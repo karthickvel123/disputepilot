@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5081
+**Date:** 29th May 2024, 06:42 PM
+**Customer:** Arjun Patel
+**Address:** Plot 12, Behind Silk Board, Outer Ring Rd, BLR 103
+**Item:** Wireless ANC Headphones Pro (Qty: 1)
+**Amount Total:** Rs. 2999.00
+**Payment Ref:** order_scysiyre6rno
+*Computer generated voucher. Signature not needed.*

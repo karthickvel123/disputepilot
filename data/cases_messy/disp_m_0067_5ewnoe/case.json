@@ -1,0 +1,88 @@
+{
+  "case_id": "disp_m_0067_5ewnoe",
+  "dispute": {
+    "id": "disp_m_0067_5ewnoe",
+    "entity": "dispute",
+    "payment_id": "pay_cm6d09xrauc3",
+    "amount": 1799800,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "screen freeze ho gayi thi button dabaya toh do bar cut hua",
+    "phase": "chargeback",
+    "status": "open",
+    "respond_by": 1717576230,
+    "created_at": 1716740303,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [
+        "disp_m_0067_5ewnoe/invoice.txt"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_8s9v0rz1u80y",
+    "entity": "order",
+    "amount": 1799800,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1715731367,
+    "customer_name": "Aditya Joshi",
+    "customer_email": "aditya_joshi@gmail.com",
+    "customer_phone": "",
+    "shipping_address": "Flat 345, Sector 10, Bengaluru, Karnataka 560103",
+    "items": [
+      {
+        "name": "Ergonomic Mesh Office Chair",
+        "quantity": 2,
+        "amount": 899900
+      }
+    ],
+    "tracking_number": "AWB-42314527",
+    "delivered_at": null
+  },
+  "refund": {
+    "id": "rfnd_mhfcdz9u29u3",
+    "entity": "refund",
+    "payment_id": "pay_cm6d09xrauc3",
+    "amount": 1799800,
+    "currency": "INR",
+    "status": "processed",
+    "created_at": 1715904167,
+    "arn": "ARN735533238858"
+  },
+  "ground_truth": {
+    "reason_class": "duplicate_charge",
+    "available_evidence": [
+      "billing_proof"
+    ],
+    "winnable": false,
+    "rule_explanation": "Duplicate transaction unrefunded without proof of separate legitimate fulfillment.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0067_5ewnoe_doc_inv",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.txt",
+      "file_path": "disp_m_0067_5ewnoe/invoice.txt",
+      "content": "# TAX INVOICE / CASH MEMO\n**Bill No:** INV-5066\n**Date:** 15th May 2024, 12:02 AM\n**Customer:** Aditya Joshi\n**Address:** #42, 2nd Cross, Koramangala 4th Blk, Bangalore-34\n**Item:** Ergonomic Mesh Office Chair (Qty: 2)\n**Amount Total:** Rs. 17998.00\n**Payment Ref:** order_8s9v0rz1u80y\n*Computer generated voucher. Signature not needed.*\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 66,
+    "mode": "messy"
+  }
+}

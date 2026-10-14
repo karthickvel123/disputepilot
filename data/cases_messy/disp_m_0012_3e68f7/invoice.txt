@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5011
+**Date:** 21st Mar 2024, 02:24 AM
+**Customer:** Neha Kulkarni
+**Address:** Near Mehboob Studio, Bandra (W), Mumbai 400050
+**Item:** Wireless ANC Headphones Pro (Qty: 1)
+**Amount Total:** Rs. 2999.00
+**Payment Ref:** order_vqtia4d5rgn5
+*Computer generated voucher. Signature not needed.*

@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5080
+**Date:** 28/05/2024
+**Customer:** Arjun Patel
+**Address:** 12A Barakhamba Road, Connaught Place, New Delhi 110001
+**Item:** 4K HDR Computer Monitor 27in (Qty: 1)
+**Amount Total:** Rs. 17999.00
+**Payment Ref:** order_8twxqpe9g0ht
+*Computer generated voucher. Signature not needed.*

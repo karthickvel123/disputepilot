@@ -1,0 +1,88 @@
+{
+  "case_id": "disp_0116_t2o90s",
+  "dispute": {
+    "id": "disp_0116_t2o90s",
+    "entity": "dispute",
+    "payment_id": "pay_gz27fhjzzgkexm",
+    "amount": 349900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "12.6",
+    "phase": "retrieval",
+    "status": "open",
+    "respond_by": 1721624974,
+    "created_at": 1720818848,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_0116_t2o90s/customer_chat.md"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [
+        "disp_0116_t2o90s/cancellation_policy.md"
+      ],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_vmzho15rrzw4z5",
+    "entity": "order",
+    "amount": 349900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1719973116,
+    "customer_name": "Neha Kulkarni",
+    "customer_email": "neha.kulkarni@example.com",
+    "customer_phone": "+919826400072",
+    "shipping_address": "Flat 602, Sector 8, Chennai, Tamil Nadu 600028",
+    "items": [
+      {
+        "name": "Smart Fitness Watch v3",
+        "quantity": 1,
+        "amount": 349900
+      }
+    ],
+    "tracking_number": "TRK-BD-23368540",
+    "delivered_at": null
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "duplicate_charge",
+    "available_evidence": [
+      "customer_communication",
+      "refund_cancellation_policy"
+    ],
+    "winnable": false,
+    "rule_explanation": "Duplicate transaction unrefunded without proof of separate legitimate fulfillment.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0116_t2o90s_1",
+      "doc_type": "customer_communication",
+      "file_name": "customer_chat.md",
+      "file_path": "disp_0116_t2o90s/customer_chat.md",
+      "content": "# Customer Support Communication Record\n\n**Support Ticket:** TIK-05115  \n**Channel:** Razorpay Merchant Web Chat  \n**Customer Name:** Neha Kulkarni  \n**Timestamp:** 2024-07-04 02:18:36 UTC  \n**Context Reference:** Order order_vmzho15rrzw4z5  \n\n---\n**[2024-07-04 02:18:36 UTC] Neha Kulkarni:** Hello, I am inquiring regarding my purchase order_vmzho15rrzw4z5.\n**[2024-07-04 02:18:36 UTC] Support Agent (Kiran):** Welcome to customer support, Neha Kulkarni. How may I help you today?\n**[2024-07-04 02:18:36 UTC] Neha Kulkarni:** I see an unauthorized charge on my statement.\n**[2024-07-04 02:18:36 UTC] Support Agent (Kiran):** The transaction was authenticated via 3DS OTP sent to your registered mobile number.\n\n---\n*Transcript archived by Merchant Customer Experience CRM.*\n"
+    },
+    {
+      "doc_id": "doc_0116_t2o90s_2",
+      "doc_type": "refund_cancellation_policy",
+      "file_name": "cancellation_policy.md",
+      "file_path": "disp_0116_t2o90s/cancellation_policy.md",
+      "content": "# Apex Retail Solutions Private Limited \u2014 Terms of Sale, Cancellation & Refund Policy\n\n**Document Reference:** TOS-POL-2024-V2  \n**Effective Date:** 2024-01-01  \n**Public Policy URL:** https://apexsolutions.example.in/terms-and-policies  \n\n### 1. Order Cancellation Policy\nCustomers may cancel orders within 2 hours of payment or before the consignment is marked as 'Dispatched'. Once dispatched with our logistics partners, transit cancellation cannot be executed.\n\n### 2. Returns and Defect Reporting\n- Return requests must be lodged within 7 calendar days of verified courier delivery.\n- Goods must be returned in unblemished original packaging with intact security seals.\n- Defective or variant discrepancies must include unboxing photographs submitted within 48 hours of receipt.\n\n### 3. Subscription Cancellations\n- Subscription renewals auto-debit on the anniversary date.\n- Cancellation requests must be logged at least 48 hours prior to the next billing cycle.\n- Continued usage or access to merchant software/services after billing constitutes acceptance of the billing cycle.\n\n### 4. Dispute Escalation & Refund SLA\n- Approved refunds are routed directly through Razorpay to the originating payment instrument within 5\u20137 banking days.\n- A valid Acquirer Reference Number (ARN) will be provided upon processing.\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 115
+  }
+}

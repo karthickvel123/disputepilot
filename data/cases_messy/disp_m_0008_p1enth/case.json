@@ -1,0 +1,79 @@
+{
+  "case_id": "disp_m_0008_p1enth",
+  "dispute": {
+    "id": "disp_m_0008_p1enth",
+    "entity": "dispute",
+    "payment_id": "pay_ogz5kok16zv0",
+    "amount": 899900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "delivery associate signed himself parcel nahi pahuncha",
+    "phase": "chargeback",
+    "status": "open",
+    "respond_by": 1712296002,
+    "created_at": 1711556916,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_m_0008_p1enth/chat_transcript.txt"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_mwufxbv932by",
+    "entity": "order",
+    "amount": 899900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1710642310,
+    "customer_name": "Arjun Patel",
+    "customer_email": "",
+    "customer_phone": "+919945134241",
+    "shipping_address": "Flat 208, Sector 2, Mumbai, Maharashtra 400050",
+    "items": [
+      {
+        "name": "Ergonomic Mesh Office Chair",
+        "quantity": 1,
+        "amount": 899900
+      }
+    ],
+    "tracking_number": "AWB-46298660",
+    "delivered_at": 1710978668
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "item_not_received",
+    "available_evidence": [
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "Missing courier proof of delivery or fulfillment unverified before dispute inception.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0008_p1enth_doc_chat",
+      "doc_type": "customer_communication",
+      "file_name": "chat_transcript.txt",
+      "file_path": "disp_m_0008_p1enth/chat_transcript.txt",
+      "content": "--- Chat Conversation Log ---\nDate: 18th of March around 02 AM\nUser: Arjun Patel\nAgent: Support Team (Harish)\n\n[User]: Hello sir, package track nahi ho raha hai theek se.\n[Agent]: Checking your consignment AWB-46298660. Please note tracking updates within 24h.\n[User]: Ok sending alternate address: Near Mehboob Studio, Bandra (W), Mumbai 400050. Please expedite.\n[Agent]: Noted sir. Have escalated to courier partner.\n\n--- Log Closed ---\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 7,
+    "mode": "messy"
+  }
+}

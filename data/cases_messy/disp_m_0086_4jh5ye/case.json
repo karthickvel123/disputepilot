@@ -1,0 +1,79 @@
+{
+  "case_id": "disp_m_0086_4jh5ye",
+  "dispute": {
+    "id": "disp_m_0086_4jh5ye",
+    "entity": "dispute",
+    "payment_id": "pay_pgmac3dzpoc9",
+    "amount": 379800,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "ordered 27 inch monitor received small 21 inch cheap panel",
+    "phase": "retrieval",
+    "status": "open",
+    "respond_by": 1718835339,
+    "created_at": 1718096896,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_m_0086_4jh5ye/chat_transcript.txt"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_0qcj3b4gglj7",
+    "entity": "order",
+    "amount": 379800,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1717381162,
+    "customer_name": "Aditya Joshi",
+    "customer_email": "aditya_joshi@gmail.com",
+    "customer_phone": "+916309830458",
+    "shipping_address": "Flat 670, Sector 2, Bengaluru, Karnataka 560103",
+    "items": [
+      {
+        "name": "USB-C Fast Charging Hub 100W",
+        "quantity": 2,
+        "amount": 189900
+      }
+    ],
+    "tracking_number": "AWB-17279643",
+    "delivered_at": 1717638706
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "not_as_described",
+    "available_evidence": [
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "Insufficient evidence proving product specifications and customer adherence to return terms.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0086_4jh5ye_doc_chat",
+      "doc_type": "customer_communication",
+      "file_name": "chat_transcript.txt",
+      "file_path": "disp_m_0086_4jh5ye/chat_transcript.txt",
+      "content": "--- Chat Conversation Log ---\nDate: 04-Jun-24\nUser: Aditya Joshi\nAgent: Support Team (Harish)\n\n[User]: Hello sir, package track nahi ho raha hai theek se.\n[Agent]: Checking your consignment AWB-17279643. Please note tracking updates within 24h.\n[User]: Ok sending alternate address: #42, 2nd Cross, Koramangala 4th Blk, Bangalore-34. Please expedite.\n[Agent]: Noted sir. Have escalated to courier partner.\n\n--- Log Closed ---\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 85,
+    "mode": "messy"
+  }
+}

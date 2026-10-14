@@ -1,0 +1,78 @@
+{
+  "case_id": "disp_0102_z3pm7v",
+  "dispute": {
+    "id": "disp_0102_z3pm7v",
+    "entity": "dispute",
+    "payment_id": "pay_g7g2wosqmcbfdn",
+    "amount": 599800,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "duplicate_processing",
+    "phase": "retrieval",
+    "status": "open",
+    "respond_by": 1721176257,
+    "created_at": 1720396456,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_0102_z3pm7v/customer_chat.md"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_hhfiylhlqs3e3r",
+    "entity": "order",
+    "amount": 599800,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1718757982,
+    "customer_name": "Deepika Nair",
+    "customer_email": "deepika.nair@mail.in",
+    "customer_phone": "+919831738712",
+    "shipping_address": "Flat 384, Sector 13, Mumbai, Maharashtra 400050",
+    "items": [
+      {
+        "name": "Wireless ANC Headphones Pro",
+        "quantity": 2,
+        "amount": 299900
+      }
+    ],
+    "tracking_number": "TRK-DT-54648162",
+    "delivered_at": null
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "duplicate_charge",
+    "available_evidence": [
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "Duplicate transaction unrefunded without proof of separate legitimate fulfillment.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0102_z3pm7v_1",
+      "doc_type": "customer_communication",
+      "file_name": "customer_chat.md",
+      "file_path": "disp_0102_z3pm7v/customer_chat.md",
+      "content": "# Customer Support Communication Record\n\n**Support Ticket:** TIK-05101  \n**Channel:** Razorpay Merchant Web Chat  \n**Customer Name:** Deepika Nair  \n**Timestamp:** 2024-06-20 00:46:22 UTC  \n**Context Reference:** Order order_hhfiylhlqs3e3r  \n\n---\n**[2024-06-20 00:46:22 UTC] Deepika Nair:** Hello, I am inquiring regarding my purchase order_hhfiylhlqs3e3r.\n**[2024-06-20 00:46:22 UTC] Support Agent (Kiran):** Welcome to customer support, Deepika Nair. How may I help you today?\n**[2024-06-20 00:46:22 UTC] Deepika Nair:** I see an unauthorized charge on my statement.\n**[2024-06-20 00:46:22 UTC] Support Agent (Kiran):** The transaction was authenticated via 3DS OTP sent to your registered mobile number.\n\n---\n*Transcript archived by Merchant Customer Experience CRM.*\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 101
+  }
+}

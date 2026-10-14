@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5039
+**Date:** 17th of April around 10 PM
+**Customer:** Ananya Rao
+**Address:** 12A Barakhamba Road, Connaught Place, New Delhi 110001
+**Item:** 4K HDR Computer Monitor 27in (Qty: 2)
+**Amount Total:** Rs. 35998.00
+**Payment Ref:** order_cqwd9bdq64dg
+*Computer generated voucher. Signature not needed.*

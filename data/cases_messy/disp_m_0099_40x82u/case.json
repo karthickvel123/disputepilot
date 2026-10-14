@@ -1,0 +1,93 @@
+{
+  "case_id": "disp_m_0099_40x82u",
+  "dispute": {
+    "id": "disp_m_0099_40x82u",
+    "entity": "dispute",
+    "payment_id": "pay_c9ie3ctev17f",
+    "amount": 189900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "consignment lost somewhere before reaching my apartment",
+    "phase": "retrieval",
+    "status": "open",
+    "respond_by": 1719975018,
+    "created_at": 1719268802,
+    "evidence": {
+      "shipping_proof": [
+        "disp_m_0099_40x82u/delivery_slip.md"
+      ],
+      "billing_proof": [
+        "disp_m_0099_40x82u/invoice.txt"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_jzgdcsi7geuk",
+    "entity": "order",
+    "amount": 189900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1718481882,
+    "customer_name": "Aditya Joshi",
+    "customer_email": "",
+    "customer_phone": "+917451837823",
+    "shipping_address": "Flat 227, Sector 4, New Delhi, Delhi 110001",
+    "items": [
+      {
+        "name": "USB-C Fast Charging Hub 100W",
+        "quantity": 1,
+        "amount": 189900
+      }
+    ],
+    "tracking_number": "AWB-44838748",
+    "delivered_at": 1719441602
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "item_not_received",
+    "available_evidence": [
+      "billing_proof",
+      "shipping_proof"
+    ],
+    "winnable": false,
+    "rule_explanation": "Delivery timestamp is after the dispute date; merchant cannot prove timely fulfillment.",
+    "adversarial": {
+      "is_adversarial": true,
+      "adversarial_types": [
+        "delivery_after_dispute"
+      ],
+      "details": [
+        "POD date is recorded after dispute creation."
+      ]
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0099_40x82u_doc_inv",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.txt",
+      "file_path": "disp_m_0099_40x82u/invoice.txt",
+      "content": "# TAX INVOICE / CASH MEMO\n**Bill No:** INV-5098\n**Date:** 15.06.2024\n**Customer:** Aditya Joshi\n**Address:** 12A Barakhamba Road, Connaught Place, New Delhi 110001\n**Item:** USB-C Fast Charging Hub 100W (Qty: 1)\n**Amount Total:** Rs. 1899.00\n**Payment Ref:** order_jzgdcsi7geuk\n*Computer generated voucher. Signature not needed.*\n"
+    },
+    {
+      "doc_id": "disp_m_0099_40x82u_doc_pod",
+      "doc_type": "shipping_proof",
+      "file_name": "delivery_slip.md",
+      "file_path": "disp_m_0099_40x82u/delivery_slip.md",
+      "content": "# Courier Handover Sheet\nCourier: Bluedart Express Courier\nDocket Number: AWB-44838748\nDelivered To: Aditya Joshi\nDelivery Location: 12A Barakhamba Road, Connaught Place, New Delhi 110001\nHandover Time: 26th of June around 10 PM\nReceived By: Self / Family member\nOTP Status: Verified electronically on driver handset\n\nStatus: COMPLETE_DELIVERY\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 98,
+    "mode": "messy"
+  }
+}

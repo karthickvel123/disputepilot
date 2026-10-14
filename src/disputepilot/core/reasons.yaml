@@ -1,0 +1,142 @@
+# Mapping of Razorpay reason codes and text keywords to ReasonClass
+item_not_received:
+  codes:
+    - "13.1"
+    - "4855"
+    - "merchandise_not_received"
+    - "INR_101"
+    - "goods_not_received"
+    - "services_not_provided"
+    - "non_receipt"
+  keywords:
+    - "not received"
+    - "didn't arrive"
+    - "did not arrive"
+    - "undelivered"
+    - "non-receipt"
+    - "non receipt"
+    - "package missing"
+    - "never arrived"
+    - "item missing"
+    - "goods not received"
+    - "merchandise not received"
+    - "no delivery"
+
+not_as_described:
+  codes:
+    - "13.3"
+    - "4853"
+    - "not_as_described"
+    - "INR_103"
+    - "defective_merchandise"
+    - "counterfeit"
+    - "different_from_description"
+  keywords:
+    - "not as described"
+    - "defective"
+    - "counterfeit"
+    - "damaged"
+    - "wrong item"
+    - "faulty"
+    - "different specification"
+    - "fake"
+    - "broken"
+    - "inferior quality"
+    - "mismatch"
+
+unauthorised:
+  codes:
+    - "10.4"
+    - "4837"
+    - "fraud_card_not_present"
+    - "INR_104"
+    - "fraud"
+    - "unauthorized"
+    - "unauthorised"
+    - "card_present_fraud"
+    - "10.1"
+    - "10.2"
+    - "10.3"
+    - "10.5"
+    - "4840"
+    - "4849"
+  keywords:
+    - "unauthorised"
+    - "unauthorized"
+    - "fraud"
+    - "stolen"
+    - "compromised"
+    - "did not authorize"
+    - "not recognized"
+    - "scam"
+    - "hacked"
+    - "unrecognized transaction"
+
+duplicate_charge:
+  codes:
+    - "12.6"
+    - "4834"
+    - "duplicate_processing"
+    - "INR_106"
+    - "duplicate_transaction"
+    - "charged_twice"
+    - "double_billing"
+  keywords:
+    - "duplicate"
+    - "charged twice"
+    - "double charge"
+    - "billed twice"
+    - "multiple debits"
+    - "double billed"
+    - "second charge"
+    - "two charges"
+
+subscription_cancelled:
+  codes:
+    - "13.7"
+    - "4841"
+    - "cancelled_recurring"
+    - "INR_107"
+    - "recurring_transaction"
+    - "subscription_dispute"
+  keywords:
+    - "cancelled recurring"
+    - "subscription cancelled"
+    - "cancelled subscription"
+    - "recurring charge"
+    - "auto-renewal"
+    - "renewal after cancellation"
+    - "membership cancelled"
+
+refund_not_received:
+  codes:
+    - "13.6"
+    - "4860"
+    - "credit_not_processed"
+    - "INR_108"
+    - "refund_pending"
+    - "credit_not_received"
+    - "missing_refund"
+  keywords:
+    - "credit not processed"
+    - "refund not received"
+    - "refund missing"
+    - "credit missing"
+    - "promised refund"
+    - "never refunded"
+    - "no refund"
+
+other:
+  codes:
+    - "general_inquiry"
+    - "retrieval_request"
+    - "other_dispute"
+    - "request_for_information"
+    - "other"
+  keywords:
+    - "general inquiry"
+    - "retrieval request"
+    - "inquiry"
+    - "clarification"
+    - "unspecified"
+    - "other"

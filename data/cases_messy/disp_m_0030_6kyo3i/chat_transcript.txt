@@ -1,0 +1,11 @@
+--- Chat Conversation Log ---
+Date: 8th Apr 2024, 08:26 PM
+User: Rohan Gupta
+Agent: Support Team (Harish)
+
+[User]: Hello sir, package track nahi ho raha hai theek se.
+[Agent]: Checking your consignment AWB-68374377. Please note tracking updates within 24h.
+[User]: Ok sending alternate address: B-402, Sea Breeze Apts, Hill Rd, Bandra West, Mum-50. Please expedite.
+[Agent]: Noted sir. Have escalated to courier partner.
+
+--- Log Closed ---

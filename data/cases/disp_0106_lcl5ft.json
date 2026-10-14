@@ -1,0 +1,88 @@
+{
+  "case_id": "disp_0106_lcl5ft",
+  "dispute": {
+    "id": "disp_0106_lcl5ft",
+    "entity": "dispute",
+    "payment_id": "pay_gx86o3nrdmhj45",
+    "amount": 699800,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "merchandise_not_received",
+    "phase": "chargeback",
+    "status": "open",
+    "respond_by": 1720778450,
+    "created_at": 1719967738,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [
+        "disp_0106_lcl5ft/invoice.md"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [
+        "disp_0106_lcl5ft/cancellation_policy.md"
+      ],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_lkcdxsn1qv3cgd",
+    "entity": "order",
+    "amount": 699800,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1719110816,
+    "customer_name": "Priya Sharma",
+    "customer_email": "priya.sharma@mail.in",
+    "customer_phone": "+919879109207",
+    "shipping_address": "Flat 173, Sector 15, Mumbai, Maharashtra 400050",
+    "items": [
+      {
+        "name": "Smart Fitness Watch v3",
+        "quantity": 2,
+        "amount": 349900
+      }
+    ],
+    "tracking_number": "TRK-SF-66246123",
+    "delivered_at": 1719329723
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "item_not_received",
+    "available_evidence": [
+      "billing_proof",
+      "refund_cancellation_policy"
+    ],
+    "winnable": false,
+    "rule_explanation": "Missing courier proof of delivery or fulfillment unverified before dispute inception.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0106_lcl5ft_1",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.md",
+      "file_path": "disp_0106_lcl5ft/invoice.md",
+      "content": "# TAX INVOICE\n\n**Invoice Number:** INV-2024-01105  \n**Invoice Date:** 2024-06-23 02:46:56 UTC  \n**Order Reference:** order_lkcdxsn1qv3cgd  \n**Payment ID:** pay_gx86o3nrdmhj45  \n\n### Merchant Details:\n**Seller:** Apex Retail Solutions Private Limited  \n**GSTIN:** 29AABCA1234F1Z5  \n**State:** Karnataka (Code 29)  \n**Registered Address:** Outer Ring Road, Bellandur, Bengaluru, Karnataka 560103  \n\n### Customer Details:\n**Billed To:** Priya Sharma  \n**Address:** Flat 173, Sector 15, Mumbai, Maharashtra 400050  \n**Email:** priya.sharma@mail.in  \n**Phone:** +919879109207  \n\n### Itemized Particulars:\n| Description | HSN | Qty | Unit Price | Tax Rate | Total Amount |\n| --- | --- | --- | --- | --- | --- |\n| Smart Fitness Watch v3 | 8471 | 2 | INR 3499.00 | 18% | INR 3499.00 |\n\n**Grand Total:** INR 6998.00 (699800 paise)  \n**Payment Method:** Razorpay Checkout (3D-Secure 2.0 Authenticated)  \n**Transaction Reference:** pay_gx86o3nrdmhj45  \n\n---\n*Authorized Signatory for Apex Retail Solutions Private Limited.*\n"
+    },
+    {
+      "doc_id": "doc_0106_lcl5ft_2",
+      "doc_type": "refund_cancellation_policy",
+      "file_name": "cancellation_policy.md",
+      "file_path": "disp_0106_lcl5ft/cancellation_policy.md",
+      "content": "# Apex Retail Solutions Private Limited \u2014 Terms of Sale, Cancellation & Refund Policy\n\n**Document Reference:** TOS-POL-2024-V2  \n**Effective Date:** 2024-01-01  \n**Public Policy URL:** https://apexsolutions.example.in/terms-and-policies  \n\n### 1. Order Cancellation Policy\nCustomers may cancel orders within 2 hours of payment or before the consignment is marked as 'Dispatched'. Once dispatched with our logistics partners, transit cancellation cannot be executed.\n\n### 2. Returns and Defect Reporting\n- Return requests must be lodged within 7 calendar days of verified courier delivery.\n- Goods must be returned in unblemished original packaging with intact security seals.\n- Defective or variant discrepancies must include unboxing photographs submitted within 48 hours of receipt.\n\n### 3. Subscription Cancellations\n- Subscription renewals auto-debit on the anniversary date.\n- Cancellation requests must be logged at least 48 hours prior to the next billing cycle.\n- Continued usage or access to merchant software/services after billing constitutes acceptance of the billing cycle.\n\n### 4. Dispute Escalation & Refund SLA\n- Approved refunds are routed directly through Razorpay to the originating payment instrument within 5\u20137 banking days.\n- A valid Acquirer Reference Number (ARN) will be provided upon processing.\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 105
+  }
+}

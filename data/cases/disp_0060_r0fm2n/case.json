@@ -1,0 +1,78 @@
+{
+  "case_id": "disp_0060_r0fm2n",
+  "dispute": {
+    "id": "disp_0060_r0fm2n",
+    "entity": "dispute",
+    "payment_id": "pay_t6zi7blmmdpc3d",
+    "amount": 1799900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "4834",
+    "phase": "pre_arbitration",
+    "status": "open",
+    "respond_by": 1717098104,
+    "created_at": 1716401617,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_0060_r0fm2n/customer_chat.md"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_xmrx36zhbpx52l",
+    "entity": "order",
+    "amount": 1799900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1715132302,
+    "customer_name": "Deepika Nair",
+    "customer_email": "deepika.nair@example.com",
+    "customer_phone": "+919844716747",
+    "shipping_address": "Flat 392, Sector 1, Mumbai, Maharashtra 400050",
+    "items": [
+      {
+        "name": "4K HDR Computer Monitor 27in",
+        "quantity": 1,
+        "amount": 1799900
+      }
+    ],
+    "tracking_number": "TRK-DL-86807176",
+    "delivered_at": null
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "duplicate_charge",
+    "available_evidence": [
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "Duplicate transaction unrefunded without proof of separate legitimate fulfillment.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0060_r0fm2n_1",
+      "doc_type": "customer_communication",
+      "file_name": "customer_chat.md",
+      "file_path": "disp_0060_r0fm2n/customer_chat.md",
+      "content": "# Customer Support Communication Record\n\n**Support Ticket:** TIK-05059  \n**Channel:** Razorpay Merchant Web Chat  \n**Customer Name:** Deepika Nair  \n**Timestamp:** 2024-05-09 01:38:22 UTC  \n**Context Reference:** Order order_xmrx36zhbpx52l  \n\n---\n**[2024-05-09 01:38:22 UTC] Deepika Nair:** Hello, I am inquiring regarding my purchase order_xmrx36zhbpx52l.\n**[2024-05-09 01:38:22 UTC] Support Agent (Kiran):** Welcome to customer support, Deepika Nair. How may I help you today?\n**[2024-05-09 01:38:22 UTC] Deepika Nair:** I see an unauthorized charge on my statement.\n**[2024-05-09 01:38:22 UTC] Support Agent (Kiran):** The transaction was authenticated via 3DS OTP sent to your registered mobile number.\n\n---\n*Transcript archived by Merchant Customer Experience CRM.*\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 59
+  }
+}

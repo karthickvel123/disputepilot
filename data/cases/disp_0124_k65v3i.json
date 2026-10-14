@@ -1,0 +1,78 @@
+{
+  "case_id": "disp_0124_k65v3i",
+  "dispute": {
+    "id": "disp_0124_k65v3i",
+    "entity": "dispute",
+    "payment_id": "pay_ci5rx1sqq7u1ku",
+    "amount": 399800,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "4841",
+    "phase": "retrieval",
+    "status": "open",
+    "respond_by": 1722313738,
+    "created_at": 1721474274,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_0124_k65v3i/customer_chat.md"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_5j92dmjdolc4qk",
+    "entity": "order",
+    "amount": 399800,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1720661414,
+    "customer_name": "Neha Kulkarni",
+    "customer_email": "neha.kulkarni@example.com",
+    "customer_phone": "+919869259769",
+    "shipping_address": "Flat 675, Sector 8, Pune, Maharashtra 411014",
+    "items": [
+      {
+        "name": "Wireless Bluetooth Earbuds",
+        "quantity": 2,
+        "amount": 199900
+      }
+    ],
+    "tracking_number": "TRK-BD-29871432",
+    "delivered_at": null
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "subscription_cancelled",
+    "available_evidence": [
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "Merchant failed to prove ongoing service usage or customer acknowledgement of renewal window.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0124_k65v3i_1",
+      "doc_type": "customer_communication",
+      "file_name": "customer_chat.md",
+      "file_path": "disp_0124_k65v3i/customer_chat.md",
+      "content": "# Customer Support Communication Record\n\n**Support Ticket:** TIK-05123  \n**Channel:** Razorpay Merchant Web Chat  \n**Customer Name:** Neha Kulkarni  \n**Timestamp:** 2024-07-12 01:30:14 UTC  \n**Context Reference:** Order order_5j92dmjdolc4qk  \n\n---\n**[2024-07-12 01:30:14 UTC] Neha Kulkarni:** Hello, I am inquiring regarding my purchase order_5j92dmjdolc4qk.\n**[2024-07-12 01:30:14 UTC] Support Agent (Kiran):** Welcome to customer support, Neha Kulkarni. How may I help you today?\n**[2024-07-12 01:30:14 UTC] Neha Kulkarni:** I was billed for a monthly renewal.\n**[2024-07-12 01:30:14 UTC] Support Agent (Kiran):** Per our terms, subscriptions must be cancelled at least 48 hours before renewal. Your cancellation request came after the cycle commenced.\n\n---\n*Transcript archived by Merchant Customer Experience CRM.*\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 123
+  }
+}

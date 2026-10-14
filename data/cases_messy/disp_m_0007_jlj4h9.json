@@ -1,0 +1,89 @@
+{
+  "case_id": "disp_m_0007_jlj4h9",
+  "dispute": {
+    "id": "disp_m_0007_jlj4h9",
+    "entity": "dispute",
+    "payment_id": "pay_g9dpmrcg629b",
+    "amount": 299900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "bill amount samajh me nahi aa raha explain karo split",
+    "phase": "chargeback",
+    "status": "open",
+    "respond_by": 1712931403,
+    "created_at": 1712079617,
+    "evidence": {
+      "shipping_proof": [
+        "disp_m_0007_jlj4h9/delivery_slip.md"
+      ],
+      "billing_proof": [
+        "disp_m_0007_jlj4h9/invoice.txt"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_e2u66mr26846",
+    "entity": "order",
+    "amount": 299900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1710556289,
+    "customer_name": "Vikram Singh",
+    "customer_email": "vikram_singh@outlook.in",
+    "customer_phone": "+919834353250",
+    "shipping_address": "Flat 559, Sector 3, Mumbai, Maharashtra 400050",
+    "items": [
+      {
+        "name": "Wireless ANC Headphones Pro",
+        "quantity": 1,
+        "amount": 299900
+      }
+    ],
+    "tracking_number": "AWB-52410090",
+    "delivered_at": 1710958867
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "other",
+    "available_evidence": [
+      "billing_proof",
+      "shipping_proof"
+    ],
+    "winnable": true,
+    "rule_explanation": "Sufficient composite documentation of transaction legitimacy and fulfillment.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0007_jlj4h9_doc_inv",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.txt",
+      "file_path": "disp_m_0007_jlj4h9/invoice.txt",
+      "content": "# TAX INVOICE / CASH MEMO\n**Bill No:** INV-5006\n**Date:** 16th Mar 2024, 02:31 AM\n**Customer:** Vikram Singh\n**Address:** Near Mehboob Studio, Bandra (W), Mumbai 400050\n**Item:** Wireless ANC Headphones Pro (Qty: 1)\n**Amount Total:** Rs. 2999.00\n**Payment Ref:** order_e2u66mr26846\n*Computer generated voucher. Signature not needed.*\n"
+    },
+    {
+      "doc_id": "disp_m_0007_jlj4h9_doc_pod",
+      "doc_type": "shipping_proof",
+      "file_name": "delivery_slip.md",
+      "file_path": "disp_m_0007_jlj4h9/delivery_slip.md",
+      "content": "# Courier Handover Sheet\nCourier: DTDC Air\nDocket Number: AWB-52410090\nDelivered To: Vikram Singh\nDelivery Location: Near Mehboob Studio, Bandra (W), Mumbai 400050\nHandover Time: 20-Mar-24\nReceived By: Self / Family member\nOTP Status: Verified electronically on driver handset\n\nStatus: COMPLETE_DELIVERY\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 6,
+    "mode": "messy"
+  }
+}

@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5050
+**Date:** 29/04/2024
+**Customer:** Priya Sharma
+**Address:** B-402, Sea Breeze Apts, Hill Rd, Bandra West, Mum-50
+**Item:** Mechanical Gaming Keyboard (Qty: 1)
+**Amount Total:** Rs. 4500.00
+**Payment Ref:** order_zeh1w9pym3sw
+*Computer generated voucher. Signature not needed.*

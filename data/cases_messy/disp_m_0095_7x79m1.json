@@ -1,0 +1,80 @@
+{
+  "case_id": "disp_m_0095_7x79m1",
+  "dispute": {
+    "id": "disp_m_0095_7x79m1",
+    "entity": "dispute",
+    "payment_id": "pay_0x7qed4nua24",
+    "amount": 149900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "merchant portal gave error but debited account two times",
+    "phase": "pre_arbitration",
+    "status": "open",
+    "respond_by": 1720306674,
+    "created_at": 1719516219,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_vl3uo1fn80zi",
+    "entity": "order",
+    "amount": 149900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1718140436,
+    "customer_name": "Deepika Nair",
+    "customer_email": "deepika_nair@yahoo.co.in",
+    "customer_phone": "+918849007761",
+    "shipping_address": "Flat 474, Sector 3, Pune, Maharashtra 411014",
+    "items": [
+      {
+        "name": "Monthly Cloud SaaS Subscription",
+        "quantity": 1,
+        "amount": 149900
+      }
+    ],
+    "tracking_number": "AWB-25179620",
+    "delivered_at": null
+  },
+  "refund": {
+    "id": "rfnd_c6iz0e43v8ww",
+    "entity": "refund",
+    "payment_id": "pay_0x7qed4nua24",
+    "amount": 149900,
+    "currency": "INR",
+    "status": "processed",
+    "created_at": 1718313236,
+    "arn": "ARN936249183100"
+  },
+  "ground_truth": {
+    "reason_class": "duplicate_charge",
+    "available_evidence": [],
+    "winnable": false,
+    "rule_explanation": "Duplicate transaction unrefunded without proof of separate legitimate fulfillment.",
+    "adversarial": {
+      "is_adversarial": true,
+      "adversarial_types": [
+        "card_number"
+      ],
+      "details": [
+        "Evidence document contains a payment card string."
+      ]
+    }
+  },
+  "documents": [],
+  "metadata": {
+    "seed": 7,
+    "case_index": 94,
+    "mode": "messy"
+  }
+}

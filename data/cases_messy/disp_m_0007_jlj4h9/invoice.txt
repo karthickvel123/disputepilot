@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5006
+**Date:** 16th Mar 2024, 02:31 AM
+**Customer:** Vikram Singh
+**Address:** Near Mehboob Studio, Bandra (W), Mumbai 400050
+**Item:** Wireless ANC Headphones Pro (Qty: 1)
+**Amount Total:** Rs. 2999.00
+**Payment Ref:** order_e2u66mr26846
+*Computer generated voucher. Signature not needed.*

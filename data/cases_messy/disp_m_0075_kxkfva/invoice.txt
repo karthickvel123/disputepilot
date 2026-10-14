@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5074
+**Date:** 23rd of May around 02 AM
+**Customer:** Arjun Patel
+**Address:** Plot 12, Behind Silk Board, Outer Ring Rd, BLR 103
+**Item:** Monthly Cloud SaaS Subscription (Qty: 2)
+**Amount Total:** Rs. 2998.00
+**Payment Ref:** order_8c6qxmsz9nip
+*Computer generated voucher. Signature not needed.*

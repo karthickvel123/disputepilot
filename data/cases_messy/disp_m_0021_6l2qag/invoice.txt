@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5020
+**Date:** 29/03/2024
+**Customer:** Aditya Joshi
+**Address:** 12A Barakhamba Road, Connaught Place, New Delhi 110001
+**Item:** Monthly Cloud SaaS Subscription (Qty: 2)
+**Amount Total:** Rs. 2998.00
+**Payment Ref:** order_nc594e0gz9j8
+*Computer generated voucher. Signature not needed.*

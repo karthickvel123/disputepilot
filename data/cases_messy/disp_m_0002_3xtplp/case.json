@@ -1,0 +1,79 @@
+{
+  "case_id": "disp_m_0002_3xtplp",
+  "dispute": {
+    "id": "disp_m_0002_3xtplp",
+    "entity": "dispute",
+    "payment_id": "pay_seh60kvj50ce",
+    "amount": 900000,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "jo picture me tha wo nahi bheja duplicate piece lag raha",
+    "phase": "chargeback",
+    "status": "open",
+    "respond_by": 1712316148,
+    "created_at": 1711594526,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_m_0002_3xtplp/chat_transcript.txt"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_9uvw53efr4ed",
+    "entity": "order",
+    "amount": 900000,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1710127876,
+    "customer_name": "Vikram Singh",
+    "customer_email": "vikram_singh@outlook.in",
+    "customer_phone": "+917656961615",
+    "shipping_address": "Flat 124, Sector 8, New Delhi, Delhi 110001",
+    "items": [
+      {
+        "name": "Mechanical Gaming Keyboard",
+        "quantity": 2,
+        "amount": 450000
+      }
+    ],
+    "tracking_number": "AWB-76262352",
+    "delivered_at": 1710479258
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "not_as_described",
+    "available_evidence": [
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "Insufficient evidence proving product specifications and customer adherence to return terms.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0002_3xtplp_doc_chat",
+      "doc_type": "customer_communication",
+      "file_name": "chat_transcript.txt",
+      "file_path": "disp_m_0002_3xtplp/chat_transcript.txt",
+      "content": "--- Chat Conversation Log ---\nDate: 12.03.2024\nUser: Vikram Singh\nAgent: Support Team (Harish)\n\n[User]: Hello sir, package track nahi ho raha hai theek se.\n[Agent]: Checking your consignment AWB-76262352. Please note tracking updates within 24h.\n[User]: Ok sending alternate address: 12A Barakhamba Road, Connaught Place, New Delhi 110001. Please expedite.\n[Agent]: Noted sir. Have escalated to courier partner.\n\n--- Log Closed ---\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 1,
+    "mode": "messy"
+  }
+}

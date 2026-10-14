@@ -1,0 +1,78 @@
+{
+  "case_id": "disp_0032_umk563",
+  "dispute": {
+    "id": "disp_0032_umk563",
+    "entity": "dispute",
+    "payment_id": "pay_pnwdds54s8ag1i",
+    "amount": 1799900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "4834",
+    "phase": "chargeback",
+    "status": "open",
+    "respond_by": 1714956722,
+    "created_at": 1714207781,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_0032_umk563/customer_chat.md"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_qxzxczd9mx9sey",
+    "entity": "order",
+    "amount": 1799900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1712715046,
+    "customer_name": "Vikram Singh",
+    "customer_email": "vikram.singh@webmail.in",
+    "customer_phone": "+919892012822",
+    "shipping_address": "Flat 232, Sector 2, Mumbai, Maharashtra 400050",
+    "items": [
+      {
+        "name": "4K HDR Computer Monitor 27in",
+        "quantity": 1,
+        "amount": 1799900
+      }
+    ],
+    "tracking_number": "TRK-SF-84870921",
+    "delivered_at": null
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "duplicate_charge",
+    "available_evidence": [
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "Duplicate transaction unrefunded without proof of separate legitimate fulfillment.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0032_umk563_1",
+      "doc_type": "customer_communication",
+      "file_name": "customer_chat.md",
+      "file_path": "disp_0032_umk563/customer_chat.md",
+      "content": "# Customer Support Communication Record\n\n**Support Ticket:** TIK-05031  \n**Channel:** Razorpay Merchant Web Chat  \n**Customer Name:** Vikram Singh  \n**Timestamp:** 2024-04-11 02:10:46 UTC  \n**Context Reference:** Order order_qxzxczd9mx9sey  \n\n---\n**[2024-04-11 02:10:46 UTC] Vikram Singh:** Hello, I am inquiring regarding my purchase order_qxzxczd9mx9sey.\n**[2024-04-11 02:10:46 UTC] Support Agent (Kiran):** Welcome to customer support, Vikram Singh. How may I help you today?\n**[2024-04-11 02:10:46 UTC] Vikram Singh:** I see an unauthorized charge on my statement.\n**[2024-04-11 02:10:46 UTC] Support Agent (Kiran):** The transaction was authenticated via 3DS OTP sent to your registered mobile number.\n\n---\n*Transcript archived by Merchant Customer Experience CRM.*\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 31
+  }
+}

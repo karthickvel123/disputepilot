@@ -1,0 +1,89 @@
+{
+  "case_id": "disp_m_0024_266cci",
+  "dispute": {
+    "id": "disp_m_0024_266cci",
+    "entity": "dispute",
+    "payment_id": "pay_yibehmi5skoe",
+    "amount": 450000,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "stranger purchased without my permission or knowledge",
+    "phase": "chargeback",
+    "status": "open",
+    "respond_by": 1713312084,
+    "created_at": 1712655133,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [
+        "disp_m_0024_266cci/invoice.txt"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_m_0024_266cci/chat_transcript.txt"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_wqkur3jq64nq",
+    "entity": "order",
+    "amount": 450000,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1712011711,
+    "customer_name": "Rohan Gupta",
+    "customer_email": "rohan_gupta@yahoo.co.in",
+    "customer_phone": "+916692474760",
+    "shipping_address": "Flat 796, Sector 6, New Delhi, Delhi 110001",
+    "items": [
+      {
+        "name": "Mechanical Gaming Keyboard",
+        "quantity": 1,
+        "amount": 450000
+      }
+    ],
+    "tracking_number": "AWB-81232198",
+    "delivered_at": 1712282098
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "unauthorised",
+    "available_evidence": [
+      "billing_proof",
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "Missing 3DS authentication records or delivery link to cardholder.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0024_266cci_doc_inv",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.txt",
+      "file_path": "disp_m_0024_266cci/invoice.txt",
+      "content": "# TAX INVOICE / CASH MEMO\n**Bill No:** INV-5023\n**Date:** 01.04.2024\n**Customer:** Rohan Gupta\n**Address:** 12A Barakhamba Road, Connaught Place, New Delhi 110001\n**Item:** Mechanical Gaming Keyboard (Qty: 1)\n**Amount Total:** Rs. 4500.00\n**Payment Ref:** order_wqkur3jq64nq\n*Computer generated voucher. Signature not needed.*\n"
+    },
+    {
+      "doc_id": "disp_m_0024_266cci_doc_chat",
+      "doc_type": "customer_communication",
+      "file_name": "chat_transcript.txt",
+      "file_path": "disp_m_0024_266cci/chat_transcript.txt",
+      "content": "--- Chat Conversation Log ---\nDate: 02/04/2024\nUser: Rohan Gupta\nAgent: Support Team (Harish)\n\n[User]: Hello sir, package track nahi ho raha hai theek se.\n[Agent]: Checking your consignment AWB-81232198. Please note tracking updates within 24h.\n[User]: Ok sending alternate address: 12A Barakhamba Road, Connaught Place, New Delhi 110001. Please expedite.\n[Agent]: Noted sir. Have escalated to courier partner.\n\n--- Log Closed ---\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 23,
+    "mode": "messy"
+  }
+}

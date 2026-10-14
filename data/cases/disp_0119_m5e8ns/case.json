@@ -1,0 +1,88 @@
+{
+  "case_id": "disp_0119_m5e8ns",
+  "dispute": {
+    "id": "disp_0119_m5e8ns",
+    "entity": "dispute",
+    "payment_id": "pay_re741nwet6t18u",
+    "amount": 299800,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "retrieval_request",
+    "phase": "retrieval",
+    "status": "open",
+    "respond_by": 1722320922,
+    "created_at": 1721576473,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [
+        "disp_0119_m5e8ns/invoice.md"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_0119_m5e8ns/customer_chat.md"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_m0zq639lb7l5n3",
+    "entity": "order",
+    "amount": 299800,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1720216359,
+    "customer_name": "Siddharth Menon",
+    "customer_email": "siddharth.menon@mail.in",
+    "customer_phone": "+919885982862",
+    "shipping_address": "Flat 635, Sector 4, Bengaluru, Karnataka 560103",
+    "items": [
+      {
+        "name": "Monthly Cloud SaaS Subscription",
+        "quantity": 2,
+        "amount": 149900
+      }
+    ],
+    "tracking_number": "TRK-DL-42262445",
+    "delivered_at": 1720634830
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "other",
+    "available_evidence": [
+      "billing_proof",
+      "customer_communication"
+    ],
+    "winnable": true,
+    "rule_explanation": "Sufficient composite documentation of transaction legitimacy and fulfillment.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0119_m5e8ns_1",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.md",
+      "file_path": "disp_0119_m5e8ns/invoice.md",
+      "content": "# TAX INVOICE\n\n**Invoice Number:** INV-2024-01118  \n**Invoice Date:** 2024-07-05 21:52:39 UTC  \n**Order Reference:** order_m0zq639lb7l5n3  \n**Payment ID:** pay_re741nwet6t18u  \n\n### Merchant Details:\n**Seller:** Apex Retail Solutions Private Limited  \n**GSTIN:** 29AABCA1234F1Z5  \n**State:** Karnataka (Code 29)  \n**Registered Address:** Outer Ring Road, Bellandur, Bengaluru, Karnataka 560103  \n\n### Customer Details:\n**Billed To:** Siddharth Menon  \n**Address:** Flat 635, Sector 4, Bengaluru, Karnataka 560103  \n**Email:** siddharth.menon@mail.in  \n**Phone:** +919885982862  \n\n### Itemized Particulars:\n| Description | HSN | Qty | Unit Price | Tax Rate | Total Amount |\n| --- | --- | --- | --- | --- | --- |\n| Monthly Cloud SaaS Subscription | 8471 | 2 | INR 1499.00 | 18% | INR 1499.00 |\n\n**Grand Total:** INR 2998.00 (299800 paise)  \n**Payment Method:** Razorpay Checkout (3D-Secure 2.0 Authenticated)  \n**Transaction Reference:** pay_re741nwet6t18u  \n\n---\n*Authorized Signatory for Apex Retail Solutions Private Limited.*\n"
+    },
+    {
+      "doc_id": "doc_0119_m5e8ns_2",
+      "doc_type": "customer_communication",
+      "file_name": "customer_chat.md",
+      "file_path": "disp_0119_m5e8ns/customer_chat.md",
+      "content": "# Customer Support Communication Record\n\n**Support Ticket:** TIK-05118  \n**Channel:** Razorpay Merchant Web Chat  \n**Customer Name:** Siddharth Menon  \n**Timestamp:** 2024-07-06 21:52:39 UTC  \n**Context Reference:** Order order_m0zq639lb7l5n3  \n\n---\n**[2024-07-06 21:52:39 UTC] Siddharth Menon:** Hello, I am inquiring regarding my purchase order_m0zq639lb7l5n3.\n**[2024-07-06 21:52:39 UTC] Support Agent (Kiran):** Welcome to customer support, Siddharth Menon. How may I help you today?\n**[2024-07-06 21:52:39 UTC] Siddharth Menon:** I see an unauthorized charge on my statement.\n**[2024-07-06 21:52:39 UTC] Support Agent (Kiran):** The transaction was authenticated via 3DS OTP sent to your registered mobile number.\n\n---\n*Transcript archived by Merchant Customer Experience CRM.*\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 118
+  }
+}

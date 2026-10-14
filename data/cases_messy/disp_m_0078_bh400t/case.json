@@ -1,0 +1,89 @@
+{
+  "case_id": "disp_m_0078_bh400t",
+  "dispute": {
+    "id": "disp_m_0078_bh400t",
+    "entity": "dispute",
+    "payment_id": "pay_wz3csvfrl208",
+    "amount": 1799900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "courier marked handed over but porch was completely empty",
+    "phase": "chargeback",
+    "status": "open",
+    "respond_by": 1718904492,
+    "created_at": 1718139721,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [
+        "disp_m_0078_bh400t/invoice.txt"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_m_0078_bh400t/chat_transcript.txt"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_phncylyrvjxk",
+    "entity": "order",
+    "amount": 1799900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1716679439,
+    "customer_name": "Aditya Joshi",
+    "customer_email": "",
+    "customer_phone": "",
+    "shipping_address": "Flat 619, Sector 10, New Delhi, Delhi 110001",
+    "items": [
+      {
+        "name": "4K HDR Computer Monitor 27in",
+        "quantity": 1,
+        "amount": 1799900
+      }
+    ],
+    "tracking_number": "AWB-80758688",
+    "delivered_at": 1717085509
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "item_not_received",
+    "available_evidence": [
+      "billing_proof",
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "Missing courier proof of delivery or fulfillment unverified before dispute inception.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0078_bh400t_doc_inv",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.txt",
+      "file_path": "disp_m_0078_bh400t/invoice.txt",
+      "content": "# TAX INVOICE / CASH MEMO\n**Bill No:** INV-5077\n**Date:** 25-May-24\n**Customer:** Aditya Joshi\n**Address:** Flat 104, Sec-3, Nr Metro Pillar 240, Dwarka, ND-75\n**Item:** 4K HDR Computer Monitor 27in (Qty: 1)\n**Amount Total:** Rs. 17999.00\n**Payment Ref:** order_phncylyrvjxk\n*Computer generated voucher. Signature not needed.*\n"
+    },
+    {
+      "doc_id": "disp_m_0078_bh400t_doc_chat",
+      "doc_type": "customer_communication",
+      "file_name": "chat_transcript.txt",
+      "file_path": "disp_m_0078_bh400t/chat_transcript.txt",
+      "content": "--- Chat Conversation Log ---\nDate: 26th of May around 11 PM\nUser: Aditya Joshi\nAgent: Support Team (Harish)\n\n[User]: Hello sir, package track nahi ho raha hai theek se.\n[Agent]: Checking your consignment AWB-80758688. Please note tracking updates within 24h.\n[User]: Ok sending alternate address: Flat 104, Sec-3, Nr Metro Pillar 240, Dwarka, ND-75. Please expedite.\n[Agent]: Noted sir. Have escalated to courier partner.\n\n--- Log Closed ---\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 77,
+    "mode": "messy"
+  }
+}

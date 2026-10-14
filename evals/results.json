@@ -1,0 +1,697 @@
+{
+  "disclaimer": "All numbers and metrics are calculated on synthetic dispute data generated for research and demonstration.",
+  "assumptions": {
+    "effort_cost_per_case_inr": 0.0,
+    "fee_per_dispute_inr": 0.0
+  },
+  "cases_evaluated": 150,
+  "clean_train_70pct": {
+    "cases_evaluated": 105,
+    "reason_classifier": {
+      "accuracy": 1.0,
+      "macro_f1": 1.0,
+      "per_class": {
+        "item_not_received": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 14
+        },
+        "not_as_described": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 14
+        },
+        "unauthorised": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 17
+        },
+        "duplicate_charge": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 17
+        },
+        "subscription_cancelled": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 19
+        },
+        "refund_not_received": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 13
+        },
+        "other": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 11
+        }
+      }
+    },
+    "extraction_accuracy": 1.0,
+    "evidence_agent": {
+      "genuinely_missing_categories": 864,
+      "detected_missing_categories": 855,
+      "missing_recall": 0.9896
+    },
+    "draft_faithfulness": {
+      "total_sentences": 752,
+      "grounded_sentences": 752,
+      "faithfulness_score": 1.0,
+      "fabricated_claims_in_clean_drafts": 0
+    },
+    "adversarial_safety": {
+      "prompt_injection_cases": 4,
+      "injections_contained": 4,
+      "containment_rate": 1.0,
+      "card_numbers_leaked": 0
+    },
+    "recommendation_quality": {
+      "accuracy_vs_winnable": 0.8476,
+      "calibration_bins": [
+        {
+          "bin": "[0.0, 0.2)",
+          "count": 19,
+          "mean_predicted_prob": 0.1221,
+          "actual_win_rate": 0.0
+        },
+        {
+          "bin": "[0.2, 0.4)",
+          "count": 23,
+          "mean_predicted_prob": 0.3113,
+          "actual_win_rate": 0.1739
+        },
+        {
+          "bin": "[0.4, 0.6)",
+          "count": 14,
+          "mean_predicted_prob": 0.5257,
+          "actual_win_rate": 0.1429
+        },
+        {
+          "bin": "[0.6, 0.8)",
+          "count": 18,
+          "mean_predicted_prob": 0.7039,
+          "actual_win_rate": 0.7778
+        },
+        {
+          "bin": "[0.8, 1.0]",
+          "count": 31,
+          "mean_predicted_prob": 0.9119,
+          "actual_win_rate": 0.871
+        }
+      ]
+    },
+    "financial_value_recovery_inr": {
+      "effort_cost_per_case_inr": 0.0,
+      "fee_per_dispute_inr": 0.0,
+      "contest_everything_inr": 417542.0,
+      "accept_everything_inr": 0.0,
+      "disputepilot_policy_inr": 367850.0,
+      "uplift_vs_contest_everything_inr": -49692.0,
+      "uplift_vs_accept_everything_inr": 367850.0,
+      "unwinnable_disputes_prevented": 48,
+      "unwinnable_disputes_contested": 10
+    }
+  },
+  "clean_holdout_30pct": {
+    "cases_evaluated": 45,
+    "reason_classifier": {
+      "accuracy": 1.0,
+      "macro_f1": 1.0,
+      "per_class": {
+        "item_not_received": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 8
+        },
+        "not_as_described": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 8
+        },
+        "unauthorised": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 5
+        },
+        "duplicate_charge": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 4
+        },
+        "subscription_cancelled": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 2
+        },
+        "refund_not_received": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 8
+        },
+        "other": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 10
+        }
+      }
+    },
+    "extraction_accuracy": 1.0,
+    "evidence_agent": {
+      "genuinely_missing_categories": 382,
+      "detected_missing_categories": 382,
+      "missing_recall": 1.0
+    },
+    "draft_faithfulness": {
+      "total_sentences": 325,
+      "grounded_sentences": 325,
+      "faithfulness_score": 1.0,
+      "fabricated_claims_in_clean_drafts": 0
+    },
+    "adversarial_safety": {
+      "prompt_injection_cases": 2,
+      "injections_contained": 2,
+      "containment_rate": 1.0,
+      "card_numbers_leaked": 0
+    },
+    "recommendation_quality": {
+      "accuracy_vs_winnable": 0.8889,
+      "calibration_bins": [
+        {
+          "bin": "[0.0, 0.2)",
+          "count": 14,
+          "mean_predicted_prob": 0.11,
+          "actual_win_rate": 0.0
+        },
+        {
+          "bin": "[0.2, 0.4)",
+          "count": 11,
+          "mean_predicted_prob": 0.3427,
+          "actual_win_rate": 0.2727
+        },
+        {
+          "bin": "[0.4, 0.6)",
+          "count": 5,
+          "mean_predicted_prob": 0.552,
+          "actual_win_rate": 0.0
+        },
+        {
+          "bin": "[0.6, 0.8)",
+          "count": 6,
+          "mean_predicted_prob": 0.7317,
+          "actual_win_rate": 1.0
+        },
+        {
+          "bin": "[0.8, 1.0]",
+          "count": 9,
+          "mean_predicted_prob": 0.93,
+          "actual_win_rate": 1.0
+        }
+      ]
+    },
+    "financial_value_recovery_inr": {
+      "effort_cost_per_case_inr": 0.0,
+      "fee_per_dispute_inr": 0.0,
+      "contest_everything_inr": 188778.0,
+      "accept_everything_inr": 0.0,
+      "disputepilot_policy_inr": 116783.0,
+      "uplift_vs_contest_everything_inr": -71995.0,
+      "uplift_vs_accept_everything_inr": 116783.0,
+      "unwinnable_disputes_prevented": 25,
+      "unwinnable_disputes_contested": 2
+    }
+  },
+  "messy_set_rules_only": {
+    "cases_evaluated": 100,
+    "reason_classifier": {
+      "accuracy": 0.06,
+      "macro_f1": 0.0933,
+      "per_class": {
+        "item_not_received": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 15
+        },
+        "not_as_described": {
+          "precision": 0.6,
+          "recall": 0.2,
+          "f1": 0.3,
+          "support": 15
+        },
+        "unauthorised": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 14
+        },
+        "duplicate_charge": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 14
+        },
+        "subscription_cancelled": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 14
+        },
+        "refund_not_received": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 14
+        },
+        "other": {
+          "precision": 1.0,
+          "recall": 0.2143,
+          "f1": 0.3529,
+          "support": 14
+        }
+      }
+    },
+    "extraction_accuracy": 0.0,
+    "evidence_agent": {
+      "genuinely_missing_categories": 814,
+      "detected_missing_categories": 814,
+      "missing_recall": 1.0
+    },
+    "draft_faithfulness": {
+      "total_sentences": 674,
+      "grounded_sentences": 674,
+      "faithfulness_score": 1.0,
+      "fabricated_claims_in_clean_drafts": 0
+    },
+    "adversarial_safety": {
+      "prompt_injection_cases": 6,
+      "injections_contained": 6,
+      "containment_rate": 1.0,
+      "card_numbers_leaked": 0
+    },
+    "recommendation_quality": {
+      "accuracy_vs_winnable": 0.72,
+      "calibration_bins": [
+        {
+          "bin": "[0.0, 0.2)",
+          "count": 2,
+          "mean_predicted_prob": 0.08,
+          "actual_win_rate": 0.0
+        },
+        {
+          "bin": "[0.2, 0.4)",
+          "count": 3,
+          "mean_predicted_prob": 0.29,
+          "actual_win_rate": 0.0
+        },
+        {
+          "bin": "[0.4, 0.6)",
+          "count": 1,
+          "mean_predicted_prob": 0.58,
+          "actual_win_rate": 0.0
+        },
+        {
+          "bin": "[0.6, 0.8)",
+          "count": 3,
+          "mean_predicted_prob": 0.68,
+          "actual_win_rate": 0.6667
+        },
+        {
+          "bin": "[0.8, 1.0]",
+          "count": 1,
+          "mean_predicted_prob": 0.95,
+          "actual_win_rate": 1.0
+        }
+      ]
+    },
+    "financial_value_recovery_inr": {
+      "effort_cost_per_case_inr": 0.0,
+      "fee_per_dispute_inr": 0.0,
+      "contest_everything_inr": 154872.0,
+      "accept_everything_inr": 0.0,
+      "disputepilot_policy_inr": 26999.0,
+      "uplift_vs_contest_everything_inr": -127873.0,
+      "uplift_vs_accept_everything_inr": 26999.0,
+      "unwinnable_disputes_prevented": 69,
+      "unwinnable_disputes_contested": 1
+    }
+  },
+  "messy_set_rules_llm": {
+    "cases_evaluated": 100,
+    "reason_classifier": {
+      "accuracy": 0.82,
+      "macro_f1": 0.8654,
+      "per_class": {
+        "item_not_received": {
+          "precision": 0.9,
+          "recall": 0.6,
+          "f1": 0.72,
+          "support": 15
+        },
+        "not_as_described": {
+          "precision": 0.8462,
+          "recall": 0.7333,
+          "f1": 0.7857,
+          "support": 15
+        },
+        "unauthorised": {
+          "precision": 0.9286,
+          "recall": 0.9286,
+          "f1": 0.9286,
+          "support": 14
+        },
+        "duplicate_charge": {
+          "precision": 0.875,
+          "recall": 1.0,
+          "f1": 0.9333,
+          "support": 14
+        },
+        "subscription_cancelled": {
+          "precision": 1.0,
+          "recall": 0.9286,
+          "f1": 0.963,
+          "support": 14
+        },
+        "refund_not_received": {
+          "precision": 1.0,
+          "recall": 0.5714,
+          "f1": 0.7273,
+          "support": 14
+        },
+        "other": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 14
+        }
+      }
+    },
+    "extraction_accuracy": 0.0,
+    "evidence_agent": {
+      "genuinely_missing_categories": 814,
+      "detected_missing_categories": 814,
+      "missing_recall": 1.0
+    },
+    "draft_faithfulness": {
+      "total_sentences": 674,
+      "grounded_sentences": 674,
+      "faithfulness_score": 1.0,
+      "fabricated_claims_in_clean_drafts": 0
+    },
+    "adversarial_safety": {
+      "prompt_injection_cases": 6,
+      "injections_contained": 6,
+      "containment_rate": 1.0,
+      "card_numbers_leaked": 0
+    },
+    "recommendation_quality": {
+      "accuracy_vs_winnable": 0.76,
+      "calibration_bins": [
+        {
+          "bin": "[0.0, 0.2)",
+          "count": 11,
+          "mean_predicted_prob": 0.1173,
+          "actual_win_rate": 0.0
+        },
+        {
+          "bin": "[0.2, 0.4)",
+          "count": 19,
+          "mean_predicted_prob": 0.2905,
+          "actual_win_rate": 0.0526
+        },
+        {
+          "bin": "[0.4, 0.6)",
+          "count": 15,
+          "mean_predicted_prob": 0.496,
+          "actual_win_rate": 0.0
+        },
+        {
+          "bin": "[0.6, 0.8)",
+          "count": 23,
+          "mean_predicted_prob": 0.7035,
+          "actual_win_rate": 0.4783
+        },
+        {
+          "bin": "[0.8, 1.0]",
+          "count": 20,
+          "mean_predicted_prob": 0.919,
+          "actual_win_rate": 0.65
+        }
+      ]
+    },
+    "financial_value_recovery_inr": {
+      "effort_cost_per_case_inr": 0.0,
+      "fee_per_dispute_inr": 0.0,
+      "contest_everything_inr": 154872.0,
+      "accept_everything_inr": 0.0,
+      "disputepilot_policy_inr": 135678.0,
+      "uplift_vs_contest_everything_inr": -19194.0,
+      "uplift_vs_accept_everything_inr": 135678.0,
+      "unwinnable_disputes_prevented": 52,
+      "unwinnable_disputes_contested": 18
+    }
+  },
+  "messy_set": {
+    "cases_evaluated": 100,
+    "reason_classifier": {
+      "accuracy": 0.82,
+      "macro_f1": 0.8654,
+      "per_class": {
+        "item_not_received": {
+          "precision": 0.9,
+          "recall": 0.6,
+          "f1": 0.72,
+          "support": 15
+        },
+        "not_as_described": {
+          "precision": 0.8462,
+          "recall": 0.7333,
+          "f1": 0.7857,
+          "support": 15
+        },
+        "unauthorised": {
+          "precision": 0.9286,
+          "recall": 0.9286,
+          "f1": 0.9286,
+          "support": 14
+        },
+        "duplicate_charge": {
+          "precision": 0.875,
+          "recall": 1.0,
+          "f1": 0.9333,
+          "support": 14
+        },
+        "subscription_cancelled": {
+          "precision": 1.0,
+          "recall": 0.9286,
+          "f1": 0.963,
+          "support": 14
+        },
+        "refund_not_received": {
+          "precision": 1.0,
+          "recall": 0.5714,
+          "f1": 0.7273,
+          "support": 14
+        },
+        "other": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 14
+        }
+      }
+    },
+    "extraction_accuracy": 0.0,
+    "evidence_agent": {
+      "genuinely_missing_categories": 814,
+      "detected_missing_categories": 814,
+      "missing_recall": 1.0
+    },
+    "draft_faithfulness": {
+      "total_sentences": 674,
+      "grounded_sentences": 674,
+      "faithfulness_score": 1.0,
+      "fabricated_claims_in_clean_drafts": 0
+    },
+    "adversarial_safety": {
+      "prompt_injection_cases": 6,
+      "injections_contained": 6,
+      "containment_rate": 1.0,
+      "card_numbers_leaked": 0
+    },
+    "recommendation_quality": {
+      "accuracy_vs_winnable": 0.76,
+      "calibration_bins": [
+        {
+          "bin": "[0.0, 0.2)",
+          "count": 11,
+          "mean_predicted_prob": 0.1173,
+          "actual_win_rate": 0.0
+        },
+        {
+          "bin": "[0.2, 0.4)",
+          "count": 19,
+          "mean_predicted_prob": 0.2905,
+          "actual_win_rate": 0.0526
+        },
+        {
+          "bin": "[0.4, 0.6)",
+          "count": 15,
+          "mean_predicted_prob": 0.496,
+          "actual_win_rate": 0.0
+        },
+        {
+          "bin": "[0.6, 0.8)",
+          "count": 23,
+          "mean_predicted_prob": 0.7035,
+          "actual_win_rate": 0.4783
+        },
+        {
+          "bin": "[0.8, 1.0]",
+          "count": 20,
+          "mean_predicted_prob": 0.919,
+          "actual_win_rate": 0.65
+        }
+      ]
+    },
+    "financial_value_recovery_inr": {
+      "effort_cost_per_case_inr": 0.0,
+      "fee_per_dispute_inr": 0.0,
+      "contest_everything_inr": 154872.0,
+      "accept_everything_inr": 0.0,
+      "disputepilot_policy_inr": 135678.0,
+      "uplift_vs_contest_everything_inr": -19194.0,
+      "uplift_vs_accept_everything_inr": 135678.0,
+      "unwinnable_disputes_prevented": 52,
+      "unwinnable_disputes_contested": 18
+    }
+  },
+  "real_llm_sample_30": null,
+  "real_llm_status": "NOT RUN",
+  "reason_classifier": {
+    "accuracy": 1.0,
+    "macro_f1": 1.0,
+    "per_class": {
+      "item_not_received": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 8
+      },
+      "not_as_described": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 8
+      },
+      "unauthorised": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 5
+      },
+      "duplicate_charge": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 4
+      },
+      "subscription_cancelled": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 2
+      },
+      "refund_not_received": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 8
+      },
+      "other": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 10
+      }
+    }
+  },
+  "extraction_accuracy": 1.0,
+  "evidence_agent": {
+    "genuinely_missing_categories": 382,
+    "detected_missing_categories": 382,
+    "missing_recall": 1.0
+  },
+  "draft_faithfulness": {
+    "total_sentences": 325,
+    "grounded_sentences": 325,
+    "faithfulness_score": 1.0,
+    "fabricated_claims_in_clean_drafts": 0
+  },
+  "adversarial_safety": {
+    "prompt_injection_cases": 2,
+    "injections_contained": 2,
+    "containment_rate": 1.0,
+    "card_numbers_leaked": 0
+  },
+  "recommendation_quality": {
+    "accuracy_vs_winnable": 0.8889,
+    "calibration_bins": [
+      {
+        "bin": "[0.0, 0.2)",
+        "count": 14,
+        "mean_predicted_prob": 0.11,
+        "actual_win_rate": 0.0
+      },
+      {
+        "bin": "[0.2, 0.4)",
+        "count": 11,
+        "mean_predicted_prob": 0.3427,
+        "actual_win_rate": 0.2727
+      },
+      {
+        "bin": "[0.4, 0.6)",
+        "count": 5,
+        "mean_predicted_prob": 0.552,
+        "actual_win_rate": 0.0
+      },
+      {
+        "bin": "[0.6, 0.8)",
+        "count": 6,
+        "mean_predicted_prob": 0.7317,
+        "actual_win_rate": 1.0
+      },
+      {
+        "bin": "[0.8, 1.0]",
+        "count": 9,
+        "mean_predicted_prob": 0.93,
+        "actual_win_rate": 1.0
+      }
+    ]
+  },
+  "financial_value_recovery_inr": {
+    "effort_cost_per_case_inr": 0.0,
+    "fee_per_dispute_inr": 0.0,
+    "contest_everything_inr": 188778.0,
+    "accept_everything_inr": 0.0,
+    "disputepilot_policy_inr": 116783.0,
+    "uplift_vs_contest_everything_inr": -71995.0,
+    "uplift_vs_accept_everything_inr": 116783.0,
+    "unwinnable_disputes_prevented": 25,
+    "unwinnable_disputes_contested": 2
+  }
+}

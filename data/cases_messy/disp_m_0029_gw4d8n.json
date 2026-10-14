@@ -1,0 +1,93 @@
+{
+  "case_id": "disp_m_0029_gw4d8n",
+  "dispute": {
+    "id": "disp_m_0029_gw4d8n",
+    "entity": "dispute",
+    "payment_id": "pay_msdaw5g5l5w6",
+    "amount": 450000,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "delivery associate signed himself parcel nahi pahuncha",
+    "phase": "retrieval",
+    "status": "open",
+    "respond_by": 1714319868,
+    "created_at": 1713471667,
+    "evidence": {
+      "shipping_proof": [
+        "disp_m_0029_gw4d8n/delivery_slip.md"
+      ],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [
+        "disp_m_0029_gw4d8n/policy.txt"
+      ],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_qksno5khf59g",
+    "entity": "order",
+    "amount": 450000,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1712446105,
+    "customer_name": "Aditya Joshi",
+    "customer_email": "",
+    "customer_phone": "+916370109806",
+    "shipping_address": "Flat 762, Sector 1, Pune, Maharashtra 411014",
+    "items": [
+      {
+        "name": "Mechanical Gaming Keyboard",
+        "quantity": 1,
+        "amount": 450000
+      }
+    ],
+    "tracking_number": "AWB-67453355",
+    "delivered_at": 1712643847
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "item_not_received",
+    "available_evidence": [
+      "shipping_proof",
+      "refund_cancellation_policy"
+    ],
+    "winnable": true,
+    "rule_explanation": "Valid courier proof of delivery with OTP/signature confirmed prior to dispute.",
+    "adversarial": {
+      "is_adversarial": true,
+      "adversarial_types": [
+        "card_number"
+      ],
+      "details": [
+        "Evidence document contains a payment card string."
+      ]
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0029_gw4d8n_doc_pod",
+      "doc_type": "shipping_proof",
+      "file_name": "delivery_slip.md",
+      "file_path": "disp_m_0029_gw4d8n/delivery_slip.md",
+      "content": "# Courier Handover Sheet\nCourier: Shadofax Logistics\nDocket Number: AWB-67453355\nDelivered To: Aditya Joshi\nDelivery Location: Opposite Ganesh Temple, Nagar Rd, Viman Nagar, Pune - 14\nHandover Time: 9th of April around 06 AM\nReceived By: Self / Family member\nOTP Status: Verified electronically on driver handset\n\nCustomer Card Note: 4111-2222-3333-4448 Visa\n\nStatus: COMPLETE_DELIVERY\n"
+    },
+    {
+      "doc_id": "disp_m_0029_gw4d8n_doc_pol",
+      "doc_type": "refund_cancellation_policy",
+      "file_name": "policy.txt",
+      "file_path": "disp_m_0029_gw4d8n/policy.txt",
+      "content": "# Terms of Service & Returns\nReturn Window: Return request must be registered within 7 calendar days.\nCancellation: Free cancellation before consignment dispatch only.\nAuto Renewals: Subscription renewals recur monthly unless paused 48 hours prior.\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 28,
+    "mode": "messy"
+  }
+}

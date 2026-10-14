@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5057
+**Date:** 05-May-24
+**Customer:** Arjun Patel
+**Address:** #42, 2nd Cross, Koramangala 4th Blk, Bangalore-34
+**Item:** Mechanical Gaming Keyboard (Qty: 1)
+**Amount Total:** Rs. 4500.00
+**Payment Ref:** order_m7q5o93o8h6f
+*Computer generated voucher. Signature not needed.*

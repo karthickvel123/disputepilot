@@ -1,0 +1,88 @@
+{
+  "case_id": "disp_0087_u9ux01",
+  "dispute": {
+    "id": "disp_0087_u9ux01",
+    "entity": "dispute",
+    "payment_id": "pay_22zacsb7itaton",
+    "amount": 349900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "10.4",
+    "phase": "pre_arbitration",
+    "status": "open",
+    "respond_by": 1719429989,
+    "created_at": 1718759691,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [
+        "disp_0087_u9ux01/invoice.md"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [
+        "disp_0087_u9ux01/access_activity_log.md"
+      ],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_ubr969jgc3wjiq",
+    "entity": "order",
+    "amount": 349900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1717458057,
+    "customer_name": "Ananya Rao",
+    "customer_email": "ananya.rao@mail.in",
+    "customer_phone": "+919850305910",
+    "shipping_address": "Flat 685, Sector 7, Mumbai, Maharashtra 400050",
+    "items": [
+      {
+        "name": "Smart Fitness Watch v3",
+        "quantity": 1,
+        "amount": 349900
+      }
+    ],
+    "tracking_number": "TRK-SF-74764506",
+    "delivered_at": 1717864066
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "unauthorised",
+    "available_evidence": [
+      "billing_proof",
+      "access_activity_log"
+    ],
+    "winnable": true,
+    "rule_explanation": "3D-Secure authentication logs match cardholder details with verified delivery/activity.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0087_u9ux01_1",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.md",
+      "file_path": "disp_0087_u9ux01/invoice.md",
+      "content": "# TAX INVOICE\n\n**Invoice Number:** INV-2024-01086  \n**Invoice Date:** 2024-06-03 23:40:57 UTC  \n**Order Reference:** order_ubr969jgc3wjiq  \n**Payment ID:** pay_22zacsb7itaton  \n\n### Merchant Details:\n**Seller:** Apex Retail Solutions Private Limited  \n**GSTIN:** 29AABCA1234F1Z5  \n**State:** Karnataka (Code 29)  \n**Registered Address:** Outer Ring Road, Bellandur, Bengaluru, Karnataka 560103  \n\n### Customer Details:\n**Billed To:** Ananya Rao  \n**Address:** Flat 685, Sector 7, Mumbai, Maharashtra 400050  \n**Email:** ananya.rao@mail.in  \n**Phone:** +919850305910  \n\n### Itemized Particulars:\n| Description | HSN | Qty | Unit Price | Tax Rate | Total Amount |\n| --- | --- | --- | --- | --- | --- |\n| Smart Fitness Watch v3 | 8471 | 1 | INR 3499.00 | 18% | INR 3499.00 |\n\n**Grand Total:** INR 3499.00 (349900 paise)  \n**Payment Method:** Razorpay Checkout (3D-Secure 2.0 Authenticated)  \n**Transaction Reference:** pay_22zacsb7itaton  \n\n---\n*Authorized Signatory for Apex Retail Solutions Private Limited.*\n"
+    },
+    {
+      "doc_id": "doc_0087_u9ux01_2",
+      "doc_type": "access_activity_log",
+      "file_name": "access_activity_log.md",
+      "file_path": "disp_0087_u9ux01/access_activity_log.md",
+      "content": "# Digital Service Access & Activity Log\n\n**User Name:** Ananya Rao  \n**User Email:** ananya.rao@mail.in  \n**Payment Reference:** pay_22zacsb7itaton  \n**Status:** ACTIVE_USER  \n\n### Audit Trail:\n| Timestamp | Event | IP Address | User Agent | Status |\n| --- | --- | --- | --- | --- |\n| 2024-06-04 23:40:57 UTC | LOGIN_SUCCESS | IP: 103.21.124.9 | Device: Chrome/Windows 11 | Session Verified |\n| 2024-06-05 23:40:57 UTC | LOGIN_SUCCESS | IP: 103.21.124.9 | Device: Chrome/Windows 11 | Session Verified |\n| 2024-06-06 23:40:57 UTC | LOGIN_SUCCESS | IP: 103.21.124.9 | Device: Chrome/Windows 11 | Session Verified |\n| 2024-06-07 23:40:57 UTC | LOGIN_SUCCESS | IP: 103.21.124.9 | Device: Chrome/Windows 11 | Session Verified |\n\n---\n*Cryptographically hashed access ledger verified by Cloud Access Manager.*\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 86
+  }
+}

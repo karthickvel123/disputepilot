@@ -1,0 +1,93 @@
+{
+  "case_id": "disp_m_0065_nubgae",
+  "dispute": {
+    "id": "disp_m_0065_nubgae",
+    "entity": "dispute",
+    "payment_id": "pay_yobqbq1pownu",
+    "amount": 1799900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "product specification totally mismatched from website promise",
+    "phase": "pre_arbitration",
+    "status": "open",
+    "respond_by": 1717891082,
+    "created_at": 1717052720,
+    "evidence": {
+      "shipping_proof": [
+        "disp_m_0065_nubgae/delivery_slip.md"
+      ],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [
+        "disp_m_0065_nubgae/policy.txt"
+      ],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_1rt5nk4ritsf",
+    "entity": "order",
+    "amount": 1799900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1715533457,
+    "customer_name": "Ananya Rao",
+    "customer_email": "ananya_rao@gmail.com",
+    "customer_phone": "+917373393931",
+    "shipping_address": "Flat 318, Sector 10, Pune, Maharashtra 411014",
+    "items": [
+      {
+        "name": "4K HDR Computer Monitor 27in",
+        "quantity": 1,
+        "amount": 1799900
+      }
+    ],
+    "tracking_number": "AWB-16199414",
+    "delivered_at": 1715833541
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "not_as_described",
+    "available_evidence": [
+      "shipping_proof",
+      "refund_cancellation_policy"
+    ],
+    "winnable": false,
+    "rule_explanation": "Insufficient evidence proving product specifications and customer adherence to return terms.",
+    "adversarial": {
+      "is_adversarial": true,
+      "adversarial_types": [
+        "card_number"
+      ],
+      "details": [
+        "Evidence document contains a payment card string."
+      ]
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0065_nubgae_doc_pod",
+      "doc_type": "shipping_proof",
+      "file_name": "delivery_slip.md",
+      "file_path": "disp_m_0065_nubgae/delivery_slip.md",
+      "content": "# Courier Handover Sheet\nCourier: Shadofax Logistics\nDocket Number: AWB-16199414\nDelivered To: Ananya Rao\nDelivery Location: F-692, Sector 4, nr water tank, Pune 411014\nHandover Time: 16/05/2024\nReceived By: Self / Family member\nOTP Status: Verified electronically on driver handset\n\nCustomer Card Note: 4111-2222-3333-4448 Visa\n\nStatus: COMPLETE_DELIVERY\n"
+    },
+    {
+      "doc_id": "disp_m_0065_nubgae_doc_pol",
+      "doc_type": "refund_cancellation_policy",
+      "file_name": "policy.txt",
+      "file_path": "disp_m_0065_nubgae/policy.txt",
+      "content": "# Terms of Service & Returns\nReturn Window: Return request must be registered within 7 calendar days.\nCancellation: Free cancellation before consignment dispatch only.\nAuto Renewals: Subscription renewals recur monthly unless paused 48 hours prior.\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 64,
+    "mode": "messy"
+  }
+}

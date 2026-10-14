@@ -1,0 +1,89 @@
+{
+  "case_id": "disp_m_0100_y4ols3",
+  "dispute": {
+    "id": "disp_m_0100_y4ols3",
+    "entity": "dispute",
+    "payment_id": "pay_6vpbq64juulv",
+    "amount": 450000,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "product specification totally mismatched from website promise",
+    "phase": "retrieval",
+    "status": "open",
+    "respond_by": 1720246894,
+    "created_at": 1719563040,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [
+        "disp_m_0100_y4ols3/invoice.txt"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_m_0100_y4ols3/chat_transcript.txt"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_m0daowaqccuo",
+    "entity": "order",
+    "amount": 450000,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1718574631,
+    "customer_name": "Deepika Nair",
+    "customer_email": "deepika_nair@outlook.in",
+    "customer_phone": "",
+    "shipping_address": "Flat 488, Sector 5, Pune, Maharashtra 411014",
+    "items": [
+      {
+        "name": "Mechanical Gaming Keyboard",
+        "quantity": 1,
+        "amount": 450000
+      }
+    ],
+    "tracking_number": "AWB-95337149",
+    "delivered_at": 1718996365
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "not_as_described",
+    "available_evidence": [
+      "billing_proof",
+      "customer_communication"
+    ],
+    "winnable": true,
+    "rule_explanation": "Detailed invoice confirms item specifications and policy/communication refutes defect claim.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0100_y4ols3_doc_inv",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.txt",
+      "file_path": "disp_m_0100_y4ols3/invoice.txt",
+      "content": "# TAX INVOICE / CASH MEMO\n**Bill No:** INV-5099\n**Date:** 16th of June around 09 PM\n**Customer:** Deepika Nair\n**Address:** F-692, Sector 4, nr water tank, Pune 411014\n**Item:** Mechanical Gaming Keyboard (Qty: 1)\n**Amount Total:** Rs. 4500.00\n**Payment Ref:** order_m0daowaqccuo\n*Computer generated voucher. Signature not needed.*\n"
+    },
+    {
+      "doc_id": "disp_m_0100_y4ols3_doc_chat",
+      "doc_type": "customer_communication",
+      "file_name": "chat_transcript.txt",
+      "file_path": "disp_m_0100_y4ols3/chat_transcript.txt",
+      "content": "--- Chat Conversation Log ---\nDate: 17th Jun 2024, 09:50 PM\nUser: Deepika Nair\nAgent: Support Team (Harish)\n\n[User]: Hello sir, package track nahi ho raha hai theek se.\n[Agent]: Checking your consignment AWB-95337149. Please note tracking updates within 24h.\n[User]: Ok sending alternate address: F-692, Sector 4, nr water tank, Pune 411014. Please expedite.\n[Agent]: Noted sir. Have escalated to courier partner.\n\n--- Log Closed ---\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 99,
+    "mode": "messy"
+  }
+}

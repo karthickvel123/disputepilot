@@ -1,0 +1,88 @@
+{
+  "case_id": "disp_0003_h8rvhs",
+  "dispute": {
+    "id": "disp_0003_h8rvhs",
+    "entity": "dispute",
+    "payment_id": "pay_gt6mjxk87au5bh",
+    "amount": 299800,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "fraud_card_not_present",
+    "phase": "chargeback",
+    "status": "open",
+    "respond_by": 1712265230,
+    "created_at": 1711431727,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [
+        "disp_0003_h8rvhs/invoice.md"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [
+        "disp_0003_h8rvhs/access_activity_log.md"
+      ],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_xtpdpff5e8ii49",
+    "entity": "order",
+    "amount": 299800,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1710187221,
+    "customer_name": "Siddharth Menon",
+    "customer_email": "siddharth.menon@mail.in",
+    "customer_phone": "+919838427073",
+    "shipping_address": "Flat 420, Sector 7, Hyderabad, Telangana 500081",
+    "items": [
+      {
+        "name": "Monthly Cloud SaaS Subscription",
+        "quantity": 2,
+        "amount": 149900
+      }
+    ],
+    "tracking_number": "TRK-DT-26240908",
+    "delivered_at": 1710429504
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "unauthorised",
+    "available_evidence": [
+      "billing_proof",
+      "access_activity_log"
+    ],
+    "winnable": true,
+    "rule_explanation": "3D-Secure authentication logs match cardholder details with verified delivery/activity.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0003_h8rvhs_1",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.md",
+      "file_path": "disp_0003_h8rvhs/invoice.md",
+      "content": "# TAX INVOICE\n\n**Invoice Number:** INV-2024-01002  \n**Invoice Date:** 2024-03-11 20:00:21 UTC  \n**Order Reference:** order_xtpdpff5e8ii49  \n**Payment ID:** pay_gt6mjxk87au5bh  \n\n### Merchant Details:\n**Seller:** Apex Retail Solutions Private Limited  \n**GSTIN:** 29AABCA1234F1Z5  \n**State:** Karnataka (Code 29)  \n**Registered Address:** Outer Ring Road, Bellandur, Bengaluru, Karnataka 560103  \n\n### Customer Details:\n**Billed To:** Siddharth Menon  \n**Address:** Flat 420, Sector 7, Hyderabad, Telangana 500081  \n**Email:** siddharth.menon@mail.in  \n**Phone:** +919838427073  \n\n### Itemized Particulars:\n| Description | HSN | Qty | Unit Price | Tax Rate | Total Amount |\n| --- | --- | --- | --- | --- | --- |\n| Monthly Cloud SaaS Subscription | 8471 | 2 | INR 1499.00 | 18% | INR 1499.00 |\n\n**Grand Total:** INR 2998.00 (299800 paise)  \n**Payment Method:** Razorpay Checkout (3D-Secure 2.0 Authenticated)  \n**Transaction Reference:** pay_gt6mjxk87au5bh  \n\n---\n*Authorized Signatory for Apex Retail Solutions Private Limited.*\n"
+    },
+    {
+      "doc_id": "doc_0003_h8rvhs_2",
+      "doc_type": "access_activity_log",
+      "file_name": "access_activity_log.md",
+      "file_path": "disp_0003_h8rvhs/access_activity_log.md",
+      "content": "# Digital Service Access & Activity Log\n\n**User Name:** Siddharth Menon  \n**User Email:** siddharth.menon@mail.in  \n**Payment Reference:** pay_gt6mjxk87au5bh  \n**Status:** ACTIVE_USER  \n\n### Audit Trail:\n| Timestamp | Event | IP Address | User Agent | Status |\n| --- | --- | --- | --- | --- |\n| 2024-03-12 20:00:21 UTC | LOGIN_SUCCESS | IP: 103.21.124.9 | Device: Chrome/Windows 11 | Session Verified |\n| 2024-03-13 20:00:21 UTC | LOGIN_SUCCESS | IP: 103.21.124.9 | Device: Chrome/Windows 11 | Session Verified |\n| 2024-03-14 20:00:21 UTC | LOGIN_SUCCESS | IP: 103.21.124.9 | Device: Chrome/Windows 11 | Session Verified |\n| 2024-03-15 20:00:21 UTC | LOGIN_SUCCESS | IP: 103.21.124.9 | Device: Chrome/Windows 11 | Session Verified |\n\n---\n*Cryptographically hashed access ledger verified by Cloud Access Manager.*\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 2
+  }
+}

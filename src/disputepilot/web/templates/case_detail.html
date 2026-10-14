@@ -1,0 +1,355 @@
+{% extends "base.html" %}
+
+{% block title %}Case {{ case.case_id }} Review{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 1.5rem;">
+  <a href="/" class="btn btn-secondary">&larr; Back to Worklist</a>
+</div>
+
+{% if reason_class == "unclassified" or (recommendation.is_uncertain and "reason could not be classified" in recommendation.reasons) or (recommendation.decision.value if recommendation.decision.value is defined else recommendation.decision) == "uncertain" %}
+<div class="alert alert-warning" id="unclassified-banner" style="border-left: 5px solid var(--warning); padding: 1.25rem; margin-bottom: 1.5rem;">
+  <h3 style="color: var(--warning); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+    ⚠️ Reason Could Not Be Classified
+  </h3>
+  <p style="margin-bottom: 0.25rem;">
+    <strong>Uncertain State:</strong> The dispute reason could not be classified (<em>reason could not be classified</em>).
+  </p>
+  <p style="color: var(--text-muted); font-size: 0.85rem;">
+    No automated action has been preselected and prior probabilities were not applied. Manual merchant investigation is required to determine the appropriate response.
+  </p>
+</div>
+{% endif %}
+
+<!-- Header Card -->
+<div class="card">
+  <div class="card-title">
+    <div>
+      <h2>Case: <code>{{ case.case_id }}</code></h2>
+      <small class="text-muted">Dispute ID: {{ case.dispute.id }} &bull; Payment ID: {{ case.dispute.payment_id }}</small>
+    </div>
+    <div>
+      <span class="badge badge-{{ urgency }}">{{ urgency }} ({{ "%.1f"|format(hours_remaining) }}h left)</span>
+      {% set ph = case.dispute.phase.value if case.dispute.phase.value is defined else case.dispute.phase %}
+      <span class="badge badge-info">{{ ph }}</span>
+      {% set st_disp = case.dispute.status.value if case.dispute.status.value is defined else case.dispute.status %}
+      <span class="badge badge-{{ st_disp }}">{{ st_disp }}</span>
+    </div>
+  </div>
+
+  <div class="grid-3" style="margin-top: 1rem;">
+    <div>
+      <label>Dispute Amount</label>
+      <div style="font-size: 1.25rem; font-weight: 700;">₹{{ "%.2f"|format(case.dispute.amount / 100) }} <small class="text-muted">({{ case.dispute.amount }}p)</small></div>
+    </div>
+    <div>
+      <label>Reason Code / Class</label>
+      <div style="font-size: 1rem; font-weight: 600;">{{ case.dispute.reason_code }}</div>
+      <small class="text-muted">Classified as: <strong>{{ reason_class }}</strong></small>
+    </div>
+    <div>
+      <label>Respond By Deadline</label>
+      <div style="font-size: 1rem; font-weight: 600;">{{ respond_by_formatted }}</div>
+    </div>
+  </div>
+</div>
+
+<!-- Order & Customer Summary -->
+{% if case.order %}
+<div class="card">
+  <div class="card-title">
+    <h3>Order Details</h3>
+    <span class="badge badge-info">Order ID: {{ case.order.order_id }}</span>
+  </div>
+  <div class="grid-3">
+    <div>
+      <label>Order Amount</label>
+      <div>₹{{ "%.2f"|format(case.order.amount / 100) }}</div>
+    </div>
+    <div>
+      <label>Status / Delivery</label>
+      <div>{{ case.order.status }} {% if case.order.delivered_at %}&bull; Delivered: {{ case.order.delivered_at }}{% endif %}</div>
+    </div>
+    <div>
+      <label>Tracking / AWB</label>
+      <div><code>{{ case.order.tracking_number or "N/A" }}</code></div>
+    </div>
+  </div>
+  {% if case.order.shipping_address %}
+  <div style="margin-top: 0.75rem;">
+    <label>Shipping Address</label>
+    <div class="text-muted">{{ case.order.shipping_address }}</div>
+  </div>
+  {% endif %}
+</div>
+{% endif %}
+
+<!-- Cross-Check Flags & Prompt Injection Warnings -->
+{% if cross_check_flags %}
+<div class="alert alert-warning">
+  <h4>Discrepancy Flags Detected ({{ cross_check_flags|length }})</h4>
+  <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+    {% for flag in cross_check_flags %}
+    <li>
+      {% set sev = flag.severity.value if flag.severity.value is defined else flag.severity %}
+      {% set ft = flag.flag_type.value if flag.flag_type.value is defined else flag.flag_type %}
+      <strong>[{{ sev|upper }}] {{ ft }}</strong>: {{ flag.message }}
+      {% if flag.conflicting_values %}
+      <small class="text-muted">({{ flag.conflicting_values }})</small>
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+
+{% if injection_detected %}
+<div class="alert alert-danger">
+  <h4>Caution: Potential Prompt Injection / Untrusted Content Flagged</h4>
+  <p>One or more customer-submitted documents contained suspicious instruction overrides. These were safely neutralised in sanitisation.</p>
+</div>
+{% endif %}
+
+<!-- Recommendation Engine Card -->
+<div class="card">
+  <div class="card-title">
+    <h3>Recommendation Engine</h3>
+    <div>
+      {% set dec = recommendation.decision.value if recommendation.decision.value is defined else recommendation.decision %}
+      <span class="badge badge-{{ dec }}">{{ dec }}</span>
+      {% if recommendation.is_uncertain %}
+      <span class="badge badge-uncertain">Uncertain Band</span>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if recommendation.is_uncertain and "reason could not be classified" in recommendation.reasons %}
+  <div class="alert alert-warning" style="margin-bottom: 1rem;">
+    <strong>Uncertain Case:</strong> Reason could not be classified. Prior probabilities and heuristic win rates are not applicable. No action is pre-selected. Manual merchant investigation required.
+  </div>
+  {% elif recommendation.is_uncertain %}
+  <div class="alert alert-warning" style="margin-bottom: 1rem;">
+    <strong>Uncertain Case:</strong> Win probability falls in the ambiguous threshold [0.35 &ndash; 0.55]. No action is pre-selected. Manual human evaluation required.
+  </div>
+  {% endif %}
+
+  <div class="grid-3">
+    <div>
+      <label>Estimated Win Probability</label>
+      {% if recommendation.p_win == "n/a" or recommendation.p_win is string %}
+      <div style="font-size: 1.25rem; font-weight: 700;">n/a</div>
+      <small class="text-muted">Estimated band: [n/a &ndash; n/a]</small>
+      {% else %}
+      <div style="font-size: 1.25rem; font-weight: 700;">{{ "%.0f"|format(recommendation.p_win * 100) }}%</div>
+      <small class="text-muted">Estimated band: [{{ "%.0f"|format(recommendation.p_win_low * 100) }}% &ndash; {{ "%.0f"|format(recommendation.p_win_high * 100) }}%]</small>
+      {% endif %}
+    </div>
+    <div>
+      <label>Expected Value (EV)</label>
+      {% if recommendation.expected_value_paise == "n/a" or recommendation.expected_value_paise is string %}
+      <div style="font-size: 1.25rem; font-weight: 700;">n/a</div>
+      <small class="text-muted">n/a</small>
+      {% else %}
+      <div style="font-size: 1.25rem; font-weight: 700;">₹{{ "%.2f"|format(recommendation.expected_value_paise / 100) }}</div>
+      <small class="text-muted">{{ recommendation.expected_value_paise }} paise</small>
+      {% endif %}
+    </div>
+    <div>
+      <label>Recommended Decision</label>
+      <div style="font-size: 1.25rem; font-weight: 700;">{{ dec|upper }}</div>
+    </div>
+  </div>
+
+  <div style="margin-top: 1rem;">
+    <label>Reasoning</label>
+    <ul style="margin-left: 1.5rem; margin-top: 0.25rem;">
+      {% for reason in recommendation.reasons %}
+      <li>{{ reason }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  <p class="disclaimer-text">{{ recommendation.disclaimer }}</p>
+</div>
+
+<!-- Evidence Checklist -->
+<div class="card">
+  <div class="card-title">
+    <h3>Evidence Checklist</h3>
+    <small class="text-muted">Audit based on Razorpay requirements for {{ reason_class }}</small>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Category</th>
+        <th>Status</th>
+        <th>Requirement Level</th>
+        <th>Specific Ask / Assessment</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for cat, status in evidence_report.category_status.items() %}
+      <tr>
+        <td><strong>{{ cat|replace('_', ' ')|capitalize }}</strong></td>
+        <td>
+          {% set st = status.value if status.value is defined else status %}
+          <span class="badge badge-{{ st }}">{{ st }}</span>
+        </td>
+        <td>
+          {% if cat in requirements.required %}
+          <span class="text-danger" style="font-weight: 600;">Required</span>
+          {% elif cat in requirements.helpful %}
+          <span class="text-info">Helpful</span>
+          {% else %}
+          <span class="text-muted">Optional</span>
+          {% endif %}
+        </td>
+        <td>
+          {% if cat in evidence_report.specific_asks %}
+          <span style="color: #fde68a;">{{ evidence_report.specific_asks[cat] }}</span>
+          {% else %}
+          <span class="text-muted">Document present and verified</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- Rebuttal Draft with Citations -->
+<div class="card">
+  <div class="card-title">
+    <h3>Rebuttal Letter Draft</h3>
+    <span class="badge badge-info">Verified Grounded Claims</span>
+  </div>
+  <p class="text-muted" style="font-size: 0.85rem; margin-bottom: 0.75rem;">
+    Every sentence has been deterministically verified against verified order, dispute, and document facts. Inline pills denote cited fact IDs.
+  </p>
+
+  <div class="draft-box">
+    {% for s in clean_draft.all_sentences() %}
+    <div style="margin-bottom: 0.35rem;">
+      <span>{{ s.sentence }}</span>
+      {% for cit in s.cited_fact_ids %}
+      <span class="citation-pill">#{{ cit }}</span>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+
+  {% if verifier_report %}
+  <div style="margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+      <h4>Deterministic Verifier Report</h4>
+      <div>
+        <span class="badge badge-ok">{{ verifier_report.valid_count }} Valid Sentences</span>
+        {% if verifier_report.stripped_count > 0 %}
+        <span class="badge badge-critical">{{ verifier_report.stripped_count }} Stripped Sentences</span>
+        {% else %}
+        <span class="badge badge-ok">0 Fabrications (100% Clean)</span>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if verifier_report.stripped_count > 0 %}
+    <div class="alert alert-danger" style="margin-top: 0.5rem;">
+      <p><strong>The following sentences were stripped because their numbers, dates, or IDs were ungrounded:</strong></p>
+      <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+        {% for stripped in verifier_report.stripped_sentences %}
+        <li><em>"{{ stripped.sentence }}"</em> &mdash; <small class="text-muted">{{ stripped.reason }}</small></li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+
+<!-- Reviewer Action Console -->
+<div class="card" style="border: 2px solid var(--accent-primary);">
+  <div class="card-title">
+    <h3>Merchant Review & Decision Console</h3>
+    <span class="badge badge-warning">Human Approval Required</span>
+  </div>
+  <p class="disclaimer-text" style="margin-bottom: 1rem;">
+    Non-negotiable: No dispute is contested or accepted without a named reviewer and explicit confirmation.
+  </p>
+
+  <!-- Reviewer Identity Form Shared -->
+  <div class="grid-2">
+    <!-- Option A: Contest with Verified Draft -->
+    <div class="card" style="background-color: var(--bg-card);">
+      <h4>Option 1: Contest Dispute</h4>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+        Review the submission payload, generate a cryptographically bound approval token, and submit the rebuttal to Razorpay.
+      </p>
+      <form action="/cases/{{ case.case_id }}/confirm-submit" method="get">
+        <div class="form-group">
+          <label for="approver_contest">Reviewer Name (Required):</label>
+          <input type="text" id="approver_contest" name="reviewer_name" placeholder="e.g. Priya Sharma (Compliance)" required>
+        </div>
+        <button type="submit" class="btn" style="width: 100%;">Proceed to Submission Review &rarr;</button>
+      </form>
+    </div>
+
+    <!-- Option B: Accept Dispute -->
+    <div class="card" style="background-color: var(--bg-card);">
+      <h4>Option 2: Accept Dispute</h4>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+        Accept the chargeback liability. To prevent accidental acceptance, you must type the dispute amount in Rupees (₹{{ "%.2f"|format(case.dispute.amount / 100) }}).
+      </p>
+      <form action="/cases/{{ case.case_id }}/accept" method="post">
+        <div class="form-group">
+          <label for="approver_accept">Reviewer Name (Required):</label>
+          <input type="text" id="approver_accept" name="reviewer_name" placeholder="e.g. Priya Sharma (Compliance)" required>
+        </div>
+        <div class="form-group">
+          <label for="typed_amount">Confirm Dispute Amount (₹):</label>
+          <input type="text" id="typed_amount" name="typed_amount" placeholder="{{ "%.2f"|format(case.dispute.amount / 100) }}" required>
+        </div>
+        <button type="submit" class="btn btn-danger" style="width: 100%;">Confirm Acceptance</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-top: 1rem;">
+    <!-- Option C: Save Draft -->
+    <div class="card" style="background-color: var(--bg-card);">
+      <h4>Option 3: Save Draft Rebuttal</h4>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+        Edit and save custom rebuttal text without submitting to Razorpay.
+      </p>
+      <form action="/cases/{{ case.case_id }}/save-draft" method="post">
+        <div class="form-group">
+          <label for="approver_draft">Reviewer Name (Required):</label>
+          <input type="text" id="approver_draft" name="reviewer_name" placeholder="e.g. Priya Sharma" required>
+        </div>
+        <div class="form-group">
+          <label for="draft_summary">Rebuttal Text:</label>
+          <textarea id="draft_summary" name="summary" rows="4">{{ clean_draft.to_markdown() }}</textarea>
+        </div>
+        <button type="submit" class="btn btn-secondary" style="width: 100%;">Save Draft Only</button>
+      </form>
+    </div>
+
+    <!-- Option D: Mark Needs Evidence -->
+    <div class="card" style="background-color: var(--bg-card);">
+      <h4>Option 4: Request Customer/Courier Evidence</h4>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+        Flag this case as blocked on missing documentation and notify operations.
+      </p>
+      <form action="/cases/{{ case.case_id }}/needs-evidence" method="post">
+        <div class="form-group">
+          <label for="approver_evidence">Reviewer Name (Required):</label>
+          <input type="text" id="approver_evidence" name="reviewer_name" placeholder="e.g. Priya Sharma" required>
+        </div>
+        <div class="form-group">
+          <label for="evidence_note">Note / Missing Item:</label>
+          <textarea id="evidence_note" name="note" rows="4" placeholder="Request signed POD from Bluedart..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-secondary" style="width: 100%;">Flag Needs Evidence</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

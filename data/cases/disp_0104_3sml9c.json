@@ -1,0 +1,78 @@
+{
+  "case_id": "disp_0104_3sml9c",
+  "dispute": {
+    "id": "disp_0104_3sml9c",
+    "entity": "dispute",
+    "payment_id": "pay_2micmbp5ye8t58",
+    "amount": 199900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "13.6",
+    "phase": "chargeback",
+    "status": "open",
+    "respond_by": 1721225390,
+    "created_at": 1720601707,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_0104_3sml9c/customer_chat.md"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_2bcvdvczhn738j",
+    "entity": "order",
+    "amount": 199900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1718940768,
+    "customer_name": "Priya Sharma",
+    "customer_email": "priya.sharma@webmail.in",
+    "customer_phone": "+919829003951",
+    "shipping_address": "Flat 770, Sector 1, Ahmedabad, Gujarat 380015",
+    "items": [
+      {
+        "name": "Wireless Bluetooth Earbuds",
+        "quantity": 1,
+        "amount": 199900
+      }
+    ],
+    "tracking_number": "TRK-DL-97078639",
+    "delivered_at": 1719174643
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "refund_not_received",
+    "available_evidence": [
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "No verified bank refund record found for customer's transaction.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0104_3sml9c_1",
+      "doc_type": "customer_communication",
+      "file_name": "customer_chat.md",
+      "file_path": "disp_0104_3sml9c/customer_chat.md",
+      "content": "# Customer Support Communication Record\n\n**Support Ticket:** TIK-05103  \n**Channel:** Razorpay Merchant Web Chat  \n**Customer Name:** Priya Sharma  \n**Timestamp:** 2024-06-22 03:32:48 UTC  \n**Context Reference:** Order order_2bcvdvczhn738j  \n\n---\n**[2024-06-22 03:32:48 UTC] Priya Sharma:** Hello, I am inquiring regarding my purchase order_2bcvdvczhn738j.\n**[2024-06-22 03:32:48 UTC] Support Agent (Kiran):** Welcome to customer support, Priya Sharma. How may I help you today?\n**[2024-06-22 03:32:48 UTC] Priya Sharma:** I see an unauthorized charge on my statement.\n**[2024-06-22 03:32:48 UTC] Support Agent (Kiran):** The transaction was authenticated via 3DS OTP sent to your registered mobile number.\n\n---\n*Transcript archived by Merchant Customer Experience CRM.*\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 103
+  }
+}

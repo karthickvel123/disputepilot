@@ -1,0 +1,78 @@
+{
+  "case_id": "disp_0044_24z860",
+  "dispute": {
+    "id": "disp_0044_24z860",
+    "entity": "dispute",
+    "payment_id": "pay_kczv1gagqo679o",
+    "amount": 900000,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "13.3",
+    "phase": "chargeback",
+    "status": "open",
+    "respond_by": 1715441056,
+    "created_at": 1714746324,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_0044_24z860/customer_chat.md"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_2xz36jwb4gs0fh",
+    "entity": "order",
+    "amount": 900000,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1713728084,
+    "customer_name": "Neha Kulkarni",
+    "customer_email": "neha.kulkarni@example.com",
+    "customer_phone": "+919879942848",
+    "shipping_address": "Flat 457, Sector 8, Ahmedabad, Gujarat 380015",
+    "items": [
+      {
+        "name": "Mechanical Gaming Keyboard",
+        "quantity": 2,
+        "amount": 450000
+      }
+    ],
+    "tracking_number": "TRK-DT-52803305",
+    "delivered_at": 1713992196
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "not_as_described",
+    "available_evidence": [
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "Insufficient evidence proving product specifications and customer adherence to return terms.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0044_24z860_1",
+      "doc_type": "customer_communication",
+      "file_name": "customer_chat.md",
+      "file_path": "disp_0044_24z860/customer_chat.md",
+      "content": "# Customer Support Communication Record\n\n**Support Ticket:** TIK-05043  \n**Channel:** Razorpay Merchant Web Chat  \n**Customer Name:** Neha Kulkarni  \n**Timestamp:** 2024-04-22 19:34:44 UTC  \n**Context Reference:** Order order_2xz36jwb4gs0fh  \n\n---\n**[2024-04-22 19:34:44 UTC] Neha Kulkarni:** Hello, I am inquiring regarding my purchase order_2xz36jwb4gs0fh.\n**[2024-04-22 19:34:44 UTC] Support Agent (Kiran):** Welcome to customer support, Neha Kulkarni. How may I help you today?\n**[2024-04-22 19:34:44 UTC] Neha Kulkarni:** The item delivered doesn't match the specifications on your catalog.\n**[2024-04-22 19:34:44 UTC] Support Agent (Kiran):** We checked your invoice specifications; the product delivered is the exact SKU ordered under our standard 7-day exchange policy.\n\n---\n*Transcript archived by Merchant Customer Experience CRM.*\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 43
+  }
+}

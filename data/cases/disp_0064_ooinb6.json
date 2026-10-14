@@ -1,0 +1,78 @@
+{
+  "case_id": "disp_0064_ooinb6",
+  "dispute": {
+    "id": "disp_0064_ooinb6",
+    "entity": "dispute",
+    "payment_id": "pay_dgbdh02yh9q4jn",
+    "amount": 899900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "13.1",
+    "phase": "chargeback",
+    "status": "open",
+    "respond_by": 1717466366,
+    "created_at": 1716809203,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [
+        "disp_0064_ooinb6/invoice.md"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_at0g7ri0g6hshg",
+    "entity": "order",
+    "amount": 899900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1715479419,
+    "customer_name": "Vikram Singh",
+    "customer_email": "vikram.singh@webmail.in",
+    "customer_phone": "+919837068117",
+    "shipping_address": "Flat 520, Sector 5, Pune, Maharashtra 411014",
+    "items": [
+      {
+        "name": "Ergonomic Mesh Office Chair",
+        "quantity": 1,
+        "amount": 899900
+      }
+    ],
+    "tracking_number": "TRK-DT-37876214",
+    "delivered_at": 1715704293
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "item_not_received",
+    "available_evidence": [
+      "billing_proof"
+    ],
+    "winnable": false,
+    "rule_explanation": "Missing courier proof of delivery or fulfillment unverified before dispute inception.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0064_ooinb6_1",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.md",
+      "file_path": "disp_0064_ooinb6/invoice.md",
+      "content": "# TAX INVOICE\n\n**Invoice Number:** INV-2024-01063  \n**Invoice Date:** 2024-05-12 02:03:39 UTC  \n**Order Reference:** order_at0g7ri0g6hshg  \n**Payment ID:** pay_dgbdh02yh9q4jn  \n\n### Merchant Details:\n**Seller:** Apex Retail Solutions Private Limited  \n**GSTIN:** 29AABCA1234F1Z5  \n**State:** Karnataka (Code 29)  \n**Registered Address:** Outer Ring Road, Bellandur, Bengaluru, Karnataka 560103  \n\n### Customer Details:\n**Billed To:** Vikram Singh  \n**Address:** Flat 520, Sector 5, Pune, Maharashtra 411014  \n**Email:** vikram.singh@webmail.in  \n**Phone:** +919837068117  \n\n### Itemized Particulars:\n| Description | HSN | Qty | Unit Price | Tax Rate | Total Amount |\n| --- | --- | --- | --- | --- | --- |\n| Ergonomic Mesh Office Chair | 8471 | 1 | INR 8999.00 | 18% | INR 8999.00 |\n\n**Grand Total:** INR 8999.00 (899900 paise)  \n**Payment Method:** Razorpay Checkout (3D-Secure 2.0 Authenticated)  \n**Transaction Reference:** pay_dgbdh02yh9q4jn  \n\n---\n*Authorized Signatory for Apex Retail Solutions Private Limited.*\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 63
+  }
+}

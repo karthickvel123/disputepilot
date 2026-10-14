@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5002
+**Date:** 12-Mar-24
+**Customer:** Priya Sharma
+**Address:** Opposite Ganesh Temple, Nagar Rd, Viman Nagar, Pune - 14
+**Item:** Wireless ANC Headphones Pro (Qty: 1)
+**Amount Total:** Rs. 2999.00
+**Payment Ref:** order_jooa5lqsaj08
+*Computer generated voucher. Signature not needed.*

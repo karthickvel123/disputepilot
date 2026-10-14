@@ -1,0 +1,88 @@
+{
+  "case_id": "disp_0115_nmlwbf",
+  "dispute": {
+    "id": "disp_0115_nmlwbf",
+    "entity": "dispute",
+    "payment_id": "pay_ega7nmsk8agn64",
+    "amount": 299900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "INR_104",
+    "phase": "pre_arbitration",
+    "status": "open",
+    "respond_by": 1721409218,
+    "created_at": 1720668175,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [
+        "disp_0115_nmlwbf/invoice.md"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [
+        "disp_0115_nmlwbf/access_activity_log.md"
+      ],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_xl2glwy1n6o0hu",
+    "entity": "order",
+    "amount": 299900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1719861301,
+    "customer_name": "Rohan Gupta",
+    "customer_email": "rohan.gupta@mail.in",
+    "customer_phone": "+919858486215",
+    "shipping_address": "Flat 671, Sector 12, Chennai, Tamil Nadu 600028",
+    "items": [
+      {
+        "name": "Wireless ANC Headphones Pro",
+        "quantity": 1,
+        "amount": 299900
+      }
+    ],
+    "tracking_number": "TRK-SF-76265010",
+    "delivered_at": 1720156234
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "unauthorised",
+    "available_evidence": [
+      "billing_proof",
+      "access_activity_log"
+    ],
+    "winnable": true,
+    "rule_explanation": "3D-Secure authentication logs match cardholder details with verified delivery/activity.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0115_nmlwbf_1",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.md",
+      "file_path": "disp_0115_nmlwbf/invoice.md",
+      "content": "# TAX INVOICE\n\n**Invoice Number:** INV-2024-01114  \n**Invoice Date:** 2024-07-01 19:15:01 UTC  \n**Order Reference:** order_xl2glwy1n6o0hu  \n**Payment ID:** pay_ega7nmsk8agn64  \n\n### Merchant Details:\n**Seller:** Apex Retail Solutions Private Limited  \n**GSTIN:** 29AABCA1234F1Z5  \n**State:** Karnataka (Code 29)  \n**Registered Address:** Outer Ring Road, Bellandur, Bengaluru, Karnataka 560103  \n\n### Customer Details:\n**Billed To:** Rohan Gupta  \n**Address:** Flat 671, Sector 12, Chennai, Tamil Nadu 600028  \n**Email:** rohan.gupta@mail.in  \n**Phone:** +919858486215  \n\n### Itemized Particulars:\n| Description | HSN | Qty | Unit Price | Tax Rate | Total Amount |\n| --- | --- | --- | --- | --- | --- |\n| Wireless ANC Headphones Pro | 8471 | 1 | INR 2999.00 | 18% | INR 2999.00 |\n\n**Grand Total:** INR 2999.00 (299900 paise)  \n**Payment Method:** Razorpay Checkout (3D-Secure 2.0 Authenticated)  \n**Transaction Reference:** pay_ega7nmsk8agn64  \n\n---\n*Authorized Signatory for Apex Retail Solutions Private Limited.*\n"
+    },
+    {
+      "doc_id": "doc_0115_nmlwbf_2",
+      "doc_type": "access_activity_log",
+      "file_name": "access_activity_log.md",
+      "file_path": "disp_0115_nmlwbf/access_activity_log.md",
+      "content": "# Digital Service Access & Activity Log\n\n**User Name:** Rohan Gupta  \n**User Email:** rohan.gupta@mail.in  \n**Payment Reference:** pay_ega7nmsk8agn64  \n**Status:** ACTIVE_USER  \n\n### Audit Trail:\n| Timestamp | Event | IP Address | User Agent | Status |\n| --- | --- | --- | --- | --- |\n| 2024-07-02 19:15:01 UTC | LOGIN_SUCCESS | IP: 103.21.124.9 | Device: Chrome/Windows 11 | Session Verified |\n| 2024-07-03 19:15:01 UTC | LOGIN_SUCCESS | IP: 103.21.124.9 | Device: Chrome/Windows 11 | Session Verified |\n| 2024-07-04 19:15:01 UTC | LOGIN_SUCCESS | IP: 103.21.124.9 | Device: Chrome/Windows 11 | Session Verified |\n| 2024-07-05 19:15:01 UTC | LOGIN_SUCCESS | IP: 103.21.124.9 | Device: Chrome/Windows 11 | Session Verified |\n\n---\n*Cryptographically hashed access ledger verified by Cloud Access Manager.*\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 114
+  }
+}

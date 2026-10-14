@@ -1,0 +1,98 @@
+{
+  "case_id": "disp_0117_blyujt",
+  "dispute": {
+    "id": "disp_0117_blyujt",
+    "entity": "dispute",
+    "payment_id": "pay_56q8v88bc1hy2u",
+    "amount": 899900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "INR_107",
+    "phase": "pre_arbitration",
+    "status": "open",
+    "respond_by": 1721617761,
+    "created_at": 1720863840,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [
+        "disp_0117_blyujt/invoice.md"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [
+        "disp_0117_blyujt/access_activity_log.md"
+      ],
+      "refund_cancellation_policy": [
+        "disp_0117_blyujt/cancellation_policy.md"
+      ],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_y23ccl9tk51ity",
+    "entity": "order",
+    "amount": 899900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1720057945,
+    "customer_name": "Pooja Verma",
+    "customer_email": "pooja.verma@mail.in",
+    "customer_phone": "+919898594248",
+    "shipping_address": "Flat 588, Sector 9, Ahmedabad, Gujarat 380015",
+    "items": [
+      {
+        "name": "Ergonomic Mesh Office Chair",
+        "quantity": 1,
+        "amount": 899900
+      }
+    ],
+    "tracking_number": "TRK-DT-45351739",
+    "delivered_at": null
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "subscription_cancelled",
+    "available_evidence": [
+      "billing_proof",
+      "refund_cancellation_policy",
+      "access_activity_log"
+    ],
+    "winnable": true,
+    "rule_explanation": "Service access logs show active usage post-billing or cancellation requested outside SLA window.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0117_blyujt_1",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.md",
+      "file_path": "disp_0117_blyujt/invoice.md",
+      "content": "# TAX INVOICE\n\n**Invoice Number:** INV-2024-01116  \n**Invoice Date:** 2024-07-04 01:52:25 UTC  \n**Order Reference:** order_y23ccl9tk51ity  \n**Payment ID:** pay_56q8v88bc1hy2u  \n\n### Merchant Details:\n**Seller:** Apex Retail Solutions Private Limited  \n**GSTIN:** 29AABCA1234F1Z5  \n**State:** Karnataka (Code 29)  \n**Registered Address:** Outer Ring Road, Bellandur, Bengaluru, Karnataka 560103  \n\n### Customer Details:\n**Billed To:** Pooja Verma  \n**Address:** Flat 588, Sector 9, Ahmedabad, Gujarat 380015  \n**Email:** pooja.verma@mail.in  \n**Phone:** +919898594248  \n\n### Itemized Particulars:\n| Description | HSN | Qty | Unit Price | Tax Rate | Total Amount |\n| --- | --- | --- | --- | --- | --- |\n| Ergonomic Mesh Office Chair | 8471 | 1 | INR 8999.00 | 18% | INR 8999.00 |\n\n**Grand Total:** INR 8999.00 (899900 paise)  \n**Payment Method:** Razorpay Checkout (3D-Secure 2.0 Authenticated)  \n**Transaction Reference:** pay_56q8v88bc1hy2u  \n\n---\n*Authorized Signatory for Apex Retail Solutions Private Limited.*\n"
+    },
+    {
+      "doc_id": "doc_0117_blyujt_2",
+      "doc_type": "refund_cancellation_policy",
+      "file_name": "cancellation_policy.md",
+      "file_path": "disp_0117_blyujt/cancellation_policy.md",
+      "content": "# Apex Retail Solutions Private Limited \u2014 Terms of Sale, Cancellation & Refund Policy\n\n**Document Reference:** TOS-POL-2024-V2  \n**Effective Date:** 2024-01-01  \n**Public Policy URL:** https://apexsolutions.example.in/terms-and-policies  \n\n### 1. Order Cancellation Policy\nCustomers may cancel orders within 2 hours of payment or before the consignment is marked as 'Dispatched'. Once dispatched with our logistics partners, transit cancellation cannot be executed.\n\n### 2. Returns and Defect Reporting\n- Return requests must be lodged within 7 calendar days of verified courier delivery.\n- Goods must be returned in unblemished original packaging with intact security seals.\n- Defective or variant discrepancies must include unboxing photographs submitted within 48 hours of receipt.\n\n### 3. Subscription Cancellations\n- Subscription renewals auto-debit on the anniversary date.\n- Cancellation requests must be logged at least 48 hours prior to the next billing cycle.\n- Continued usage or access to merchant software/services after billing constitutes acceptance of the billing cycle.\n\n### 4. Dispute Escalation & Refund SLA\n- Approved refunds are routed directly through Razorpay to the originating payment instrument within 5\u20137 banking days.\n- A valid Acquirer Reference Number (ARN) will be provided upon processing.\n"
+    },
+    {
+      "doc_id": "doc_0117_blyujt_3",
+      "doc_type": "access_activity_log",
+      "file_name": "access_activity_log.md",
+      "file_path": "disp_0117_blyujt/access_activity_log.md",
+      "content": "# Digital Service Access & Activity Log\n\n**User Name:** Pooja Verma  \n**User Email:** pooja.verma@mail.in  \n**Payment Reference:** pay_56q8v88bc1hy2u  \n**Status:** ACTIVE_USER  \n\n### Audit Trail:\n| Timestamp | Event | IP Address | User Agent | Status |\n| --- | --- | --- | --- | --- |\n| 2024-07-05 01:52:25 UTC | LOGIN_SUCCESS | IP: 103.21.124.9 | Device: Chrome/Windows 11 | Session Verified |\n| 2024-07-06 01:52:25 UTC | LOGIN_SUCCESS | IP: 103.21.124.9 | Device: Chrome/Windows 11 | Session Verified |\n| 2024-07-07 01:52:25 UTC | LOGIN_SUCCESS | IP: 103.21.124.9 | Device: Chrome/Windows 11 | Session Verified |\n| 2024-07-08 01:52:25 UTC | LOGIN_SUCCESS | IP: 103.21.124.9 | Device: Chrome/Windows 11 | Session Verified |\n\n---\n*Cryptographically hashed access ledger verified by Cloud Access Manager.*\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 116
+  }
+}

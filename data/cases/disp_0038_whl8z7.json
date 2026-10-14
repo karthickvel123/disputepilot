@@ -1,0 +1,101 @@
+{
+  "case_id": "disp_0038_whl8z7",
+  "dispute": {
+    "id": "disp_0038_whl8z7",
+    "entity": "dispute",
+    "payment_id": "pay_8yop3wjrmhc0bp",
+    "amount": 899900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "4837",
+    "phase": "pre_arbitration",
+    "status": "open",
+    "respond_by": 1714870281,
+    "created_at": 1714204097,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_0038_whl8z7/customer_chat.md"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [
+        "disp_0038_whl8z7/refund_receipt.md"
+      ],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_negc2dpcz2o8nd",
+    "entity": "order",
+    "amount": 899900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1713209583,
+    "customer_name": "Manish Tiwari",
+    "customer_email": "manish.tiwari@webmail.in",
+    "customer_phone": "+919852802529",
+    "shipping_address": "Flat 343, Sector 5, Pune, Maharashtra 411014",
+    "items": [
+      {
+        "name": "Ergonomic Mesh Office Chair",
+        "quantity": 1,
+        "amount": 899900
+      }
+    ],
+    "tracking_number": "TRK-DT-50332555",
+    "delivered_at": 1713514476
+  },
+  "refund": {
+    "id": "rfnd_l195dwy7u00jty",
+    "entity": "refund",
+    "payment_id": "pay_8yop3wjrmhc0bp",
+    "amount": 899900,
+    "currency": "INR",
+    "status": "processed",
+    "created_at": 1713641583,
+    "arn": "ARN752613925183"
+  },
+  "ground_truth": {
+    "reason_class": "unauthorised",
+    "available_evidence": [
+      "customer_communication",
+      "refund_confirmation"
+    ],
+    "winnable": false,
+    "rule_explanation": "Missing 3DS authentication records or delivery link to cardholder.",
+    "adversarial": {
+      "is_adversarial": true,
+      "adversarial_types": [
+        "card_number"
+      ],
+      "details": [
+        "Evidence document contains a card-number-like string."
+      ]
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0038_whl8z7_1",
+      "doc_type": "customer_communication",
+      "file_name": "customer_chat.md",
+      "file_path": "disp_0038_whl8z7/customer_chat.md",
+      "content": "# Customer Support Communication Record\n\n**Support Ticket:** TIK-05037  \n**Channel:** Razorpay Merchant Web Chat  \n**Customer Name:** Manish Tiwari  \n**Timestamp:** 2024-04-16 19:33:03 UTC  \n**Context Reference:** Order order_negc2dpcz2o8nd  \n\n---\n**[2024-04-16 19:33:03 UTC] Manish Tiwari:** Hello, I am inquiring regarding my purchase order_negc2dpcz2o8nd.\n**[2024-04-16 19:33:03 UTC] Support Agent (Kiran):** Welcome to customer support, Manish Tiwari. How may I help you today?\n**[2024-04-16 19:33:03 UTC] Manish Tiwari:** I see an unauthorized charge on my statement.\n**[2024-04-16 19:33:03 UTC] Support Agent (Kiran):** The transaction was authenticated via 3DS OTP sent to your registered mobile number.\n**[2024-04-16 19:33:03 UTC] Manish Tiwari:** Here are my card details if you need them: Payment Card: 4111 2222 3333 4448 (Visa Verified)\n**[2024-04-16 19:33:03 UTC] Support Agent (Kiran):** Please never share card numbers in chat for security reasons.\n\n---\n*Transcript archived by Merchant Customer Experience CRM.*\n"
+    },
+    {
+      "doc_id": "doc_0038_whl8z7_2",
+      "doc_type": "refund_confirmation",
+      "file_name": "refund_receipt.md",
+      "file_path": "disp_0038_whl8z7/refund_receipt.md",
+      "content": "# Razorpay Electronic Refund Confirmation\n\n**Refund ID:** rfnd_l195dwy7u00jty  \n**Payment ID:** pay_8yop3wjrmhc0bp  \n**Refund Amount:** INR 8999.00 (899900 paise)  \n**Status:** PROCESSED  \n**Acquirer Reference Number (ARN):** ARN752613925183  \n**Refund Processed At:** 2024-04-20 19:33:03 UTC  \n**Settlement Route:** Original Payment Source (Bank / Card / UPI)  \n\n### Bank Traceability:\nThis transaction was routed via Razorpay Gateway to the acquiring bank. The cardholder's issuing bank can locate the credited funds using the ARN provided above.\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 37
+  }
+}

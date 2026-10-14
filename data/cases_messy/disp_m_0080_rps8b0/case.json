@@ -1,0 +1,79 @@
+{
+  "case_id": "disp_m_0080_rps8b0",
+  "dispute": {
+    "id": "disp_m_0080_rps8b0",
+    "entity": "dispute",
+    "payment_id": "pay_ruk5d8wim7dk",
+    "amount": 1799900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "stranger purchased without my permission or knowledge",
+    "phase": "chargeback",
+    "status": "open",
+    "respond_by": 1718625081,
+    "created_at": 1717914617,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_m_0080_rps8b0/chat_transcript.txt"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_t7ktdtyxlrt4",
+    "entity": "order",
+    "amount": 1799900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1716850230,
+    "customer_name": "Arjun Patel",
+    "customer_email": "arjun_patel@outlook.in",
+    "customer_phone": "+917117593853",
+    "shipping_address": "Flat 504, Sector 6, New Delhi, Delhi 110001",
+    "items": [
+      {
+        "name": "4K HDR Computer Monitor 27in",
+        "quantity": 1,
+        "amount": 1799900
+      }
+    ],
+    "tracking_number": "AWB-25095267",
+    "delivered_at": 1717266312
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "unauthorised",
+    "available_evidence": [
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "Missing 3DS authentication records or delivery link to cardholder.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0080_rps8b0_doc_chat",
+      "doc_type": "customer_communication",
+      "file_name": "chat_transcript.txt",
+      "file_path": "disp_m_0080_rps8b0/chat_transcript.txt",
+      "content": "--- Chat Conversation Log ---\nDate: 28th May 2024, 10:50 PM\nUser: Arjun Patel\nAgent: Support Team (Harish)\n\n[User]: Hello sir, package track nahi ho raha hai theek se.\n[Agent]: Checking your consignment AWB-25095267. Please note tracking updates within 24h.\n[User]: Ok sending alternate address: 12A Barakhamba Road, Connaught Place, New Delhi 110001. Please expedite.\n[Agent]: Noted sir. Have escalated to courier partner.\n\n--- Log Closed ---\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 79,
+    "mode": "messy"
+  }
+}

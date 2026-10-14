@@ -1,0 +1,97 @@
+{
+  "case_id": "disp_0139_gd9dsy",
+  "dispute": {
+    "id": "disp_0139_gd9dsy",
+    "entity": "dispute",
+    "payment_id": "pay_1gvb37vmggaemi",
+    "amount": 189900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "INR_108",
+    "phase": "pre_arbitration",
+    "status": "open",
+    "respond_by": 1724137544,
+    "created_at": 1723334990,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [
+        "disp_0139_gd9dsy/invoice.md"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [
+        "disp_0139_gd9dsy/refund_receipt.md"
+      ],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_6qw042lpicdit1",
+    "entity": "order",
+    "amount": 189900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1721960428,
+    "customer_name": "Deepika Nair",
+    "customer_email": "deepika.nair@mail.in",
+    "customer_phone": "+919888338313",
+    "shipping_address": "Flat 251, Sector 8, New Delhi, Delhi 110001",
+    "items": [
+      {
+        "name": "USB-C Fast Charging Hub 100W",
+        "quantity": 1,
+        "amount": 189900
+      }
+    ],
+    "tracking_number": "TRK-SF-59503523",
+    "delivered_at": 1722384818
+  },
+  "refund": {
+    "id": "rfnd_jdp69d1wmmmevm",
+    "entity": "refund",
+    "payment_id": "pay_1gvb37vmggaemi",
+    "amount": 189900,
+    "currency": "INR",
+    "status": "processed",
+    "created_at": 1722306028,
+    "arn": "ARN746468515588"
+  },
+  "ground_truth": {
+    "reason_class": "refund_not_received",
+    "available_evidence": [
+      "billing_proof",
+      "refund_confirmation"
+    ],
+    "winnable": true,
+    "rule_explanation": "Merchant successfully processed refund with traceable bank ARN reference.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0139_gd9dsy_1",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.md",
+      "file_path": "disp_0139_gd9dsy/invoice.md",
+      "content": "# TAX INVOICE\n\n**Invoice Number:** INV-2024-01138  \n**Invoice Date:** 2024-07-26 02:20:28 UTC  \n**Order Reference:** order_6qw042lpicdit1  \n**Payment ID:** pay_1gvb37vmggaemi  \n\n### Merchant Details:\n**Seller:** Apex Retail Solutions Private Limited  \n**GSTIN:** 29AABCA1234F1Z5  \n**State:** Karnataka (Code 29)  \n**Registered Address:** Outer Ring Road, Bellandur, Bengaluru, Karnataka 560103  \n\n### Customer Details:\n**Billed To:** Deepika Nair  \n**Address:** Flat 251, Sector 8, New Delhi, Delhi 110001  \n**Email:** deepika.nair@mail.in  \n**Phone:** +919888338313  \n\n### Itemized Particulars:\n| Description | HSN | Qty | Unit Price | Tax Rate | Total Amount |\n| --- | --- | --- | --- | --- | --- |\n| USB-C Fast Charging Hub 100W | 8471 | 1 | INR 1899.00 | 18% | INR 1899.00 |\n\n**Grand Total:** INR 1899.00 (189900 paise)  \n**Payment Method:** Razorpay Checkout (3D-Secure 2.0 Authenticated)  \n**Transaction Reference:** pay_1gvb37vmggaemi  \n\n---\n*Authorized Signatory for Apex Retail Solutions Private Limited.*\n"
+    },
+    {
+      "doc_id": "doc_0139_gd9dsy_2",
+      "doc_type": "refund_confirmation",
+      "file_name": "refund_receipt.md",
+      "file_path": "disp_0139_gd9dsy/refund_receipt.md",
+      "content": "# Razorpay Electronic Refund Confirmation\n\n**Refund ID:** rfnd_jdp69d1wmmmevm  \n**Payment ID:** pay_1gvb37vmggaemi  \n**Refund Amount:** INR 1899.00 (189900 paise)  \n**Status:** PROCESSED  \n**Acquirer Reference Number (ARN):** ARN746468515588  \n**Refund Processed At:** 2024-07-30 02:20:28 UTC  \n**Settlement Route:** Original Payment Source (Bank / Card / UPI)  \n\n### Bank Traceability:\nThis transaction was routed via Razorpay Gateway to the acquiring bank. The cardholder's issuing bank can locate the credited funds using the ARN provided above.\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 138
+  }
+}

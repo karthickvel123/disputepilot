@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5096
+**Date:** 13th Jun 2024, 09:12 PM
+**Customer:** Neha Kulkarni
+**Address:** Shop No 4, Opp Station, Andheri East, Mumbai
+**Item:** Mechanical Gaming Keyboard (Qty: 1)
+**Amount Total:** Rs. 4500.00
+**Payment Ref:** order_sbote4gejm23
+*Computer generated voucher. Signature not needed.*

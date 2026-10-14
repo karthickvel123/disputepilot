@@ -1,0 +1,103 @@
+{
+  "case_id": "disp_m_0009_1qzj86",
+  "dispute": {
+    "id": "disp_m_0009_1qzj86",
+    "entity": "dispute",
+    "payment_id": "pay_1erbfqfoeqh3",
+    "amount": 149900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "dusra maal bhej diya color and size bilkul alag hai",
+    "phase": "chargeback",
+    "status": "open",
+    "respond_by": 1712408220,
+    "created_at": 1711638618,
+    "evidence": {
+      "shipping_proof": [
+        "disp_m_0009_1qzj86/delivery_slip.md"
+      ],
+      "billing_proof": [
+        "disp_m_0009_1qzj86/invoice.txt"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [
+        "disp_m_0009_1qzj86/policy.txt"
+      ],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_av90ric7phkq",
+    "entity": "order",
+    "amount": 149900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1710706671,
+    "customer_name": "Vikram Singh",
+    "customer_email": "vikram_singh@outlook.in",
+    "customer_phone": "+919262020162",
+    "shipping_address": "Flat 397, Sector 8, Mumbai, Maharashtra 400050",
+    "items": [
+      {
+        "name": "Monthly Cloud SaaS Subscription",
+        "quantity": 1,
+        "amount": 149900
+      }
+    ],
+    "tracking_number": "AWB-56573688",
+    "delivered_at": 1711811418
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "not_as_described",
+    "available_evidence": [
+      "billing_proof",
+      "shipping_proof",
+      "refund_cancellation_policy"
+    ],
+    "winnable": false,
+    "rule_explanation": "Delivery timestamp is after the dispute date; merchant cannot prove timely fulfillment.",
+    "adversarial": {
+      "is_adversarial": true,
+      "adversarial_types": [
+        "delivery_after_dispute"
+      ],
+      "details": [
+        "POD date is recorded after dispute creation."
+      ]
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0009_1qzj86_doc_inv",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.txt",
+      "file_path": "disp_m_0009_1qzj86/invoice.txt",
+      "content": "# TAX INVOICE / CASH MEMO\n**Bill No:** INV-5008\n**Date:** 17.03.2024\n**Customer:** Vikram Singh\n**Address:** Shop No 4, Opp Station, Andheri East, Mumbai\n**Item:** Monthly Cloud SaaS Subscription (Qty: 1)\n**Amount Total:** Rs. 1499.00\n**Payment Ref:** order_av90ric7phkq\n*Computer generated voucher. Signature not needed.*\n"
+    },
+    {
+      "doc_id": "disp_m_0009_1qzj86_doc_pod",
+      "doc_type": "shipping_proof",
+      "file_name": "delivery_slip.md",
+      "file_path": "disp_m_0009_1qzj86/delivery_slip.md",
+      "content": "# Courier Handover Sheet\nCourier: Shadofax Logistics\nDocket Number: AWB-56573688\nDelivered To: Vikram Singh\nDelivery Location: Shop No 4, Opp Station, Andheri East, Mumbai\nHandover Time: 30th of March around 03 PM\nReceived By: Self / Family member\nOTP Status: Verified electronically on driver handset\n\nStatus: COMPLETE_DELIVERY\n"
+    },
+    {
+      "doc_id": "disp_m_0009_1qzj86_doc_pol",
+      "doc_type": "refund_cancellation_policy",
+      "file_name": "policy.txt",
+      "file_path": "disp_m_0009_1qzj86/policy.txt",
+      "content": "# Terms of Service & Returns\nReturn Window: Return request must be registered within 7 calendar days.\nCancellation: Free cancellation before consignment dispatch only.\nAuto Renewals: Subscription renewals recur monthly unless paused 48 hours prior.\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 8,
+    "mode": "messy"
+  }
+}

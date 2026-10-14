@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5038
+**Date:** 16.04.2024
+**Customer:** Arjun Patel
+**Address:** #42, 2nd Cross, Koramangala 4th Blk, Bangalore-34
+**Item:** USB-C Fast Charging Hub 100W (Qty: 1)
+**Amount Total:** Rs. 1899.00
+**Payment Ref:** order_mflsxwz7jpc5
+*Computer generated voucher. Signature not needed.*

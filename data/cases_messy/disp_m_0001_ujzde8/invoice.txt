@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5000
+**Date:** 09/03/2024
+**Customer:** Ananya Rao
+**Address:** #42, 2nd Cross, Koramangala 4th Blk, Bangalore-34
+**Item:** Mechanical Gaming Keyboard (Qty: 1)
+**Amount Total:** Rs. 4500.00
+**Payment Ref:** order_zdoc9is0j8ht
+*Computer generated voucher. Signature not needed.*

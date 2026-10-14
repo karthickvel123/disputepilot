@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5030
+**Date:** 09/04/2024
+**Customer:** Aditya Joshi
+**Address:** B-402, Sea Breeze Apts, Hill Rd, Bandra West, Mum-50
+**Item:** Smart Fitness Watch v3 (Qty: 1)
+**Amount Total:** Rs. 3499.00
+**Payment Ref:** order_olh31uqg0pzk
+*Computer generated voucher. Signature not needed.*

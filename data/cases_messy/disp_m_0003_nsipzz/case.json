@@ -1,0 +1,89 @@
+{
+  "case_id": "disp_m_0003_nsipzz",
+  "dispute": {
+    "id": "disp_m_0003_nsipzz",
+    "entity": "dispute",
+    "payment_id": "pay_ri19r0wyojfl",
+    "amount": 299900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "family member or card skimmer misused my credentials",
+    "phase": "chargeback",
+    "status": "open",
+    "respond_by": 1711735710,
+    "created_at": 1710949902,
+    "evidence": {
+      "shipping_proof": [
+        "disp_m_0003_nsipzz/delivery_slip.md"
+      ],
+      "billing_proof": [
+        "disp_m_0003_nsipzz/invoice.txt"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_jooa5lqsaj08",
+    "entity": "order",
+    "amount": 299900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1710213515,
+    "customer_name": "Priya Sharma",
+    "customer_email": "priya_sharma@yahoo.co.in",
+    "customer_phone": "+919863464847",
+    "shipping_address": "Flat 508, Sector 7, Pune, Maharashtra 411014",
+    "items": [
+      {
+        "name": "Wireless ANC Headphones Pro",
+        "quantity": 1,
+        "amount": 299900
+      }
+    ],
+    "tracking_number": "AWB-18354761",
+    "delivered_at": 1710469837
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "unauthorised",
+    "available_evidence": [
+      "billing_proof",
+      "shipping_proof"
+    ],
+    "winnable": true,
+    "rule_explanation": "3D-Secure authentication logs match cardholder details with verified delivery/activity.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0003_nsipzz_doc_inv",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.txt",
+      "file_path": "disp_m_0003_nsipzz/invoice.txt",
+      "content": "# TAX INVOICE / CASH MEMO\n**Bill No:** INV-5002\n**Date:** 12-Mar-24\n**Customer:** Priya Sharma\n**Address:** Opposite Ganesh Temple, Nagar Rd, Viman Nagar, Pune - 14\n**Item:** Wireless ANC Headphones Pro (Qty: 1)\n**Amount Total:** Rs. 2999.00\n**Payment Ref:** order_jooa5lqsaj08\n*Computer generated voucher. Signature not needed.*\n"
+    },
+    {
+      "doc_id": "disp_m_0003_nsipzz_doc_pod",
+      "doc_type": "shipping_proof",
+      "file_name": "delivery_slip.md",
+      "file_path": "disp_m_0003_nsipzz/delivery_slip.md",
+      "content": "# Courier Handover Sheet\nCourier: DTDC Air\nDocket Number: AWB-18354761\nDelivered To: Priya Sharma\nDelivery Location: Opposite Ganesh Temple, Nagar Rd, Viman Nagar, Pune - 14\nHandover Time: 15.03.2024\nReceived By: Self / Family member\nOTP Status: Verified electronically on driver handset\n\nStatus: COMPLETE_DELIVERY\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 2,
+    "mode": "messy"
+  }
+}

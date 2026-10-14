@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5005
+**Date:** 14/03/2024
+**Customer:** Aditya Joshi
+**Address:** B-402, Sea Breeze Apts, Hill Rd, Bandra West, Mum-50
+**Item:** 4K HDR Computer Monitor 27in (Qty: 1)
+**Amount Total:** Rs. 17999.00
+**Payment Ref:** order_nbqns6puq80i
+*Computer generated voucher. Signature not needed.*

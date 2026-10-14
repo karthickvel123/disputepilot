@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5095
+**Date:** 12/06/2024
+**Customer:** Arjun Patel
+**Address:** B-402, Sea Breeze Apts, Hill Rd, Bandra West, Mum-50
+**Item:** USB-C Fast Charging Hub 100W (Qty: 1)
+**Amount Total:** Rs. 1899.00
+**Payment Ref:** order_9rbealfpalol
+*Computer generated voucher. Signature not needed.*

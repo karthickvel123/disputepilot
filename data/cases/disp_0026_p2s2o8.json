@@ -1,0 +1,78 @@
+{
+  "case_id": "disp_0026_p2s2o8",
+  "dispute": {
+    "id": "disp_0026_p2s2o8",
+    "entity": "dispute",
+    "payment_id": "pay_y670kmiqd4x9g7",
+    "amount": 299900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "4841",
+    "phase": "chargeback",
+    "status": "open",
+    "respond_by": 1714034100,
+    "created_at": 1713297702,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_0026_p2s2o8/customer_chat.md"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_hsfkr26j1fo2wb",
+    "entity": "order",
+    "amount": 299900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1712190790,
+    "customer_name": "Deepika Nair",
+    "customer_email": "deepika.nair@example.com",
+    "customer_phone": "+919861830338",
+    "shipping_address": "Flat 484, Sector 4, Mumbai, Maharashtra 400050",
+    "items": [
+      {
+        "name": "Wireless ANC Headphones Pro",
+        "quantity": 1,
+        "amount": 299900
+      }
+    ],
+    "tracking_number": "TRK-BD-97236246",
+    "delivered_at": null
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "subscription_cancelled",
+    "available_evidence": [
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "Merchant failed to prove ongoing service usage or customer acknowledgement of renewal window.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0026_p2s2o8_1",
+      "doc_type": "customer_communication",
+      "file_name": "customer_chat.md",
+      "file_path": "disp_0026_p2s2o8/customer_chat.md",
+      "content": "# Customer Support Communication Record\n\n**Support Ticket:** TIK-05025  \n**Channel:** Razorpay Merchant Web Chat  \n**Customer Name:** Deepika Nair  \n**Timestamp:** 2024-04-05 00:33:10 UTC  \n**Context Reference:** Order order_hsfkr26j1fo2wb  \n\n---\n**[2024-04-05 00:33:10 UTC] Deepika Nair:** Hello, I am inquiring regarding my purchase order_hsfkr26j1fo2wb.\n**[2024-04-05 00:33:10 UTC] Support Agent (Kiran):** Welcome to customer support, Deepika Nair. How may I help you today?\n**[2024-04-05 00:33:10 UTC] Deepika Nair:** I was billed for a monthly renewal.\n**[2024-04-05 00:33:10 UTC] Support Agent (Kiran):** Per our terms, subscriptions must be cancelled at least 48 hours before renewal. Your cancellation request came after the cycle commenced.\n\n---\n*Transcript archived by Merchant Customer Experience CRM.*\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 25
+  }
+}

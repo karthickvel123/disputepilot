@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5015
+**Date:** 24/03/2024
+**Customer:** Aditya Joshi
+**Address:** Near Mehboob Studio, Bandra (W), Mumbai 400050
+**Item:** Mechanical Gaming Keyboard (Qty: 1)
+**Amount Total:** Rs. 4500.00
+**Payment Ref:** order_t3rup47p9pb0
+*Computer generated voucher. Signature not needed.*

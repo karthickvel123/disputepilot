@@ -1,0 +1,78 @@
+{
+  "case_id": "disp_0147_gkkc06",
+  "dispute": {
+    "id": "disp_0147_gkkc06",
+    "entity": "dispute",
+    "payment_id": "pay_1hongwulazuayn",
+    "amount": 299800,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "other_dispute",
+    "phase": "retrieval",
+    "status": "open",
+    "respond_by": 1724187108,
+    "created_at": 1723425057,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [
+        "disp_0147_gkkc06/invoice.md"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_3oerxcen0t5g8k",
+    "entity": "order",
+    "amount": 299800,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1722634511,
+    "customer_name": "Deepika Nair",
+    "customer_email": "deepika.nair@webmail.in",
+    "customer_phone": "+919862152370",
+    "shipping_address": "Flat 441, Sector 3, New Delhi, Delhi 110001",
+    "items": [
+      {
+        "name": "Monthly Cloud SaaS Subscription",
+        "quantity": 2,
+        "amount": 149900
+      }
+    ],
+    "tracking_number": "TRK-BD-54977061",
+    "delivered_at": 1723058716
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "other",
+    "available_evidence": [
+      "billing_proof"
+    ],
+    "winnable": false,
+    "rule_explanation": "Insufficient documentation to counter general dispute inquiry.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0147_gkkc06_1",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.md",
+      "file_path": "disp_0147_gkkc06/invoice.md",
+      "content": "# TAX INVOICE\n\n**Invoice Number:** INV-2024-01146  \n**Invoice Date:** 2024-08-02 21:35:11 UTC  \n**Order Reference:** order_3oerxcen0t5g8k  \n**Payment ID:** pay_1hongwulazuayn  \n\n### Merchant Details:\n**Seller:** Apex Retail Solutions Private Limited  \n**GSTIN:** 29AABCA1234F1Z5  \n**State:** Karnataka (Code 29)  \n**Registered Address:** Outer Ring Road, Bellandur, Bengaluru, Karnataka 560103  \n\n### Customer Details:\n**Billed To:** Deepika Nair  \n**Address:** Flat 441, Sector 3, New Delhi, Delhi 110001  \n**Email:** deepika.nair@webmail.in  \n**Phone:** +919862152370  \n\n### Itemized Particulars:\n| Description | HSN | Qty | Unit Price | Tax Rate | Total Amount |\n| --- | --- | --- | --- | --- | --- |\n| Monthly Cloud SaaS Subscription | 8471 | 2 | INR 1499.00 | 18% | INR 1499.00 |\n\n**Grand Total:** INR 2998.00 (299800 paise)  \n**Payment Method:** Razorpay Checkout (3D-Secure 2.0 Authenticated)  \n**Transaction Reference:** pay_1hongwulazuayn  \n\n---\n*Authorized Signatory for Apex Retail Solutions Private Limited.*\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 146
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "case_id": "disp_m_0033_9ojw03",
+  "dispute": {
+    "id": "disp_m_0033_9ojw03",
+    "entity": "dispute",
+    "payment_id": "pay_ryq1l4arwptu",
+    "amount": 189900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "unsubscribed 10 days before expiry still took yearly fee",
+    "phase": "pre_arbitration",
+    "status": "open",
+    "respond_by": 1714615295,
+    "created_at": 1714006567,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [
+        "disp_m_0033_9ojw03/invoice.txt"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [
+        "disp_m_0033_9ojw03/policy.txt"
+      ],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_451fxjtydfui",
+    "entity": "order",
+    "amount": 189900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1712791019,
+    "customer_name": "Priya Sharma",
+    "customer_email": "priya_sharma@gmail.com",
+    "customer_phone": "+916309235875",
+    "shipping_address": "Flat 357, Sector 10, New Delhi, Delhi 110001",
+    "items": [
+      {
+        "name": "USB-C Fast Charging Hub 100W",
+        "quantity": 1,
+        "amount": 189900
+      }
+    ],
+    "tracking_number": "AWB-34919329",
+    "delivered_at": null
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "subscription_cancelled",
+    "available_evidence": [
+      "billing_proof",
+      "refund_cancellation_policy"
+    ],
+    "winnable": false,
+    "rule_explanation": "Merchant failed to prove ongoing service usage or customer acknowledgement of renewal window.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0033_9ojw03_doc_inv",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.txt",
+      "file_path": "disp_m_0033_9ojw03/invoice.txt",
+      "content": "# TAX INVOICE / CASH MEMO\n**Bill No:** INV-5032\n**Date:** 10-Apr-24\n**Customer:** Priya Sharma\n**Address:** Flat 104, Sec-3, Nr Metro Pillar 240, Dwarka, ND-75\n**Item:** USB-C Fast Charging Hub 100W (Qty: 1)\n**Amount Total:** Rs. 1899.00\n**Payment Ref:** order_451fxjtydfui\n*Computer generated voucher. Signature not needed.*\n"
+    },
+    {
+      "doc_id": "disp_m_0033_9ojw03_doc_pol",
+      "doc_type": "refund_cancellation_policy",
+      "file_name": "policy.txt",
+      "file_path": "disp_m_0033_9ojw03/policy.txt",
+      "content": "# Terms of Service & Returns\nReturn Window: Return request must be registered within 7 calendar days.\nCancellation: Free cancellation before consignment dispatch only.\nAuto Renewals: Subscription renewals recur monthly unless paused 48 hours prior.\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 32,
+    "mode": "messy"
+  }
+}

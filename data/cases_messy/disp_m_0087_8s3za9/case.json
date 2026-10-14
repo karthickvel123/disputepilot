@@ -1,0 +1,89 @@
+{
+  "case_id": "disp_m_0087_8s3za9",
+  "dispute": {
+    "id": "disp_m_0087_8s3za9",
+    "entity": "dispute",
+    "payment_id": "pay_hn1hf87wgfpg",
+    "amount": 149900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "sleep kar raha tha tab alert aaya debit ka",
+    "phase": "chargeback",
+    "status": "open",
+    "respond_by": 1719544026,
+    "created_at": 1718757702,
+    "evidence": {
+      "shipping_proof": [
+        "disp_m_0087_8s3za9/delivery_slip.md"
+      ],
+      "billing_proof": [
+        "disp_m_0087_8s3za9/invoice.txt"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_fxrttsj5vmaf",
+    "entity": "order",
+    "amount": 149900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1717436854,
+    "customer_name": "Ananya Rao",
+    "customer_email": "ananya_rao@outlook.in",
+    "customer_phone": "+917655172235",
+    "shipping_address": "Flat 518, Sector 10, Pune, Maharashtra 411014",
+    "items": [
+      {
+        "name": "Monthly Cloud SaaS Subscription",
+        "quantity": 1,
+        "amount": 149900
+      }
+    ],
+    "tracking_number": "AWB-12894767",
+    "delivered_at": 1717639451
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "unauthorised",
+    "available_evidence": [
+      "billing_proof",
+      "shipping_proof"
+    ],
+    "winnable": true,
+    "rule_explanation": "3D-Secure authentication logs match cardholder details with verified delivery/activity.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0087_8s3za9_doc_inv",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.txt",
+      "file_path": "disp_m_0087_8s3za9/invoice.txt",
+      "content": "# TAX INVOICE / CASH MEMO\n**Bill No:** INV-5086\n**Date:** 3rd Jun 2024, 05:47 PM\n**Customer:** Ananya Rao\n**Address:** Flat 301, Gera Emerald, Kharadi, Pune 411014\n**Item:** Monthly Cloud SaaS Subscription (Qty: 1)\n**Amount Total:** Rs. 1499.00\n**Payment Ref:** order_fxrttsj5vmaf\n*Computer generated voucher. Signature not needed.*\n"
+    },
+    {
+      "doc_id": "disp_m_0087_8s3za9_doc_pod",
+      "doc_type": "shipping_proof",
+      "file_name": "delivery_slip.md",
+      "file_path": "disp_m_0087_8s3za9/delivery_slip.md",
+      "content": "# Courier Handover Sheet\nCourier: Bluedart Express Courier\nDocket Number: AWB-12894767\nDelivered To: Ananya Rao\nDelivery Location: Flat 301, Gera Emerald, Kharadi, Pune 411014\nHandover Time: 06-Jun-24\nReceived By: Self / Family member\nOTP Status: Verified electronically on driver handset\n\nStatus: COMPLETE_DELIVERY\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 86,
+    "mode": "messy"
+  }
+}

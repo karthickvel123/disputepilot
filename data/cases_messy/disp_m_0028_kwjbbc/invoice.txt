@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5027
+**Date:** 05-Apr-24
+**Customer:** Deepika Nair
+**Address:** Flat 301, Gera Emerald, Kharadi, Pune 411014
+**Item:** Wireless ANC Headphones Pro (Qty: 1)
+**Amount Total:** Rs. 2999.00
+**Payment Ref:** order_s4gignsuv1qb
+*Computer generated voucher. Signature not needed.*

@@ -1,0 +1,88 @@
+{
+  "case_id": "disp_0137_3xm2ao",
+  "dispute": {
+    "id": "disp_0137_3xm2ao",
+    "entity": "dispute",
+    "payment_id": "pay_5xcr5namzhr65k",
+    "amount": 1799900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "INR_106",
+    "phase": "retrieval",
+    "status": "open",
+    "respond_by": 1723885398,
+    "created_at": 1723049099,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [
+        "disp_0137_3xm2ao/invoice.md"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_0137_3xm2ao/customer_chat.md"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_9mleieiqo7rmb8",
+    "entity": "order",
+    "amount": 1799900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1721770575,
+    "customer_name": "Neha Kulkarni",
+    "customer_email": "neha.kulkarni@example.com",
+    "customer_phone": "+919867326334",
+    "shipping_address": "Flat 431, Sector 7, Bengaluru, Karnataka 560103",
+    "items": [
+      {
+        "name": "4K HDR Computer Monitor 27in",
+        "quantity": 1,
+        "amount": 1799900
+      }
+    ],
+    "tracking_number": "TRK-BD-79564413",
+    "delivered_at": null
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "duplicate_charge",
+    "available_evidence": [
+      "billing_proof",
+      "customer_communication"
+    ],
+    "winnable": true,
+    "rule_explanation": "Documented separate orders and invoices confirm distinct legitimate transactions.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0137_3xm2ao_1",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.md",
+      "file_path": "disp_0137_3xm2ao/invoice.md",
+      "content": "# TAX INVOICE\n\n**Invoice Number:** INV-2024-01136  \n**Invoice Date:** 2024-07-23 21:36:15 UTC  \n**Order Reference:** order_9mleieiqo7rmb8  \n**Payment ID:** pay_5xcr5namzhr65k  \n\n### Merchant Details:\n**Seller:** Apex Retail Solutions Private Limited  \n**GSTIN:** 29AABCA1234F1Z5  \n**State:** Karnataka (Code 29)  \n**Registered Address:** Outer Ring Road, Bellandur, Bengaluru, Karnataka 560103  \n\n### Customer Details:\n**Billed To:** Neha Kulkarni  \n**Address:** Flat 431, Sector 7, Bengaluru, Karnataka 560103  \n**Email:** neha.kulkarni@example.com  \n**Phone:** +919867326334  \n\n### Itemized Particulars:\n| Description | HSN | Qty | Unit Price | Tax Rate | Total Amount |\n| --- | --- | --- | --- | --- | --- |\n| 4K HDR Computer Monitor 27in | 8471 | 1 | INR 17999.00 | 18% | INR 17999.00 |\n\n**Grand Total:** INR 17999.00 (1799900 paise)  \n**Payment Method:** Razorpay Checkout (3D-Secure 2.0 Authenticated)  \n**Transaction Reference:** pay_5xcr5namzhr65k  \n\n---\n*Authorized Signatory for Apex Retail Solutions Private Limited.*\n"
+    },
+    {
+      "doc_id": "doc_0137_3xm2ao_2",
+      "doc_type": "customer_communication",
+      "file_name": "customer_chat.md",
+      "file_path": "disp_0137_3xm2ao/customer_chat.md",
+      "content": "# Customer Support Communication Record\n\n**Support Ticket:** TIK-05136  \n**Channel:** Razorpay Merchant Web Chat  \n**Customer Name:** Neha Kulkarni  \n**Timestamp:** 2024-07-24 21:36:15 UTC  \n**Context Reference:** Order order_9mleieiqo7rmb8  \n\n---\n**[2024-07-24 21:36:15 UTC] Neha Kulkarni:** Hello, I am inquiring regarding my purchase order_9mleieiqo7rmb8.\n**[2024-07-24 21:36:15 UTC] Support Agent (Kiran):** Welcome to customer support, Neha Kulkarni. How may I help you today?\n**[2024-07-24 21:36:15 UTC] Neha Kulkarni:** I see an unauthorized charge on my statement.\n**[2024-07-24 21:36:15 UTC] Support Agent (Kiran):** The transaction was authenticated via 3DS OTP sent to your registered mobile number.\n\n---\n*Transcript archived by Merchant Customer Experience CRM.*\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 136
+  }
+}

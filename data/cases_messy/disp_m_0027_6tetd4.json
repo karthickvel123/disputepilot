@@ -1,0 +1,98 @@
+{
+  "case_id": "disp_m_0027_6tetd4",
+  "dispute": {
+    "id": "disp_m_0027_6tetd4",
+    "entity": "dispute",
+    "payment_id": "pay_2logqochvqdr",
+    "amount": 699800,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "merchant promised compensation but ghosted on emails",
+    "phase": "chargeback",
+    "status": "open",
+    "respond_by": 1713835406,
+    "created_at": 1713035007,
+    "evidence": {
+      "shipping_proof": [
+        "disp_m_0027_6tetd4/delivery_slip.md"
+      ],
+      "billing_proof": [
+        "disp_m_0027_6tetd4/invoice.txt"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_917qsnf6akqp",
+    "entity": "order",
+    "amount": 699800,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1712263289,
+    "customer_name": "Deepika Nair",
+    "customer_email": "deepika_nair@gmail.com",
+    "customer_phone": "+919780279012",
+    "shipping_address": "Flat 437, Sector 10, Pune, Maharashtra 411014",
+    "items": [
+      {
+        "name": "Smart Fitness Watch v3",
+        "quantity": 2,
+        "amount": 349900
+      }
+    ],
+    "tracking_number": "AWB-73369627",
+    "delivered_at": 1712683735
+  },
+  "refund": {
+    "id": "rfnd_7ab1otnzekjc",
+    "entity": "refund",
+    "payment_id": "pay_2logqochvqdr",
+    "amount": 699800,
+    "currency": "INR",
+    "status": "processed",
+    "created_at": 1712522489,
+    "arn": "ARN220374629859"
+  },
+  "ground_truth": {
+    "reason_class": "refund_not_received",
+    "available_evidence": [
+      "billing_proof",
+      "shipping_proof"
+    ],
+    "winnable": false,
+    "rule_explanation": "No verified bank refund record found for customer's transaction.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0027_6tetd4_doc_inv",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.txt",
+      "file_path": "disp_m_0027_6tetd4/invoice.txt",
+      "content": "# TAX INVOICE / CASH MEMO\n**Bill No:** INV-5026\n**Date:** 4th Apr 2024, 08:41 PM\n**Customer:** Deepika Nair\n**Address:** F-692, Sector 4, nr water tank, Pune 411014\n**Item:** Smart Fitness Watch v3 (Qty: 2)\n**Amount Total:** Rs. 6998.00\n**Payment Ref:** order_917qsnf6akqp\n*Computer generated voucher. Signature not needed.*\n"
+    },
+    {
+      "doc_id": "disp_m_0027_6tetd4_doc_pod",
+      "doc_type": "shipping_proof",
+      "file_name": "delivery_slip.md",
+      "file_path": "disp_m_0027_6tetd4/delivery_slip.md",
+      "content": "# Courier Handover Sheet\nCourier: DTDC Air\nDocket Number: AWB-73369627\nDelivered To: Deepika Nair\nDelivery Location: F-692, Sector 4, nr water tank, Pune 411014\nHandover Time: 09-Apr-24\nReceived By: Self / Family member\nOTP Status: Verified electronically on driver handset\n\nStatus: COMPLETE_DELIVERY\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 26,
+    "mode": "messy"
+  }
+}

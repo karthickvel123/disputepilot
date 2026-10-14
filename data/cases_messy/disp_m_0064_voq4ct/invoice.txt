@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5063
+**Date:** 11.05.2024
+**Customer:** Rohan Gupta
+**Address:** 12A Barakhamba Road, Connaught Place, New Delhi 110001
+**Item:** Mechanical Gaming Keyboard (Qty: 2)
+**Amount Total:** Rs. 9000.00
+**Payment Ref:** order_fbihd86n9lqx
+*Computer generated voucher. Signature not needed.*

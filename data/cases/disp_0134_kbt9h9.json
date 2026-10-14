@@ -1,0 +1,78 @@
+{
+  "case_id": "disp_0134_kbt9h9",
+  "dispute": {
+    "id": "disp_0134_kbt9h9",
+    "entity": "dispute",
+    "payment_id": "pay_bh8lbrnp2f8uzc",
+    "amount": 899900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "merchandise_not_received",
+    "phase": "retrieval",
+    "status": "open",
+    "respond_by": 1723163275,
+    "created_at": 1722520718,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_0134_kbt9h9/customer_chat.md"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_5bv1l0b7uyqfhg",
+    "entity": "order",
+    "amount": 899900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1721530306,
+    "customer_name": "Rohan Gupta",
+    "customer_email": "rohan.gupta@mail.in",
+    "customer_phone": "+919822029742",
+    "shipping_address": "Flat 415, Sector 7, New Delhi, Delhi 110001",
+    "items": [
+      {
+        "name": "Ergonomic Mesh Office Chair",
+        "quantity": 1,
+        "amount": 899900
+      }
+    ],
+    "tracking_number": "TRK-SF-34354859",
+    "delivered_at": 1721747187
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "item_not_received",
+    "available_evidence": [
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "Missing courier proof of delivery or fulfillment unverified before dispute inception.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0134_kbt9h9_1",
+      "doc_type": "customer_communication",
+      "file_name": "customer_chat.md",
+      "file_path": "disp_0134_kbt9h9/customer_chat.md",
+      "content": "# Customer Support Communication Record\n\n**Support Ticket:** TIK-05133  \n**Channel:** Razorpay Merchant Web Chat  \n**Customer Name:** Rohan Gupta  \n**Timestamp:** 2024-07-22 02:51:46 UTC  \n**Context Reference:** Order order_5bv1l0b7uyqfhg  \n\n---\n**[2024-07-22 02:51:46 UTC] Rohan Gupta:** Hello, I am inquiring regarding my purchase order_5bv1l0b7uyqfhg.\n**[2024-07-22 02:51:46 UTC] Support Agent (Kiran):** Welcome to customer support, Rohan Gupta. How may I help you today?\n**[2024-07-22 02:51:46 UTC] Rohan Gupta:** Where is my package? I haven't received it yet.\n**[2024-07-22 02:51:46 UTC] Support Agent (Kiran):** Tracking details indicate courier handover. Please check your building security desk or OTP confirmation.\n\n---\n*Transcript archived by Merchant Customer Experience CRM.*\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 133
+  }
+}

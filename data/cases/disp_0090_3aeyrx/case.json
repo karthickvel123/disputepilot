@@ -1,0 +1,78 @@
+{
+  "case_id": "disp_0090_3aeyrx",
+  "dispute": {
+    "id": "disp_0090_3aeyrx",
+    "entity": "dispute",
+    "payment_id": "pay_u58flm639bcp7t",
+    "amount": 1799900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "INR_108",
+    "phase": "chargeback",
+    "status": "open",
+    "respond_by": 1719876738,
+    "created_at": 1719264214,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_0090_3aeyrx/customer_chat.md"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_v5zkbwwwtp6rdq",
+    "entity": "order",
+    "amount": 1799900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1717718573,
+    "customer_name": "Kavita Reddy",
+    "customer_email": "kavita.reddy@mail.in",
+    "customer_phone": "+919840277197",
+    "shipping_address": "Flat 450, Sector 15, New Delhi, Delhi 110001",
+    "items": [
+      {
+        "name": "4K HDR Computer Monitor 27in",
+        "quantity": 1,
+        "amount": 1799900
+      }
+    ],
+    "tracking_number": "TRK-BD-61298971",
+    "delivered_at": 1718124786
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "refund_not_received",
+    "available_evidence": [
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "No verified bank refund record found for customer's transaction.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0090_3aeyrx_1",
+      "doc_type": "customer_communication",
+      "file_name": "customer_chat.md",
+      "file_path": "disp_0090_3aeyrx/customer_chat.md",
+      "content": "# Customer Support Communication Record\n\n**Support Ticket:** TIK-05089  \n**Channel:** Razorpay Merchant Web Chat  \n**Customer Name:** Kavita Reddy  \n**Timestamp:** 2024-06-08 00:02:53 UTC  \n**Context Reference:** Order order_v5zkbwwwtp6rdq  \n\n---\n**[2024-06-08 00:02:53 UTC] Kavita Reddy:** Hello, I am inquiring regarding my purchase order_v5zkbwwwtp6rdq.\n**[2024-06-08 00:02:53 UTC] Support Agent (Kiran):** Welcome to customer support, Kavita Reddy. How may I help you today?\n**[2024-06-08 00:02:53 UTC] Kavita Reddy:** I see an unauthorized charge on my statement.\n**[2024-06-08 00:02:53 UTC] Support Agent (Kiran):** The transaction was authenticated via 3DS OTP sent to your registered mobile number.\n\n---\n*Transcript archived by Merchant Customer Experience CRM.*\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 89
+  }
+}

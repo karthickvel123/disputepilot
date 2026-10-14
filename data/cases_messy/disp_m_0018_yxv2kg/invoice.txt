@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5017
+**Date:** 27-Mar-24
+**Customer:** Priya Sharma
+**Address:** Nr Apollo Pharmacy, Green Glen Layout, Bellandur, Bengaluru
+**Item:** Ergonomic Mesh Office Chair (Qty: 1)
+**Amount Total:** Rs. 8999.00
+**Payment Ref:** order_82mux4b0pzcy
+*Computer generated voucher. Signature not needed.*

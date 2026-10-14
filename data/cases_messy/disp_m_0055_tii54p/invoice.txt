@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5054
+**Date:** 2nd of May around 10 PM
+**Customer:** Deepika Nair
+**Address:** House No 89, Gali 4, Laxmi Nagar, Delhi 92
+**Item:** Wireless ANC Headphones Pro (Qty: 1)
+**Amount Total:** Rs. 2999.00
+**Payment Ref:** order_nhsax5ncdrtm
+*Computer generated voucher. Signature not needed.*

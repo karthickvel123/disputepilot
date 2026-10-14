@@ -1,0 +1,89 @@
+{
+  "case_id": "disp_m_0031_mggrny",
+  "dispute": {
+    "id": "disp_m_0031_mggrny",
+    "entity": "dispute",
+    "payment_id": "pay_6s3bjqzap10o",
+    "amount": 349900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "suspicious debit txn while I was in hospital",
+    "phase": "pre_arbitration",
+    "status": "open",
+    "respond_by": 1714315418,
+    "created_at": 1713705465,
+    "evidence": {
+      "shipping_proof": [
+        "disp_m_0031_mggrny/delivery_slip.md"
+      ],
+      "billing_proof": [
+        "disp_m_0031_mggrny/invoice.txt"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_olh31uqg0pzk",
+    "entity": "order",
+    "amount": 349900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1712623359,
+    "customer_name": "Aditya Joshi",
+    "customer_email": "aditya_joshi@outlook.in",
+    "customer_phone": "+918900155231",
+    "shipping_address": "Flat 771, Sector 6, Mumbai, Maharashtra 400050",
+    "items": [
+      {
+        "name": "Smart Fitness Watch v3",
+        "quantity": 1,
+        "amount": 349900
+      }
+    ],
+    "tracking_number": "AWB-15119806",
+    "delivered_at": 1712922707
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "unauthorised",
+    "available_evidence": [
+      "billing_proof",
+      "shipping_proof"
+    ],
+    "winnable": true,
+    "rule_explanation": "3D-Secure authentication logs match cardholder details with verified delivery/activity.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0031_mggrny_doc_inv",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.txt",
+      "file_path": "disp_m_0031_mggrny/invoice.txt",
+      "content": "# TAX INVOICE / CASH MEMO\n**Bill No:** INV-5030\n**Date:** 09/04/2024\n**Customer:** Aditya Joshi\n**Address:** B-402, Sea Breeze Apts, Hill Rd, Bandra West, Mum-50\n**Item:** Smart Fitness Watch v3 (Qty: 1)\n**Amount Total:** Rs. 3499.00\n**Payment Ref:** order_olh31uqg0pzk\n*Computer generated voucher. Signature not needed.*\n"
+    },
+    {
+      "doc_id": "disp_m_0031_mggrny_doc_pod",
+      "doc_type": "shipping_proof",
+      "file_name": "delivery_slip.md",
+      "file_path": "disp_m_0031_mggrny/delivery_slip.md",
+      "content": "# Courier Handover Sheet\nCourier: Bluedart Express Courier\nDocket Number: AWB-15119806\nDelivered To: Aditya Joshi\nDelivery Location: B-402, Sea Breeze Apts, Hill Rd, Bandra West, Mum-50\nHandover Time: 12th Apr 2024, 11:51 AM\nReceived By: Self / Family member\nOTP Status: Verified electronically on driver handset\n\nStatus: COMPLETE_DELIVERY\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 30,
+    "mode": "messy"
+  }
+}

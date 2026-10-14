@@ -1,0 +1,78 @@
+{
+  "case_id": "disp_0109_xdhyx3",
+  "dispute": {
+    "id": "disp_0109_xdhyx3",
+    "entity": "dispute",
+    "payment_id": "pay_ivp8h4nouwr61r",
+    "amount": 1799900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "4834",
+    "phase": "retrieval",
+    "status": "open",
+    "respond_by": 1721608760,
+    "created_at": 1720756139,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [
+        "disp_0109_xdhyx3/invoice.md"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_dexw2567h488s2",
+    "entity": "order",
+    "amount": 1799900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1719358926,
+    "customer_name": "Manish Tiwari",
+    "customer_email": "manish.tiwari@example.com",
+    "customer_phone": "+919835280389",
+    "shipping_address": "Flat 190, Sector 2, Ahmedabad, Gujarat 380015",
+    "items": [
+      {
+        "name": "4K HDR Computer Monitor 27in",
+        "quantity": 1,
+        "amount": 1799900
+      }
+    ],
+    "tracking_number": "TRK-SF-20327693",
+    "delivered_at": null
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "duplicate_charge",
+    "available_evidence": [
+      "billing_proof"
+    ],
+    "winnable": true,
+    "rule_explanation": "Documented separate orders and invoices confirm distinct legitimate transactions.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0109_xdhyx3_1",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.md",
+      "file_path": "disp_0109_xdhyx3/invoice.md",
+      "content": "# TAX INVOICE\n\n**Invoice Number:** INV-2024-01108  \n**Invoice Date:** 2024-06-25 23:42:06 UTC  \n**Order Reference:** order_dexw2567h488s2  \n**Payment ID:** pay_ivp8h4nouwr61r  \n\n### Merchant Details:\n**Seller:** Apex Retail Solutions Private Limited  \n**GSTIN:** 29AABCA1234F1Z5  \n**State:** Karnataka (Code 29)  \n**Registered Address:** Outer Ring Road, Bellandur, Bengaluru, Karnataka 560103  \n\n### Customer Details:\n**Billed To:** Manish Tiwari  \n**Address:** Flat 190, Sector 2, Ahmedabad, Gujarat 380015  \n**Email:** manish.tiwari@example.com  \n**Phone:** +919835280389  \n\n### Itemized Particulars:\n| Description | HSN | Qty | Unit Price | Tax Rate | Total Amount |\n| --- | --- | --- | --- | --- | --- |\n| 4K HDR Computer Monitor 27in | 8471 | 1 | INR 17999.00 | 18% | INR 17999.00 |\n\n**Grand Total:** INR 17999.00 (1799900 paise)  \n**Payment Method:** Razorpay Checkout (3D-Secure 2.0 Authenticated)  \n**Transaction Reference:** pay_ivp8h4nouwr61r  \n\n---\n*Authorized Signatory for Apex Retail Solutions Private Limited.*\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 108
+  }
+}

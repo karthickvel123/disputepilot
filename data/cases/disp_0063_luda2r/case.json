@@ -1,0 +1,78 @@
+{
+  "case_id": "disp_0063_luda2r",
+  "dispute": {
+    "id": "disp_0063_luda2r",
+    "entity": "dispute",
+    "payment_id": "pay_z14yac8mxau7mb",
+    "amount": 299800,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "retrieval_request",
+    "phase": "chargeback",
+    "status": "open",
+    "respond_by": 1717575036,
+    "created_at": 1716833846,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [
+        "disp_0063_luda2r/invoice.md"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_apowtigy6tkect",
+    "entity": "order",
+    "amount": 299800,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1715379459,
+    "customer_name": "Siddharth Menon",
+    "customer_email": "siddharth.menon@webmail.in",
+    "customer_phone": "+919855343466",
+    "shipping_address": "Flat 804, Sector 3, Kolkata, West Bengal 700016",
+    "items": [
+      {
+        "name": "Monthly Cloud SaaS Subscription",
+        "quantity": 2,
+        "amount": 149900
+      }
+    ],
+    "tracking_number": "TRK-SF-35290114",
+    "delivered_at": 1715671777
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "other",
+    "available_evidence": [
+      "billing_proof"
+    ],
+    "winnable": false,
+    "rule_explanation": "Insufficient documentation to counter general dispute inquiry.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0063_luda2r_1",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.md",
+      "file_path": "disp_0063_luda2r/invoice.md",
+      "content": "# TAX INVOICE\n\n**Invoice Number:** INV-2024-01062  \n**Invoice Date:** 2024-05-10 22:17:39 UTC  \n**Order Reference:** order_apowtigy6tkect  \n**Payment ID:** pay_z14yac8mxau7mb  \n\n### Merchant Details:\n**Seller:** Apex Retail Solutions Private Limited  \n**GSTIN:** 29AABCA1234F1Z5  \n**State:** Karnataka (Code 29)  \n**Registered Address:** Outer Ring Road, Bellandur, Bengaluru, Karnataka 560103  \n\n### Customer Details:\n**Billed To:** Siddharth Menon  \n**Address:** Flat 804, Sector 3, Kolkata, West Bengal 700016  \n**Email:** siddharth.menon@webmail.in  \n**Phone:** +919855343466  \n\n### Itemized Particulars:\n| Description | HSN | Qty | Unit Price | Tax Rate | Total Amount |\n| --- | --- | --- | --- | --- | --- |\n| Monthly Cloud SaaS Subscription | 8471 | 2 | INR 1499.00 | 18% | INR 1499.00 |\n\n**Grand Total:** INR 2998.00 (299800 paise)  \n**Payment Method:** Razorpay Checkout (3D-Secure 2.0 Authenticated)  \n**Transaction Reference:** pay_z14yac8mxau7mb  \n\n---\n*Authorized Signatory for Apex Retail Solutions Private Limited.*\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 62
+  }
+}

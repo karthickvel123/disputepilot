@@ -1,0 +1,87 @@
+{
+  "case_id": "disp_0039_4potj3",
+  "dispute": {
+    "id": "disp_0039_4potj3",
+    "entity": "dispute",
+    "payment_id": "pay_pqnvf2xf8mdryc",
+    "amount": 149900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "4834",
+    "phase": "chargeback",
+    "status": "open",
+    "respond_by": 1715618520,
+    "created_at": 1714950981,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [
+        "disp_0039_4potj3/refund_receipt.md"
+      ],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_em9n4nvtanmh4p",
+    "entity": "order",
+    "amount": 149900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1713300202,
+    "customer_name": "Kavita Reddy",
+    "customer_email": "kavita.reddy@mail.in",
+    "customer_phone": "+919847991562",
+    "shipping_address": "Flat 578, Sector 9, Kolkata, West Bengal 700016",
+    "items": [
+      {
+        "name": "Monthly Cloud SaaS Subscription",
+        "quantity": 1,
+        "amount": 149900
+      }
+    ],
+    "tracking_number": "TRK-SF-58270683",
+    "delivered_at": null
+  },
+  "refund": {
+    "id": "rfnd_4unxu0cojbq90s",
+    "entity": "refund",
+    "payment_id": "pay_pqnvf2xf8mdryc",
+    "amount": 149900,
+    "currency": "INR",
+    "status": "processed",
+    "created_at": 1713473002,
+    "arn": "ARN209375654650"
+  },
+  "ground_truth": {
+    "reason_class": "duplicate_charge",
+    "available_evidence": [
+      "refund_confirmation"
+    ],
+    "winnable": true,
+    "rule_explanation": "Second charge was already refunded to cardholder with bank ARN confirmation.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0039_4potj3_1",
+      "doc_type": "refund_confirmation",
+      "file_name": "refund_receipt.md",
+      "file_path": "disp_0039_4potj3/refund_receipt.md",
+      "content": "# Razorpay Electronic Refund Confirmation\n\n**Refund ID:** rfnd_4unxu0cojbq90s  \n**Payment ID:** pay_pqnvf2xf8mdryc  \n**Refund Amount:** INR 1499.00 (149900 paise)  \n**Status:** PROCESSED  \n**Acquirer Reference Number (ARN):** ARN209375654650  \n**Refund Processed At:** 2024-04-18 20:43:22 UTC  \n**Settlement Route:** Original Payment Source (Bank / Card / UPI)  \n\n### Bank Traceability:\nThis transaction was routed via Razorpay Gateway to the acquiring bank. The cardholder's issuing bank can locate the credited funds using the ARN provided above.\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 38
+  }
+}

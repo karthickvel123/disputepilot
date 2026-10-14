@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5060
+**Date:** 09/05/2024
+**Customer:** Deepika Nair
+**Address:** F-692, Sector 4, nr water tank, Pune 411014
+**Item:** 4K HDR Computer Monitor 27in (Qty: 1)
+**Amount Total:** Rs. 17999.00
+**Payment Ref:** order_xspjetvx6pw9
+*Computer generated voucher. Signature not needed.*

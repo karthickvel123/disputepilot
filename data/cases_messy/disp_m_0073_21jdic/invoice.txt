@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5072
+**Date:** 20-May-24
+**Customer:** Ananya Rao
+**Address:** Nr Apollo Pharmacy, Green Glen Layout, Bellandur, Bengaluru
+**Item:** Wireless ANC Headphones Pro (Qty: 1)
+**Amount Total:** Rs. 2999.00
+**Payment Ref:** order_jso8fm3jl1vz
+*Computer generated voucher. Signature not needed.*

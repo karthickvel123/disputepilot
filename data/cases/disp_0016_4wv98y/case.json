@@ -1,0 +1,78 @@
+{
+  "case_id": "disp_0016_4wv98y",
+  "dispute": {
+    "id": "disp_0016_4wv98y",
+    "entity": "dispute",
+    "payment_id": "pay_u4yyj5ci6vg2g7",
+    "amount": 189900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "13.3",
+    "phase": "retrieval",
+    "status": "open",
+    "respond_by": 1713602617,
+    "created_at": 1712765181,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_0016_4wv98y/customer_chat.md"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_3aj0je4qvzfv8y",
+    "entity": "order",
+    "amount": 189900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1711320352,
+    "customer_name": "Neha Kulkarni",
+    "customer_email": "neha.kulkarni@webmail.in",
+    "customer_phone": "+919814818295",
+    "shipping_address": "Flat 341, Sector 11, Mumbai, Maharashtra 400050",
+    "items": [
+      {
+        "name": "USB-C Fast Charging Hub 100W",
+        "quantity": 1,
+        "amount": 189900
+      }
+    ],
+    "tracking_number": "TRK-BD-68246664",
+    "delivered_at": 1711657463
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "not_as_described",
+    "available_evidence": [
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "Insufficient evidence proving product specifications and customer adherence to return terms.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0016_4wv98y_1",
+      "doc_type": "customer_communication",
+      "file_name": "customer_chat.md",
+      "file_path": "disp_0016_4wv98y/customer_chat.md",
+      "content": "# Customer Support Communication Record\n\n**Support Ticket:** TIK-05015  \n**Channel:** Razorpay Merchant Web Chat  \n**Customer Name:** Neha Kulkarni  \n**Timestamp:** 2024-03-25 22:45:52 UTC  \n**Context Reference:** Order order_3aj0je4qvzfv8y  \n\n---\n**[2024-03-25 22:45:52 UTC] Neha Kulkarni:** Hello, I am inquiring regarding my purchase order_3aj0je4qvzfv8y.\n**[2024-03-25 22:45:52 UTC] Support Agent (Kiran):** Welcome to customer support, Neha Kulkarni. How may I help you today?\n**[2024-03-25 22:45:52 UTC] Neha Kulkarni:** The item delivered doesn't match the specifications on your catalog.\n**[2024-03-25 22:45:52 UTC] Support Agent (Kiran):** We checked your invoice specifications; the product delivered is the exact SKU ordered under our standard 7-day exchange policy.\n\n---\n*Transcript archived by Merchant Customer Experience CRM.*\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 15
+  }
+}

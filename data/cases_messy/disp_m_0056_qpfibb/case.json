@@ -1,0 +1,79 @@
+{
+  "case_id": "disp_m_0056_qpfibb",
+  "dispute": {
+    "id": "disp_m_0056_qpfibb",
+    "entity": "dispute",
+    "payment_id": "pay_kgtuylwuoxi9",
+    "amount": 149900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "bill amount samajh me nahi aa raha explain karo split",
+    "phase": "pre_arbitration",
+    "status": "open",
+    "respond_by": 1716758407,
+    "created_at": 1715989376,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_m_0056_qpfibb/chat_transcript.txt"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_xqpdcgzdn515",
+    "entity": "order",
+    "amount": 149900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1714775232,
+    "customer_name": "Arjun Patel",
+    "customer_email": "arjun_patel@gmail.com",
+    "customer_phone": "",
+    "shipping_address": "Flat 268, Sector 3, Mumbai, Maharashtra 400050",
+    "items": [
+      {
+        "name": "Monthly Cloud SaaS Subscription",
+        "quantity": 1,
+        "amount": 149900
+      }
+    ],
+    "tracking_number": "AWB-15361070",
+    "delivered_at": 1715106006
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "other",
+    "available_evidence": [
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "Insufficient documentation to counter general dispute inquiry.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0056_qpfibb_doc_chat",
+      "doc_type": "customer_communication",
+      "file_name": "chat_transcript.txt",
+      "file_path": "disp_m_0056_qpfibb/chat_transcript.txt",
+      "content": "--- Chat Conversation Log ---\nDate: 04-May-24\nUser: Arjun Patel\nAgent: Support Team (Harish)\n\n[User]: Hello sir, package track nahi ho raha hai theek se.\n[Agent]: Checking your consignment AWB-15361070. Please note tracking updates within 24h.\n[User]: Ok sending alternate address: Near Mehboob Studio, Bandra (W), Mumbai 400050. Please expedite.\n[Agent]: Noted sir. Have escalated to courier partner.\n\n--- Log Closed ---\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 55,
+    "mode": "messy"
+  }
+}

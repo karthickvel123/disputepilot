@@ -1,0 +1,87 @@
+{
+  "case_id": "disp_0123_z1qjfx",
+  "dispute": {
+    "id": "disp_0123_z1qjfx",
+    "entity": "dispute",
+    "payment_id": "pay_onmrs5yi1nnsm0",
+    "amount": 189900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "4834",
+    "phase": "retrieval",
+    "status": "open",
+    "respond_by": 1722443508,
+    "created_at": 1721583276,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [
+        "disp_0123_z1qjfx/refund_receipt.md"
+      ],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_l0jbsqp2px3fa4",
+    "entity": "order",
+    "amount": 189900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1720553129,
+    "customer_name": "Manish Tiwari",
+    "customer_email": "manish.tiwari@mail.in",
+    "customer_phone": "+919838483372",
+    "shipping_address": "Flat 534, Sector 12, Kolkata, West Bengal 700016",
+    "items": [
+      {
+        "name": "USB-C Fast Charging Hub 100W",
+        "quantity": 1,
+        "amount": 189900
+      }
+    ],
+    "tracking_number": "TRK-BD-84759271",
+    "delivered_at": null
+  },
+  "refund": {
+    "id": "rfnd_p4wcaq6ytzxi9c",
+    "entity": "refund",
+    "payment_id": "pay_onmrs5yi1nnsm0",
+    "amount": 189900,
+    "currency": "INR",
+    "status": "processed",
+    "created_at": 1720725929,
+    "arn": "ARN465296042117"
+  },
+  "ground_truth": {
+    "reason_class": "duplicate_charge",
+    "available_evidence": [
+      "refund_confirmation"
+    ],
+    "winnable": true,
+    "rule_explanation": "Second charge was already refunded to cardholder with bank ARN confirmation.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0123_z1qjfx_1",
+      "doc_type": "refund_confirmation",
+      "file_name": "refund_receipt.md",
+      "file_path": "disp_0123_z1qjfx/refund_receipt.md",
+      "content": "# Razorpay Electronic Refund Confirmation\n\n**Refund ID:** rfnd_p4wcaq6ytzxi9c  \n**Payment ID:** pay_onmrs5yi1nnsm0  \n**Refund Amount:** INR 1899.00 (189900 paise)  \n**Status:** PROCESSED  \n**Acquirer Reference Number (ARN):** ARN465296042117  \n**Refund Processed At:** 2024-07-11 19:25:29 UTC  \n**Settlement Route:** Original Payment Source (Bank / Card / UPI)  \n\n### Bank Traceability:\nThis transaction was routed via Razorpay Gateway to the acquiring bank. The cardholder's issuing bank can locate the credited funds using the ARN provided above.\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 122
+  }
+}

@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5003
+**Date:** 12.03.2024
+**Customer:** Rohan Gupta
+**Address:** #42, 2nd Cross, Koramangala 4th Blk, Bangalore-34
+**Item:** 4K HDR Computer Monitor 27in (Qty: 1)
+**Amount Total:** Rs. 17999.00
+**Payment Ref:** order_5344tfjgvq4k
+*Computer generated voucher. Signature not needed.*

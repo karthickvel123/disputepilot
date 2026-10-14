@@ -1,0 +1,78 @@
+{
+  "case_id": "disp_0022_ljzejb",
+  "dispute": {
+    "id": "disp_0022_ljzejb",
+    "entity": "dispute",
+    "payment_id": "pay_xtufdjkdfr2152",
+    "amount": 189900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "INR_101",
+    "phase": "chargeback",
+    "status": "open",
+    "respond_by": 1713782700,
+    "created_at": 1713163540,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [
+        "disp_0022_ljzejb/invoice.md"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_0rn6hw1hs57tco",
+    "entity": "order",
+    "amount": 189900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1711843903,
+    "customer_name": "Priya Sharma",
+    "customer_email": "priya.sharma@example.com",
+    "customer_phone": "+919850455821",
+    "shipping_address": "Flat 241, Sector 13, Hyderabad, Telangana 500081",
+    "items": [
+      {
+        "name": "USB-C Fast Charging Hub 100W",
+        "quantity": 1,
+        "amount": 189900
+      }
+    ],
+    "tracking_number": "TRK-SF-26104026",
+    "delivered_at": 1712274769
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "item_not_received",
+    "available_evidence": [
+      "billing_proof"
+    ],
+    "winnable": false,
+    "rule_explanation": "Missing courier proof of delivery or fulfillment unverified before dispute inception.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0022_ljzejb_1",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.md",
+      "file_path": "disp_0022_ljzejb/invoice.md",
+      "content": "# TAX INVOICE\n\n**Invoice Number:** INV-2024-01021  \n**Invoice Date:** 2024-03-31 00:11:43 UTC  \n**Order Reference:** order_0rn6hw1hs57tco  \n**Payment ID:** pay_xtufdjkdfr2152  \n\n### Merchant Details:\n**Seller:** Apex Retail Solutions Private Limited  \n**GSTIN:** 29AABCA1234F1Z5  \n**State:** Karnataka (Code 29)  \n**Registered Address:** Outer Ring Road, Bellandur, Bengaluru, Karnataka 560103  \n\n### Customer Details:\n**Billed To:** Priya Sharma  \n**Address:** Flat 241, Sector 13, Hyderabad, Telangana 500081  \n**Email:** priya.sharma@example.com  \n**Phone:** +919850455821  \n\n### Itemized Particulars:\n| Description | HSN | Qty | Unit Price | Tax Rate | Total Amount |\n| --- | --- | --- | --- | --- | --- |\n| USB-C Fast Charging Hub 100W | 8471 | 1 | INR 1899.00 | 18% | INR 1899.00 |\n\n**Grand Total:** INR 1899.00 (189900 paise)  \n**Payment Method:** Razorpay Checkout (3D-Secure 2.0 Authenticated)  \n**Transaction Reference:** pay_xtufdjkdfr2152  \n\n---\n*Authorized Signatory for Apex Retail Solutions Private Limited.*\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 21
+  }
+}

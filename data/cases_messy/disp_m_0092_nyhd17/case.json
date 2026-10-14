@@ -1,0 +1,79 @@
+{
+  "case_id": "disp_m_0092_nyhd17",
+  "dispute": {
+    "id": "disp_m_0092_nyhd17",
+    "entity": "dispute",
+    "payment_id": "pay_ngf4q33ie2ug",
+    "amount": 349900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "samaan nahi mila abhi tak parcel gayab",
+    "phase": "retrieval",
+    "status": "open",
+    "respond_by": 1719891291,
+    "created_at": 1719278046,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_m_0092_nyhd17/chat_transcript.txt"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_nrxeh44ql6a6",
+    "entity": "order",
+    "amount": 349900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1717896821,
+    "customer_name": "Ananya Rao",
+    "customer_email": "",
+    "customer_phone": "+918853797635",
+    "shipping_address": "Flat 767, Sector 6, Mumbai, Maharashtra 400050",
+    "items": [
+      {
+        "name": "Smart Fitness Watch v3",
+        "quantity": 1,
+        "amount": 349900
+      }
+    ],
+    "tracking_number": "AWB-59355506",
+    "delivered_at": 1718249691
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "item_not_received",
+    "available_evidence": [
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "Missing courier proof of delivery or fulfillment unverified before dispute inception.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0092_nyhd17_doc_chat",
+      "doc_type": "customer_communication",
+      "file_name": "chat_transcript.txt",
+      "file_path": "disp_m_0092_nyhd17/chat_transcript.txt",
+      "content": "--- Chat Conversation Log ---\nDate: 10.06.2024\nUser: Ananya Rao\nAgent: Support Team (Harish)\n\n[User]: Hello sir, package track nahi ho raha hai theek se.\n[Agent]: Checking your consignment AWB-59355506. Please note tracking updates within 24h.\n[User]: Ok sending alternate address: B-402, Sea Breeze Apts, Hill Rd, Bandra West, Mum-50. Please expedite.\n[Agent]: Noted sir. Have escalated to courier partner.\n\n--- Log Closed ---\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 91,
+    "mode": "messy"
+  }
+}

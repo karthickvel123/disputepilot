@@ -1,0 +1,78 @@
+{
+  "case_id": "disp_0066_i45h02",
+  "dispute": {
+    "id": "disp_0066_i45h02",
+    "entity": "dispute",
+    "payment_id": "pay_77g1p4wyj9dak6",
+    "amount": 399800,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "10.4",
+    "phase": "chargeback",
+    "status": "open",
+    "respond_by": 1717209108,
+    "created_at": 1716583644,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [
+        "disp_0066_i45h02/cancellation_policy.md"
+      ],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_45ke5upvrd6o9y",
+    "entity": "order",
+    "amount": 399800,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1715646029,
+    "customer_name": "Neha Kulkarni",
+    "customer_email": "neha.kulkarni@mail.in",
+    "customer_phone": "+919886911446",
+    "shipping_address": "Flat 191, Sector 14, Ahmedabad, Gujarat 380015",
+    "items": [
+      {
+        "name": "Wireless Bluetooth Earbuds",
+        "quantity": 2,
+        "amount": 199900
+      }
+    ],
+    "tracking_number": "TRK-SF-25932563",
+    "delivered_at": 1716033027
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "unauthorised",
+    "available_evidence": [
+      "refund_cancellation_policy"
+    ],
+    "winnable": false,
+    "rule_explanation": "Missing 3DS authentication records or delivery link to cardholder.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0066_i45h02_1",
+      "doc_type": "refund_cancellation_policy",
+      "file_name": "cancellation_policy.md",
+      "file_path": "disp_0066_i45h02/cancellation_policy.md",
+      "content": "# Apex Retail Solutions Private Limited \u2014 Terms of Sale, Cancellation & Refund Policy\n\n**Document Reference:** TOS-POL-2024-V2  \n**Effective Date:** 2024-01-01  \n**Public Policy URL:** https://apexsolutions.example.in/terms-and-policies  \n\n### 1. Order Cancellation Policy\nCustomers may cancel orders within 2 hours of payment or before the consignment is marked as 'Dispatched'. Once dispatched with our logistics partners, transit cancellation cannot be executed.\n\n### 2. Returns and Defect Reporting\n- Return requests must be lodged within 7 calendar days of verified courier delivery.\n- Goods must be returned in unblemished original packaging with intact security seals.\n- Defective or variant discrepancies must include unboxing photographs submitted within 48 hours of receipt.\n\n### 3. Subscription Cancellations\n- Subscription renewals auto-debit on the anniversary date.\n- Cancellation requests must be logged at least 48 hours prior to the next billing cycle.\n- Continued usage or access to merchant software/services after billing constitutes acceptance of the billing cycle.\n\n### 4. Dispute Escalation & Refund SLA\n- Approved refunds are routed directly through Razorpay to the originating payment instrument within 5\u20137 banking days.\n- A valid Acquirer Reference Number (ARN) will be provided upon processing.\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 65
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "case_id": "disp_m_0004_en2khv",
+  "dispute": {
+    "id": "disp_m_0004_en2khv",
+    "entity": "dispute",
+    "payment_id": "pay_xbenyjqwx4hh",
+    "amount": 1799900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "glitch on payment screen caused twin debits for one order",
+    "phase": "pre_arbitration",
+    "status": "open",
+    "respond_by": 1712122662,
+    "created_at": 1711423031,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [
+        "disp_m_0004_en2khv/invoice.txt"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_m_0004_en2khv/chat_transcript.txt"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_5344tfjgvq4k",
+    "entity": "order",
+    "amount": 1799900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1710264313,
+    "customer_name": "Rohan Gupta",
+    "customer_email": "rohan_gupta@outlook.in",
+    "customer_phone": "+918332907787",
+    "shipping_address": "Flat 641, Sector 5, Bengaluru, Karnataka 560103",
+    "items": [
+      {
+        "name": "4K HDR Computer Monitor 27in",
+        "quantity": 1,
+        "amount": 1799900
+      }
+    ],
+    "tracking_number": "AWB-79578048",
+    "delivered_at": null
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "duplicate_charge",
+    "available_evidence": [
+      "billing_proof",
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "Duplicate transaction unrefunded without proof of separate legitimate fulfillment.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0004_en2khv_doc_inv",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.txt",
+      "file_path": "disp_m_0004_en2khv/invoice.txt",
+      "content": "# TAX INVOICE / CASH MEMO\n**Bill No:** INV-5003\n**Date:** 12.03.2024\n**Customer:** Rohan Gupta\n**Address:** #42, 2nd Cross, Koramangala 4th Blk, Bangalore-34\n**Item:** 4K HDR Computer Monitor 27in (Qty: 1)\n**Amount Total:** Rs. 17999.00\n**Payment Ref:** order_5344tfjgvq4k\n*Computer generated voucher. Signature not needed.*\n"
+    },
+    {
+      "doc_id": "disp_m_0004_en2khv_doc_chat",
+      "doc_type": "customer_communication",
+      "file_name": "chat_transcript.txt",
+      "file_path": "disp_m_0004_en2khv/chat_transcript.txt",
+      "content": "--- Chat Conversation Log ---\nDate: 13/03/2024\nUser: Rohan Gupta\nAgent: Support Team (Harish)\n\n[User]: Hello sir, package track nahi ho raha hai theek se.\n[Agent]: Checking your consignment AWB-79578048. Please note tracking updates within 24h.\n[User]: Ok sending alternate address: #42, 2nd Cross, Koramangala 4th Blk, Bangalore-34. Please expedite.\n[Agent]: Noted sir. Have escalated to courier partner.\n\n--- Log Closed ---\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 3,
+    "mode": "messy"
+  }
+}

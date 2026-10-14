@@ -1,0 +1,82 @@
+{
+  "case_id": "disp_0014_ts2h3t",
+  "dispute": {
+    "id": "disp_0014_ts2h3t",
+    "entity": "dispute",
+    "payment_id": "pay_1uqbfobrcl472r",
+    "amount": 149900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "other_dispute",
+    "phase": "retrieval",
+    "status": "open",
+    "respond_by": 1713537771,
+    "created_at": 1712827995,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_0014_ts2h3t/customer_chat.md"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_l15f4w0vugkv05",
+    "entity": "order",
+    "amount": 149900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1711145688,
+    "customer_name": "Kavita Reddy",
+    "customer_email": "kavita.reddy@example.com",
+    "customer_phone": "+919871045700",
+    "shipping_address": "Flat 423, Sector 5, Mumbai, Maharashtra 400050",
+    "items": [
+      {
+        "name": "Monthly Cloud SaaS Subscription",
+        "quantity": 1,
+        "amount": 149900
+      }
+    ],
+    "tracking_number": "TRK-DT-79067939",
+    "delivered_at": 1711492180
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "other",
+    "available_evidence": [
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "Insufficient documentation to counter general dispute inquiry.",
+    "adversarial": {
+      "is_adversarial": true,
+      "adversarial_types": [
+        "card_number"
+      ],
+      "details": [
+        "Evidence document contains a card-number-like string."
+      ]
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0014_ts2h3t_1",
+      "doc_type": "customer_communication",
+      "file_name": "customer_chat.md",
+      "file_path": "disp_0014_ts2h3t/customer_chat.md",
+      "content": "# Customer Support Communication Record\n\n**Support Ticket:** TIK-05013  \n**Channel:** Razorpay Merchant Web Chat  \n**Customer Name:** Kavita Reddy  \n**Timestamp:** 2024-03-23 22:14:48 UTC  \n**Context Reference:** Order order_l15f4w0vugkv05  \n\n---\n**[2024-03-23 22:14:48 UTC] Kavita Reddy:** Hello, I am inquiring regarding my purchase order_l15f4w0vugkv05.\n**[2024-03-23 22:14:48 UTC] Support Agent (Kiran):** Welcome to customer support, Kavita Reddy. How may I help you today?\n**[2024-03-23 22:14:48 UTC] Kavita Reddy:** I see an unauthorized charge on my statement.\n**[2024-03-23 22:14:48 UTC] Support Agent (Kiran):** The transaction was authenticated via 3DS OTP sent to your registered mobile number.\n**[2024-03-23 22:14:48 UTC] Kavita Reddy:** Here are my card details if you need them: Payment Card: 4111 2222 3333 4448 (Visa Verified)\n**[2024-03-23 22:14:48 UTC] Support Agent (Kiran):** Please never share card numbers in chat for security reasons.\n\n---\n*Transcript archived by Merchant Customer Experience CRM.*\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 13
+  }
+}

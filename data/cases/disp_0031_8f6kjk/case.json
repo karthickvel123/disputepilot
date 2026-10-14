@@ -1,0 +1,98 @@
+{
+  "case_id": "disp_0031_8f6kjk",
+  "dispute": {
+    "id": "disp_0031_8f6kjk",
+    "entity": "dispute",
+    "payment_id": "pay_b58st4pzt3edk2",
+    "amount": 299900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "4837",
+    "phase": "retrieval",
+    "status": "open",
+    "respond_by": 1714274320,
+    "created_at": 1713547238,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [
+        "disp_0031_8f6kjk/invoice.md"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [
+        "disp_0031_8f6kjk/access_activity_log.md"
+      ],
+      "refund_cancellation_policy": [
+        "disp_0031_8f6kjk/cancellation_policy.md"
+      ],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_043nvjuuwzix69",
+    "entity": "order",
+    "amount": 299900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1712602558,
+    "customer_name": "Arjun Patel",
+    "customer_email": "arjun.patel@mail.in",
+    "customer_phone": "+919870343755",
+    "shipping_address": "Flat 245, Sector 2, Hyderabad, Telangana 500081",
+    "items": [
+      {
+        "name": "Wireless ANC Headphones Pro",
+        "quantity": 1,
+        "amount": 299900
+      }
+    ],
+    "tracking_number": "TRK-DT-92594562",
+    "delivered_at": 1712859012
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "unauthorised",
+    "available_evidence": [
+      "billing_proof",
+      "refund_cancellation_policy",
+      "access_activity_log"
+    ],
+    "winnable": true,
+    "rule_explanation": "3D-Secure authentication logs match cardholder details with verified delivery/activity.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0031_8f6kjk_1",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.md",
+      "file_path": "disp_0031_8f6kjk/invoice.md",
+      "content": "# TAX INVOICE\n\n**Invoice Number:** INV-2024-01030  \n**Invoice Date:** 2024-04-08 18:55:58 UTC  \n**Order Reference:** order_043nvjuuwzix69  \n**Payment ID:** pay_b58st4pzt3edk2  \n\n### Merchant Details:\n**Seller:** Apex Retail Solutions Private Limited  \n**GSTIN:** 29AABCA1234F1Z5  \n**State:** Karnataka (Code 29)  \n**Registered Address:** Outer Ring Road, Bellandur, Bengaluru, Karnataka 560103  \n\n### Customer Details:\n**Billed To:** Arjun Patel  \n**Address:** Flat 245, Sector 2, Hyderabad, Telangana 500081  \n**Email:** arjun.patel@mail.in  \n**Phone:** +919870343755  \n\n### Itemized Particulars:\n| Description | HSN | Qty | Unit Price | Tax Rate | Total Amount |\n| --- | --- | --- | --- | --- | --- |\n| Wireless ANC Headphones Pro | 8471 | 1 | INR 2999.00 | 18% | INR 2999.00 |\n\n**Grand Total:** INR 2999.00 (299900 paise)  \n**Payment Method:** Razorpay Checkout (3D-Secure 2.0 Authenticated)  \n**Transaction Reference:** pay_b58st4pzt3edk2  \n\n---\n*Authorized Signatory for Apex Retail Solutions Private Limited.*\n"
+    },
+    {
+      "doc_id": "doc_0031_8f6kjk_2",
+      "doc_type": "refund_cancellation_policy",
+      "file_name": "cancellation_policy.md",
+      "file_path": "disp_0031_8f6kjk/cancellation_policy.md",
+      "content": "# Apex Retail Solutions Private Limited \u2014 Terms of Sale, Cancellation & Refund Policy\n\n**Document Reference:** TOS-POL-2024-V2  \n**Effective Date:** 2024-01-01  \n**Public Policy URL:** https://apexsolutions.example.in/terms-and-policies  \n\n### 1. Order Cancellation Policy\nCustomers may cancel orders within 2 hours of payment or before the consignment is marked as 'Dispatched'. Once dispatched with our logistics partners, transit cancellation cannot be executed.\n\n### 2. Returns and Defect Reporting\n- Return requests must be lodged within 7 calendar days of verified courier delivery.\n- Goods must be returned in unblemished original packaging with intact security seals.\n- Defective or variant discrepancies must include unboxing photographs submitted within 48 hours of receipt.\n\n### 3. Subscription Cancellations\n- Subscription renewals auto-debit on the anniversary date.\n- Cancellation requests must be logged at least 48 hours prior to the next billing cycle.\n- Continued usage or access to merchant software/services after billing constitutes acceptance of the billing cycle.\n\n### 4. Dispute Escalation & Refund SLA\n- Approved refunds are routed directly through Razorpay to the originating payment instrument within 5\u20137 banking days.\n- A valid Acquirer Reference Number (ARN) will be provided upon processing.\n"
+    },
+    {
+      "doc_id": "doc_0031_8f6kjk_3",
+      "doc_type": "access_activity_log",
+      "file_name": "access_activity_log.md",
+      "file_path": "disp_0031_8f6kjk/access_activity_log.md",
+      "content": "# Digital Service Access & Activity Log\n\n**User Name:** Arjun Patel  \n**User Email:** arjun.patel@mail.in  \n**Payment Reference:** pay_b58st4pzt3edk2  \n**Status:** ACTIVE_USER  \n\n### Audit Trail:\n| Timestamp | Event | IP Address | User Agent | Status |\n| --- | --- | --- | --- | --- |\n| 2024-04-09 18:55:58 UTC | LOGIN_SUCCESS | IP: 103.21.124.9 | Device: Chrome/Windows 11 | Session Verified |\n| 2024-04-10 18:55:58 UTC | LOGIN_SUCCESS | IP: 103.21.124.9 | Device: Chrome/Windows 11 | Session Verified |\n| 2024-04-11 18:55:58 UTC | LOGIN_SUCCESS | IP: 103.21.124.9 | Device: Chrome/Windows 11 | Session Verified |\n| 2024-04-12 18:55:58 UTC | LOGIN_SUCCESS | IP: 103.21.124.9 | Device: Chrome/Windows 11 | Session Verified |\n\n---\n*Cryptographically hashed access ledger verified by Cloud Access Manager.*\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 30
+  }
+}

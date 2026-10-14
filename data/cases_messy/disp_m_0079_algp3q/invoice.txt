@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5078
+**Date:** 27.05.2024
+**Customer:** Rohan Gupta
+**Address:** House No 89, Gali 4, Laxmi Nagar, Delhi 92
+**Item:** USB-C Fast Charging Hub 100W (Qty: 2)
+**Amount Total:** Rs. 3798.00
+**Payment Ref:** order_d55xbdh9y2t6
+*Computer generated voucher. Signature not needed.*

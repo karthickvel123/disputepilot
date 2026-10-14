@@ -1,0 +1,78 @@
+{
+  "case_id": "disp_0010_00v830",
+  "dispute": {
+    "id": "disp_0010_00v830",
+    "entity": "dispute",
+    "payment_id": "pay_wty088o5or15by",
+    "amount": 1799900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "10.4",
+    "phase": "retrieval",
+    "status": "open",
+    "respond_by": 1712563827,
+    "created_at": 1711873214,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_0010_00v830/customer_chat.md"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_vzk3i8bzbf1i3l",
+    "entity": "order",
+    "amount": 1799900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1710784495,
+    "customer_name": "Ananya Rao",
+    "customer_email": "ananya.rao@mail.in",
+    "customer_phone": "+919853868501",
+    "shipping_address": "Flat 489, Sector 5, Pune, Maharashtra 411014",
+    "items": [
+      {
+        "name": "4K HDR Computer Monitor 27in",
+        "quantity": 1,
+        "amount": 1799900
+      }
+    ],
+    "tracking_number": "TRK-BD-73123515",
+    "delivered_at": 1711025493
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "unauthorised",
+    "available_evidence": [
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "Missing 3DS authentication records or delivery link to cardholder.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0010_00v830_1",
+      "doc_type": "customer_communication",
+      "file_name": "customer_chat.md",
+      "file_path": "disp_0010_00v830/customer_chat.md",
+      "content": "# Customer Support Communication Record\n\n**Support Ticket:** TIK-05009  \n**Channel:** Razorpay Merchant Web Chat  \n**Customer Name:** Ananya Rao  \n**Timestamp:** 2024-03-19 17:54:55 UTC  \n**Context Reference:** Order order_vzk3i8bzbf1i3l  \n\n---\n**[2024-03-19 17:54:55 UTC] Ananya Rao:** Hello, I am inquiring regarding my purchase order_vzk3i8bzbf1i3l.\n**[2024-03-19 17:54:55 UTC] Support Agent (Kiran):** Welcome to customer support, Ananya Rao. How may I help you today?\n**[2024-03-19 17:54:55 UTC] Ananya Rao:** I see an unauthorized charge on my statement.\n**[2024-03-19 17:54:55 UTC] Support Agent (Kiran):** The transaction was authenticated via 3DS OTP sent to your registered mobile number.\n\n---\n*Transcript archived by Merchant Customer Experience CRM.*\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 9
+  }
+}

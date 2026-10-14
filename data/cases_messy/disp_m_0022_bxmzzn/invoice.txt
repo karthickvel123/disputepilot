@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5021
+**Date:** 30th Mar 2024, 10:29 PM
+**Customer:** Priya Sharma
+**Address:** Plot 12, Behind Silk Board, Outer Ring Rd, BLR 103
+**Item:** Monthly Cloud SaaS Subscription (Qty: 2)
+**Amount Total:** Rs. 2998.00
+**Payment Ref:** order_6kjwsk7kegy5
+*Computer generated voucher. Signature not needed.*

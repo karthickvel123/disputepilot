@@ -1,0 +1,98 @@
+{
+  "case_id": "disp_0143_a46jzo",
+  "dispute": {
+    "id": "disp_0143_a46jzo",
+    "entity": "dispute",
+    "payment_id": "pay_vfum10n229bxii",
+    "amount": 1799900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "INR_104",
+    "phase": "pre_arbitration",
+    "status": "open",
+    "respond_by": 1724851959,
+    "created_at": 1723997431,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [
+        "disp_0143_a46jzo/invoice.md"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_0143_a46jzo/customer_chat.md"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [
+        "disp_0143_a46jzo/access_activity_log.md"
+      ],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_ta5wvo01z8tubc",
+    "entity": "order",
+    "amount": 1799900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1722281518,
+    "customer_name": "Deepika Nair",
+    "customer_email": "deepika.nair@webmail.in",
+    "customer_phone": "+919894535600",
+    "shipping_address": "Flat 491, Sector 4, Kolkata, West Bengal 700016",
+    "items": [
+      {
+        "name": "4K HDR Computer Monitor 27in",
+        "quantity": 1,
+        "amount": 1799900
+      }
+    ],
+    "tracking_number": "TRK-DT-35278389",
+    "delivered_at": 1722494607
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "unauthorised",
+    "available_evidence": [
+      "billing_proof",
+      "customer_communication",
+      "access_activity_log"
+    ],
+    "winnable": true,
+    "rule_explanation": "3D-Secure authentication logs match cardholder details with verified delivery/activity.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0143_a46jzo_1",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.md",
+      "file_path": "disp_0143_a46jzo/invoice.md",
+      "content": "# TAX INVOICE\n\n**Invoice Number:** INV-2024-01142  \n**Invoice Date:** 2024-07-29 19:31:58 UTC  \n**Order Reference:** order_ta5wvo01z8tubc  \n**Payment ID:** pay_vfum10n229bxii  \n\n### Merchant Details:\n**Seller:** Apex Retail Solutions Private Limited  \n**GSTIN:** 29AABCA1234F1Z5  \n**State:** Karnataka (Code 29)  \n**Registered Address:** Outer Ring Road, Bellandur, Bengaluru, Karnataka 560103  \n\n### Customer Details:\n**Billed To:** Deepika Nair  \n**Address:** Flat 491, Sector 4, Kolkata, West Bengal 700016  \n**Email:** deepika.nair@webmail.in  \n**Phone:** +919894535600  \n\n### Itemized Particulars:\n| Description | HSN | Qty | Unit Price | Tax Rate | Total Amount |\n| --- | --- | --- | --- | --- | --- |\n| 4K HDR Computer Monitor 27in | 8471 | 1 | INR 17999.00 | 18% | INR 17999.00 |\n\n**Grand Total:** INR 17999.00 (1799900 paise)  \n**Payment Method:** Razorpay Checkout (3D-Secure 2.0 Authenticated)  \n**Transaction Reference:** pay_vfum10n229bxii  \n\n---\n*Authorized Signatory for Apex Retail Solutions Private Limited.*\n"
+    },
+    {
+      "doc_id": "doc_0143_a46jzo_2",
+      "doc_type": "customer_communication",
+      "file_name": "customer_chat.md",
+      "file_path": "disp_0143_a46jzo/customer_chat.md",
+      "content": "# Customer Support Communication Record\n\n**Support Ticket:** TIK-05142  \n**Channel:** Razorpay Merchant Web Chat  \n**Customer Name:** Deepika Nair  \n**Timestamp:** 2024-07-30 19:31:58 UTC  \n**Context Reference:** Order order_ta5wvo01z8tubc  \n\n---\n**[2024-07-30 19:31:58 UTC] Deepika Nair:** Hello, I am inquiring regarding my purchase order_ta5wvo01z8tubc.\n**[2024-07-30 19:31:58 UTC] Support Agent (Kiran):** Welcome to customer support, Deepika Nair. How may I help you today?\n**[2024-07-30 19:31:58 UTC] Deepika Nair:** I see an unauthorized charge on my statement.\n**[2024-07-30 19:31:58 UTC] Support Agent (Kiran):** The transaction was authenticated via 3DS OTP sent to your registered mobile number.\n\n---\n*Transcript archived by Merchant Customer Experience CRM.*\n"
+    },
+    {
+      "doc_id": "doc_0143_a46jzo_3",
+      "doc_type": "access_activity_log",
+      "file_name": "access_activity_log.md",
+      "file_path": "disp_0143_a46jzo/access_activity_log.md",
+      "content": "# Digital Service Access & Activity Log\n\n**User Name:** Deepika Nair  \n**User Email:** deepika.nair@webmail.in  \n**Payment Reference:** pay_vfum10n229bxii  \n**Status:** ACTIVE_USER  \n\n### Audit Trail:\n| Timestamp | Event | IP Address | User Agent | Status |\n| --- | --- | --- | --- | --- |\n| 2024-07-30 19:31:58 UTC | LOGIN_SUCCESS | IP: 103.21.124.9 | Device: Chrome/Windows 11 | Session Verified |\n| 2024-07-31 19:31:58 UTC | LOGIN_SUCCESS | IP: 103.21.124.9 | Device: Chrome/Windows 11 | Session Verified |\n| 2024-08-01 19:31:58 UTC | LOGIN_SUCCESS | IP: 103.21.124.9 | Device: Chrome/Windows 11 | Session Verified |\n| 2024-08-02 19:31:58 UTC | LOGIN_SUCCESS | IP: 103.21.124.9 | Device: Chrome/Windows 11 | Session Verified |\n\n---\n*Cryptographically hashed access ledger verified by Cloud Access Manager.*\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 142
+  }
+}

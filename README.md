@@ -139,5 +139,3 @@ Before connecting DisputePilot to live Razorpay webhooks:
 - **[5-Minute Demo Walkthrough Script](file:///c:/Users/Karthick%20Vel/Downloads/razorpay%20problem/DEMO.md)**
 - **[Evaluation Report & Calibration](file:///c:/Users/Karthick%20Vel/Downloads/razorpay%20problem/evals/report.md)**
 - **[Development & Phase Progress Log](file:///c:/Users/Karthick%20Vel/Downloads/razorpay%20problem/PROGRESS.md)**
-#   d i s p u t e p i l o t  
- 

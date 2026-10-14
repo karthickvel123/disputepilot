@@ -1,0 +1,78 @@
+{
+  "case_id": "disp_0086_gcy57q",
+  "dispute": {
+    "id": "disp_0086_gcy57q",
+    "entity": "dispute",
+    "payment_id": "pay_3dx90xdr7ceten",
+    "amount": 1799800,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "INR_103",
+    "phase": "retrieval",
+    "status": "open",
+    "respond_by": 1719471302,
+    "created_at": 1718715360,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_0086_gcy57q/customer_chat.md"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_7ggo8ymm7pl990",
+    "entity": "order",
+    "amount": 1799800,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1717354514,
+    "customer_name": "Deepika Nair",
+    "customer_email": "deepika.nair@webmail.in",
+    "customer_phone": "+919871568435",
+    "shipping_address": "Flat 207, Sector 3, Kolkata, West Bengal 700016",
+    "items": [
+      {
+        "name": "Ergonomic Mesh Office Chair",
+        "quantity": 2,
+        "amount": 899900
+      }
+    ],
+    "tracking_number": "TRK-SF-98252435",
+    "delivered_at": 1717728190
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "not_as_described",
+    "available_evidence": [
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "Insufficient evidence proving product specifications and customer adherence to return terms.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0086_gcy57q_1",
+      "doc_type": "customer_communication",
+      "file_name": "customer_chat.md",
+      "file_path": "disp_0086_gcy57q/customer_chat.md",
+      "content": "# Customer Support Communication Record\n\n**Support Ticket:** TIK-05085  \n**Channel:** Razorpay Merchant Web Chat  \n**Customer Name:** Deepika Nair  \n**Timestamp:** 2024-06-03 18:55:14 UTC  \n**Context Reference:** Order order_7ggo8ymm7pl990  \n\n---\n**[2024-06-03 18:55:14 UTC] Deepika Nair:** Hello, I am inquiring regarding my purchase order_7ggo8ymm7pl990.\n**[2024-06-03 18:55:14 UTC] Support Agent (Kiran):** Welcome to customer support, Deepika Nair. How may I help you today?\n**[2024-06-03 18:55:14 UTC] Deepika Nair:** The item delivered doesn't match the specifications on your catalog.\n**[2024-06-03 18:55:14 UTC] Support Agent (Kiran):** We checked your invoice specifications; the product delivered is the exact SKU ordered under our standard 7-day exchange policy.\n\n---\n*Transcript archived by Merchant Customer Experience CRM.*\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 85
+  }
+}

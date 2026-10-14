@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5068
+**Date:** 17.05.2024
+**Customer:** Ananya Rao
+**Address:** Flat 301, Gera Emerald, Kharadi, Pune 411014
+**Item:** Smart Fitness Watch v3 (Qty: 1)
+**Amount Total:** Rs. 3499.00
+**Payment Ref:** order_7vyqb9maqdlt
+*Computer generated voucher. Signature not needed.*

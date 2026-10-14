@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Dispute Worklist{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-title">
+    <h2>Dispute Triage Worklist</h2>
+    <span class="badge badge-info">{{ items|length }} Active Disputes</span>
+  </div>
+  <p class="disclaimer-text">Ranked deterministically by Priority = (Amount &times; p_win) / Effort. Calibrated on synthetic data.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Rank</th>
+        <th>Case ID</th>
+        <th>Dispute ID</th>
+        <th>Amount</th>
+        <th>Urgency</th>
+        <th>Reason Class</th>
+        <th>Recommendation</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in items %}
+      <tr>
+        <td><strong>#{{ loop.index }}</strong></td>
+        <td><code>{{ item.case_id }}</code></td>
+        <td>{{ item.dispute_id }}</td>
+        <td><strong>₹{{ "%.2f"|format(item.amount / 100) }}</strong> <small class="text-muted">({{ item.amount }}p)</small></td>
+        <td>
+          {% set urg = item.urgency.value if item.urgency.value is defined else item.urgency %}
+          <span class="badge badge-{{ urg }}">
+            {{ urg }} ({{ "%.1f"|format(item.hours_remaining) }}h)
+          </span>
+        </td>
+        <td>{{ item.reason_class }}</td>
+        <td>
+          {% set dec = item.recommendation.decision.value if item.recommendation.decision.value is defined else item.recommendation.decision %}
+          <span class="badge badge-{{ dec }}">
+            {{ dec }}
+          </span>
+          {% if item.recommendation.is_uncertain %}
+          <small class="badge badge-uncertain">Uncertain</small>
+          {% endif %}
+        </td>
+        <td>
+          <a href="/cases/{{ item.case_id }}" class="btn">Review</a>
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="8" style="text-align: center; padding: 2rem;">No disputes found in worklist.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

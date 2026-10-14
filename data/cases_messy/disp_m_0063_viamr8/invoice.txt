@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5062
+**Date:** 10-May-24
+**Customer:** Arjun Patel
+**Address:** House No 89, Gali 4, Laxmi Nagar, Delhi 92
+**Item:** Monthly Cloud SaaS Subscription (Qty: 2)
+**Amount Total:** Rs. 2998.00
+**Payment Ref:** order_q3abuud0vkfb
+*Computer generated voucher. Signature not needed.*

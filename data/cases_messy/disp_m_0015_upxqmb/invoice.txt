@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5014
+**Date:** 23rd of March around 06 PM
+**Customer:** Neha Kulkarni
+**Address:** Plot 12, Behind Silk Board, Outer Ring Rd, BLR 103
+**Item:** USB-C Fast Charging Hub 100W (Qty: 2)
+**Amount Total:** Rs. 3798.00
+**Payment Ref:** order_pyz21tbic145
+*Computer generated voucher. Signature not needed.*

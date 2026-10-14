@@ -1,0 +1,89 @@
+{
+  "case_id": "disp_m_0077_7veemd",
+  "dispute": {
+    "id": "disp_m_0077_7veemd",
+    "entity": "dispute",
+    "payment_id": "pay_5iqtd3k1y6t8",
+    "amount": 1799900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "want audit clarification from merchant finance department",
+    "phase": "pre_arbitration",
+    "status": "open",
+    "respond_by": 1718305978,
+    "created_at": 1717594685,
+    "evidence": {
+      "shipping_proof": [
+        "disp_m_0077_7veemd/delivery_slip.md"
+      ],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [
+        "disp_m_0077_7veemd/policy.txt"
+      ],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_heqopm39p5dz",
+    "entity": "order",
+    "amount": 1799900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1716592455,
+    "customer_name": "Arjun Patel",
+    "customer_email": "arjun_patel@gmail.com",
+    "customer_phone": "+918802363623",
+    "shipping_address": "Flat 780, Sector 10, New Delhi, Delhi 110001",
+    "items": [
+      {
+        "name": "4K HDR Computer Monitor 27in",
+        "quantity": 1,
+        "amount": 1799900
+      }
+    ],
+    "tracking_number": "AWB-50328427",
+    "delivered_at": 1716981725
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "other",
+    "available_evidence": [
+      "shipping_proof",
+      "refund_cancellation_policy"
+    ],
+    "winnable": false,
+    "rule_explanation": "Insufficient documentation to counter general dispute inquiry.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0077_7veemd_doc_pod",
+      "doc_type": "shipping_proof",
+      "file_name": "delivery_slip.md",
+      "file_path": "disp_m_0077_7veemd/delivery_slip.md",
+      "content": "# Courier Handover Sheet\nCourier: Bluedart Express Courier\nDocket Number: AWB-50328427\nDelivered To: Arjun Patel\nDelivery Location: 12A Barakhamba Road, Connaught Place, New Delhi 110001\nHandover Time: 29-May-24\nReceived By: Self / Family member\nOTP Status: Verified electronically on driver handset\n\nStatus: COMPLETE_DELIVERY\n"
+    },
+    {
+      "doc_id": "disp_m_0077_7veemd_doc_pol",
+      "doc_type": "refund_cancellation_policy",
+      "file_name": "policy.txt",
+      "file_path": "disp_m_0077_7veemd/policy.txt",
+      "content": "# Terms of Service & Returns\nReturn Window: Return request must be registered within 7 calendar days.\nCancellation: Free cancellation before consignment dispatch only.\nAuto Renewals: Subscription renewals recur monthly unless paused 48 hours prior.\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 76,
+    "mode": "messy"
+  }
+}

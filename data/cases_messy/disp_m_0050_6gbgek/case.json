@@ -1,0 +1,79 @@
+{
+  "case_id": "disp_m_0050_6gbgek",
+  "dispute": {
+    "id": "disp_m_0050_6gbgek",
+    "entity": "dispute",
+    "payment_id": "pay_ujpwrkcrgewm",
+    "amount": 899900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "samaan nahi mila abhi tak parcel gayab",
+    "phase": "retrieval",
+    "status": "open",
+    "respond_by": 1716296815,
+    "created_at": 1715467957,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_m_0050_6gbgek/chat_transcript.txt"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_2ybdozc2dppo",
+    "entity": "order",
+    "amount": 899900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1714247646,
+    "customer_name": "Rohan Gupta",
+    "customer_email": "",
+    "customer_phone": "+916026471339",
+    "shipping_address": "Flat 411, Sector 7, Pune, Maharashtra 411014",
+    "items": [
+      {
+        "name": "Ergonomic Mesh Office Chair",
+        "quantity": 1,
+        "amount": 899900
+      }
+    ],
+    "tracking_number": "AWB-42605224",
+    "delivered_at": 1714664455
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "item_not_received",
+    "available_evidence": [
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "Missing courier proof of delivery or fulfillment unverified before dispute inception.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0050_6gbgek_doc_chat",
+      "doc_type": "customer_communication",
+      "file_name": "chat_transcript.txt",
+      "file_path": "disp_m_0050_6gbgek/chat_transcript.txt",
+      "content": "--- Chat Conversation Log ---\nDate: 28th Apr 2024, 07:54 PM\nUser: Rohan Gupta\nAgent: Support Team (Harish)\n\n[User]: Hello sir, package track nahi ho raha hai theek se.\n[Agent]: Checking your consignment AWB-42605224. Please note tracking updates within 24h.\n[User]: Ok sending alternate address: Flat 301, Gera Emerald, Kharadi, Pune 411014. Please expedite.\n[Agent]: Noted sir. Have escalated to courier partner.\n\n--- Log Closed ---\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 49,
+    "mode": "messy"
+  }
+}

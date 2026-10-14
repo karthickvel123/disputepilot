@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5042
+**Date:** 21-Apr-24
+**Customer:** Rohan Gupta
+**Address:** Plot 12, Behind Silk Board, Outer Ring Rd, BLR 103
+**Item:** Mechanical Gaming Keyboard (Qty: 1)
+**Amount Total:** Rs. 4500.00
+**Payment Ref:** order_w727ehwpuyds
+*Computer generated voucher. Signature not needed.*
