@@ -20,16 +20,34 @@ uv --version
 # 2. Sync project dependencies
 uv sync
 
-# 3. Run the complete test suite (89 tests passing)
+# 3. Regenerate synthetic dispute datasets (clean + messy)
+make sim
+# Or on Windows (without make):
+uv run python -m disputepilot.sim.generate --n 150 --out data/cases
+uv run python -m disputepilot.sim.generate --messy --n 100 --seed 7 --out data/cases_messy
+
+# 4. Run the complete test suite (89 tests passing, offline)
 make test
+# Or on Windows (without make):
+uv run pytest
 
-# 4. Run the code linter
+# 5. Run the code linter
 make lint
+# Or on Windows (without make):
+uv run ruff check .
 
-# 5. Launch the merchant defense web console
+# 6. Run the empirical benchmark evaluation
+make eval
+# Or on Windows (without make):
+uv run python -m disputepilot.evals.runner
+
+# 7. Launch the merchant defense web console
 make run
+# Or on Windows (without make):
+uv run uvicorn disputepilot.web:app --reload
 ```
 *Console will be live at: [http://127.0.0.1:8000/](http://127.0.0.1:8000/)*
+
 
 ---
 
@@ -57,10 +75,10 @@ flowchart TD
 
 | Safety Principle | Implementation Guarantee | Enforced In Code |
 | :--- | :--- | :--- |
-| **1. Strict Human Approval** | Nothing is submitted or accepted without a single-use human approval token cryptographically bound to the SHA-256 hash of the exact payload. | [`src/disputepilot/razorpay/approval.py`](file:///c:/Users/Karthick%20Vel/Downloads/razorpay%20problem/src/disputepilot/razorpay/approval.py), [`src/disputepilot/razorpay/gateway.py`](file:///c:/Users/Karthick%20Vel/Downloads/razorpay%20problem/src/disputepilot/razorpay/gateway.py) |
-| **2. Zero Hallucinations** | Every drafted claim must cite verified fact IDs. The verifier deterministically strips any sentence with ungrounded numbers, dates, or IDs. | [`src/disputepilot/drafting/verifier.py`](file:///c:/Users/Karthick%20Vel/Downloads/razorpay%20problem/src/disputepilot/drafting/verifier.py), [`src/disputepilot/drafting/facts.py`](file:///c:/Users/Karthick%20Vel/Downloads/razorpay%20problem/src/disputepilot/drafting/facts.py) |
-| **3. Bounded Read-Only Agent** | Evidence audit agent has zero mutation permissions and operates within a strict 8-step budget with loop detection. | [`src/disputepilot/agent/orchestrator.py`](file:///c:/Users/Karthick%20Vel/Downloads/razorpay%20problem/src/disputepilot/agent/orchestrator.py), [`src/disputepilot/agent/tools.py`](file:///c:/Users/Karthick%20Vel/Downloads/razorpay%20problem/src/disputepilot/agent/tools.py) |
-| **4. PCI-DSS & Privacy Shield** | Card numbers validated via Luhn checksum and redacted immediately; PAN/Aadhaar discarded permanently; PII tokenized with 24h TTL. | [`src/disputepilot/safety/card_scanner.py`](file:///c:/Users/Karthick%20Vel/Downloads/razorpay%20problem/src/disputepilot/safety/card_scanner.py), [`src/disputepilot/safety/pii.py`](file:///c:/Users/Karthick%20Vel/Downloads/razorpay%20problem/src/disputepilot/safety/pii.py), [`src/disputepilot/safety/untrusted.py`](file:///c:/Users/Karthick%20Vel/Downloads/razorpay%20problem/src/disputepilot/safety/untrusted.py) |
+| **1. Strict Human Approval** | Nothing is submitted or accepted without a single-use human approval token cryptographically bound to the SHA-256 hash of the exact payload. | [`src/disputepilot/razorpay/approval.py`](src/disputepilot/razorpay/approval.py), [`src/disputepilot/razorpay/gateway.py`](src/disputepilot/razorpay/gateway.py) |
+| **2. Zero Hallucinations** | Every drafted claim must cite verified fact IDs. The verifier deterministically strips any sentence with ungrounded numbers, dates, or IDs. | [`src/disputepilot/drafting/verifier.py`](src/disputepilot/drafting/verifier.py), [`src/disputepilot/drafting/facts.py`](src/disputepilot/drafting/facts.py) |
+| **3. Bounded Read-Only Agent** | Evidence audit agent has zero mutation permissions and operates within a strict 8-step budget with loop detection. | [`src/disputepilot/agent/orchestrator.py`](src/disputepilot/agent/orchestrator.py), [`src/disputepilot/agent/tools.py`](src/disputepilot/agent/tools.py) |
+| **4. PCI-DSS & Privacy Shield** | Card numbers validated via Luhn checksum and redacted immediately; PAN/Aadhaar discarded permanently; PII tokenized with 24h TTL. | [`src/disputepilot/safety/card_scanner.py`](src/disputepilot/safety/card_scanner.py), [`src/disputepilot/safety/pii.py`](src/disputepilot/safety/pii.py), [`src/disputepilot/safety/untrusted.py`](src/disputepilot/safety/untrusted.py) |
 
 ---
 
@@ -75,7 +93,7 @@ flowchart TD
 
 ## 📊 Empirical Evaluation Results
 
-Run evaluation anytime with `make eval` (generates [`evals/report.md`](file:///c:/Users/Karthick%20Vel/Downloads/razorpay%20problem/evals/report.md) and [`evals/results.json`](file:///c:/Users/Karthick%20Vel/Downloads/razorpay%20problem/evals/results.json)):
+Run evaluation anytime with `make eval` (or on Windows: `uv run python -m disputepilot.evals.runner`) (generates [`evals/report.md`](evals/report.md) and [`evals/results.json`](evals/results.json)):
 
 ### Results Summary Table
 
@@ -107,14 +125,16 @@ Run evaluation anytime with `make eval` (generates [`evals/report.md`](file:///c
 
 ### Appendix: FakeLLMClient Baseline (fake client written by the same author as the test generator; sanity check only)
 
-Offline test mode runs `FakeLLMClient`, a regex and keyword matching harness written by the author of the simulator. It directly checks for vocabulary found in `sim/messy.py` (e.g. `"parcel gayab"`, `"dusra maal"`, `"maine koi payment nahi kiya"`). Because it uses the generator's exact test vocabulary, its metrics are an offline wiring sanity check only and are omitted from all headline and summary tables. Full per-class tables and calibration are documented in the appendix of [`evals/report.md`](file:///c:/Users/Karthick%20Vel/Downloads/razorpay%20problem/evals/report.md).
+Offline test mode runs `FakeLLMClient`, a regex and keyword matching harness written by the author of the simulator. It directly checks for vocabulary found in `sim/messy.py` (e.g. `"parcel gayab"`, `"dusra maal"`, `"maine koi payment nahi kiya"`). Because it uses the generator's exact test vocabulary, its metrics are an offline wiring sanity check only and are omitted from all headline and summary tables. Full per-class tables and calibration are documented in the appendix of [`evals/report.md`](evals/report.md).
 
 ---
 
 ## ⚠️ Limitations
 
-- **Reviewer Authentication**: The reviewer name in the submission workflow is typed by the operator, not authenticated via SSO or corporate identity providers.
-- **SQLite Storage**: State management, webhook event deduplication, and audit logging use local SQLite databases (`data/*.db`), which are not suitable for concurrent multi-instance production deployments.
+- **Reviewer Authentication**: Reviewer name is typed, not authenticated via SSO or corporate identity providers.
+- **No CSRF Protection**: Web endpoints currently lack Cross-Site Request Forgery (CSRF) tokens on form submissions.
+- **UI Confirmation Dependency**: Approval relies on a confirmation step in the UI where the operator reviews the bound payload and approval token before dispatch.
+- **SQLite Only**: State management, webhook event deduplication, and audit logging use local SQLite databases only (`data/*.db`), which are not suitable for concurrent multi-instance production deployments.
 - **Synthetic Data Only**: All datasets and benchmarks are synthetic, produced by the dispute simulator. They model Razorpay schemas but do not represent live bank or merchant data.
 - **Heuristic Recommendation**: The recommendation engine is a rule-based heuristic with configured weights and priors, not a machine learning model trained on real dispute outcomes.
 - **Real LLM and Razorpay Paths**: The live Razorpay API gateway and Gemini LLM client paths are verified only as far as explicitly stated in the evaluation report, and run offline in default test/simulation mode with a fake regex baseline, not a model result.
@@ -135,7 +155,8 @@ Before connecting DisputePilot to live Razorpay webhooks:
 
 ## 📖 Further Documentation
 
-- **[System Architecture (1-Page Deep Dive)](file:///c:/Users/Karthick%20Vel/Downloads/razorpay%20problem/docs/ARCHITECTURE.md)**
-- **[5-Minute Demo Walkthrough Script](file:///c:/Users/Karthick%20Vel/Downloads/razorpay%20problem/DEMO.md)**
-- **[Evaluation Report & Calibration](file:///c:/Users/Karthick%20Vel/Downloads/razorpay%20problem/evals/report.md)**
-- **[Development & Phase Progress Log](file:///c:/Users/Karthick%20Vel/Downloads/razorpay%20problem/PROGRESS.md)**
+- **[System Architecture (1-Page Deep Dive)](docs/ARCHITECTURE.md)**
+- **[5-Minute Demo Walkthrough Script](DEMO.md)**
+- **[Evaluation Report & Calibration](evals/report.md)**
+- **[Development & Phase Progress Log](PROGRESS.md)**
+

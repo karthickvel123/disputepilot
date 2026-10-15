@@ -58,6 +58,25 @@ def compute_entry_hash(
     return hashlib.sha256(payload_str.encode("utf-8")).hexdigest()
 
 
+def _sanitize_audit_details(val: Any) -> Any:
+    """Ensure raw approval tokens are never persisted in plaintext in audit logs."""
+    if isinstance(val, dict):
+        cleaned: dict[str, Any] = {}
+        for k, v in val.items():
+            if k == "approval_token":
+                raw_str = str(v)
+                token_hash = hashlib.sha256(raw_str.encode("utf-8")).hexdigest()
+                cleaned["approval_token_hash"] = token_hash
+            else:
+                cleaned[k] = _sanitize_audit_details(v)
+        return cleaned
+    if isinstance(val, list):
+        return [_sanitize_audit_details(item) for item in val]
+    if isinstance(val, str) and val.startswith("appr_"):
+        return hashlib.sha256(val.encode("utf-8")).hexdigest()
+    return val
+
+
 def record_audit_event(
     case_id: str,
     action: str,
@@ -84,7 +103,7 @@ def record_audit_event(
     """
     init_audit_db(db_path)
     current_time = int(time.time()) if timestamp is None else int(timestamp)
-    details_dict = details or {}
+    details_dict = _sanitize_audit_details(details or {})
     details_json = json.dumps(details_dict, sort_keys=True)
     payload_hash = compute_hash(details_dict)
 

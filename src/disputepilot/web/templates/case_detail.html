@@ -283,7 +283,7 @@
       <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
         Review the submission payload, generate a cryptographically bound approval token, and submit the rebuttal to Razorpay.
       </p>
-      <form action="/cases/{{ case.case_id }}/confirm-submit" method="get">
+      <form action="/cases/{{ case.case_id }}/review" method="post">
         <div class="form-group">
           <label for="approver_contest">Reviewer Name (Required):</label>
           <input type="text" id="approver_contest" name="reviewer_name" placeholder="e.g. Priya Sharma (Compliance)" required>

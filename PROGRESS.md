@@ -216,6 +216,29 @@ This document tracks implementation progress across all development phases.
   - `uv run ruff check .`: Clean, 0 errors.
   - `uv run python -m disputepilot.evals.runner --real-llm`: Clean execution, generated report and results.
 
+### Phase L: Approval Token POST Issuance, Audit Hashing, & Documentation Hygiene
+- **1. Relative Links & Local Path Scrubbing**:
+  - Replaced all local `file:///c:/...` absolute links across `README.md` with repository-relative paths (`src/...`, `docs/...`, `evals/...`).
+  - Verified 0 occurrences of `file:///` or user-specific paths across all markdown files in the repository.
+- **2. Approval Token Issuance via POST**:
+  - Updated `src/disputepilot/web/app.py` so human approval tokens are issued strictly via `POST /cases/{case_id}/review` (with `POST /cases/{case_id}/confirm-submit` alias).
+  - Replaced GET routes with POST routes so GET requests to `/review` or `/confirm-submit` return `405 Method Not Allowed`, preventing token generation or side effects via browser prefetching.
+  - Updated `src/disputepilot/web/templates/case_detail.html` to POST reviewer name to `/cases/{{ case.case_id }}/review`.
+  - Updated web test suite in `tests/test_web.py` to verify POST issuance and assert that GET returns 405.
+- **3. Audit Log Token Hashing**:
+  - Updated `src/disputepilot/pipeline/audit.py` to sanitize audit event details so that any approval token (key `"approval_token"` or prefix `"appr_"`) is hashed via SHA-256 (`approval_token_hash`), ensuring the raw approval token is never stored in plaintext in the SQLite audit log.
+  - Updated `src/disputepilot/web/app.py` contest and accept action handlers to log only `approval_token_hash`.
+  - Added unit test `test_audit_records_only_hash_of_approval_token_never_raw_token` in `tests/test_pipeline.py`.
+- **4. Limitations Documentation in README**:
+  - Explicitly documented in `README.md`: reviewer name is typed and not authenticated via SSO/OIDC, no CSRF protection on forms, approval relies on a confirmation step in the UI, and SQLite storage only.
+- **5. Makefile & Windows Command Equivalents**:
+  - Added `sim` target to `Makefile` to regenerate `data/cases` (150 clean cases) and `data/cases_messy` (100 messy cases).
+  - Listed plain `uv run ...` equivalents for Windows without `make` across README Quickstart and evaluation sections.
+- **6. Verification**:
+  - `uv run pytest`: 91 passed in 3.6s.
+  - `uv run ruff check .`: All checks passed, 0 errors.
+
+
 
 
 

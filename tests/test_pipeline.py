@@ -199,3 +199,38 @@ def test_reminders_table_persists_schedule(tmp_path: Path) -> None:
     assert "T-24h" in types
     assert "T-12h" in types
 
+
+def test_audit_records_only_hash_of_approval_token_never_raw_token(tmp_path: Path) -> None:
+    """Audit log records only a SHA-256 hash of the approval token, never the token itself."""
+    import hashlib
+
+    db_path = tmp_path / "token_audit_test.db"
+    raw_token = "appr_secure_random_token_9876543210_abcdef"
+    expected_hash = hashlib.sha256(raw_token.encode("utf-8")).hexdigest()
+
+    record_audit_event(
+        case_id="case_token_test",
+        action="submit_contest",
+        actor="Priya Sharma",
+        details={
+            "payload_hash": "dummy_payload_hash_123",
+            "approval_token": raw_token,
+        },
+        db_path=db_path,
+        timestamp=1700000000,
+    )
+
+    with sqlite3.connect(db_path) as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT details_json FROM audit_log WHERE case_id = 'case_token_test';")
+        row = cursor.fetchone()
+        assert row is not None
+        details_json = row[0]
+
+    # Raw token must NEVER appear anywhere in the persisted audit log
+    assert raw_token not in details_json
+    # The SHA-256 hash must be recorded
+    assert expected_hash in details_json
+    assert "approval_token_hash" in details_json
+
+

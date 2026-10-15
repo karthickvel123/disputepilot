@@ -1,6 +1,7 @@
 """FastAPI merchant review web application for DisputePilot."""
 
 import datetime
+import hashlib
 import json
 import logging
 from pathlib import Path
@@ -239,14 +240,16 @@ async def save_draft_action(
     return RedirectResponse(url=f"/cases/{case_id}?success=Draft+saved", status_code=status.HTTP_303_SEE_OTHER)
 
 
-@app.get("/cases/{case_id}/confirm-submit", response_class=HTMLResponse)
-def confirm_submit_view(
+@app.post("/cases/{case_id}/review", response_class=HTMLResponse)
+@app.post("/cases/{case_id}/confirm-submit", response_class=HTMLResponse)
+async def review_and_confirm_submit_view(
     request: Request,
     case_id: str,
-    reviewer_name: str = "",
 ) -> HTMLResponse:
-    """Display exact contest payload and issue cryptographically bound approval token."""
-    if not reviewer_name or not reviewer_name.strip():
+    """Display exact contest payload and issue cryptographically bound approval token via POST."""
+    form = await get_form_data(request)
+    reviewer_name = form.get("reviewer_name", "").strip()
+    if not reviewer_name:
         raise HTTPException(
             status_code=400,
             detail="A named human reviewer is strictly required to proceed with dispute submission.",
@@ -275,7 +278,7 @@ def confirm_submit_view(
         dispute_id=case.dispute.id,
         action="submit",
         payload=payload,
-        approver=reviewer_name.strip(),
+        approver=reviewer_name,
     )
 
     return templates.TemplateResponse(
@@ -283,7 +286,7 @@ def confirm_submit_view(
         name="confirm_submit.html",
         context={
             "case": case,
-            "reviewer_name": reviewer_name.strip(),
+            "reviewer_name": reviewer_name,
             "approval_token": token,
             "payload_hash": payload_hash,
             "payload_json": json.dumps(payload, indent=2),
@@ -338,11 +341,12 @@ async def submit_contest_action(
     except ApprovalRequired as err:
         raise HTTPException(status_code=400, detail=str(err))
 
+    token_hash = hashlib.sha256(approval_token.encode("utf-8")).hexdigest()
     record_audit_event(
         case_id=case_id,
         action="submit_contest",
         actor=reviewer_name,
-        details={"payload_hash": payload_hash, "approval_token": approval_token},
+        details={"payload_hash": payload_hash, "approval_token_hash": token_hash},
     )
 
     return RedirectResponse(
@@ -402,11 +406,16 @@ async def accept_dispute_action(
     except ApprovalRequired as err:
         raise HTTPException(status_code=400, detail=str(err))
 
+    token_hash = hashlib.sha256(token.encode("utf-8")).hexdigest()
     record_audit_event(
         case_id=case_id,
         action="accept_dispute",
         actor=reviewer_name,
-        details={"dispute_id": case.dispute.id, "amount": case.dispute.amount},
+        details={
+            "dispute_id": case.dispute.id,
+            "amount": case.dispute.amount,
+            "approval_token_hash": token_hash,
+        },
     )
 
     return RedirectResponse(

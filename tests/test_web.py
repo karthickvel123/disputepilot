@@ -51,17 +51,28 @@ def test_case_detail_404_for_unknown_case(client: TestClient) -> None:
 
 
 def test_confirm_submit_page_loads(client: TestClient, sample_case_id: str) -> None:
-    """Confirm submit page must load and display payload, hash, and approval token."""
-    response = client.get(f"/cases/{sample_case_id}/confirm-submit?reviewer_name=Priya+Sharma")
+    """Confirm submit page must load from POST and display payload, hash, and approval token."""
+    response = client.post(
+        f"/cases/{sample_case_id}/review",
+        data={"reviewer_name": "Priya Sharma"},
+    )
     assert response.status_code == 200
     assert "Submission Payload Review" in response.text
     assert "Priya Sharma" in response.text
     assert "appr_" in response.text  # Token issued
 
 
+def test_confirm_submit_rejects_get(client: TestClient, sample_case_id: str) -> None:
+    """Approval token cannot be issued from a GET request (405 Method Not Allowed)."""
+    response = client.get(f"/cases/{sample_case_id}/review?reviewer_name=Priya+Sharma")
+    assert response.status_code == 405
+    response_alias = client.get(f"/cases/{sample_case_id}/confirm-submit?reviewer_name=Priya+Sharma")
+    assert response_alias.status_code == 405
+
+
 def test_confirm_submit_rejects_missing_reviewer(client: TestClient, sample_case_id: str) -> None:
     """Confirm submit page rejects when reviewer name is missing."""
-    response = client.get(f"/cases/{sample_case_id}/confirm-submit")
+    response = client.post(f"/cases/{sample_case_id}/review", data={"reviewer_name": ""})
     assert response.status_code == 400
     assert "reviewer is strictly required" in response.text.lower()
 
@@ -103,10 +114,13 @@ def test_submit_with_tampered_payload_hash_fails(client: TestClient, sample_case
 
 def test_submit_with_valid_approval_succeeds(client: TestClient, sample_case_id: str) -> None:
     """Submitting with a valid, bound approval token succeeds and redirects."""
-    # First get the confirm-submit page to issue token
+    # First get the confirm-submit page via POST to issue token
     reviewer = "Aarav Mehta"
-    get_resp = client.get(f"/cases/{sample_case_id}/confirm-submit?reviewer_name={reviewer}")
-    assert get_resp.status_code == 200
+    post_review_resp = client.post(
+        f"/cases/{sample_case_id}/review",
+        data={"reviewer_name": reviewer},
+    )
+    assert post_review_resp.status_code == 200
 
     # Extract clean draft to get exact payload hash
     from disputepilot.pipeline.orchestrator import _load_case_by_id
