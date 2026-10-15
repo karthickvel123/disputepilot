@@ -9,13 +9,18 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
+from pydantic import ValidationError
+
 from disputepilot.core.models import DisputeCase, ReasonClass
 from disputepilot.core.reasons import classify_reason
+from disputepilot.extraction.extractor import extract_document
 from disputepilot.extraction.llm import (
     FakeLLMClient,
     GeminiClient,
+    GeminiDailyQuotaError,
     LLMClient,
 )
+from disputepilot.extraction.schemas import get_schema_for_doc_type
 from disputepilot.pipeline.orchestrator import process_case
 from disputepilot.razorpay.gateway import SimGateway
 from disputepilot.safety.card_scanner import scan_text
@@ -364,6 +369,397 @@ def _load_cases_from_dir(directory: Path | str, max_cases: int | None = None) ->
     return cases
 
 
+def load_completed_checkpoints(outputs_path: Path | str) -> dict[str, dict[str, Any]]:
+    """Parse outputs log and return mapping of call_key -> entry for all completed calls.
+
+    Keys:
+      - 'classification:{case_id}'
+      - 'extraction:{case_id}:{doc_id}'
+      - 'extraction:{case_id}'
+    """
+    path = Path(outputs_path)
+    if not path.exists():
+        return {}
+    records: dict[str, dict[str, Any]] = {}
+    with open(path, encoding="utf-8") as f:
+        for raw_line in f:
+            line_str = raw_line.strip()
+            if not line_str:
+                continue
+            try:
+                entry = json.loads(line_str)
+            except json.JSONDecodeError:
+                continue
+            if not isinstance(entry, dict):
+                continue
+            c_id = entry.get("case_id")
+            stg = entry.get("stage")
+            stat = entry.get("status")
+            d_id = entry.get("doc_id")
+            if c_id and stg and stat == "completed":
+                if stg == "classification":
+                    records[f"classification:{c_id}"] = entry
+                elif stg == "extraction":
+                    if d_id:
+                        records[f"extraction:{c_id}:{d_id}"] = entry
+                    records[f"extraction:{c_id}"] = entry
+    return records
+
+
+def check_extracted_field_vs_ground_truth(
+    field_name: str,
+    field_value: Any,
+    doc_type: str,
+    case: DisputeCase,
+) -> bool | None:
+    """Compare extracted field value against case ground truth.
+
+    Returns:
+        True if matches ground truth, False if mismatches, None if no ground truth available for this field.
+    """
+    if field_value is None:
+        return None
+
+    def norm_str(v: Any) -> str:
+        return str(v).strip().lower()
+
+    norm_type = doc_type.strip().lower()
+
+    if norm_type in ("billing_proof", "invoice"):
+        if field_name == "total_amount_paise":
+            try:
+                return int(field_value) == case.order.amount
+            except (ValueError, TypeError):
+                return False
+        elif field_name == "order_id":
+            return norm_str(field_value) == norm_str(case.order.id)
+        elif field_name == "customer_name":
+            return norm_str(field_value) == norm_str(case.order.customer_name)
+        elif field_name == "payment_id":
+            return norm_str(field_value) == norm_str(case.dispute.payment_id)
+
+    elif norm_type in ("shipping_proof", "delivery_proof", "courier_pod"):
+        if field_name == "tracking_number":
+            return norm_str(field_value) == norm_str(case.order.tracking_number)
+        elif field_name == "order_id":
+            return norm_str(field_value) == norm_str(case.order.id)
+        elif field_name == "recipient_name":
+            return norm_str(field_value) == norm_str(case.order.customer_name)
+
+    elif (
+        norm_type in ("customer_communication", "chat_transcript")
+        and field_name == "customer_name"
+    ):
+        return norm_str(field_value) == norm_str(case.order.customer_name)
+
+    return None
+
+
+def run_real_llm_eval(
+    messy_cases: list[DisputeCase],
+    outputs_log: Path,
+    n: int = 10,
+    model: str | None = None,
+    stage: str = "both",
+    max_calls: int = 20,
+    seed: int = 42,
+    custom_client: LLMClient | None = None,
+) -> dict[str, Any]:
+    """Execute quota-aware, staged real LLM evaluation over messy dispute cases."""
+    api_key = os.environ.get("LLM_API_KEY") or os.environ.get("GEMINI_API_KEY")
+    if not api_key and not custom_client:
+        skip_msg = "LLM_API_KEY is unset; skipping real Gemini LLM evaluation (NOT RUN)."
+        print(f"\n[REAL-LLM EVAL NOTICE] {skip_msg}\n")
+        logger.warning(skip_msg)
+        return {
+            "status": "NOT RUN",
+            "stopped_by_quota": False,
+            "classification": {
+                "status": "NOT RUN",
+                "n": n,
+                "completed_k": 0,
+                "accuracy": None,
+                "macro_f1": None,
+                "per_class": {},
+            },
+            "extraction": {
+                "status": "NOT RUN",
+                "n": min(5, n),
+                "completed_k": 0,
+                "field_accuracy": None,
+                "total_fields": 0,
+                "correct_fields": 0,
+            },
+        }
+
+    # 1. Classification Targets: only cases where deterministic rules return unclassified
+    unclassified_cases = [
+        c for c in messy_cases
+        if classify_reason(c.dispute.reason_code, llm_client=None).reason_class == ReasonClass.UNCLASSIFIED
+    ]
+    classification_targets = unclassified_cases[:n]
+    n_cls = len(classification_targets)
+
+    # 2. Extraction Targets: at most 5 cases
+    n_ext_target = min(5, n, len(messy_cases))
+    extraction_targets = messy_cases[:n_ext_target]
+    n_ext = len(extraction_targets)
+
+    # 3. Load checkpoints
+    checkpoints = load_completed_checkpoints(outputs_log)
+
+    cls_needed_calls = 0
+    if stage in ("classification", "both"):
+        for c in classification_targets:
+            if f"classification:{c.case_id}" not in checkpoints:
+                cls_needed_calls += 1
+
+    ext_needed_calls = 0
+    if stage in ("extraction", "both"):
+        for c in extraction_targets:
+            for d in c.documents:
+                k1 = f"extraction:{c.case_id}:{d.doc_id}"
+                k2 = f"extraction:{c.case_id}"
+                if k1 not in checkpoints and k2 not in checkpoints:
+                    ext_needed_calls += 1
+
+    total_est_calls = cls_needed_calls + ext_needed_calls
+    print(f"\n[CALL BUDGET] Estimated real LLM calls needed: {total_est_calls} (limit: {max_calls}, stage: {stage}, n={n})")
+    print(f"  - Classification calls needed: {cls_needed_calls} (targets: {n_cls})")
+    print(f"  - Extraction calls needed: {ext_needed_calls} (targets: {n_ext} cases, {sum(len(c.documents) for c in extraction_targets)} documents)")
+
+    stopped_by_quota = False
+    refused_by_budget = False
+    if total_est_calls > max_calls:
+        print(f"[CALL BUDGET ERROR] Estimated calls ({total_est_calls}) exceeds --max-calls limit ({max_calls}). Refusing to proceed.\n")
+        refused_by_budget = True
+
+    resolved_model = model or os.environ.get("LLM_MODEL") or os.environ.get("GEMINI_MODEL") or "gemini-2.5-flash"
+    real_client = custom_client or (GeminiClient(api_key=api_key, model=resolved_model, raw_output_path=outputs_log) if api_key else None)
+
+    # 4. Stage 1: Classification
+    cls_completed: list[dict[str, Any]] = []
+    if stage in ("classification", "both"):
+        print(f"[REAL-LLM EVAL] Processing Classification Stage ({n_cls} target cases)...")
+        for idx, case in enumerate(classification_targets):
+            key = f"classification:{case.case_id}"
+            gt_class_str = case.ground_truth.reason_class
+            try:
+                gt_val = ReasonClass(gt_class_str.lower() if isinstance(gt_class_str, str) else gt_class_str.value)
+            except ValueError:
+                gt_val = ReasonClass.OTHER
+
+            if key in checkpoints:
+                entry = checkpoints[key]
+                parsed = entry.get("parsed_response", {})
+                raw_pred = str(parsed.get("reason_class", "unclassified")).strip().lower()
+                try:
+                    pred_val = ReasonClass(raw_pred)
+                except ValueError:
+                    pred_val = ReasonClass.UNCLASSIFIED
+                cls_completed.append({
+                    "case_id": case.case_id,
+                    "gt_class": gt_val,
+                    "pred_class": pred_val,
+                    "correct": pred_val == gt_val,
+                    "cached": True,
+                })
+            elif not refused_by_budget and real_client is not None and not stopped_by_quota:
+                try:
+                    match = classify_reason(case.dispute.reason_code, llm_client=real_client, case_id=case.case_id)
+                    pred_val = match.reason_class
+                    cls_completed.append({
+                        "case_id": case.case_id,
+                        "gt_class": gt_val,
+                        "pred_class": pred_val,
+                        "correct": pred_val == gt_val,
+                        "cached": False,
+                    })
+                    print(f"  [Classification {idx+1}/{n_cls}] {case.case_id}: GT={gt_val.value}, Pred={pred_val.value} ({'MATCH' if pred_val == gt_val else 'MISMATCH'})")
+                except GeminiDailyQuotaError as e:
+                    print(f"[REAL-LLM EVAL] Daily quota limit reached during classification: {e}. Stopping immediately.")
+                    stopped_by_quota = True
+                    break
+                except (RuntimeError, ValueError, OSError) as e:
+                    err_str = str(e).lower()
+                    if "perday" in err_str or "generaterequestsperday" in err_str or ("quota" in err_str and "day" in err_str):
+                        print(f"[REAL-LLM EVAL] Daily quota limit reached: {e}. Stopping immediately.")
+                        stopped_by_quota = True
+                        break
+                    logger.error("Classification failed for %s: %s", case.case_id, e)
+
+    # 5. Stage 2: Extraction
+    ext_completed: list[dict[str, Any]] = []
+    if stage in ("extraction", "both") and not stopped_by_quota:
+        print(f"[REAL-LLM EVAL] Processing Extraction Stage ({n_ext} target cases)...")
+        for idx, case in enumerate(extraction_targets):
+            if stopped_by_quota:
+                break
+            case_docs_surviving = []
+            case_failed = False
+            for doc in case.documents:
+                k1 = f"extraction:{case.case_id}:{doc.doc_id}"
+                k2 = f"extraction:{case.case_id}"
+                if k1 in checkpoints or k2 in checkpoints:
+                    entry = checkpoints.get(k1) or checkpoints.get(k2)
+                    raw_dict = entry.get("parsed_response", {})
+                    schema_cls = get_schema_for_doc_type(doc.doc_type)
+                    try:
+                        val_model = schema_cls.model_validate(raw_dict)
+                        surviving = {}
+                        for fname, fobj in val_model:
+                            if (
+                                fobj is not None
+                                and getattr(fobj, "source_quote", None)
+                                and fobj.source_quote in doc.content
+                            ):
+                                surviving[fname] = fobj
+                        case_docs_surviving.append((doc.doc_type, surviving))
+                    except (ValidationError, TypeError, ValueError, KeyError) as e:
+                        logger.warning("Local validation failed on cached extraction: %s", e)
+                elif not refused_by_budget and real_client is not None:
+                    try:
+                        ext_doc = extract_document(
+                            text_or_path=doc.content,
+                            case_id=case.case_id,
+                            doc_id=doc.doc_id,
+                            doc_type=doc.doc_type,
+                            llm_client=real_client,
+                        )
+                        case_docs_surviving.append((doc.doc_type, ext_doc.surviving_fields))
+                    except GeminiDailyQuotaError as e:
+                        print(f"[REAL-LLM EVAL] Daily quota limit reached during extraction: {e}. Stopping immediately.")
+                        stopped_by_quota = True
+                        case_failed = True
+                        break
+                    except (RuntimeError, ValueError, OSError) as e:
+                        err_str = str(e).lower()
+                        if "perday" in err_str or "generaterequestsperday" in err_str or ("quota" in err_str and "day" in err_str):
+                            print(f"[REAL-LLM EVAL] Daily quota limit reached: {e}. Stopping immediately.")
+                            stopped_by_quota = True
+                        case_failed = True
+                        break
+                else:
+                    case_failed = True
+            if not case_failed:
+                ext_completed.append({
+                    "case": case,
+                    "docs_surviving": case_docs_surviving,
+                })
+                print(f"  [Extraction {idx+1}/{n_ext}] {case.case_id}: completed ({len(case_docs_surviving)} docs)")
+
+    # 6. Classification Metrics
+    k_cls = len(cls_completed)
+    cls_correct = sum(1 for c in cls_completed if c["correct"])
+    cls_acc = round(cls_correct / k_cls, 4) if k_cls > 0 else None
+    cls_per_class: dict[str, dict[str, float]] = {}
+    cls_f1_scores = []
+    if k_cls > 0:
+        tp_m: dict[str, int] = defaultdict(int)
+        fp_m: dict[str, int] = defaultdict(int)
+        fn_m: dict[str, int] = defaultdict(int)
+        supp_m: dict[str, int] = defaultdict(int)
+        for item in cls_completed:
+            gt_k = item["gt_class"].value
+            pr_k = item["pred_class"].value
+            supp_m[gt_k] += 1
+            if pr_k == gt_k:
+                tp_m[gt_k] += 1
+            else:
+                fp_m[pr_k] += 1
+                fn_m[gt_k] += 1
+        for rc in ALL_REASON_CLASSES:
+            k = rc.value
+            tp = tp_m[k]
+            fp = fp_m[k]
+            fn = fn_m[k]
+            prec = tp / (tp + fp) if (tp + fp) > 0 else 0.0
+            rec = tp / (tp + fn) if (tp + fn) > 0 else 0.0
+            f1 = (2 * prec * rec) / (prec + rec) if (prec + rec) > 0 else 0.0
+            cls_per_class[k] = {"precision": round(prec, 4), "recall": round(rec, 4), "f1": round(f1, 4), "support": supp_m[k]}
+            if supp_m[k] > 0 or (tp + fp) > 0:
+                cls_f1_scores.append(f1)
+        cls_macro_f1 = round(sum(cls_f1_scores) / len(cls_f1_scores), 4) if cls_f1_scores else 0.0
+    else:
+        cls_macro_f1 = None
+
+    # 7. Extraction Metrics
+    k_ext = len(ext_completed)
+    ext_total_fields = 0
+    ext_correct_fields = 0
+    for item in ext_completed:
+        case = item["case"]
+        for doc_type, surviving in item["docs_surviving"]:
+            for fname, fobj in surviving.items():
+                val = fobj.value if hasattr(fobj, "value") else fobj
+                match = check_extracted_field_vs_ground_truth(fname, val, doc_type, case)
+                if match is not None:
+                    ext_total_fields += 1
+                    if match:
+                        ext_correct_fields += 1
+    ext_field_accuracy = (
+        round(ext_correct_fields / ext_total_fields, 4)
+        if ext_total_fields > 0
+        else None
+    )
+
+    # 8. Status Determination
+    if stage in ("classification", "both"):
+        if k_cls == 0:
+            cls_status = "NOT RUN"
+        elif k_cls < n_cls and stopped_by_quota:
+            cls_status = f"PARTIAL: {k_cls} of {n_cls} cases, stopped by quota"
+        elif k_cls < n_cls:
+            cls_status = f"PARTIAL: {k_cls} of {n_cls} cases"
+        else:
+            cls_status = f"COMPLETE: {n_cls} cases"
+    else:
+        cls_status = "NOT RUN (stage omitted)"
+
+    if stage in ("extraction", "both"):
+        if k_ext == 0:
+            ext_status = "NOT RUN"
+        elif k_ext < n_ext and stopped_by_quota:
+            ext_status = f"PARTIAL: {k_ext} of {n_ext} cases, stopped by quota"
+        elif k_ext < n_ext:
+            ext_status = f"PARTIAL: {k_ext} of {n_ext} cases"
+        else:
+            ext_status = f"COMPLETE: {n_ext} cases"
+    else:
+        ext_status = "NOT RUN (stage omitted)"
+
+    if cls_status.startswith("NOT RUN") and ext_status.startswith("NOT RUN"):
+        overall_status = "NOT RUN"
+    elif "stopped by quota" in cls_status or "stopped by quota" in ext_status:
+        overall_status = cls_status if "stopped by quota" in cls_status else ext_status
+    elif "PARTIAL" in cls_status or "PARTIAL" in ext_status:
+        overall_status = cls_status if "PARTIAL" in cls_status else ext_status
+    else:
+        overall_status = f"COMPLETE ({n_cls} classification, {n_ext} extraction)"
+
+    return {
+        "status": overall_status,
+        "stopped_by_quota": stopped_by_quota,
+        "classification": {
+            "status": cls_status,
+            "n": n_cls,
+            "completed_k": k_cls,
+            "accuracy": cls_acc,
+            "correct_count": cls_correct,
+            "macro_f1": cls_macro_f1,
+            "per_class": cls_per_class,
+        },
+        "extraction": {
+            "status": ext_status,
+            "n": n_ext,
+            "completed_k": k_ext,
+            "field_accuracy": ext_field_accuracy,
+            "total_fields": ext_total_fields,
+            "correct_fields": ext_correct_fields,
+        },
+    }
+
+
 def run_evaluation(
     cases_dir: Path | str | None = None,
     clean_dir: Path | str = "data/cases",
@@ -375,6 +771,10 @@ def run_evaluation(
     effort_cost_inr: float = 0.0,
     fee_per_dispute_inr: float = 0.0,
     real_llm: bool = False,
+    real_llm_n: int = 10,
+    real_llm_model: str | None = None,
+    real_llm_stage: str = "both",
+    real_llm_max_calls: int = 20,
     seed: int = 42,
 ) -> dict[str, Any]:
     """Execute evaluation harness comparing clean (train/hold-out) and messy datasets side by side."""
@@ -448,43 +848,22 @@ def run_evaluation(
             rule_only=False,
         )
 
-    # 6. Real LLM evaluation on random 30 cases from messy set (if requested)
+    # 6. Real LLM evaluation on messy set (if requested)
     real_llm_metrics: dict[str, Any] | None = None
     real_llm_status: str = "NOT RUN"
     if real_llm:
-        api_key = os.environ.get("LLM_API_KEY")
-        if not api_key:
-            skip_msg = "LLM_API_KEY is unset; skipping real Gemini LLM evaluation on 30 messy cases (NOT RUN)."
-            print(f"\n[REAL-LLM EVAL NOTICE] {skip_msg}\n")
-            logger.warning(skip_msg)
-            real_llm_status = "NOT RUN"
-        elif not messy_cases:
-            skip_msg = "No messy cases found to evaluate real LLM."
-            print(f"\n[REAL-LLM EVAL NOTICE] {skip_msg}\n")
-            logger.warning(skip_msg)
-            real_llm_status = "NOT RUN"
-        else:
-            print("\n[REAL-LLM EVAL] Running classification and extraction with GeminiClient on 30 messy cases...")
-            rng_real = random.Random(seed)
-            sample_size = min(30, len(messy_cases))
-            sample_indices = rng_real.sample(range(len(messy_cases)), sample_size)
-            real_sample_cases = [messy_cases[i] for i in sample_indices]
-
-            outputs_log = out_path / "real_llm_outputs.jsonl"
-            real_gemini_client = GeminiClient(api_key=api_key, raw_output_path=outputs_log)
-            gw_real = SimGateway(data_dir=target_messy, drafts_dir=d_path)
-            real_llm_metrics = evaluate_slice(
-                cases=real_sample_cases,
-                gateway=gw_real,
-                client=real_gemini_client,
-                cases_dir=target_messy,
-                drafts_dir=d_path,
-                effort_cost_inr=effort_cost_inr,
-                fee_per_dispute_inr=fee_per_dispute_inr,
-                rule_only=False,
-            )
-            real_llm_status = "COMPLETED"
-            print(f"[REAL-LLM EVAL] Completed 30 cases with GeminiClient. Raw outputs logged to {outputs_log}.")
+        outputs_log = out_path / "real_llm_outputs.jsonl"
+        real_llm_metrics = run_real_llm_eval(
+            messy_cases=messy_cases,
+            outputs_log=outputs_log,
+            n=real_llm_n,
+            model=real_llm_model,
+            stage=real_llm_stage,
+            max_calls=real_llm_max_calls,
+            seed=seed,
+            custom_client=llm_client if isinstance(llm_client, (GeminiClient, FakeLLMClient)) else None,
+        )
+        real_llm_status = real_llm_metrics.get("status", "NOT RUN")
 
     # Top-level backwards compatibility mapping (defaults to holdout / clean set)
     primary_metrics = clean_holdout_metrics if clean_holdout_metrics else clean_train_metrics
@@ -501,6 +880,7 @@ def run_evaluation(
         "messy_set_rules_only": messy_rules_only_metrics,
         "messy_set_rules_llm": messy_rules_llm_metrics,
         "messy_set": messy_rules_llm_metrics,  # Backwards compatibility
+        "real_llm": real_llm_metrics,
         "real_llm_sample_30": real_llm_metrics,
         "real_llm_status": real_llm_status,
         # Backward compatibility fields
@@ -531,11 +911,29 @@ def _generate_markdown_report(results: dict[str, Any]) -> str:
     holdout = results.get("clean_holdout_30pct", {})
     messy_rules = results.get("messy_set_rules_only", {})
     messy_llm = results.get("messy_set_rules_llm", results.get("messy_set", {}))
-    real = results.get("real_llm_sample_30")
+    real = results.get("real_llm") or results.get("real_llm_sample_30")
     real_status = results.get("real_llm_status", "NOT RUN")
     assumptions = results.get("assumptions", {"effort_cost_per_case_inr": 0.0, "fee_per_dispute_inr": 0.0})
     effort_cost = assumptions.get("effort_cost_per_case_inr", 0.0)
     dispute_fee = assumptions.get("fee_per_dispute_inr", 0.0)
+
+    def _get_val(src: dict[str, Any], path: list[str]) -> Any:
+        cur = src
+        for p in path:
+            if not isinstance(cur, dict) or p not in cur:
+                return None
+            cur = cur[p]
+        return cur
+
+    ml_rc_acc = _get_val(messy_llm, ["reason_classifier", "accuracy"])
+    ml_rc_f1 = _get_val(messy_llm, ["reason_classifier", "macro_f1"])
+    ml_ext = _get_val(messy_llm, ["extraction_accuracy"])
+    ml_miss = _get_val(messy_llm, ["evidence_agent", "missing_recall"])
+    ml_faith = _get_val(messy_llm, ["draft_faithfulness", "faithfulness_score"])
+    ml_inj = _get_val(messy_llm, ["adversarial_safety", "containment_rate"])
+    ml_rec = _get_val(messy_llm, ["recommendation_quality", "accuracy_vs_winnable"])
+    ml_recov = _get_val(messy_llm, ["financial_value_recovery_inr", "disputepilot_policy_inr"]) or 0.0
+    ml_uplift = _get_val(messy_llm, ["financial_value_recovery_inr", "uplift_vs_contest_everything_inr"]) or 0.0
 
     lines = [
         "# DisputePilot Empirical Evaluation Report",
@@ -602,7 +1000,7 @@ def _generate_markdown_report(results: dict[str, Any]) -> str:
         "",
         "## Side-by-Side Evaluation Summary",
         "",
-        "| Metric | Clean Train (70%, in-distribution) | Clean Hold-out (30%, in-distribution) | Messy Set: Rules Only (n=100) | Real LLM (30 messy cases) | Metric Classification |",
+        "| Metric | Clean Train (70%, in-distribution) | Clean Hold-out (30%, in-distribution) | Messy Set: Rules Only (n=100) | Real LLM (Gemini) | Metric Classification |",
         "| :--- | :--- | :--- | :--- | :--- | :--- |",
     ]
 
@@ -610,15 +1008,38 @@ def _generate_markdown_report(results: dict[str, Any]) -> str:
     def _pct(val: float | None) -> str:
         return f"{val * 100:.2f}%" if val is not None else "N/A"
 
-    def _real_pct(val: float | None) -> str:
+    def _real_cls_str() -> str:
         if not real or real_status == "NOT RUN":
             return "NOT RUN"
-        return f"{val * 100:.2f}%" if val is not None else "NOT RUN"
+        cls_data = real.get("classification", {})
+        k = cls_data.get("completed_k", 0)
+        acc = cls_data.get("accuracy")
+        if k == 0 or acc is None:
+            return "NOT RUN"
+        return f"{acc * 100:.2f}% (k={k})"
 
-    def _real_str(val: Any) -> str:
+    def _real_cls_f1_str() -> str:
         if not real or real_status == "NOT RUN":
             return "NOT RUN"
-        return str(val) if val is not None else "NOT RUN"
+        cls_data = real.get("classification", {})
+        k = cls_data.get("completed_k", 0)
+        f1 = cls_data.get("macro_f1")
+        if k == 0 or f1 is None:
+            return "NOT RUN"
+        return f"{f1 * 100:.2f}% (k={k})"
+
+    def _real_ext_str() -> str:
+        if not real or real_status == "NOT RUN":
+            return "NOT RUN"
+        ext_data = real.get("extraction", {})
+        k = ext_data.get("completed_k", 0)
+        acc = ext_data.get("field_accuracy")
+        if k == 0 or acc is None:
+            return "NOT RUN"
+        return f"{acc * 100:.2f}% (k={k})"
+
+    def _real_omitted() -> str:
+        return "NOT RUN" if not real or real_status == "NOT RUN" else "N/A (omitted for budget)"
 
     def _get_val(src: dict[str, Any], path: list[str]) -> Any:
         cur = src
@@ -632,111 +1053,79 @@ def _generate_markdown_report(results: dict[str, Any]) -> str:
     tr_rc_acc = _get_val(train, ["reason_classifier", "accuracy"])
     ho_rc_acc = _get_val(holdout, ["reason_classifier", "accuracy"])
     mr_rc_acc = _get_val(messy_rules, ["reason_classifier", "accuracy"])
-    ml_rc_acc = _get_val(messy_llm, ["reason_classifier", "accuracy"])
-    re_rc_acc = _get_val(real, ["reason_classifier", "accuracy"]) if real else None
     lines.append(
-        f"| **Reason Code Accuracy** | {_pct(tr_rc_acc)} | {_pct(ho_rc_acc)} | {_pct(mr_rc_acc)} | {_real_pct(re_rc_acc)} | Deterministic rules |"
+        f"| **Reason Code Accuracy** | {_pct(tr_rc_acc)} | {_pct(ho_rc_acc)} | {_pct(mr_rc_acc)} | {_real_cls_str()} | Deterministic rules |"
     )
 
     # 2. Reason Macro-F1
     tr_rc_f1 = _get_val(train, ["reason_classifier", "macro_f1"])
     ho_rc_f1 = _get_val(holdout, ["reason_classifier", "macro_f1"])
     mr_rc_f1 = _get_val(messy_rules, ["reason_classifier", "macro_f1"])
-    ml_rc_f1 = _get_val(messy_llm, ["reason_classifier", "macro_f1"])
-    re_rc_f1 = _get_val(real, ["reason_classifier", "macro_f1"]) if real else None
     lines.append(
-        f"| **Reason Code Macro-F1** | {_pct(tr_rc_f1)} | {_pct(ho_rc_f1)} | {_pct(mr_rc_f1)} | {_real_pct(re_rc_f1)} | Deterministic rules |"
+        f"| **Reason Code Macro-F1** | {_pct(tr_rc_f1)} | {_pct(ho_rc_f1)} | {_pct(mr_rc_f1)} | {_real_cls_f1_str()} | Deterministic rules |"
     )
 
     # 3. Field Extraction
-    ml_ext = _get_val(messy_llm, ["extraction_accuracy"])
-    re_ext = _get_val(real, ["extraction_accuracy"]) if real else None
     lines.append(
-        f"| **Field-Level Extraction Accuracy** | fake regex baseline, appendix only | fake regex baseline, appendix only | fake regex baseline, appendix only | {_real_pct(re_ext)} | fake regex baseline, appendix only |"
+        f"| **Field-Level Extraction Accuracy** | fake regex baseline, appendix only | fake regex baseline, appendix only | fake regex baseline, appendix only | {_real_ext_str()} | fake regex baseline, appendix only |"
     )
 
     # 4. Missing Category Recall
     tr_miss = _get_val(train, ["evidence_agent", "missing_recall"])
     ho_miss = _get_val(holdout, ["evidence_agent", "missing_recall"])
     mr_miss = _get_val(messy_rules, ["evidence_agent", "missing_recall"])
-    ml_miss = _get_val(messy_llm, ["evidence_agent", "missing_recall"])
-    re_miss = _get_val(real, ["evidence_agent", "missing_recall"]) if real else None
     lines.append(
-        f"| **Missing-Category Recall** | {_pct(tr_miss)} | {_pct(ho_miss)} | {_pct(mr_miss)} | {_real_pct(re_miss)} | **Pipeline sanity check, not performance** |"
+        f"| **Missing-Category Recall** | {_pct(tr_miss)} | {_pct(ho_miss)} | {_pct(mr_miss)} | {_real_omitted()} | **Pipeline sanity check, not performance** |"
     )
 
     # 5. Raw Grounding
     tr_faith = _get_val(train, ["draft_faithfulness", "faithfulness_score"])
     ho_faith = _get_val(holdout, ["draft_faithfulness", "faithfulness_score"])
     mr_faith = _get_val(messy_rules, ["draft_faithfulness", "faithfulness_score"])
-    ml_faith = _get_val(messy_llm, ["draft_faithfulness", "faithfulness_score"])
-    re_faith = _get_val(real, ["draft_faithfulness", "faithfulness_score"]) if real else None
     lines.append(
-        f"| **Raw Sentence Grounding Rate** | {_pct(tr_faith)} | {_pct(ho_faith)} | {_pct(mr_faith)} | {_real_pct(re_faith)} | Pre-verifier fact coverage |"
+        f"| **Raw Sentence Grounding Rate** | {_pct(tr_faith)} | {_pct(ho_faith)} | {_pct(mr_faith)} | {_real_omitted()} | Pre-verifier fact coverage |"
     )
 
     # 6. Fabricated Claims
     lines.append(
-        f"| **Fabricated Claims in Clean Drafts** | **0** | **0** | **0** | {_real_str(0 if real and real_status != 'NOT RUN' else None)} | **Pipeline sanity check, not performance** (verifier guarantee) |"
+        f"| **Fabricated Claims in Clean Drafts** | **0** | **0** | **0** | {_real_omitted()} | **Pipeline sanity check, not performance** (verifier guarantee) |"
     )
 
     # 7. Prompt Injection
     tr_inj = _get_val(train, ["adversarial_safety", "containment_rate"])
     ho_inj = _get_val(holdout, ["adversarial_safety", "containment_rate"])
     mr_inj = _get_val(messy_rules, ["adversarial_safety", "containment_rate"])
-    ml_inj = _get_val(messy_llm, ["adversarial_safety", "containment_rate"])
-    re_inj = _get_val(real, ["adversarial_safety", "containment_rate"]) if real else None
     lines.append(
-        f"| **Prompt Injection Containment** | {_pct(tr_inj)} | {_pct(ho_inj)} | {_pct(mr_inj)} | {_real_pct(re_inj)} | Fencing check |"
+        f"| **Prompt Injection Containment** | {_pct(tr_inj)} | {_pct(ho_inj)} | {_pct(mr_inj)} | {_real_omitted()} | Fencing check |"
     )
 
     # 8. Card leaks
     lines.append(
-        f"| **PCI-DSS Card Leaks** | **0** | **0** | **0** | {_real_str(0 if real and real_status != 'NOT RUN' else None)} | Deterministic Luhn scanner |"
+        f"| **PCI-DSS Card Leaks** | **0** | **0** | **0** | {_real_omitted()} | Deterministic Luhn scanner |"
     )
 
     # 9. Decision Accuracy vs Winnable
     tr_rec = _get_val(train, ["recommendation_quality", "accuracy_vs_winnable"])
     ho_rec = _get_val(holdout, ["recommendation_quality", "accuracy_vs_winnable"])
     mr_rec = _get_val(messy_rules, ["recommendation_quality", "accuracy_vs_winnable"])
-    ml_rec = _get_val(messy_llm, ["recommendation_quality", "accuracy_vs_winnable"])
-    re_rec = _get_val(real, ["recommendation_quality", "accuracy_vs_winnable"]) if real else None
     lines.append(
-        f"| **Decision Accuracy vs. Winnable** | {_pct(tr_rec)} | {_pct(ho_rec)} | {_pct(mr_rec)} | {_real_pct(re_rec)} | **Pipeline sanity check, not performance** (heuristic vs sim rules) |"
+        f"| **Decision Accuracy vs. Winnable** | {_pct(tr_rec)} | {_pct(ho_rec)} | {_pct(mr_rec)} | {_real_omitted()} | **Pipeline sanity check, not performance** (heuristic vs sim rules) |"
     )
 
     # 10. Financial Policy Recovery
     tr_recov = _get_val(train, ["financial_value_recovery_inr", "disputepilot_policy_inr"])
     ho_recov = _get_val(holdout, ["financial_value_recovery_inr", "disputepilot_policy_inr"])
     mr_recov = _get_val(messy_rules, ["financial_value_recovery_inr", "disputepilot_policy_inr"])
-    ml_recov = _get_val(messy_llm, ["financial_value_recovery_inr", "disputepilot_policy_inr"])
-    re_recov = (
-        f"₹{_get_val(real, ['financial_value_recovery_inr', 'disputepilot_policy_inr']):,.2f}*"
-        if real and real_status != "NOT RUN"
-        else "NOT RUN"
-    )
     lines.append(
-        f"| **DisputePilot Policy Recovery (INR)** | ₹{tr_recov:,.2f}* | ₹{ho_recov:,.2f}* | ₹{mr_recov:,.2f}* | {re_recov} | Simulated, under assumptions listed here |"
+        f"| **DisputePilot Policy Recovery (INR)** | ₹{tr_recov:,.2f}* | ₹{ho_recov:,.2f}* | ₹{mr_recov:,.2f}* | {_real_omitted()} | Simulated, under assumptions listed here |"
     )
 
     # 11. Uplift vs Contest-All
     tr_uplift = _get_val(train, ["financial_value_recovery_inr", "uplift_vs_contest_everything_inr"])
     ho_uplift = _get_val(holdout, ["financial_value_recovery_inr", "uplift_vs_contest_everything_inr"])
     mr_uplift = _get_val(messy_rules, ["financial_value_recovery_inr", "uplift_vs_contest_everything_inr"])
-    ml_uplift = _get_val(messy_llm, ["financial_value_recovery_inr", "uplift_vs_contest_everything_inr"])
-    re_uplift = (
-        f"₹{_get_val(real, ['financial_value_recovery_inr', 'uplift_vs_contest_everything_inr']):,.2f}*"
-        if real and real_status != "NOT RUN"
-        else "NOT RUN"
-    )
-    re_accept = "₹0.00*" if real and real_status != "NOT RUN" else "NOT RUN"
-    re_contest = (
-        f"₹{_get_val(real, ['financial_value_recovery_inr', 'contest_everything_inr']):,.2f}*"
-        if real and real_status != "NOT RUN"
-        else "NOT RUN"
-    )
     lines.append(
-        f"| **Uplift vs Contest-All (INR)** | ₹{tr_uplift:,.2f}* | ₹{ho_uplift:,.2f}* | ₹{mr_uplift:,.2f}* | {re_uplift} | Simulated, under assumptions listed here |"
+        f"| **Uplift vs Contest-All (INR)** | ₹{tr_uplift:,.2f}* | ₹{ho_uplift:,.2f}* | ₹{mr_uplift:,.2f}* | {_real_omitted()} | Simulated, under assumptions listed here |"
     )
 
     lines.extend([
@@ -749,30 +1138,63 @@ def _generate_markdown_report(results: dict[str, Any]) -> str:
 
     # Section: Real LLM Evaluation
     if real and real_status != "NOT RUN":
-        re_ext_str = _pct(_get_val(real, ["extraction_accuracy"]))
-        re_faith_str = _pct(_get_val(real, ["draft_faithfulness", "faithfulness_score"]))
-        re_rec_str = _pct(_get_val(real, ["recommendation_quality", "accuracy_vs_winnable"]))
+        cls_data = real.get("classification", {})
+        ext_data = real.get("extraction", {})
+        k_cls = cls_data.get("completed_k", 0)
+        n_cls = cls_data.get("n", 0)
+        cls_acc_str = f"{cls_data['accuracy'] * 100:.2f}%" if cls_data.get("accuracy") is not None else "N/A"
+        cls_f1_str = f"{cls_data['macro_f1'] * 100:.2f}%" if cls_data.get("macro_f1") is not None else "N/A"
+        cls_correct = cls_data.get("correct_count", 0)
+
+        k_ext = ext_data.get("completed_k", 0)
+        n_ext = ext_data.get("n", 0)
+        ext_acc_str = f"{ext_data['field_accuracy'] * 100:.2f}%" if ext_data.get("field_accuracy") is not None else "N/A"
+        ext_correct = ext_data.get("correct_fields", 0)
+        ext_total = ext_data.get("total_fields", 0)
+
         lines.extend([
-            "## Real LLM Evaluation (GeminiClient on 30 Messy Cases)",
+            "## Real LLM Evaluation (GeminiClient)",
             "",
-            "Running genuine Gemini API extraction and drafting on 30 randomly sampled messy cases:",
+            f"**Overall Status: {real_status}**",
             "",
-            f"- **Field-Level Extraction Accuracy:** {re_ext_str}",
-            f"- **Raw Sentence Grounding Rate:** {re_faith_str}",
-            "- **Fabricated Claims in Clean Drafts:** **0** (enforced by verifier)",
-            f"- **Decision Accuracy vs Winnable Ground Truth:** {re_rec_str}",
-            "- **Raw Outputs & Telemetry:** Logged to `evals/real_llm_outputs.jsonl`.",
+            "### Stage 1: Reason Code Classification (Rules Fallback Only)",
+            f"- **Status:** {cls_data.get('status', 'NOT RUN')}",
+            f"- **Target Cases (rules returned unclassified):** n={n_cls}",
+            f"- **Completed Cases:** k={k_cls}",
+            f"- **Accuracy (vs Ground Truth):** {cls_acc_str} ({cls_correct}/{k_cls} correct)" if k_cls > 0 else "- **Accuracy:** N/A (no cases completed)",
+            f"- **Macro-F1 Score:** {cls_f1_str}" if k_cls > 0 else "- **Macro-F1:** N/A",
+            "",
+            "### Stage 2: Document Field Extraction (Verbatim Quoted Fields Only)",
+            f"- **Status:** {ext_data.get('status', 'NOT RUN')}",
+            f"- **Target Cases:** n={n_ext}",
+            f"- **Completed Cases:** k={k_ext}",
+            f"- **Field-Level Accuracy (vs Ground Truth):** {ext_acc_str} ({ext_correct}/{ext_total} fields)" if ext_total > 0 else "- **Field-Level Accuracy:** N/A",
+            "- **Evaluation Criteria:** Accuracy is computed only for fields where the model returned a verbatim `source_quote` matching the source document text.",
+            "",
+            "### Real LLM results: how to read them",
+            f"- **Status:** {real_status}",
+            "- Synthetic data only.",
+            "- One run.",
+            "- No confidence intervals.",
+            "- Results are not evidence of real-world accuracy.",
             "",
             "---",
             "",
         ])
     else:
         lines.extend([
-            "## Real LLM Evaluation (GeminiClient on 30 Messy Cases)",
+            "## Real LLM Evaluation (GeminiClient)",
             "",
-            "**Status: NOT RUN** (`LLM_API_KEY` is not set in the environment).",
+            "**Status: NOT RUN**",
             "",
-            "No API calls were made to Google Gemini. In accordance with honest evaluation practices, no numbers are reported for a run that did not happen. When `LLM_API_KEY` is provided, running `python -m disputepilot.evals.runner --real-llm` executes structured JSON classification and extraction across 30 sampled messy disputes with rate limit backoff and saves raw outputs, latencies, and token counts to `evals/real_llm_outputs.jsonl`.",
+            "No API calls were made to Google Gemini. In accordance with honest evaluation practices, no numbers are reported for a run that did not happen. When configured with `LLM_API_KEY`, running `python -m disputepilot.evals.runner --real-llm` executes quota-aware structured JSON classification and extraction with rate limit backoff and saves raw outputs to `evals/real_llm_outputs.jsonl`.",
+            "",
+            "### Real LLM results: how to read them",
+            "- **Status:** NOT RUN",
+            "- Synthetic data only.",
+            "- One run.",
+            "- No confidence intervals.",
+            "- Results are not evidence of real-world accuracy.",
             "",
             "---",
             "",
@@ -843,12 +1265,12 @@ def _generate_markdown_report(results: dict[str, Any]) -> str:
         f"> - Response effort cost per dispute: ₹{effort_cost:.2f} (simulated, under assumptions listed here)",
         f"> - Dispute fee per chargeback: ₹{dispute_fee:.2f} (simulated, under assumptions listed here)",
         "",
-        "| Policy | Clean Hold-out (in-distribution, n=45) | Messy Set: Rules Only (n=100) | Real LLM (30 messy cases) | Notes |",
+        "| Policy | Clean Hold-out (in-distribution, n=45) | Messy Set: Rules Only (n=100) | Real LLM (Gemini) | Notes |",
         "| :--- | :--- | :--- | :--- | :--- |",
-        f"| **Accept Everything** | ₹{fin_h.get('accept_everything_inr', 0.0):,.2f}* | ₹{fin_mr.get('accept_everything_inr', 0.0):,.2f}* | {re_accept} | Concedes 100% of disputes |",
-        f"| **Contest Everything** | ₹{fin_h.get('contest_everything_inr', 0.0):,.2f}* | ₹{fin_mr.get('contest_everything_inr', 0.0):,.2f}* | {re_contest} | Contests winnable and unwinnable alike |",
-        f"| **DisputePilot Policy** | **₹{fin_h.get('disputepilot_policy_inr', 0.0):,.2f}*** | **₹{fin_mr.get('disputepilot_policy_inr', 0.0):,.2f}*** | {re_recov} | Selectively contests high-probability disputes |",
-        f"| **Uplift vs Contest-All** | **₹{fin_h.get('uplift_vs_contest_everything_inr', 0.0):,.2f}*** | **₹{fin_mr.get('uplift_vs_contest_everything_inr', 0.0):,.2f}*** | {re_uplift} | Not tested (dispute fees set to ₹0.00 in simulation) |",
+        f"| **Accept Everything** | ₹{fin_h.get('accept_everything_inr', 0.0):,.2f}* | ₹{fin_mr.get('accept_everything_inr', 0.0):,.2f}* | {_real_omitted()} | Concedes 100% of disputes |",
+        f"| **Contest Everything** | ₹{fin_h.get('contest_everything_inr', 0.0):,.2f}* | ₹{fin_mr.get('contest_everything_inr', 0.0):,.2f}* | {_real_omitted()} | Contests winnable and unwinnable alike |",
+        f"| **DisputePilot Policy** | **₹{fin_h.get('disputepilot_policy_inr', 0.0):,.2f}*** | **₹{fin_mr.get('disputepilot_policy_inr', 0.0):,.2f}*** | {_real_omitted()} | Selectively contests high-probability disputes |",
+        f"| **Uplift vs Contest-All** | **₹{fin_h.get('uplift_vs_contest_everything_inr', 0.0):,.2f}*** | **₹{fin_mr.get('uplift_vs_contest_everything_inr', 0.0):,.2f}*** | {_real_omitted()} | Not tested (dispute fees set to ₹0.00 in simulation) |",
         "",
         f"\\* *All rupee amounts are simulated, under assumptions listed here (effort cost ₹{effort_cost:.2f}, dispute fee ₹{dispute_fee:.2f}). Whether realistic dispute fees make uplift positive is not tested.*",
         "",
@@ -922,7 +1344,11 @@ if __name__ == "__main__":
     parser.add_argument("--max-cases", type=int, default=None, help="Optional limit on cases to evaluate")
     parser.add_argument("--effort-cost", type=float, default=0.0, help="Assumed merchant effort cost per dispute (INR)")
     parser.add_argument("--fee-per-dispute", type=float, default=0.0, help="Assumed dispute fee per chargeback (INR)")
-    parser.add_argument("--real-llm", action="store_true", help="Run extraction and drafting with real GeminiClient on 30 random messy cases")
+    parser.add_argument("--real-llm", action="store_true", help="Run quota-aware real LLM evaluation")
+    parser.add_argument("--n", type=int, default=10, help="Number of cases to evaluate (default 10)")
+    parser.add_argument("--model", type=str, default=None, help="Gemini model name (default from LLM_MODEL or gemini-2.5-flash)")
+    parser.add_argument("--stage", choices=["classification", "extraction", "both"], default="both", help="Eval stage to run (default: both)")
+    parser.add_argument("--max-calls", type=int, default=20, help="Maximum real LLM call budget limit (default 20)")
     parser.add_argument("--seed", type=int, default=42, help="Random seed for holdout split and sampling")
     args = parser.parse_args()
 
@@ -938,6 +1364,10 @@ if __name__ == "__main__":
         effort_cost_inr=args.effort_cost,
         fee_per_dispute_inr=args.fee_per_dispute,
         real_llm=args.real_llm,
+        real_llm_n=args.n,
+        real_llm_model=args.model,
+        real_llm_stage=args.stage,
+        real_llm_max_calls=args.max_calls,
         seed=args.seed,
     )
 
@@ -948,6 +1378,7 @@ if __name__ == "__main__":
     print(f"- Clean Train Reason Macro-F1 (70%, in-distribution): {train_f1 * 100:.2f}%")
     print(f"- Clean Hold-out Reason Macro-F1 (30%, in-distribution): {holdout_f1 * 100:.2f}%")
     print(f"- Messy Set Rules-Only Reason Macro-F1: {messy_rules_f1 * 100:.2f}%")
-    print("- Real LLM: NOT RUN")
+    real_st = eval_results.get("real_llm_status", "NOT RUN")
+    print(f"- Real LLM Status: {real_st}")
     print("- Fabricated Claims in Verified Drafts: 0 (Structural Guarantee)")
     print("Reports written to evals/report.md and evals/results.json")

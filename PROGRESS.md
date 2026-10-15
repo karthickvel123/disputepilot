@@ -238,14 +238,55 @@ This document tracks implementation progress across all development phases.
   - `uv run pytest`: 91 passed in 3.6s.
   - `uv run ruff check .`: All checks passed, 0 errors.
 
+---
 
+### Phase M: Real-LLM Evaluation, Razorpay Test-Mode Smoke Script, & Documentation
+- **1. Real-LLM Evaluation (`python -m disputepilot.evals.runner --real-llm`)**:
+  - Executed runner with real LLM flag.
+  - Reason classification made initial calls logging to `evals/real_llm_outputs.jsonl`.
+  - Hit `429 RESOURCE_EXHAUSTED` (exceeded daily free tier limit of 20 requests per day for `gemini-2.5-flash`), followed by `google.genai.errors.ClientError: 400 INVALID_ARGUMENT` during `extract_document` schema transmission (backend rejected `additional_properties` emitted by SDK from Pydantic `extra="forbid"` models).
+  - In accordance with strict instructions ("If it fails for another reason, stop and report the exact error with any secrets removed" and "Do not edit numbers by hand"), halted execution and did not hand-edit or fabricate any numbers in `evals/report.md` or `evals/results.json`.
+  - Verified `evals/real_llm_outputs.jsonl`: file exists, contains 22 lines (21 JSON telemetry entries), and verified by search that zero API keys or `"Authorization"` header text exist in the file.
+  - Added section `"Real LLM results: how to read them"` to `evals/report.md` stating $n=30$ messy synthetic cases, single run, no confidence intervals, results are not evidence of real-world accuracy.
+- **2. Razorpay Test-Mode Smoke Script (`scripts/smoke_razorpay.py`)**:
+  - Implemented standalone, read-only smoke script using `RazorpayGateway` with `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET`.
+  - Calls `list_disputes` once with `count=5`.
+  - Guardrail: strictly refuses to run unless `key_id.startswith("rzp_test_")`.
+  - Zero write calls: no `accept_dispute`, no `contest_dispute`, no `upload_document`.
+  - Prints strictly sanitized output: HTTP status code, number of disputes returned, and top-level field names of the first dispute if present. Never prints raw response body, headers, or any credentials.
+  - Script was NOT executed against live credentials.
+  - Added unit tests in `tests/test_smoke_razorpay.py` with `httpx.MockTransport` testing non-test key refusal, empty/malformed key refusal, successful test-mode listing, 4xx handling, and asserting that zero secrets or authorization tokens leak into stdout or stderr.
+- **3. Documentation Updates**:
+  - Added `"🧪 Razorpay Test-Mode Smoke Test"` section to `README.md` with exact command (`uv run python scripts/smoke_razorpay.py`) and honest interpretation guidance for empty list (normal empty test dashboard) and 4xx status codes (invalid credentials or permissions).
+  - Updated `PROGRESS.md` with full status.
+- **5. Gateway Changes during Smoke-Script Task (`src/disputepilot/razorpay/gateway.py`)**:
+  - **File modified**: `src/disputepilot/razorpay/gateway.py`
+  - **Changes & Rationale**:
+    1. **`count: int | None = None` parameter added to `list_disputes`**:
+       - *Where*: Added to `DisputesGateway.list_disputes()`, `SimGateway.list_disputes()`, and `RazorpayGateway.list_disputes()`.
+       - *Why*: Razorpay's Disputes REST API (`GET /v1/disputes`) canonically uses `count` and `skip` for query pagination. Adding `count` as an optional parameter (`effective_limit = count if count is not None else limit`) aligns with Razorpay's API parameter naming while preserving full backward compatibility with internal `limit` calls.
+    2. **`self.last_status_code: int | None = None` attribute added to `RazorpayGateway`**:
+       - *Where*: Initialized in `RazorpayGateway.__init__` and recorded in `_execute_with_retry` (`self.last_status_code = resp.status_code`).
+       - *Why*: Allows diagnostic scripts such as `scripts/smoke_razorpay.py` to inspect the exact HTTP response code (e.g., 200, 401, 403) from the gateway without logging, storing, or exposing sensitive response payloads, headers, or credentials.
 
+---
 
-
-
-
-
-
-
-
-
+### Phase N: Gemini Schema Bug Fix & Quota-Aware Real-LLM Eval
+- **1. Gemini Schema Bug Fix (`src/disputepilot/extraction/llm.py`)**:
+  - Identified root cause: Pydantic models with `model_config = ConfigDict(extra="forbid")` emit `"additionalProperties": false` in JSON Schema. Google Gemini REST API rejects schemas containing `additional_properties` with HTTP 400 (`Invalid JSON payload received. Unknown name "additional_properties"`).
+  - Added `sanitize_schema_for_gemini()`: recursively inlines `$defs` / `definitions` into all `$ref` call sites, and removes all instances of `additionalProperties`, `additional_properties`, `$schema`, `$defs`, and `definitions`.
+  - Maintained strict local validation: raw response JSON is still validated locally against the original Pydantic models with `extra="forbid"`, ensuring unexpected or extra keys strictly raise `pydantic.ValidationError`.
+  - Added tests verifying that schemas sent to SDK contain zero `additionalProperties` and extra fields fail local Pydantic validation.
+- **2. Quota-Aware & Budget-Limited Real-LLM Evaluation (`src/disputepilot/evals/runner.py`)**:
+  - Implemented `GeminiDailyQuotaError` raised on `"perday"`, `"generaterequestsperday"`, or daily limit exhaustion, stopping execution immediately with zero retries.
+  - Per-minute rate limits (429s) retain exponential backoff and jitter.
+  - CLI flags added: `--n` (default 10), `--model` (falls back to env `LLM_MODEL` or `gemini-2.5-flash`), `--stage` (`classification`, `extraction`, or `both`), `--max-calls` (default 20).
+  - Pre-flight call budget estimation: calculates required calls based on targets and checkpoints, refusing to run if estimated calls exceed `--max-calls`.
+  - Checkpoint resumption: logs completed calls with `case_id`, `stage`, and `status: "completed"` to `evals/real_llm_outputs.jsonl`, skipping already-completed items on subsequent runs.
+  - Partial run reporting: early stops (e.g. from daily quota) label status as `PARTIAL: k of n cases, stopped by quota` and compute metrics only over completed cases labeled with $k$. Runs with zero completions report `NOT RUN`.
+- **3. Small Call Budget Eval Design**:
+  - Stage 1 (Classification): evaluates only cases where deterministic rules return `unclassified` (1 call each) against ground truth reason class.
+  - Stage 2 (Extraction): evaluates at most 5 cases; reports field accuracy against ground truth only for fields returned with a verbatim `source_quote`.
+  - Stages are reported separately with their own $n$ and $k$.
+- **4. Report Status & Caveats (`evals/report.md`)**:
+  - Replaced "Real LLM results: how to read them" section to explicitly state current status (`NOT RUN`), while maintaining all caveats: synthetic data only, one run, no confidence intervals, results are not evidence of real-world accuracy.

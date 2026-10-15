@@ -40,6 +40,7 @@ class DisputesGateway(ABC):
         phase: str | None = None,
         limit: int = 10,
         skip: int = 0,
+        count: int | None = None,
     ) -> list[RazorpayDispute]:
         """List disputes with optional filtering and pagination."""
 
@@ -136,7 +137,9 @@ class SimGateway(DisputesGateway):
         phase: str | None = None,
         limit: int = 10,
         skip: int = 0,
+        count: int | None = None,
     ) -> list[RazorpayDispute]:
+        effective_limit = count if count is not None else limit
         cases = self._load_all_cases()
         disputes: list[RazorpayDispute] = []
 
@@ -148,7 +151,7 @@ class SimGateway(DisputesGateway):
                 continue
             disputes.append(disp)
 
-        return disputes[skip : skip + limit]
+        return disputes[skip : skip + effective_limit]
 
     def fetch_dispute(self, dispute_id: str) -> RazorpayDispute:
         if dispute_id in self._memory_overrides:
@@ -295,6 +298,7 @@ class RazorpayGateway(DisputesGateway):
         self.client = client or httpx.Client(timeout=30.0)
         self.max_retries = max_retries
         self.backoff_factor = backoff_factor
+        self.last_status_code: int | None = None
 
     def _execute_with_retry(
         self,
@@ -342,6 +346,7 @@ class RazorpayGateway(DisputesGateway):
                     data=data,
                 )
                 last_resp = resp
+                self.last_status_code = resp.status_code
 
                 # If successful or not a retryable error, return response immediately
                 if resp.status_code not in (429, 500, 502, 503, 504):
@@ -365,9 +370,11 @@ class RazorpayGateway(DisputesGateway):
         phase: str | None = None,
         limit: int = 10,
         skip: int = 0,
+        count: int | None = None,
     ) -> list[RazorpayDispute]:
         """Fetch all disputes: GET /v1/disputes (Docs: https://razorpay.com/docs/api/disputes/#fetch-all-disputes)."""
-        params: dict[str, Any] = {"count": limit, "skip": skip}
+        effective_limit = count if count is not None else limit
+        params: dict[str, Any] = {"count": effective_limit, "skip": skip}
         if status:
             params["status"] = status
         if phase:

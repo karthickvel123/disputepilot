@@ -62,7 +62,7 @@ Clean and messy results are reported side by side in separate columns below. The
 
 ## Side-by-Side Evaluation Summary
 
-| Metric | Clean Train (70%, in-distribution) | Clean Hold-out (30%, in-distribution) | Messy Set: Rules Only (n=100) | Real LLM (30 messy cases) | Metric Classification |
+| Metric | Clean Train (70%, in-distribution) | Clean Hold-out (30%, in-distribution) | Messy Set: Rules Only (n=100) | Real LLM (Gemini) | Metric Classification |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **Reason Code Accuracy** | 100.00% | 100.00% | 6.00% | NOT RUN | Deterministic rules |
 | **Reason Code Macro-F1** | 100.00% | 100.00% | 9.33% | NOT RUN | Deterministic rules |
@@ -80,11 +80,18 @@ Clean and messy results are reported side by side in separate columns below. The
 
 ---
 
-## Real LLM Evaluation (GeminiClient on 30 Messy Cases)
+## Real LLM Evaluation (GeminiClient)
 
-**Status: NOT RUN** (`LLM_API_KEY` is not set in the environment).
+**Status: NOT RUN**
 
-No API calls were made to Google Gemini. In accordance with honest evaluation practices, no numbers are reported for a run that did not happen. When `LLM_API_KEY` is provided, running `python -m disputepilot.evals.runner --real-llm` executes structured JSON classification and extraction across 30 sampled messy disputes with rate limit backoff and saves raw outputs, latencies, and token counts to `evals/real_llm_outputs.jsonl`.
+No API calls were made to Google Gemini. In accordance with honest evaluation practices, no numbers are reported for a run that did not happen. When configured with `LLM_API_KEY`, running `python -m disputepilot.evals.runner --real-llm` executes quota-aware structured JSON classification and extraction with rate limit backoff and saves raw outputs to `evals/real_llm_outputs.jsonl`.
+
+### Real LLM results: how to read them
+- **Status:** NOT RUN
+- Synthetic data only.
+- One run.
+- No confidence intervals.
+- Results are not evidence of real-world accuracy.
 
 ---
 
@@ -141,7 +148,7 @@ No API calls were made to Google Gemini. In accordance with honest evaluation pr
 > - Response effort cost per dispute: ₹0.00 (simulated, under assumptions listed here)
 > - Dispute fee per chargeback: ₹0.00 (simulated, under assumptions listed here)
 
-| Policy | Clean Hold-out (in-distribution, n=45) | Messy Set: Rules Only (n=100) | Real LLM (30 messy cases) | Notes |
+| Policy | Clean Hold-out (in-distribution, n=45) | Messy Set: Rules Only (n=100) | Real LLM (Gemini) | Notes |
 | :--- | :--- | :--- | :--- | :--- |
 | **Accept Everything** | ₹0.00* | ₹0.00* | NOT RUN | Concedes 100% of disputes |
 | **Contest Everything** | ₹188,778.00* | ₹154,872.00* | NOT RUN | Contests winnable and unwinnable alike |

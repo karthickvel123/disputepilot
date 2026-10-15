@@ -1,5 +1,4 @@
-"""LLM client interface, Gemini integration, and FakeLLMClient for offline testing."""
-
+import copy
 import json
 import logging
 import os
@@ -12,6 +11,60 @@ from typing import Any, Protocol, runtime_checkable
 logger = logging.getLogger("disputepilot.extraction.llm")
 
 
+class GeminiDailyQuotaError(RuntimeError):
+    """Raised when Google Gemini daily quota (PerDay limit) is exhausted."""
+
+
+
+def sanitize_schema_for_gemini(schema: dict[str, Any] | type) -> dict[str, Any]:
+    """Sanitize a JSON schema or Pydantic model for Google Gemini API compatibility.
+
+    - Resolves and inlines all $defs and $ref references so no $defs remain.
+    - Recursively removes 'additionalProperties', 'additional_properties', '$schema',
+      '$defs', and 'definitions' at all nesting levels.
+    - Preserves field types, properties, required constraints, and enums.
+    """
+    if hasattr(schema, "model_json_schema"):
+        raw_schema = schema.model_json_schema()
+    elif isinstance(schema, dict):
+        raw_schema = copy.deepcopy(schema)
+    else:
+        raise TypeError(f"Expected dict or Pydantic model class, got {type(schema)}")
+
+    defs = copy.deepcopy(raw_schema.pop("$defs", {}) or raw_schema.pop("definitions", {}))
+
+    def clean_node(d: dict[str, Any]) -> dict[str, Any]:
+        return {
+            k: v
+            for k, v in d.items()
+            if k not in ("additionalProperties", "additional_properties", "$schema", "$defs", "definitions")
+        }
+
+    def resolve_refs(node: Any, current_defs: dict[str, Any], depth: int = 0) -> Any:
+        if depth > 20:
+            return node
+        if isinstance(node, dict):
+            if "$ref" in node:
+                ref_name = node["$ref"].split("/")[-1]
+                if ref_name in current_defs:
+                    target = copy.deepcopy(current_defs[ref_name])
+                    resolved = resolve_refs(target, current_defs, depth + 1)
+                    res_copy = dict(resolved) if isinstance(resolved, dict) else {}
+                    for k, v in node.items():
+                        if k != "$ref":
+                            res_copy[k] = resolve_refs(v, current_defs, depth + 1)
+                    return clean_node(res_copy)
+            return clean_node({k: resolve_refs(v, current_defs, depth + 1) for k, v in node.items()})
+        elif isinstance(node, list):
+            return [resolve_refs(item, current_defs, depth + 1) for item in node]
+        return node
+
+    cleaned = resolve_refs(raw_schema, defs)
+    if isinstance(cleaned, dict):
+        cleaned = clean_node(cleaned)
+    return cleaned
+
+
 @runtime_checkable
 class LLMClient(Protocol):
     """Protocol for structured JSON generation via Large Language Models."""
@@ -21,6 +74,8 @@ class LLMClient(Protocol):
         system: str,
         user: str,
         json_schema: dict[str, Any] | type,
+        case_id: str | None = None,
+        stage: str | None = None,
     ) -> dict[str, Any]:
         """Generate structured JSON output adhering to a given schema.
 
@@ -28,6 +83,8 @@ class LLMClient(Protocol):
             system: System instructions.
             user: User input / wrapped document content.
             json_schema: Target schema dict or Pydantic model class.
+            case_id: Optional case identifier for checkpointing.
+            stage: Optional stage name (e.g. 'classification', 'extraction').
 
         Returns:
             Dictionary matching the requested JSON structure.
@@ -41,7 +98,7 @@ class GeminiClient:
     def __init__(
         self,
         api_key: str | None = None,
-        model: str = "gemini-2.5-flash",
+        model: str | None = None,
         raw_output_path: Path | str | None = None,
     ) -> None:
         from google import genai
@@ -51,7 +108,7 @@ class GeminiClient:
             raise ValueError("GeminiClient requires LLM_API_KEY or GEMINI_API_KEY to be set.")
 
         self.client = genai.Client(api_key=resolved_key)
-        self.model = model
+        self.model = model or os.environ.get("LLM_MODEL") or os.environ.get("GEMINI_MODEL") or "gemini-2.5-flash"
         self.raw_output_path = Path(raw_output_path) if raw_output_path else None
         self.call_logs: list[dict[str, Any]] = []
 
@@ -60,14 +117,18 @@ class GeminiClient:
         system: str,
         user: str,
         json_schema: dict[str, Any] | type,
+        case_id: str | None = None,
+        stage: str | None = None,
+        **kwargs: Any,
     ) -> dict[str, Any]:
-        """Call Gemini API requesting structured JSON output with exponential backoff on rate limits."""
+        """Call Gemini API requesting structured JSON output with backoff for 429s and immediate stop on daily quota."""
         from google.genai import types
 
+        clean_schema = sanitize_schema_for_gemini(json_schema)
         config = types.GenerateContentConfig(
             system_instruction=system,
             response_mime_type="application/json",
-            response_schema=json_schema,
+            response_schema=clean_schema,
             temperature=0.0,
         )
 
@@ -94,6 +155,9 @@ class GeminiClient:
 
                 log_entry = {
                     "timestamp": time.time(),
+                    "case_id": case_id,
+                    "stage": stage,
+                    "status": "completed",
                     "model": self.model,
                     "latency_seconds": latency,
                     "tokens": {
@@ -105,6 +169,9 @@ class GeminiClient:
                     "raw_response": text,
                     "parsed_response": parsed_json,
                 }
+                for k, v in kwargs.items():
+                    if k not in log_entry and v is not None:
+                        log_entry[k] = v
                 self.call_logs.append(log_entry)
 
                 if self.raw_output_path:
@@ -117,6 +184,15 @@ class GeminiClient:
             except Exception as e:
                 last_error = e
                 err_str = str(e).lower()
+                is_per_day = (
+                    "perday" in err_str
+                    or "generaterequestsperday" in err_str
+                    or ("quota" in err_str and "day" in err_str)
+                )
+                if is_per_day:
+                    logger.error("Gemini daily quota exceeded (PerDay limit reached). Stopping immediately without retries.")
+                    raise GeminiDailyQuotaError(f"Gemini daily quota exhausted: {e}") from e
+
                 is_rate_limit = (
                     "429" in err_str
                     or "resourceexhausted" in err_str
@@ -169,6 +245,9 @@ class FakeLLMClient:
         system: str,
         user: str,
         json_schema: dict[str, Any] | type,
+        case_id: str | None = None,
+        stage: str | None = None,
+        **kwargs: Any,
     ) -> dict[str, Any]:
         """Generate structured response deterministically without network calls."""
         if self._default_response is not None:

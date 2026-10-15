@@ -129,6 +129,25 @@ Offline test mode runs `FakeLLMClient`, a regex and keyword matching harness wri
 
 ---
 
+## 🧪 Razorpay Test-Mode Smoke Test
+
+To verify connectivity and test credentials against Razorpay's API without writing any data, run:
+
+```bash
+uv run python scripts/smoke_razorpay.py
+```
+
+### Safety & Guardrails
+- **Read-Only**: The script only calls `GET /v1/disputes` with `count=5`. It makes **zero mutating or write calls** (no accept, no contest, no document upload).
+- **Test Key Guard**: It strictly refuses to run unless `RAZORPAY_KEY_ID` begins with `rzp_test_`.
+- **Secret Protection**: It prints only the HTTP status, number of disputes returned, and top-level field names of the first dispute (if any). It never prints raw response bodies or credentials.
+
+### Interpreting Output Honestly
+- **Empty List (`Disputes Returned: 0` with `HTTP Status: 200`)**: This means authentication succeeded, but your Razorpay test dashboard currently has no disputes created. This is a normal state for fresh test accounts and should be reported honestly as an empty dispute list, not fabricated or hidden.
+- **4xx Error (e.g. `HTTP Status: 401` or `HTTP Status: 403`)**: This indicates invalid credentials, expired API keys, or insufficient permissions on the Razorpay merchant account. 4xx errors identify real integration issues and should be reported honestly rather than suppressed.
+
+---
+
 ## ⚠️ Limitations
 
 - **Reviewer Authentication**: Reviewer name is typed, not authenticated via SSO or corporate identity providers.

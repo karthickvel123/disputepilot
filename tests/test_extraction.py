@@ -61,6 +61,92 @@ def test_extra_keys_fail_validation() -> None:
     assert "Extra inputs are not permitted" in str(exc_info.value)
 
 
+def test_schema_sent_to_sdk_contains_no_additional_properties() -> None:
+    """The schema sent to the Gemini SDK must contain no additionalProperties or defs."""
+    import json
+
+    from google.genai import types
+
+    from disputepilot.extraction.llm import sanitize_schema_for_gemini
+    from disputepilot.extraction.schemas import (
+        CancellationPolicy,
+        ChatTranscript,
+        DeliveryProof,
+        Invoice,
+    )
+
+    models_to_test = [DeliveryProof, Invoice, ChatTranscript, CancellationPolicy]
+    for model_cls in models_to_test:
+        raw_schema = model_cls.model_json_schema()
+        # Original Pydantic schema must have additionalProperties: False
+        assert "additionalProperties" in raw_schema or "$defs" in raw_schema
+
+        clean_schema = sanitize_schema_for_gemini(model_cls)
+
+        # 1. Standalone clean schema dict checks
+        clean_json_str = json.dumps(clean_schema)
+        assert "additionalProperties" not in clean_json_str
+        assert "additional_properties" not in clean_json_str
+        assert "$defs" not in clean_json_str
+        assert "definitions" not in clean_json_str
+
+        # 2. Converted GenerateContentConfig schema payload checks
+        config = types.GenerateContentConfig(
+            response_mime_type="application/json",
+            response_schema=clean_schema,
+        )
+        dumped = config.model_dump(exclude_none=True)
+        dumped_json_str = json.dumps(dumped)
+
+        assert "additionalProperties" not in dumped_json_str
+        assert "additional_properties" not in dumped_json_str
+        assert "$defs" not in dumped_json_str
+        assert "definitions" not in dumped_json_str
+
+
+def test_response_with_extra_key_fails_validation() -> None:
+    """A response containing an extra key must fail Pydantic model validation locally."""
+    from disputepilot.extraction.schemas import (
+        CancellationPolicy,
+        ChatTranscript,
+        DeliveryProof,
+        Invoice,
+    )
+
+    extra_payload = {
+        "invoice_number": {
+            "value": "INV-2026-001",
+            "source_quote": "Invoice No: INV-2026-001",
+            "confidence": 1.0,
+        },
+        "unsupported_extra_key": "malicious_or_unexpected_value",
+    }
+
+    # 1. Direct Pydantic model validation must raise ValidationError
+    with pytest.raises(ValidationError) as exc:
+        Invoice.model_validate(extra_payload)
+    assert "unsupported_extra_key" in str(exc.value)
+
+    # 2. All extraction models strictly reject extra fields
+    for model_cls in [DeliveryProof, ChatTranscript, CancellationPolicy]:
+        with pytest.raises(ValidationError):
+            model_cls.model_validate({"unknown_key": "some_value"})
+
+    # 3. In the extractor pipeline, an extra key in LLM response must fail validation
+    fake_client = FakeLLMClient()
+    fake_client.set_default_response(extra_payload)
+
+    with pytest.raises(ValidationError) as exc:
+        extract_document(
+            text_or_path="Invoice No: INV-2026-001\nTotal: 499900",
+            case_id="case_extra_test",
+            doc_id="doc_inv_extra",
+            doc_type="invoice",
+            llm_client=fake_client,
+        )
+    assert "unsupported_extra_key" in str(exc.value)
+
+
 # ==============================================================================
 # 2. Quote Verification Tests
 # ==============================================================================

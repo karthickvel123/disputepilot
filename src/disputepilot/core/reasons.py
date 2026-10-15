@@ -7,6 +7,7 @@ import yaml
 from pydantic import BaseModel
 
 from disputepilot.core.models import ReasonClass
+from disputepilot.extraction.llm import GeminiDailyQuotaError
 
 logger = logging.getLogger("disputepilot.core.reasons")
 REASONS_YAML_DEFAULT = Path(__file__).parent / "reasons.yaml"
@@ -43,6 +44,7 @@ def classify_reason(
     reason_code_or_text: str | None,
     config_path: Path | str | None = None,
     llm_client: Any | None = None,
+    case_id: str | None = None,
 ) -> ReasonMatch:
     """Map Razorpay reason code or text description to one of the 7 ReasonClass categories or UNCLASSIFIED.
 
@@ -55,6 +57,7 @@ def classify_reason(
         reason_code_or_text: Raw reason string from Razorpay dispute entity.
         config_path: Optional custom path to reasons.yaml.
         llm_client: Optional LLMClient instance for second-pass semantic classification.
+        case_id: Optional case identifier for telemetry and checkpointing.
 
     Returns:
         ReasonMatch with assigned ReasonClass, rule matched, confidence, quote, and needs_review.
@@ -159,11 +162,20 @@ def classify_reason(
                 },
                 "required": ["reason_class", "confidence", "quote"],
             }
-            res = llm_client.generate_json(
-                system=system_instruction,
-                user=user_prompt,
-                json_schema=schema,
-            )
+            try:
+                res = llm_client.generate_json(
+                    system=system_instruction,
+                    user=user_prompt,
+                    json_schema=schema,
+                    case_id=case_id,
+                    stage="classification",
+                )
+            except TypeError:
+                res = llm_client.generate_json(
+                    system=system_instruction,
+                    user=user_prompt,
+                    json_schema=schema,
+                )
             raw_class = str(res.get("reason_class", "unclassified")).strip().lower()
             try:
                 confidence = float(res.get("confidence", 0.0))
@@ -193,6 +205,8 @@ def classify_reason(
                 quote=quote,
                 needs_review=True,
             )
+        except GeminiDailyQuotaError:
+            raise
         except Exception as exc:  # noqa: BLE001
             logger.warning("LLM reason classification failed or unavailable: %s", exc)
             return ReasonMatch(

@@ -93,6 +93,9 @@ def extract_document(
         system=SYSTEM_EXTRACTION_PROMPT,
         user=wrapped_content,
         json_schema=schema_cls,
+        case_id=case_id,
+        stage="extraction",
+        doc_id=doc_id,
     )
 
     # 5. Validate schema (Pydantic models have extra="forbid" so extra keys fail validation)
