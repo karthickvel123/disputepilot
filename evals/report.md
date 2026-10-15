@@ -8,8 +8,8 @@ This evaluation measures the DisputePilot pipeline across synthetic dispute data
 - **Components Used**: Deterministic keyword & code matcher (`classify_reason` pass 1 via `reasons.yaml`) and LLM classification fallback (`LLMClient.generate_json`).
 - **What it shows**: On clean cases matching canonical reason codes, deterministic rules achieve 100% accuracy. On messy cases (paraphrased Hinglish, spelling mistakes, colloquial text without exact keywords), rule-only classification achieves 6.00%, returning 'unclassified' with needs_review=True (never silently defaulting to 'other').
 - **Why messy-set rules-only accuracy moved from 17% to 6% between runs**:
-  - **Exact count of cases correct under rules-only:** Exactly **6 cases** out of 100 (6.00%).
-  - **Breakdown of the 6 correct cases by true ground-truth class:**
+  - **Cases classified by rules:** Exactly **10 cases** out of 100.
+  - **Cases correct under rules:** Exactly **6 cases** out of 100 (6.00%):
     - `not_as_described`: **3 cases** (`disp_m_0030_6kyo3i`, `disp_m_0065_nubgae`, `disp_m_0100_y4ols3` — matched keyword `"mismatched"` in `reasons.yaml`)
     - `other`: **3 cases** (`disp_m_0014_1bz99n`, `disp_m_0077_7veemd`, `disp_m_0098_3mlntq` — matched keyword `"clarification"` in `reasons.yaml`)
     - `item_not_received`: **0 cases** (0/15)
@@ -18,7 +18,11 @@ This evaluation measures the DisputePilot pipeline across synthetic dispute data
     - `subscription_cancelled`: **0 cases** (0/14)
     - `refund_not_received`: **0 cases** (0/14)
     - **Total correct:** 3 (`not_as_described`) + 3 (`other`) = **6 cases**.
-  - **Reconciliation with 17% (17 cases):** In the earlier run, when no rule or keyword matched, the classifier had a silent fallback to `ReasonClass.OTHER`. The 100-case messy dataset contains exactly 14 cases whose true ground-truth class is `other`. While 3 of those 14 matched the keyword `"clarification"`, the remaining **11 `other` cases** did not match any rule keyword. Under the silent fallback to `other`, those 11 non-matching cases were assigned `other` by default, accidentally scoring true positives. Added to the 3 keyword matches for `not_as_described` and the 3 keyword matches for `other`, this yielded 3 + 3 + 11 = 17 cases (17.00%). Removing the silent fallback and honestly returning `unclassified` eliminated those 11 accidental credits, leaving exactly 17 - 11 = 6 cases (6.00%). The numbers reconcile completely.
+  - **Cases incorrect under rules:** Exactly **4 cases**:
+    - 2 cases predicted `duplicate_charge` (ground truth `not_as_described`): `disp_m_0002_3xtplp`, `disp_m_0016_f9caio` (text: *"jo picture me tha wo nahi bheja duplicate piece lag raha"* matched keyword `"duplicate"`)
+    - 2 cases predicted `not_as_described` (ground truth `refund_not_received`): `disp_m_0069_xw77t2`, `disp_m_0076_jqb1z7` (text: *"ARN number fake nikla bank bola koi refund nahi aaya"* matched keyword `"fake"`)
+  - **Cases left unclassified:** Exactly **90 cases** (90.00%).
+  - **Reconciliation with 17% (17 cases):** In the earlier run, when no rule or keyword matched, the classifier had a silent fallback to `ReasonClass.OTHER`. The 100-case messy dataset contains exactly 14 cases whose true ground-truth class is `other`. While 3 of those 14 matched the keyword `"clarification"`, the remaining **11 `other` cases** did not match any rule keyword. Under the silent fallback to `other`, those 11 non-matching cases were assigned `other` by default, accidentally scoring true positives. Added to the 3 keyword matches for `not_as_described` and the 3 keyword matches for `other`, this yielded 3 + 3 + 11 = 17 cases (17.00%). Removing the silent fallback and honestly returning `unclassified` eliminated those 11 accidental credits, leaving exactly 17 - 11 = 6 correct cases (6.00%), 4 incorrect cases (total 10 classified), and 90 unclassified cases. The numbers reconcile completely.
 - **What it does not show**: Live production bank dispute accuracy where reason strings may be entirely unstandardized or contain conflicting bank narrative codes.
 
 ### 2. Document Field Extraction
@@ -64,9 +68,9 @@ Clean and messy results are reported side by side in separate columns below. The
 
 | Metric | Clean Train (70%, in-distribution) | Clean Hold-out (30%, in-distribution) | Messy Set: Rules Only (n=100) | Real LLM (Gemini) | Metric Classification |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Reason Code Accuracy** | 100.00% | 100.00% | 6.00% | 95.24% (k=21) | Deterministic rules |
-| **Reason Code Macro-F1** | 100.00% | 100.00% | 9.33% | 95.56% (k=21) | Deterministic rules |
-| **Field-Level Extraction Accuracy** | fake regex baseline, appendix only | fake regex baseline, appendix only | fake regex baseline, appendix only | NOT RUN | fake regex baseline, appendix only |
+| **Reason Code Accuracy** | 100.00% | 100.00% | 6.00% | 93.75% (k=16 unique) | LLM fallback (Gemini), n=16 unique cases |
+| **Reason Code Macro-F1** | 100.00% | 100.00% | 9.33% | 92.38% (k=16 unique) | LLM fallback (Gemini), n=16 unique cases |
+| **Field-Level Extraction Accuracy** | fake regex baseline, appendix only | fake regex baseline, appendix only | fake regex baseline, appendix only | n too small (k=1) | fake regex baseline, appendix only |
 | **Missing-Category Recall** | 98.96% | 100.00% | 100.00% | N/A (omitted for budget) | **Pipeline sanity check, not performance** |
 | **Raw Sentence Grounding Rate** | 100.00% | 100.00% | 100.00% | N/A (omitted for budget) | Pre-verifier fact coverage |
 | **Fabricated Claims in Clean Drafts** | **0** | **0** | **0** | N/A (omitted for budget) | **Pipeline sanity check, not performance** (verifier guarantee) |
@@ -82,14 +86,36 @@ Clean and messy results are reported side by side in separate columns below. The
 
 ## Real LLM Evaluation (GeminiClient)
 
-**Overall Status: COMPLETE (21 classification, 1 extraction)**
+**Overall Status: PARTIAL (classification 16 unique of 30 planned, extraction 1 unique of 5 planned)**
 
 ### Stage 1: Reason Code Classification (Rules Fallback Only)
-- **Status:** COMPLETE (21 cases)
-- **Scored Records:** k=21
-- **Correct Count:** 20 / 21
-- **Accuracy (vs Ground Truth):** 95.24%
-- **Macro-F1 Score:** 95.56%
+- **Status:** PARTIAL: 16 unique of 30 planned
+- **Unique Cases Scored:** k=16 unique cases (rule: first completed record used; 5 duplicate records dropped)
+- **Correct Count:** 15 / 16
+- **Accuracy (vs Ground Truth):** 93.75% (15 of 16 unique)
+- **Macro-F1 Score:** 92.38%
+- **Duplicate Records Dropped:** 5
+
+#### Sample Composition & Origin:
+- **Sample Selection**: Not a random sample. These 16 unique cases represent the order in which cases left unclassified by rules were encountered during earlier interrupted evaluation runs.
+- **Interrupted Runs**: Calls were recorded across multiple quota-limited runs before checkpoint deduplication, yielding 21 total records. When deduplicated by case ID using the first completed record rule, 5 duplicate records are dropped, leaving 16 unique cases.
+- **Unique Cases Scored (16 cases)**:
+  1. `disp_m_0096_ul4bkz`
+  2. `disp_m_0092_nyhd17`
+  3. `disp_m_0088_bi1dls`
+  4. `disp_m_0095_7x79m1`
+  5. `disp_m_0036_9z8dzt`
+  6. `disp_m_0032_8nkm7w`
+  7. `disp_m_0094_3499yi`
+  8. `disp_m_0084_mqm9sb`
+  9. `disp_m_0055_tii54p`
+  10. `disp_m_0005_kwo886`
+  11. `disp_m_0078_bh400t`
+  12. `disp_m_0085_r71yk1`
+  13. `disp_m_0093_lob3f2`
+  14. `disp_m_0068_446v8y`
+  15. `disp_m_0090_l2g3vu`
+  16. `disp_m_0058_bmo2fj`
 
 #### Misclassified Cases:
 | Case ID | Model Answer | True Label | Model Confidence | Raw Reason Text |
@@ -98,24 +124,30 @@ Clean and messy results are reported side by side in separate columns below. The
 
 ### Confidence Statistics & Calibration
 - **Reported Confidence Distribution:**
-  - `1.00`: 11 records (52.4%)
-  - `0.95`: 6 records (28.6%)
-  - `0.90`: 4 records (19.0%)
+  - `1.00`: 8 records (50.0%)
+  - `0.95`: 5 records (31.2%)
+  - `0.90`: 3 records (18.8%)
 - **Answers Below 0.6 Review Threshold:** 0 (0.0%)
 - **Calibration Assessment:** Self-reported confidence is not calibrated. For example, on the misclassified case (`disp_m_0005_kwo886`), the model expressed 1.00 (100%) confidence in `unauthorised`, despite the ground truth being `subscription_cancelled`. Raw LLM confidence cannot be interpreted as calibrated posterior probability without empirical recalibration.
 
 ### Stage 2: Document Field Extraction (Verbatim Quoted Fields Only)
-- **Status:** COMPLETE (1 cases)
-- **Completed Cases:** k=1
-- **Field-Level Accuracy:** N/A (no cases completed)
+- **Status:** PARTIAL: 1 unique of 5 planned
+- **Documents Scored:** 1 (n too small for an accuracy rate)
+- **Fields Returned:** 6 (all with verbatim source quotes: 6 of 6)
+- **Fields Checkable vs Ground Truth:** 2 (correct: 2)
+- **Fields with No Ground-Truth Field in Eval:** 4 (`invoice_number`, `payment_id`, `billing_address`, `invoice_date`)
+- **Fields Null:** 4
+- **Fields without Verbatim Quote:** None (all quotes found verbatim)
+- **Field-Level Accuracy:** n too small for an accuracy rate
 - **Evaluation Criteria:** Accuracy is computed only for fields where the model returned a verbatim `source_quote` matching the source document text.
 
 ### Real LLM results: how to read them
-- **Status:** COMPLETE (21 classification, 1 extraction)
+- **Status:** PARTIAL (classification 16 unique of 30 planned, extraction 1 unique of 5 planned)
 - Synthetic data only.
 - One run.
 - No confidence intervals.
 - Results are not evidence of real-world accuracy.
+- Sample is not a random sample (derived from interrupted evaluation runs).
 
 ---
 

@@ -306,7 +306,130 @@ def test_score_real_llm_records_matching_and_confidence_stats(tmp_path: Path) ->
     assert cls_metrics["below_threshold_count"] == 1
 
     # Status
-    assert scored["status"] == "PARTIAL (classification 3 cases, extraction NOT RUN)"
+    assert cls_metrics["status"] == "PARTIAL: 3 unique of 30 planned"
+    assert scored["status"] == "PARTIAL (classification 3 unique of 30 planned, extraction NOT RUN)"
+
+
+def test_score_real_llm_records_extraction_offline_scoring() -> None:
+    """Test offline scoring of real extraction records against ground truth."""
+    from disputepilot.evals.runner import _load_cases_from_dir, score_real_llm_records
+
+    cases = _load_cases_from_dir("data/cases_messy")
+    outputs_path = Path("evals/real_llm_outputs.jsonl")
+    scored = score_real_llm_records(outputs_path, cases, planned_n_cls=30, planned_n_ext=5)
+
+    ext = scored["extraction"]
+    assert ext["completed_k"] == 1
+    assert ext["unique_cases_scored"] == 1
+    assert ext["documents_scored"] == 1
+    assert ext["fields_returned"] == 6
+    assert ext["fields_quoted"] == 6
+    assert ext["fields_checkable"] == 2
+    assert ext["fields_correct"] == 2
+    assert ext["fields_no_gt"] == ["invoice_number", "payment_id", "billing_address", "invoice_date"]
+    assert ext["fields_null"] == 4
+    assert ext["unquoted_fields"] == []
+    assert ext["accuracy_note"] == "n too small for an accuracy rate"
+    assert ext["field_accuracy"] is None
+    assert ext["status"] == "PARTIAL: 1 unique of 5 planned"
+
+    cls = scored["classification"]
+    assert cls["completed_k"] == 16
+    assert cls["unique_cases_scored"] == 16
+    assert cls["duplicates_dropped"] == 5
+    assert cls["correct_count"] == 15
+    assert cls["accuracy"] == 0.9375
+    assert cls["macro_f1"] == 0.9238
+    assert cls["status"] == "PARTIAL: 16 unique of 30 planned"
+
+    assert scored["status"] == "PARTIAL (classification 16 unique of 30 planned, extraction 1 unique of 5 planned)"
+
+
+def test_runner_never_repeats_case_already_completed_in_checkpoint_log(tmp_path: Path) -> None:
+    """Ensure the evaluation runner never calls the LLM for a case already completed in the checkpoint log."""
+    import json
+    from typing import Any
+
+    from disputepilot.evals.runner import _load_cases_from_dir, run_real_llm_eval
+
+    cases = _load_cases_from_dir("data/cases_messy", max_cases=10)
+    unclassified_cases = [c for c in cases if c.ground_truth.reason_class != "not_as_described"]
+    case_a, case_b, case_c = unclassified_cases[0], unclassified_cases[1], unclassified_cases[2]
+
+    log_file = tmp_path / "real_llm_outputs.jsonl"
+    entries = [
+        {
+            "timestamp": 100.0,
+            "case_id": case_a.case_id,
+            "stage": "classification",
+            "status": "completed",
+            "parsed_response": {"reason_class": case_a.ground_truth.reason_class.value if hasattr(case_a.ground_truth.reason_class, "value") else str(case_a.ground_truth.reason_class), "confidence": 0.99},
+        },
+        {
+            "timestamp": 105.0,
+            "case_id": case_a.case_id,  # duplicate record to test deduplication
+            "stage": "classification",
+            "status": "completed",
+            "parsed_response": {"reason_class": case_a.ground_truth.reason_class.value if hasattr(case_a.ground_truth.reason_class, "value") else str(case_a.ground_truth.reason_class), "confidence": 0.95},
+        },
+        {
+            "timestamp": 110.0,
+            "case_id": case_b.case_id,
+            "stage": "classification",
+            "status": "completed",
+            "parsed_response": {"reason_class": case_b.ground_truth.reason_class.value if hasattr(case_b.ground_truth.reason_class, "value") else str(case_b.ground_truth.reason_class), "confidence": 0.90},
+        },
+    ]
+    log_file.write_text("\n".join(json.dumps(e) for e in entries) + "\n", encoding="utf-8")
+
+    class SpyClient:
+        def __init__(self) -> None:
+            self.invocations: list[str] = []
+
+        def generate_json(
+            self,
+            system: str,
+            user: str,
+            json_schema: Any,
+            case_id: str | None = None,
+            stage: str | None = None,
+            **kwargs: Any,
+        ) -> dict[str, Any]:
+            if case_id:
+                self.invocations.append(case_id)
+            return {"reason_class": "other", "confidence": 0.85, "quote": "test"}
+
+    spy = SpyClient()
+
+    # Run targeting 3 cases: case_a, case_b (completed), and case_c (uncompleted)
+    res = run_real_llm_eval(
+        messy_cases=[case_a, case_b, case_c],
+        outputs_log=log_file,
+        n=3,
+        max_calls=10,
+        stage="classification",
+        custom_client=spy,
+    )
+
+    # Neither case_a nor case_b should EVER be called on client!
+    assert case_a.case_id not in spy.invocations
+    assert case_b.case_id not in spy.invocations
+    # Only case_c was called
+    assert spy.invocations == [case_c.case_id]
+    assert res["classification"]["completed_k"] == 3
+
+    # On second run, case_c is already in checkpoints; zero calls should be made!
+    spy.invocations.clear()
+    res2 = run_real_llm_eval(
+        messy_cases=[case_a, case_b, case_c],
+        outputs_log=log_file,
+        n=3,
+        max_calls=10,
+        stage="classification",
+        custom_client=spy,
+    )
+    assert spy.invocations == []
+    assert res2["classification"]["completed_k"] == 3
 
 
 def test_score_real_llm_records_backfill_older_records(tmp_path: Path) -> None:

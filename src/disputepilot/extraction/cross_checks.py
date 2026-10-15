@@ -75,6 +75,48 @@ def check_invoice_amount_mismatch(
     return None
 
 
+def check_invoice_payment_mismatch(
+    invoice_payment_id: str | None,
+    dispute_payment_id: str | None,
+    order_id: str | None = None,
+) -> CrossCheckFlag | None:
+    """Flag if invoice payment reference differs from both dispute payment_id and order_id."""
+    if not invoice_payment_id or not invoice_payment_id.strip():
+        return None
+
+    inv_ref = invoice_payment_id.strip()
+    pmt_id = dispute_payment_id.strip() if dispute_payment_id else None
+    ord_id = order_id.strip() if order_id else None
+
+    # Matches if equals dispute payment_id OR order_id
+    if (pmt_id and inv_ref == pmt_id) or (ord_id and inv_ref == ord_id):
+        return None
+
+    # Flag only when it matches neither
+    if pmt_id or ord_id:
+        expected_refs = []
+        if pmt_id:
+            expected_refs.append(f"payment ID '{pmt_id}'")
+        if ord_id:
+            expected_refs.append(f"order ID '{ord_id}'")
+        expected_str = " or ".join(expected_refs)
+
+        return CrossCheckFlag(
+            flag_code="INVOICE_PAYMENT_MISMATCH",
+            severity=Severity.HIGH,
+            message=(
+                f"Invoice payment reference '{inv_ref}' does not match "
+                f"the dispute {expected_str}."
+            ),
+            details={
+                "invoice_payment_id": inv_ref,
+                "dispute_payment_id": pmt_id,
+                "order_id": ord_id,
+            },
+        )
+    return None
+
+
 def _normalize_address_tokens(address: str) -> set[str]:
     """Tokenize and normalize address string into salient words."""
     # Remove punctuation and split on whitespace
@@ -204,6 +246,24 @@ def run_cross_checks(
         )
         if flag_amt:
             flags.append(flag_amt)
+
+    # 2b. Inspect Invoices for payment reference mismatch
+    invoice_payment_id: str | None = None
+    for doc in extracted_docs:
+        if "payment_id" in doc.surviving_fields:
+            val = _extract_val(doc.surviving_fields["payment_id"])
+            if val:
+                invoice_payment_id = str(val)
+                break
+
+    if invoice_payment_id:
+        flag_pmt = check_invoice_payment_mismatch(
+            invoice_payment_id=invoice_payment_id,
+            dispute_payment_id=case.dispute.payment_id,
+            order_id=case.order.id if case.order else None,
+        )
+        if flag_pmt:
+            flags.append(flag_pmt)
 
     # 3. Address match between POD and Order
     if delivery_address and case.order.shipping_address:

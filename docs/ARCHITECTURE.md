@@ -1,6 +1,6 @@
 # DisputePilot: System Architecture & Technical Design
 
-DisputePilot is an autonomous defense and decision engine designed for Razorpay merchants to triage, audit, and contest chargebacks while enforcing strict cryptographic and operational safety guarantees.
+DisputePilot is a human-approved defense and decision engine designed for Razorpay merchants to triage, audit, and contest chargebacks while enforcing strict cryptographic and operational safety guarantees.
 
 ---
 
@@ -55,7 +55,7 @@ To eliminate LLM hallucinations and prevent false claims in merchant rebuttals:
    - Extracts all numbers, dates (ISO and natural text), and alphanumeric identifiers from the sentence text.
    - Verifies that every single number, date, or ID is strictly grounded in the cited facts.
    - Any ungrounded or fabricated sentence is automatically stripped into the audit report.
-   - **Guarantee**: Verified final drafts contain **zero fabricated claims**.
+   - **Enforcement**: Unsupported numbers, dates and IDs are stripped by a deterministic verifier so verified final drafts contain no ungrounded claims.
 
 ---
 

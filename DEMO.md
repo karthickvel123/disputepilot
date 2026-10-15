@@ -1,6 +1,6 @@
 # DisputePilot: 5-Minute Evaluation & Demo Walkthrough
 
-This step-by-step walkthrough script guides you through verifying DisputePilot's defense console, autonomous evidence auditing, deterministic verification, and human approval safeguards.
+This step-by-step walkthrough script guides you through verifying DisputePilot's defense console, bounded evidence auditing, deterministic verification, and human approval safeguards.
 
 ---
 
@@ -92,7 +92,7 @@ This step-by-step walkthrough script guides you through verifying DisputePilot's
 
 Run these commands in your shell:
 ```bash
-# 1. Run all 85 pytest tests
+# 1. Run the test suite (run uv run pytest)
 make test
 
 # 2. Run ruff linter

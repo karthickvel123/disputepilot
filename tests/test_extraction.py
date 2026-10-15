@@ -10,6 +10,7 @@ from disputepilot.extraction.cross_checks import (
     Severity,
     check_address_mismatch,
     check_invoice_amount_mismatch,
+    check_invoice_payment_mismatch,
     check_refund_not_mentioned,
     run_cross_checks,
 )
@@ -277,6 +278,46 @@ def test_cross_check_invoice_amount_mismatch() -> None:
 
     # Matching amount produces no flag
     assert check_invoice_amount_mismatch(299900, 299900) is None
+
+
+def test_cross_check_invoice_payment_mismatch() -> None:
+    """Invoice payment reference matching payment_id or order_id succeeds; matching neither flags."""
+    # 1. Matches payment_id -> produces no flag
+    assert check_invoice_payment_mismatch(
+        invoice_payment_id="pay_f10epf91dhod",
+        dispute_payment_id="pay_f10epf91dhod",
+        order_id="order_zdoc9is0j8ht",
+    ) is None
+
+    # 2. Matches order_id -> produces no flag
+    assert check_invoice_payment_mismatch(
+        invoice_payment_id="order_zdoc9is0j8ht",
+        dispute_payment_id="pay_f10epf91dhod",
+        order_id="order_zdoc9is0j8ht",
+    ) is None
+
+    # 3. Matches neither -> triggers INVOICE_PAYMENT_MISMATCH flag
+    flag = check_invoice_payment_mismatch(
+        invoice_payment_id="ref_completely_different",
+        dispute_payment_id="pay_f10epf91dhod",
+        order_id="order_zdoc9is0j8ht",
+    )
+    assert flag is not None
+    assert flag.flag_code == "INVOICE_PAYMENT_MISMATCH"
+    assert flag.severity == Severity.HIGH
+    assert flag.details["invoice_payment_id"] == "ref_completely_different"
+    assert flag.details["dispute_payment_id"] == "pay_f10epf91dhod"
+    assert flag.details["order_id"] == "order_zdoc9is0j8ht"
+
+    # Backward compatibility when order_id is omitted
+    assert check_invoice_payment_mismatch("pay_f10epf91dhod", "pay_f10epf91dhod") is None
+    flag_legacy = check_invoice_payment_mismatch("other_ref", "pay_f10epf91dhod")
+    assert flag_legacy is not None
+    assert flag_legacy.flag_code == "INVOICE_PAYMENT_MISMATCH"
+
+    # Empty or None produces no flag
+    assert check_invoice_payment_mismatch(None, "pay_f10epf91dhod", "order_zdoc9is0j8ht") is None
+    assert check_invoice_payment_mismatch("", "pay_f10epf91dhod", "order_zdoc9is0j8ht") is None
 
 
 def test_cross_check_address_mismatch() -> None:

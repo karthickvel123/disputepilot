@@ -23,7 +23,7 @@ This document tracks implementation progress across all development phases.
   - `src/disputepilot/extraction/cross_checks.py`: Deterministic discrepancy audits with severity tiers: delivery date after dispute date, invoice amount vs dispute amount mismatch, delivery address vs shipping address token overlap, and unmentioned refund records.
   - `src/disputepilot/extraction/__init__.py`: Public exports.
   - `tests/test_extraction.py`: 7 tests covering extra key validation, quote dropping, prompt injection resilience, and each cross-check flag.
-- **Tests Added**: 7 tests in `test_extraction.py` (total suite: 53 tests passing).
+- **Tests Added**: 7 tests in `test_extraction.py` (run uv run pytest).
 - **Assumed / Not Done**:
   - Live Gemini API calls require `LLM_API_KEY` or `GEMINI_API_KEY`; in default/test mode `FakeLLMClient` provides deterministic offline responses.
   - Address comparison uses token set intersection (Jaccard similarity threshold 0.5) with basic stopword filtering.
@@ -37,7 +37,7 @@ This document tracks implementation progress across all development phases.
   - `src/disputepilot/agent/orchestrator.py`: Bounded orchestrator `EvidenceAgent` with step limits, deterministic fallback classification, cross-check evaluation, and tailored merchant requests for missing items.
   - `src/disputepilot/agent/__init__.py`: Public exports.
   - `tests/test_agent.py`: 4 tests verifying malicious document tool immunity, step limit halting, tailored merchant missing asks, and full end-to-end evidence audit.
-- **Tests Added**: 4 tests in `test_agent.py` (total suite: 57 tests passing).
+- **Tests Added**: 4 tests in `test_agent.py` (run uv run pytest).
 - **Assumed / Not Done**:
   - Agent uses deterministic mapping for known doc types with LLM classification fallback.
 ---
@@ -49,7 +49,7 @@ This document tracks implementation progress across all development phases.
   - `src/disputepilot/drafting/verifier.py`: Deterministic claim and entity verifier (`verify_sentence`, `verify_rebuttal`) that audits every cited fact ID, checks every number, date, and domain ID against cited facts, strips ungrounded or fabricated sentences, and generates a detailed `VerifierReport`. Zero fabricated claims survive.
   - `src/disputepilot/drafting/__init__.py`: Public exports.
   - `tests/test_drafting.py`: 6 tests covering clean drafts, stripping invented delivery dates, stripping sentences with missing citations, invalid citations, fabricated numbers/AWBs, and end-to-end drafting from case facts.
-- **Tests Added**: 6 tests in `test_drafting.py` (total suite: 63 tests passing).
+- **Tests Added**: 6 tests in `test_drafting.py` (run uv run pytest).
 - **Assumed / Not Done**:
   - Verification extracts ISO and text dates, alphanumeric IDs, and numbers/amounts, checking presence against normalized text and entity representations of cited facts.
 
@@ -61,7 +61,7 @@ This document tracks implementation progress across all development phases.
   - `src/disputepilot/core/recommend.py`: Heuristic recommendation engine computing `p_win` with uncertainty interval (`p_win_low`, `p_win_high`), expected value (`EV = p_win * amount - effort_cost`), and outputting `ContestDecision` (`CONTEST`, `ACCEPT`, `NEEDS_EVIDENCE`). Preselects nothing when uncertain (0.35–0.55) or when required evidence is missing. Labelled with synthetic data disclaimer.
   - `src/disputepilot/core/__init__.py`: Exported `ContestDecision`, `HEURISTIC_DISCLAIMER`, `Recommendation`, `recommend_action`.
   - `tests/test_recommend.py`: 5 tests covering missing required evidence triggering `NeedsEvidence`, high win rate with positive EV recommending `Contest`, critical discrepancies triggering `Accept`, uncertain band suppressing preselection, and effort cost configuration altering EV.
-- **Tests Added**: 5 tests in `test_recommend.py` (total suite: 68 tests passing).
+- **Tests Added**: 5 tests in `test_recommend.py` (run uv run pytest).
 - **Assumed / Not Done**:
   - Baseline uses transparent deterministic heuristic weights calibrated on synthetic data, not a machine learning classifier.
 
@@ -75,7 +75,7 @@ This document tracks implementation progress across all development phases.
   - `src/disputepilot/pipeline/orchestrator.py`: Implemented `process_case(case_id)` pipeline (ingest -> extract -> cross-check -> evidence report -> recommendation -> draft -> verify -> audit log -> reminders -> draft save). Strictly never calls `accept` or `submit`.
   - `src/disputepilot/pipeline/__init__.py`: Public exports.
   - `tests/test_pipeline.py`: 5 tests covering safety guarantees (pipeline never calls accept or submit), expired token rejection, named reviewer requirement, tamper detection in cryptographic audit chain, and reminder persistence.
-- **Tests Added**: 5 tests in `test_pipeline.py` (total suite: 73 tests passing).
+- **Tests Added**: 5 tests in `test_pipeline.py` (run uv run pytest).
 - **Assumed / Not Done**:
   - Reminders are recorded to SQLite table for inspection; external dispatch (email/Slack/SMS) is deliberately not implemented.
 
@@ -91,7 +91,7 @@ This document tracks implementation progress across all development phases.
   - `src/disputepilot/web/app.py`: FastAPI web app mounting static files, templates, Razorpay webhook (`/webhook/razorpay`), worklist (`GET /`, `GET /cases`), case review (`GET /cases/{case_id}`), save draft (`POST /cases/{case_id}/save-draft`), confirm submission (`GET /cases/{case_id}/confirm-submit`), contest submission (`POST /cases/{case_id}/submit`), dispute acceptance (`POST /cases/{case_id}/accept` with typed amount check), and evidence requests (`POST /cases/{case_id}/needs-evidence`). Zero third-party multipart dependencies (uses standard `urllib.parse`).
   - `src/disputepilot/web/__init__.py`: Public export of `app`.
   - `tests/test_web.py`: 11 tests covering worklist rendering, case detail page, 404 handling, confirm-submit approval token issuance, rejection of submissions without approval token, rejection of tampered payload hashes, successful submission with valid token, typed amount verification on accept, missing reviewer rejection, draft saving, and needs-evidence flagging.
-- **Tests Added**: 11 tests in `test_web.py` (total suite: 84 tests passing).
+- **Tests Added**: 11 tests in `test_web.py` (run uv run pytest).
 - **Assumed / Not Done**:
   - Web UI runs locally on FastAPI/Uvicorn without external CDN dependencies.
 
@@ -105,7 +105,7 @@ This document tracks implementation progress across all development phases.
   - `evals/results.json`: Complete machine-readable evaluation metrics across all 150 cases.
   - `evals/report.md`: Markdown summary report with tables, calibration analysis, and synthetic data disclaimer.
   - `tests/test_evals.py`: 1 comprehensive test verifying evaluation harness runs cleanly and produces all metrics.
-- **Tests Added**: 1 test in `test_evals.py` (total suite: 85 tests passing).
+- **Tests Added**: 1 test in `test_evals.py` (run uv run pytest).
 - **Assumed / Not Done**:
   - Baseline uses heuristic weights calibrated on synthetic data; real LLM runs when `LLM_API_KEY` is supplied.
 
@@ -123,7 +123,7 @@ This document tracks implementation progress across all development phases.
     5. Approval token enforcement & tampered hash rejection (`disp_0001_hbrpoi`)
   - `Makefile`: Configured with `test`, `lint`, `run`, and `eval` targets.
 - **Verification**:
-  - `uv run pytest`: 85 passing tests (100% pass rate).
+  - `uv run pytest`: pass (run uv run pytest).
   - `uv run ruff check .`: Clean, zero lint errors.
   - `uv run python -m disputepilot.evals.runner`: Clean execution over all 150 simulated cases.
 - **Assumed / Not Done**:
@@ -146,7 +146,7 @@ This document tracks implementation progress across all development phases.
   - `README.md`: Added "Limitations" section (typed reviewer name, SQLite, synthetic data only, heuristic recommendation, real LLM/Razorpay paths verified only as reported) and removed all claims of "saving fees" and "protecting dispute ratios".
 - **Tests Added / Verified**:
   - `tests/test_evals.py`: Verified evaluation harness runs and produces structured report and results.
-  - Full suite: 85 passed in 2.4s.
+  - Full suite: pass (run uv run pytest).
   - Ruff linter: All checks passed (0 errors).
 - **Assumed / Not Done**:
   - `LLM_API_KEY` is not set in the local environment, so the real Gemini LLM path was verified for safe fallback and clear skip messaging as required.
@@ -183,7 +183,7 @@ This document tracks implementation progress across all development phases.
 
 - **6. Side-by-Side Reporting & Verification**:
   - Side-by-side evaluation table in `evals/report.md` reports Clean Train, Clean Hold-out, Messy Rules Only, Messy Rules + LLM (fake regex baseline, not a model result), and Real LLM (`NOT RUN`).
-  - Unit tests: 89 passing tests (`uv run pytest`).
+  - Unit tests: pass (run uv run pytest).
   - Ruff linter: Zero errors (`uv run ruff check .`).
 
 ---
@@ -208,11 +208,11 @@ This document tracks implementation progress across all development phases.
   - Documented in `evals/report.md` that `FakeLLMClient._classify_reason_regex` directly checks for colloquial phrases authored in `src/disputepilot/sim/messy.py` (`MESSY_REASONS`), including `"parcel gayab"`, `"nahi mila"`, `"dusra maal"`, `"torn stitching"`, `"cloth quality"`, `"maine koi payment nahi kiya"`, `"sleep kar raha"`, `"wallet me tha"`, `"do alag"`, `"do bar"`, `"twin debits"`, `"service stop"`, `"account delete"`, and `"paise wapas"`.
   - Clarified that because `FakeLLMClient` was authored by the same author as the test generator and uses its exact vocabulary, its 82% score is an offline pipeline sanity check, not a real model evaluation.
 - **6. README Results Table**:
-  - Placed `**Tests passing: 89/89 (fake LLM, offline)**` on its own line above the table (not inside the Real LLM column).
+  - Placed `**Tests passing: run uv run pytest (fake LLM, offline)**` on its own line above the table (not inside the Real LLM column).
   - Labeled `Field-Level Extraction Accuracy` as `fake regex baseline, appendix only` (from FakeLLMClient).
   - Added the exact 6-case count and true-class breakdown under the table with complete 17% to 6% reconciliation.
 - **7. Test Suite & Verification**:
-  - `uv run pytest`: 89 passed in 3.4s.
+  - `uv run pytest`: pass (run uv run pytest).
   - `uv run ruff check .`: Clean, 0 errors.
   - `uv run python -m disputepilot.evals.runner --real-llm`: Clean execution, generated report and results.
 
@@ -235,7 +235,7 @@ This document tracks implementation progress across all development phases.
   - Added `sim` target to `Makefile` to regenerate `data/cases` (150 clean cases) and `data/cases_messy` (100 messy cases).
   - Listed plain `uv run ...` equivalents for Windows without `make` across README Quickstart and evaluation sections.
 - **6. Verification**:
-  - `uv run pytest`: 91 passed in 3.6s.
+  - `uv run pytest`: pass (run uv run pytest).
   - `uv run ruff check .`: All checks passed, 0 errors.
 
 ---
@@ -299,7 +299,7 @@ This document tracks implementation progress across all development phases.
   - Matches records by `case_id` directly, or falls back to matching by reason text regex for older records, backfilling `case_id`, `stage="classification"`, and `status="completed"` into `evals/real_llm_outputs.jsonl`.
   - Reports $k=21$ records scored, 20 correct (95.24% accuracy, 95.56% Macro-F1).
   - Reports list of misses with case ID, model answer, true label, confidence, and raw reason text (`disp_m_0005_kwo886` predicted `unauthorised`, true label `subscription_cancelled`).
-  - Reports status as `PARTIAL (classification 21 cases, extraction NOT RUN)`.
+  - Reports status as `PARTIAL (classification 16 unique of 30 planned, extraction NOT RUN)`.
 - **2. Confidence Distribution & Calibration Assessment (`evals/report.md`)**:
   - Tallied reported confidence distribution: 1.00 (11 records, 52.4%), 0.95 (6 records, 28.6%), 0.90 (4 records, 19.0%).
   - Reported count of answers below 0.6 review threshold: 0 (0.0%).
@@ -312,7 +312,128 @@ This document tracks implementation progress across all development phases.
   - Updated all `LLMClient.generate_json` implementations (`GeminiClient`, `FakeLLMClient`, and test mock clients) with matching optional `case_id: str | None = None` and `stage: str | None = None` parameters.
 - **5. Test Suite & Verification**:
   - Added unit tests in `tests/test_evals.py` verifying offline scoring, case ID matching, reason text backfill, confidence distribution, and partial status.
-  - `uv run pytest`: 104 passed (100% pass rate).
+  - `uv run pytest`: pass (run uv run pytest).
   - `uv run ruff check .`: Clean, 0 errors.
+
+---
+
+### Phase P: Real-LLM Status Logic, Offline Extraction Scoring, & Invoice Payment Cross-Check
+- **1. Status Logic & Singular/Plural Grammar (`src/disputepilot/evals/runner.py`)**:
+  - Enforced that a stage status is marked COMPLETE only if completed cases $k$ equal planned $n$. Otherwise, marked as `PARTIAL: k unique of n planned`.
+  - For the evaluation data: classification reports `PARTIAL: 16 unique of 30 planned`, extraction reports `PARTIAL: 1 unique of 5 planned`.
+  - Overall status updated to `PARTIAL (classification 16 unique of 30 planned, extraction 1 unique of 5 planned)`.
+  - Implemented `_case_word(num)` helper across `score_real_llm_records`, `run_real_llm_eval`, and report generation to ensure correct grammatical pluralization (`case` for 1, `cases` for other counts).
+  - Ensured no "COMPLETE" label appears for an incomplete stage anywhere in `report.md`, `results.json`, `README.md`, or `PROGRESS.md`.
+- **2. Offline Ground-Truth Extraction Scoring (`src/disputepilot/evals/runner.py`)**:
+  - Scored the 1 completed real-LLM extraction record (`disp_m_0001_ujzde8_doc_inv`) offline against ground truth without network calls.
+  - Metrics reported:
+    - Documents scored: 1 document (`n too small for an accuracy rate`)
+    - Fields returned: 6 (`invoice_number`, `payment_id`, `customer_name`, `billing_address`, `total_amount_paise`, `invoice_date`)
+    - Fields correct vs ground truth: 2 (`customer_name`: "Ananya Rao", `total_amount_paise`: 450000 paise / Rs. 4500.00)
+    - Fields null: 4 (`order_id`, `customer_email`, `customer_phone`, `shipping_address`)
+    - Fields without verbatim quote: None (all 6 returned quotes verified verbatim in source document text)
+    - Field-level accuracy: `n too small for an accuracy rate` (fewer than 10 documents scored; minimum 10 required)
+    - Side-by-side summary table: reports `n too small (k=1)` instead of `NOT RUN`
+    - Removed contradictory `"N/A (no cases completed)"` text.
+- **3. Invoice Payment Reference Mismatch Cross-Check (`src/disputepilot/extraction/cross_checks.py`)**:
+  - Implemented `check_invoice_payment_mismatch(invoice_payment_id, dispute_payment_id)` emitting high-severity flag `INVOICE_PAYMENT_MISMATCH` when an invoice's payment reference differs from the dispute's `payment_id`.
+  - Integrated into `run_cross_checks()` to scan extracted invoice documents.
+  - Exported in `src/disputepilot/extraction/__init__.py`.
+  - Added unit test `test_cross_check_invoice_payment_mismatch()` in `tests/test_extraction.py`.
+- **4. Test Suite & Verification**:
+  - Added extraction offline scoring test `test_score_real_llm_records_extraction_offline_scoring` in `tests/test_evals.py`.
+  - Regenerated `evals/report.md` and `evals/results.json` offline with zero network calls.
+
+---
+
+### Phase Q: Report Labeling, Calibration Warnings, Wording Harmonization, & Documentation
+- **1. Report Status & Summary Table Labeling (`src/disputepilot/evals/runner.py`, `evals/report.md`)**:
+  - Enforced strict report status logic: `COMPLETE` only when completed cases $k$ equal planned $n$; otherwise `PARTIAL: k of n`.
+  - Extraction currently has 1 completed document scored offline against ground truth (6 fields returned, 2 correct, 4 null, 0 unquoted), status: `PARTIAL: 1 unique of 5 planned`, with explicit note `"n too small for an accuracy rate"`.
+  - Removed all contradictory `"N/A (no cases completed)"` text.
+  - Relabeled Real LLM classification rows in the summary table as `"LLM fallback (Gemini), n=16 unique cases"` instead of `"Deterministic rules"`.
+  - Regenerated `evals/report.md` and `evals/results.json` offline with zero network calls.
+- **2. Invoice Payment ID Mismatch Cross-Check Verification (`src/disputepilot/extraction/cross_checks.py`, `tests/test_extraction.py`)**:
+  - Verified `check_invoice_payment_mismatch` flags invoices where the payment reference differs from dispute's `payment_id` (`INVOICE_PAYMENT_MISMATCH`, `Severity.HIGH`).
+  - Verified unit test `test_cross_check_invoice_payment_mismatch()` in `tests/test_extraction.py`.
+- **3. README.md Updates & Wording Adjustments**:
+  - Updated test count references to say "run uv run pytest" (`(run uv run pytest)` and `Tests passing: run uv run pytest (fake LLM, offline)`).
+  - Updated Real LLM summary table column with actual values: classification `93.75% (15 of 16 unique)` on $k=16$ unique messy cases, extraction `n too small (1 document)`, status `PARTIAL`.
+  - Stated case selection: deterministic rules left 90 of 100 messy cases unclassified, and the classification calls in `real_llm_outputs.jsonl` represent 16 unique cases from those 90 cases (with duplicates dropped using the first completed record rule). Removed "precisely those".
+  - Wording updates: removed "Autonomous" $\to$ replaced with "human-approved"; replaced "zero-hallucination" and "0 Hallucinations Guaranteed" $\to$ "unsupported numbers, dates and IDs are stripped by a deterministic verifier"; clarified "150 clean + 100 messy synthetic cases".
+  - Stated plainly that the win-probability heuristic is not calibrated, citing the 0.4 to 0.6 bin in the report (where predicted win rate was ~55% but actual win rate was 0.0%).
+- **4. Markdown Audit & Consistency Verification**:
+  - Checked all documentation files (`README.md`, `evals/report.md`, `docs/ARCHITECTURE.md`, `DEMO.md`, `PROGRESS.md`) for contradictory occurrences of `"COMPLETE"`, `"89"`, `"NOT RUN"`, or `"guaranteed"`.
+  - Updated `docs/ARCHITECTURE.md` and `DEMO.md` to remove "autonomous" and align with deterministic verifier terminology.
+
+---
+
+### Phase R: Extraction Scoring Wording, Test Count Cleanliness, Case Selection Precision, & Order ID Invoice Cross-Check
+- **1. Extraction Scoring Wording Alignment (`evals/report.md`, `README.md`, `src/disputepilot/evals/runner.py`)**:
+  - Updated Stage 2 extraction scoring output to report:
+    - Fields returned: 6
+    - All with verbatim source quotes: 6 of 6
+    - Fields checkable against ground truth: 2, and correct: 2 (`customer_name`, `total_amount_paise`)
+    - Fields with no ground-truth field in the eval: 4 (`invoice_number`, `payment_id`, `billing_address`, `invoice_date`)
+    - Fields null: 4 (`order_id`, `customer_email`, `customer_phone`, `shipping_address`)
+    - Kept note: `"n too small for an accuracy rate"`.
+  - Removed `payment_id` check from `check_extracted_field_vs_ground_truth` for invoice documents since invoice payment references have no ground-truth field in the eval case.
+- **2. Hard-Coded Test Count Removal**:
+  - Removed hard-coded test counts from `README.md`, `DEMO.md`, `docs/ARCHITECTURE.md`, and `PROGRESS.md`, replacing with `"run uv run pytest"`.
+- **3. Exact Case Selection Description**:
+  - Described exactly how the classification records were chosen:
+    - Out of 100 messy cases, deterministic rules classified 10 cases (6 correctly, 4 incorrectly) and left **90 cases unclassified**.
+    - The records in `evals/real_llm_outputs.jsonl` are the call records captured during earlier quota-limited runs. They cover **16 unique cases** (all drawn from the 90 unclassified cases), with duplicates dropped using the first completed record rule.
+    - Removed phrase `"precisely those"`.
+- **4. Invoice Payment Reference Cross-Check Matching Order ID (`src/disputepilot/extraction/cross_checks.py`)**:
+  - Updated `check_invoice_payment_mismatch(invoice_payment_id, dispute_payment_id, order_id=None)` so a payment reference on an invoice matches if it equals `dispute_payment_id` OR `order_id`. Flags `INVOICE_PAYMENT_MISMATCH` only when it matches neither.
+  - Updated `run_cross_checks()` to pass `order_id=case.order.id`.
+  - Added unit tests in `tests/test_extraction.py` covering: matches payment id, matches order id, and matches neither.
+  - Audited dataset flag counts:
+    - **150 clean cases**: 67 invoices have `**Payment ID:** pay_...` matching `dispute.payment_id`. Before: **0 flags**, After: **0 flags**.
+    - **100 messy cases**: 67 invoices have `**Payment Ref:** order_...` matching `order.id`. Under document payment reference extraction, Before (payment ID only): **67 flags**, After (payment ID or order ID): **0 flags**. Under offline `FakeLLMClient` regex (which matches `**Payment ID:**` only): 0 flags before and 0 flags after.
+- **5. Test Suite & Linter Verification**:
+  - Ran `uv run pytest`: all tests passing (run `uv run pytest`).
+  - Ran `uv run ruff check .`: clean, 0 errors.
+
+---
+
+### Phase S: Classification Deduplication by Case ID, Runner Checkpoint Guard, Rules Reconcile, & Sample Honesty
+- **1. Deduplicate Real-LLM Classification by Case ID (`src/disputepilot/evals/runner.py`)**:
+  - Implemented deduplication in `load_completed_checkpoints` and `score_real_llm_records`: if a case has several records, the **first completed record is retained** (`deduplication_rule="first_completed_record"`).
+  - Out of 21 raw call records in `evals/real_llm_outputs.jsonl`, **5 duplicate records were dropped** (`disp_m_0032_8nkm7w`, `disp_m_0096_ul4bkz` x2, `disp_m_0084_mqm9sb`, `disp_m_0094_3499yi`).
+  - Scored metrics on **16 unique cases**:
+    - Unique cases scored: **16**
+    - Correct count: **15 / 16**
+    - Accuracy: **93.75%**
+    - Macro-F1: **92.38%**
+    - Misses: Exactly 1 miss: `disp_m_0005_kwo886` (predicted `unauthorised` with confidence 1.00, true label `subscription_cancelled`, raw reason: *"free trial khatam hote hi bina permission charge lagaya"*).
+    - Confidence distribution: `1.00`: 8 (50.0%), `0.95`: 5 (31.3%), `0.90`: 3 (18.8%); 0 below 0.6 threshold.
+- **2. Status Line Harmonization Across All Outputs**:
+  - Classification status: `"PARTIAL: 16 unique of 30 planned"`.
+  - Extraction status: `"PARTIAL: 1 unique of 5 planned"`.
+  - Overall status: `"PARTIAL (classification 16 unique of 30 planned, extraction 1 unique of 5 planned)"`.
+- **3. Runner Checkpoint Guard & Non-Repetition Guarantee**:
+  - Updated `run_real_llm_eval`: checks in-memory `checkpoints` and `seen_cls_targets` / `seen_ext_targets` sets. Never calls the model or repeats a case already completed in the checkpoint log.
+  - Implemented and verified unit test `test_runner_never_repeats_case_already_completed_in_checkpoint_log()` in `tests/test_evals.py`.
+- **4. Reconciled Rules-Only Counts on Messy Set (Computed Directly From Data)**:
+  - Total messy cases evaluated: 100 cases.
+  - Classified by rules: Exactly **10 cases** (10.00%).
+  - Correct under rules: Exactly **6 cases** (6.00% accuracy):
+    - `not_as_described`: 3 cases (`disp_m_0030_6kyo3i`, `disp_m_0065_nubgae`, `disp_m_0100_y4ols3` — matched keyword `"mismatched"`)
+    - `other`: 3 cases (`disp_m_0014_1bz99n`, `disp_m_0077_7veemd`, `disp_m_0098_3mlntq` — matched keyword `"clarification"`)
+  - Incorrect under rules: Exactly **4 cases**:
+    - 2 predicted `duplicate_charge` on `not_as_described`: `disp_m_0002_3xtplp`, `disp_m_0016_f9caio` (matched keyword `"duplicate"`)
+    - 2 predicted `not_as_described` on `refund_not_received`: `disp_m_0069_xw77t2`, `disp_m_0076_jqb1z7` (matched keyword `"fake"`)
+  - Left unclassified: Exactly **90 cases** (90.00%).
+  - Reconciliation with 17%: In earlier runs, unclassified disputes silently defaulted to `other`. 14 cases in the dataset have ground-truth `other`. 3 matched `"clarification"`, and 11 did not match any keyword. The silent fallback credited those 11 non-matching cases as true positives (3 + 3 + 11 = 17, 17.00%). Removing silent fallback and returning `unclassified` eliminated those 11 accidental credits: 17 - 11 = 6 correct cases (6.00%).
+- **5. Accurate Sample Description**:
+  - Explicitly documented: Not a random sample. These 16 unique cases represent the order in which cases left unclassified by rules were encountered during earlier interrupted evaluation runs.
+  - Listed all 16 unique cases in exact execution order:
+    1. `disp_m_0096_ul4bkz`, 2. `disp_m_0092_nyhd17`, 3. `disp_m_0088_bi1dls`, 4. `disp_m_0095_7x79m1`, 5. `disp_m_0036_9z8dzt`, 6. `disp_m_0032_8nkm7w`, 7. `disp_m_0094_3499yi`, 8. `disp_m_0084_mqm9sb`, 9. `disp_m_0055_tii54p`, 10. `disp_m_0005_kwo886`, 11. `disp_m_0078_bh400t`, 12. `disp_m_0085_r71yk1`, 13. `disp_m_0093_lob3f2`, 14. `disp_m_0068_446v8y`, 15. `disp_m_0090_l2g3vu`, 16. `disp_m_0058_bmo2fj`.
+- **6. Artifacts & Tests Synchronized**:
+  - `evals/report.md`, `evals/results.json`, and `README.md` completely updated with unique-case metrics.
+  - Ran `uv run pytest`: 107 tests passing.
+  - Ran `uv run ruff check .`: clean, 0 errors.
 
 

@@ -581,13 +581,17 @@
     }
   },
   "real_llm": {
-    "status": "COMPLETE (21 classification, 1 extraction)",
+    "status": "PARTIAL (classification 16 unique of 30 planned, extraction 1 unique of 5 planned)",
     "classification": {
-      "status": "COMPLETE (21 cases)",
-      "completed_k": 21,
-      "correct_count": 20,
-      "accuracy": 0.9524,
-      "macro_f1": 0.9556,
+      "status": "PARTIAL: 16 unique of 30 planned",
+      "n": 30,
+      "completed_k": 16,
+      "unique_cases_scored": 16,
+      "duplicates_dropped": 5,
+      "deduplication_rule": "first_completed_record",
+      "correct_count": 15,
+      "accuracy": 0.9375,
+      "macro_f1": 0.9238,
       "per_class": {
         "item_not_received": {
           "precision": 1.0,
@@ -602,22 +606,22 @@
           "support": 2
         },
         "unauthorised": {
-          "precision": 0.6667,
+          "precision": 0.5,
           "recall": 1.0,
-          "f1": 0.8,
-          "support": 2
+          "f1": 0.6667,
+          "support": 1
         },
         "duplicate_charge": {
           "precision": 1.0,
           "recall": 1.0,
           "f1": 1.0,
-          "support": 4
+          "support": 3
         },
         "subscription_cancelled": {
           "precision": 1.0,
-          "recall": 0.8,
-          "f1": 0.8889,
-          "support": 5
+          "recall": 0.6667,
+          "f1": 0.8,
+          "support": 3
         },
         "refund_not_received": {
           "precision": 1.0,
@@ -629,7 +633,7 @@
           "precision": 1.0,
           "recall": 1.0,
           "f1": 1.0,
-          "support": 2
+          "support": 1
         }
       },
       "misses": [
@@ -648,45 +652,62 @@
         1.0,
         0.95,
         1.0,
-        1.0,
         0.9,
-        0.9,
-        1.0,
-        0.95,
-        1.0,
-        0.9,
-        0.95,
-        0.95,
         0.9,
         0.95,
         1.0,
+        0.95,
+        0.95,
+        0.9,
         0.95,
         1.0,
         1.0
       ],
       "confidence_distribution": {
-        "1.0": 11,
-        "0.95": 6,
-        "0.9": 4
+        "1.0": 8,
+        "0.95": 5,
+        "0.9": 3
       },
       "below_threshold_count": 0
     },
     "extraction": {
-      "status": "COMPLETE (1 cases)",
+      "status": "PARTIAL: 1 unique of 5 planned",
+      "n": 5,
       "completed_k": 1,
+      "unique_cases_scored": 1,
+      "duplicates_dropped": 0,
+      "deduplication_rule": "first_completed_record",
+      "documents_scored": 1,
+      "fields_returned": 6,
+      "fields_quoted": 6,
+      "fields_checkable": 2,
+      "fields_correct": 2,
+      "fields_no_gt": [
+        "invoice_number",
+        "payment_id",
+        "billing_address",
+        "invoice_date"
+      ],
+      "fields_null": 4,
+      "unquoted_fields": [],
       "field_accuracy": null,
-      "total_fields": 0,
-      "correct_fields": 0
+      "accuracy_note": "n too small for an accuracy rate",
+      "total_fields": 6,
+      "correct_fields": 2
     }
   },
   "real_llm_sample_30": {
-    "status": "COMPLETE (21 classification, 1 extraction)",
+    "status": "PARTIAL (classification 16 unique of 30 planned, extraction 1 unique of 5 planned)",
     "classification": {
-      "status": "COMPLETE (21 cases)",
-      "completed_k": 21,
-      "correct_count": 20,
-      "accuracy": 0.9524,
-      "macro_f1": 0.9556,
+      "status": "PARTIAL: 16 unique of 30 planned",
+      "n": 30,
+      "completed_k": 16,
+      "unique_cases_scored": 16,
+      "duplicates_dropped": 5,
+      "deduplication_rule": "first_completed_record",
+      "correct_count": 15,
+      "accuracy": 0.9375,
+      "macro_f1": 0.9238,
       "per_class": {
         "item_not_received": {
           "precision": 1.0,
@@ -701,22 +722,22 @@
           "support": 2
         },
         "unauthorised": {
-          "precision": 0.6667,
+          "precision": 0.5,
           "recall": 1.0,
-          "f1": 0.8,
-          "support": 2
+          "f1": 0.6667,
+          "support": 1
         },
         "duplicate_charge": {
           "precision": 1.0,
           "recall": 1.0,
           "f1": 1.0,
-          "support": 4
+          "support": 3
         },
         "subscription_cancelled": {
           "precision": 1.0,
-          "recall": 0.8,
-          "f1": 0.8889,
-          "support": 5
+          "recall": 0.6667,
+          "f1": 0.8,
+          "support": 3
         },
         "refund_not_received": {
           "precision": 1.0,
@@ -728,7 +749,7 @@
           "precision": 1.0,
           "recall": 1.0,
           "f1": 1.0,
-          "support": 2
+          "support": 1
         }
       },
       "misses": [
@@ -747,38 +768,51 @@
         1.0,
         0.95,
         1.0,
-        1.0,
         0.9,
-        0.9,
-        1.0,
-        0.95,
-        1.0,
-        0.9,
-        0.95,
-        0.95,
         0.9,
         0.95,
         1.0,
+        0.95,
+        0.95,
+        0.9,
         0.95,
         1.0,
         1.0
       ],
       "confidence_distribution": {
-        "1.0": 11,
-        "0.95": 6,
-        "0.9": 4
+        "1.0": 8,
+        "0.95": 5,
+        "0.9": 3
       },
       "below_threshold_count": 0
     },
     "extraction": {
-      "status": "COMPLETE (1 cases)",
+      "status": "PARTIAL: 1 unique of 5 planned",
+      "n": 5,
       "completed_k": 1,
+      "unique_cases_scored": 1,
+      "duplicates_dropped": 0,
+      "deduplication_rule": "first_completed_record",
+      "documents_scored": 1,
+      "fields_returned": 6,
+      "fields_quoted": 6,
+      "fields_checkable": 2,
+      "fields_correct": 2,
+      "fields_no_gt": [
+        "invoice_number",
+        "payment_id",
+        "billing_address",
+        "invoice_date"
+      ],
+      "fields_null": 4,
+      "unquoted_fields": [],
       "field_accuracy": null,
-      "total_fields": 0,
-      "correct_fields": 0
+      "accuracy_note": "n too small for an accuracy rate",
+      "total_fields": 6,
+      "correct_fields": 2
     }
   },
-  "real_llm_status": "COMPLETE (21 classification, 1 extraction)",
+  "real_llm_status": "PARTIAL (classification 16 unique of 30 planned, extraction 1 unique of 5 planned)",
   "reason_classifier": {
     "accuracy": 1.0,
     "macro_f1": 1.0,

@@ -7,6 +7,7 @@ from disputepilot.extraction.cross_checks import (
     check_address_mismatch,
     check_delivery_after_dispute,
     check_invoice_amount_mismatch,
+    check_invoice_payment_mismatch,
     check_refund_not_mentioned,
     run_cross_checks,
 )
@@ -47,6 +48,7 @@ __all__ = [
     "check_address_mismatch",
     "check_delivery_after_dispute",
     "check_invoice_amount_mismatch",
+    "check_invoice_payment_mismatch",
     "check_refund_not_mentioned",
     "extract_document",
     "get_llm_client",
