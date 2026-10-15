@@ -47,7 +47,7 @@ The Evidence Agent audits evidence completeness without authority to execute mut
 
 ## 4. Grounded Drafting & Deterministic Verifier (`src/disputepilot/drafting/`)
 
-To eliminate LLM hallucinations and prevent false claims in merchant rebuttals:
+To prevent false claims in merchant rebuttals, a deterministic verifier removes sentences whose numbers, dates or IDs are not in the cited facts:
 1. **`FactSet` Assembly**: Extracts atomic, verified facts from verified records (dispute ID, amount, payment ID, courier tracking number, delivery timestamp, customer details).
 2. **Citation-Mandated Drafter**: Generates a 4-section rebuttal (Summary, Timeline, Evidence Submitted, Conclusion) where each sentence must explicitly cite `[fact_id]`.
 3. **Deterministic Verifier**:

@@ -42,6 +42,21 @@ def test_case_detail_page_loads(client: TestClient, sample_case_id: str) -> None
     assert "Evidence Checklist" in response.text
     assert "Rebuttal Letter Draft" in response.text
     assert "Deterministic Verifier Report" in response.text
+    assert "Verifier: 0 sentence(s) removed. Remaining sentences cite verified facts." in response.text
+
+
+def test_case_detail_safety_findings_card_redaction(client: TestClient) -> None:
+    """Case detail displays Safety Findings panel with redacted card details and no raw digits."""
+    case_id = "disp_0008_6hymqc"
+    response = client.get(f"/cases/{case_id}")
+    assert response.status_code == 200
+    assert "Safety Findings" in response.text
+    assert "1 card number redacted" in response.text
+    assert "4448" in response.text
+    # Ensure no raw 16-digit card number or full prefix is displayed
+    assert "4111 2222 3333 4448" not in response.text
+    assert "4111222233334448" not in response.text
+    assert "4111" not in response.text
 
 
 def test_case_detail_404_for_unknown_case(client: TestClient) -> None:

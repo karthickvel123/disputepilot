@@ -28,6 +28,7 @@ from disputepilot.razorpay.approval import (
 )
 from disputepilot.razorpay.gateway import DisputesGateway, SimGateway
 from disputepilot.razorpay.webhook import default_router as webhook_router
+from disputepilot.safety.ingest import ingest_document
 
 logger = logging.getLogger("disputepilot.web.app")
 
@@ -190,6 +191,57 @@ def case_detail_view(request: Request, case_id: str) -> HTMLResponse:
         "ignore previous instructions" in (d.content or "").lower() for d in case.documents
     )
 
+    # Compute safety findings per document
+    protected_ids = {
+        case.order.id if case.order else "",
+        case.dispute.id,
+        case.dispute.payment_id,
+        case.order.tracking_number if case.order else "",
+    }
+    known_names = [case.order.customer_name] if case.order and case.order.customer_name else []
+
+    safety_findings: list[dict[str, Any]] = []
+    for doc in case.documents:
+        ingest_res = ingest_document(
+            doc.content or "",
+            case_id=case.case_id,
+            known_names=known_names,
+            protected_ids=protected_ids,
+        )
+        card_findings = [f for f in ingest_res.findings if f.type == "card_number"]
+        card_count = len(card_findings)
+        last_4_list = [f.masked[-4:] for f in card_findings]
+
+        if card_count == 1:
+            card_str = f"1 card number redacted (last 4: {last_4_list[0]})"
+        elif card_count > 1:
+            card_str = f"{card_count} card numbers redacted (last 4: {', '.join(last_4_list)})"
+        else:
+            card_str = "0 card numbers redacted"
+
+        inj_count = len(ingest_res.injection_flags)
+        if inj_count > 0:
+            inj_str = f"{inj_count} injection indicator(s) detected: {', '.join(ingest_res.injection_flags)}"
+        else:
+            inj_str = "0 injection indicators detected"
+
+        pii_count = len(ingest_res.vault)
+        pii_str = f"{pii_count} PII token(s) replaced"
+
+        safety_findings.append({
+            "doc_id": doc.doc_id,
+            "doc_type": doc.doc_type,
+            "file_name": doc.file_name,
+            "card_count": card_count,
+            "card_str": card_str,
+            "last_4": last_4_list,
+            "injection_count": inj_count,
+            "injection_str": inj_str,
+            "injection_flags": ingest_res.injection_flags,
+            "pii_count": pii_count,
+            "pii_str": pii_str,
+        })
+
     return templates.TemplateResponse(
         request=request,
         name="case_detail.html",
@@ -206,6 +258,7 @@ def case_detail_view(request: Request, case_id: str) -> HTMLResponse:
             "requirements": requirements,
             "cross_check_flags": result.evidence_report.cross_check_flags,
             "injection_detected": injection_detected,
+            "safety_findings": safety_findings,
         },
     )
 

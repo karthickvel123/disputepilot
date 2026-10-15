@@ -9,9 +9,9 @@ This document tracks implementation progress across all development phases.
 - [x] Phase C: Rebuttal drafter and verifier (`src/disputepilot/drafting/`)
 - [x] Phase D: Recommendation (`src/disputepilot/core/recommend.py`)
 - [x] Phase E: Pipeline, approval and audit (`src/disputepilot/pipeline/`)
-- [ ] Phase F: Web app (`src/disputepilot/web/`)
-- [ ] Phase G: Evaluation (`src/disputepilot/evals/`)
-- [ ] Phase H: Documentation (`README.md`, `docs/ARCHITECTURE.md`, `DEMO.md`)
+- [x] Phase F: Web app (`src/disputepilot/web/`)
+- [x] Phase G: Evaluation (`src/disputepilot/evals/`)
+- [x] Phase H: Documentation (`README.md`, `docs/ARCHITECTURE.md`, `DEMO.md`)
 
 ---
 
@@ -99,7 +99,7 @@ This document tracks implementation progress across all development phases.
 
 ### Phase G: Evaluation
 - **Files Added / Modified**:
-  - `src/disputepilot/evals/runner.py`: Empirical evaluation harness executing end-to-end processing across all 150 simulated dispute cases. Computes reason classifier macro-F1 (100.0%), field extraction accuracy (100.0%), missing evidence recall (99.28%), draft grounding faithfulness (100.0%), zero-hallucination guarantee verification (0 fabricated claims in clean drafts), prompt injection containment rate (100.0%), card number leak audits (0 leaks), decision accuracy vs ground truth winnable (86.0%), calibration curve across 5 probability bins, and financial recovery value analysis (₹467,633 net recovered; 73 unwinnable disputes prevented from contesting).
+  - `src/disputepilot/evals/runner.py`: Empirical evaluation harness executing end-to-end processing across simulated dispute cases. (Early un-split metrics: reason classifier macro-F1 100.0%, field extraction accuracy 100.0%, missing evidence recall 99.28%, draft grounding faithfulness 100.0%, zero-hallucination guarantee verification, decision accuracy vs ground truth winnable 86.0%, financial recovery value analysis ₹467,633 net recovered, 73 unwinnable disputes prevented — all superseded: see evals/report.md for split in-distribution clean holdout and messy evaluations).
   - `src/disputepilot/evals/__init__.py`: Public export of `run_evaluation`.
   - `Makefile`: Added `eval: uv run python -m disputepilot.evals.runner` target.
   - `evals/results.json`: Complete machine-readable evaluation metrics across all 150 cases.
@@ -171,7 +171,7 @@ This document tracks implementation progress across all development phases.
   - **Measurement Change**: In Phase G, "field extraction accuracy" was an artifact: the harness merely checked whether order fields (`order.tracking_number`, `order.amount`, `order.customer_name`) were substrings of the generated rebuttal markdown letter (`draft_md`). Because the rebuttal template systematically injected those order fields into the markdown text, it produced an artificial score of 100.0% without evaluating actual document extraction from attached files.
   - **Specification Error / Bug**: In Phase I, the metric was updated to inspect `res.extracted_docs.surviving_fields` per document type. For `customer_communication`, the test benchmark set `expected_keys = ["customer_sentiment"]`. However, `customer_sentiment` does not exist in `ChatTranscript` (`src/disputepilot/extraction/schemas.py`, which defines `ticket_id`, `customer_name`, `issue_reported`, etc., with `model_config = ConfigDict(extra="forbid")`). Because no chat document could ever extract a non-existent schema field, every customer communication document scored 0/1. On the 45-case clean hold-out set, out of 112 expected field evaluations, exactly 82 passed (billing, shipping, policy) and 30 failed (chat documents missing `customer_sentiment`), yielding $82 / 112 = 73.214\%$ (reported as 73.21%).
   - **Classification**: This was a **measurement change** (evaluating document extracted fields rather than drafted letter substrings) compounded by a **benchmark specification error / bug** (specifying a non-existent schema field), NOT a model or pipeline regression.
-  - **Fix Applied**: Updated `expected_keys` in `src/disputepilot/evals/runner.py` for `customer_communication` to universal schema fields `["ticket_id", "customer_name"]`, and aligned `FakeLLMClient` regexes and dispatch headers to match canonical markdown template formatting. Clean-set field extraction accuracy is restored to 100.0%.
+  - **Fix Applied**: Updated `expected_keys` in `src/disputepilot/evals/runner.py` for `customer_communication` to universal schema fields `["ticket_id", "customer_name"]`, and aligned `FakeLLMClient` regexes and dispatch headers to match canonical markdown template formatting. Clean-set field extraction accuracy is restored to 100.0% (superseded: see evals/report.md, where extraction on clean holdout is a fake regex baseline and real LLM extraction has n=1 document).
 
 - **4. Labeling of FakeLLMClient Metrics**:
   - Every metric generated using `FakeLLMClient` across all summary tables and evaluation sections in `evals/report.md`, `README.md`, and progress logs is explicitly labeled as `"fake regex baseline, not a model result"`.
@@ -433,7 +433,34 @@ This document tracks implementation progress across all development phases.
     1. `disp_m_0096_ul4bkz`, 2. `disp_m_0092_nyhd17`, 3. `disp_m_0088_bi1dls`, 4. `disp_m_0095_7x79m1`, 5. `disp_m_0036_9z8dzt`, 6. `disp_m_0032_8nkm7w`, 7. `disp_m_0094_3499yi`, 8. `disp_m_0084_mqm9sb`, 9. `disp_m_0055_tii54p`, 10. `disp_m_0005_kwo886`, 11. `disp_m_0078_bh400t`, 12. `disp_m_0085_r71yk1`, 13. `disp_m_0093_lob3f2`, 14. `disp_m_0068_446v8y`, 15. `disp_m_0090_l2g3vu`, 16. `disp_m_0058_bmo2fj`.
 - **6. Artifacts & Tests Synchronized**:
   - `evals/report.md`, `evals/results.json`, and `README.md` completely updated with unique-case metrics.
-  - Ran `uv run pytest`: 107 tests passing.
+  - Ran `uv run pytest`: pass (run `uv run pytest`).
   - Ran `uv run ruff check .`: clean, 0 errors.
+
+---
+
+### Phase T: Safety Findings Panel, Verifier Metric Harmonization, & Sample Honesty
+- **1. UI Safety Findings Panel (`src/disputepilot/web/app.py`, `src/disputepilot/web/templates/case_detail.html`)**:
+  - Added dedicated "Safety findings" panel (`#safety-findings-card`) to case review page displaying per-document findings:
+    - Card-like numbers redacted: formatted as `"N card number(s) redacted (last 4: ...)"` or `"0 card numbers redacted"`. Raw card numbers and prefixes are strictly suppressed.
+    - Prompt injection indicators detected: formatted as `"N injection indicator(s) detected"` or `"0 injection indicators detected"`.
+    - PII tokens replaced: formatted as `"N PII token(s) replaced"` or `"0 PII tokens replaced"`.
+  - Added unit test `test_case_detail_safety_findings_card_redaction` in `tests/test_web.py` on case `disp_0008_6hymqc`, asserting `"1 card number redacted"`, `"4448"` rendered, and zero raw digits/prefixes (`"4111 2222 3333 4448"`, `"4111"`) rendered anywhere on the page.
+- **2. UI Verifier Label (`src/disputepilot/web/templates/case_detail.html`)**:
+  - Replaced label `"0 Fabrications (100% Clean)"` with dynamic count badge:
+    `Verifier: {{ verifier_report.stripped_count }} sentence(s) removed. Remaining sentences cite verified facts.`
+  - Updated web test assertions in `tests/test_web.py` to verify this exact format.
+- **3. Precision in Documentation Claims (`DEMO.md`, `docs/ARCHITECTURE.md`)**:
+  - Replaced `"Accidental chargeback concessions are impossible."` in `DEMO.md` with `"A wrong typed amount is rejected."`.
+  - Replaced `"eliminate LLM hallucinations"` in `docs/ARCHITECTURE.md` with `"a deterministic verifier removes sentences whose numbers, dates or IDs are not in the cited facts"`.
+  - Updated `DEMO.md` step 4 walkthrough to inspect the new Safety findings panel on `disp_0008_6hymqc`.
+- **4. Macro-F1 Omission for Small Real-LLM Sample (`README.md`, `evals/report.md`, `src/disputepilot/evals/runner.py`)**:
+  - Removed macro-F1 figure for the 16-case real-LLM sample across `README.md`, `evals/report.md`, and `runner.py`, reporting `"omitted (sample too small)"`.
+  - Kept classification accuracy as `"15 of 16"` (`93.75%`).
+- **5. Early Phase Metrics Stale/Superseded Annotation (`PROGRESS.md`)**:
+  - Annotated early un-split metrics in Phase G and Phase J with `(superseded: see evals/report.md)`.
+- **6. Verification**:
+  - `uv run pytest`: all tests passing (run `uv run pytest`).
+  - `uv run ruff check .`: All checks passed!
+
 
 

@@ -68,8 +68,8 @@ Clean and messy results are reported side by side in separate columns below. The
 
 | Metric | Clean Train (70%, in-distribution) | Clean Hold-out (30%, in-distribution) | Messy Set: Rules Only (n=100) | Real LLM (Gemini) | Metric Classification |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Reason Code Accuracy** | 100.00% | 100.00% | 6.00% | 93.75% (k=16 unique) | LLM fallback (Gemini), n=16 unique cases |
-| **Reason Code Macro-F1** | 100.00% | 100.00% | 9.33% | 92.38% (k=16 unique) | LLM fallback (Gemini), n=16 unique cases |
+| **Reason Code Accuracy** | 100.00% | 100.00% | 6.00% | 15 of 16 | LLM fallback (Gemini), n=16 unique cases |
+| **Reason Code Macro-F1** | 100.00% | 100.00% | 9.33% | omitted (sample too small) | LLM fallback (Gemini), n=16 unique cases |
 | **Field-Level Extraction Accuracy** | fake regex baseline, appendix only | fake regex baseline, appendix only | fake regex baseline, appendix only | n too small (k=1) | fake regex baseline, appendix only |
 | **Missing-Category Recall** | 98.96% | 100.00% | 100.00% | N/A (omitted for budget) | **Pipeline sanity check, not performance** |
 | **Raw Sentence Grounding Rate** | 100.00% | 100.00% | 100.00% | N/A (omitted for budget) | Pre-verifier fact coverage |
@@ -92,8 +92,7 @@ Clean and messy results are reported side by side in separate columns below. The
 - **Status:** PARTIAL: 16 unique of 30 planned
 - **Unique Cases Scored:** k=16 unique cases (rule: first completed record used; 5 duplicate records dropped)
 - **Correct Count:** 15 / 16
-- **Accuracy (vs Ground Truth):** 93.75% (15 of 16 unique)
-- **Macro-F1 Score:** 92.38%
+- **Accuracy (vs Ground Truth):** 15 of 16 (93.75%)
 - **Duplicate Records Dropped:** 5
 
 #### Sample Composition & Origin:

@@ -30,7 +30,7 @@ This step-by-step walkthrough script guides you through verifying DisputePilot's
   1. **Recommendation Card:** Engine recommends `CONTEST` with high estimated win probability (~90%) and positive expected value (EV = ₹3,800.00).
   2. **Evidence Checklist:** `shipping_proof`, `billing_proof`, and `cancellation_policy` are all marked **PRESENT** (green).
   3. **Rebuttal Letter Draft:** Notice the 4 clean sections (Summary, Timeline, Evidence Submitted, Conclusion). Every claim has an inline citation pill like `#fact_courier_tracking` or `#fact_delivery_timestamp`.
-  4. **Deterministic Verifier Report:** Displays `0 Fabrications (100% Clean)`.
+  4. **Deterministic Verifier Report:** Displays `Verifier: 0 sentence(s) removed. Remaining sentences cite verified facts.`.
   5. **Reviewer Console:** Enter reviewer name (e.g. `Priya Sharma`) and click **"Proceed to Submission Review &rarr;"**. You will see the exact JSON payload and its SHA-256 hash before final submission.
 
 ---
@@ -66,7 +66,7 @@ This step-by-step walkthrough script guides you through verifying DisputePilot's
 - **Sensitive Content:** Customer sent a real Luhn-valid card number in the chat transcript:
   `Payment Card: 4111 2222 3333 4448 (Visa Verified)`
 - **What to Observe:**
-  1. **Card Scanner Protection:** Upon document ingestion, the scanner identified the Luhn-valid card sequence and immediately replaced it with `[REDACTED_CARD]`.
+  1. **Safety Findings Panel:** Look at the **Safety Findings** panel on the case page. For the document `customer_chat.md`, it displays: *"1 card number redacted (last 4: 4448)"*, with zero raw digits shown anywhere.
   2. **Draft & Vault Audit:** Inspect the case facts and draft. The sensitive card number does not appear anywhere in the console, drafts, or database logs.
   3. **Non-Card Numbers Preserved:** AWB tracking numbers and order IDs remain fully preserved without false-positive redaction.
 
@@ -82,7 +82,7 @@ This step-by-step walkthrough script guides you through verifying DisputePilot's
   2. **Typed Amount Safeguard on Accept:**
      - Under **Option 2: Accept Dispute**, try typing an incorrect amount (e.g. `10.00`).
      - Submit the form.
-     - Observe: Rejection with HTTP 400 (*"Amount mismatch. You typed ₹10.00, but dispute amount is ₹4500.00"*). Accidental chargeback concessions are impossible.
+     - Observe: Rejection with HTTP 400 (*"Amount mismatch. You typed ₹10.00, but dispute amount is ₹4500.00"*). A wrong typed amount is rejected.
   3. **Tampered Submission Hash Rejection:**
      - If an attacker intercepts the submission request and modifies the rebuttal text or payload without re-issuing an approval token, the cryptographic hash verification detects the mismatch and raises `ApprovalRequired`.
 

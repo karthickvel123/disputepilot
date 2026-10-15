@@ -1483,20 +1483,20 @@ def _generate_markdown_report(results: dict[str, Any]) -> str:
             return "NOT RUN"
         cls_data = real.get("classification", {})
         k = cls_data.get("unique_cases_scored", cls_data.get("completed_k", 0))
+        corr = cls_data.get("correct_count")
+        if k == 0:
+            return "NOT RUN"
+        if corr is not None:
+            return f"{corr} of {k}"
         acc = cls_data.get("accuracy")
-        if k == 0 or acc is None:
+        if acc is None:
             return "NOT RUN"
         return f"{acc * 100:.2f}% (k={k} unique)"
 
     def _real_cls_f1_str() -> str:
         if not real or real_status == "NOT RUN":
             return "NOT RUN"
-        cls_data = real.get("classification", {})
-        k = cls_data.get("unique_cases_scored", cls_data.get("completed_k", 0))
-        f1 = cls_data.get("macro_f1")
-        if k == 0 or f1 is None:
-            return "NOT RUN"
-        return f"{f1 * 100:.2f}% (k={k} unique)"
+        return "omitted (sample too small)"
 
     def _real_ext_str() -> str:
         if not real or real_status == "NOT RUN":
@@ -1615,8 +1615,7 @@ def _generate_markdown_report(results: dict[str, Any]) -> str:
         k_cls = cls_data.get("unique_cases_scored", cls_data.get("completed_k", 0))
         cls_correct = cls_data.get("correct_count", 0)
         dups_dropped = cls_data.get("duplicates_dropped", 0)
-        cls_acc_str = f"{cls_data['accuracy'] * 100:.2f}% ({cls_correct} of {k_cls} unique)" if cls_data.get("accuracy") is not None else "N/A"
-        cls_f1_str = f"{cls_data['macro_f1'] * 100:.2f}%" if cls_data.get("macro_f1") is not None else "N/A"
+        cls_acc_str = f"{cls_correct} of {k_cls} ({cls_data['accuracy'] * 100:.2f}%)" if cls_data.get("accuracy") is not None else "N/A"
         misses = cls_data.get("misses", [])
         conf_dist = cls_data.get("confidence_distribution", {})
         below_thresh = cls_data.get("below_threshold_count", 0)
@@ -1631,7 +1630,6 @@ def _generate_markdown_report(results: dict[str, Any]) -> str:
             f"- **Unique Cases Scored:** k={k_cls} unique cases (rule: first completed record used; {dups_dropped} duplicate records dropped)",
             f"- **Correct Count:** {cls_correct} / {k_cls}",
             f"- **Accuracy (vs Ground Truth):** {cls_acc_str}" if k_cls > 0 else "- **Accuracy:** NOT RUN",
-            f"- **Macro-F1 Score:** {cls_f1_str}" if k_cls > 0 else "- **Macro-F1:** N/A",
             f"- **Duplicate Records Dropped:** {dups_dropped}",
             "",
             "#### Sample Composition & Origin:",
