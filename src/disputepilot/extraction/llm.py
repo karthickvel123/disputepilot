@@ -31,13 +31,17 @@ def sanitize_schema_for_gemini(schema: dict[str, Any] | type) -> dict[str, Any]:
     else:
         raise TypeError(f"Expected dict or Pydantic model class, got {type(schema)}")
 
-    defs = copy.deepcopy(raw_schema.pop("$defs", {}) or raw_schema.pop("definitions", {}))
+    defs: dict[str, Any] = {}
+    if "$defs" in raw_schema and isinstance(raw_schema["$defs"], dict):
+        defs.update(copy.deepcopy(raw_schema.pop("$defs")))
+    if "definitions" in raw_schema and isinstance(raw_schema["definitions"], dict):
+        defs.update(copy.deepcopy(raw_schema.pop("definitions")))
 
     def clean_node(d: dict[str, Any]) -> dict[str, Any]:
         return {
             k: v
             for k, v in d.items()
-            if k not in ("additionalProperties", "additional_properties", "$schema", "$defs", "definitions")
+            if k not in ("additionalProperties", "additional_properties", "$schema", "$defs", "definitions", "$ref")
         }
 
     def resolve_refs(node: Any, current_defs: dict[str, Any], depth: int = 0) -> Any:
@@ -54,6 +58,9 @@ def sanitize_schema_for_gemini(schema: dict[str, Any] | type) -> dict[str, Any]:
                         if k != "$ref":
                             res_copy[k] = resolve_refs(v, current_defs, depth + 1)
                     return clean_node(res_copy)
+                else:
+                    node_copy = {k: v for k, v in node.items() if k != "$ref"}
+                    return clean_node({k: resolve_refs(v, current_defs, depth + 1) for k, v in node_copy.items()})
             return clean_node({k: resolve_refs(v, current_defs, depth + 1) for k, v in node.items()})
         elif isinstance(node, list):
             return [resolve_refs(item, current_defs, depth + 1) for item in node]

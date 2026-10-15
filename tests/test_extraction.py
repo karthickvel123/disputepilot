@@ -89,6 +89,7 @@ def test_schema_sent_to_sdk_contains_no_additional_properties() -> None:
         assert "additional_properties" not in clean_json_str
         assert "$defs" not in clean_json_str
         assert "definitions" not in clean_json_str
+        assert "$ref" not in clean_json_str
 
         # 2. Converted GenerateContentConfig schema payload checks
         config = types.GenerateContentConfig(
@@ -102,6 +103,7 @@ def test_schema_sent_to_sdk_contains_no_additional_properties() -> None:
         assert "additional_properties" not in dumped_json_str
         assert "$defs" not in dumped_json_str
         assert "definitions" not in dumped_json_str
+        assert "$ref" not in dumped_json_str
 
 
 def test_response_with_extra_key_fails_validation() -> None:
@@ -311,3 +313,88 @@ def test_cross_check_refund_not_mentioned() -> None:
     assert check_refund_not_mentioned(True, True) is None
     # No refund exists -> no flag
     assert check_refund_not_mentioned(False, False) is None
+
+
+def test_nested_pydantic_model_schema_sanitization() -> None:
+    """For a nested Pydantic model containing field objects, $ref/$defs are inlined and removed.
+
+    The final schema must contain no $ref, no additionalProperties, and no $defs,
+    and all nested properties must be preserved inline.
+    """
+    import json
+
+    from google.genai import types
+    from pydantic import BaseModel, ConfigDict, Field
+
+    from disputepilot.extraction.llm import sanitize_schema_for_gemini
+
+    class ItemDetail(BaseModel):
+        model_config = ConfigDict(extra="forbid")
+        sku: str
+        quantity: int
+        unit_price_paise: int
+
+    class FieldObject(BaseModel):
+        model_config = ConfigDict(extra="forbid")
+        value: str
+        source_quote: str
+        confidence: float = Field(default=1.0, ge=0.0, le=1.0)
+
+    class ExtractedDoc(BaseModel):
+        model_config = ConfigDict(extra="forbid")
+        doc_id: str
+        doc_type: str
+        tracking: FieldObject
+        items: list[ItemDetail]
+        optional_note: FieldObject | None = None
+
+    raw_schema = ExtractedDoc.model_json_schema()
+
+    # 1. Verify raw schema originally contains $defs, $ref, and additionalProperties
+    raw_json_str = json.dumps(raw_schema)
+    assert "$defs" in raw_json_str
+    assert "$ref" in raw_json_str
+    assert "additionalProperties" in raw_json_str
+
+    # 2. Sanitize schema
+    clean_schema = sanitize_schema_for_gemini(ExtractedDoc)
+    clean_json_str = json.dumps(clean_schema)
+
+    # 3. Verify that $ref, additionalProperties, and $defs are completely eliminated
+    assert "$ref" not in clean_json_str
+    assert "$defs" not in clean_json_str
+    assert "definitions" not in clean_json_str
+    assert "additionalProperties" not in clean_json_str
+    assert "additional_properties" not in clean_json_str
+
+    # 4. Verify that nested properties were properly inlined into properties
+    props = clean_schema["properties"]
+    assert "doc_id" in props
+    assert "tracking" in props
+    assert "items" in props
+
+    # tracking properties inlined
+    assert props["tracking"]["type"] == "object"
+    assert "value" in props["tracking"]["properties"]
+    assert "source_quote" in props["tracking"]["properties"]
+    assert "confidence" in props["tracking"]["properties"]
+
+    # items array inlined
+    assert props["items"]["type"] == "array"
+    assert "properties" in props["items"]["items"]
+    assert "sku" in props["items"]["items"]["properties"]
+    assert "quantity" in props["items"]["items"]["properties"]
+
+    # 5. Converted GenerateContentConfig schema payload checks
+    config = types.GenerateContentConfig(
+        response_mime_type="application/json",
+        response_schema=clean_schema,
+    )
+    dumped = config.model_dump(exclude_none=True)
+    dumped_json_str = json.dumps(dumped)
+
+    assert "$ref" not in dumped_json_str
+    assert "$defs" not in dumped_json_str
+    assert "additionalProperties" not in dumped_json_str
+    assert "additional_properties" not in dumped_json_str
+

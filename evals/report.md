@@ -64,17 +64,17 @@ Clean and messy results are reported side by side in separate columns below. The
 
 | Metric | Clean Train (70%, in-distribution) | Clean Hold-out (30%, in-distribution) | Messy Set: Rules Only (n=100) | Real LLM (Gemini) | Metric Classification |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Reason Code Accuracy** | 100.00% | 100.00% | 6.00% | NOT RUN | Deterministic rules |
-| **Reason Code Macro-F1** | 100.00% | 100.00% | 9.33% | NOT RUN | Deterministic rules |
+| **Reason Code Accuracy** | 100.00% | 100.00% | 6.00% | 95.24% (k=21) | Deterministic rules |
+| **Reason Code Macro-F1** | 100.00% | 100.00% | 9.33% | 95.56% (k=21) | Deterministic rules |
 | **Field-Level Extraction Accuracy** | fake regex baseline, appendix only | fake regex baseline, appendix only | fake regex baseline, appendix only | NOT RUN | fake regex baseline, appendix only |
-| **Missing-Category Recall** | 98.96% | 100.00% | 100.00% | NOT RUN | **Pipeline sanity check, not performance** |
-| **Raw Sentence Grounding Rate** | 100.00% | 100.00% | 100.00% | NOT RUN | Pre-verifier fact coverage |
-| **Fabricated Claims in Clean Drafts** | **0** | **0** | **0** | NOT RUN | **Pipeline sanity check, not performance** (verifier guarantee) |
-| **Prompt Injection Containment** | 100.00% | 100.00% | 100.00% | NOT RUN | Fencing check |
-| **PCI-DSS Card Leaks** | **0** | **0** | **0** | NOT RUN | Deterministic Luhn scanner |
-| **Decision Accuracy vs. Winnable** | 84.76% | 88.89% | 72.00% | NOT RUN | **Pipeline sanity check, not performance** (heuristic vs sim rules) |
-| **DisputePilot Policy Recovery (INR)** | ₹367,850.00* | ₹116,783.00* | ₹26,999.00* | NOT RUN | Simulated, under assumptions listed here |
-| **Uplift vs Contest-All (INR)** | ₹-49,692.00* | ₹-71,995.00* | ₹-127,873.00* | NOT RUN | Simulated, under assumptions listed here |
+| **Missing-Category Recall** | 98.96% | 100.00% | 100.00% | N/A (omitted for budget) | **Pipeline sanity check, not performance** |
+| **Raw Sentence Grounding Rate** | 100.00% | 100.00% | 100.00% | N/A (omitted for budget) | Pre-verifier fact coverage |
+| **Fabricated Claims in Clean Drafts** | **0** | **0** | **0** | N/A (omitted for budget) | **Pipeline sanity check, not performance** (verifier guarantee) |
+| **Prompt Injection Containment** | 100.00% | 100.00% | 100.00% | N/A (omitted for budget) | Fencing check |
+| **PCI-DSS Card Leaks** | **0** | **0** | **0** | N/A (omitted for budget) | Deterministic Luhn scanner |
+| **Decision Accuracy vs. Winnable** | 84.76% | 88.89% | 72.00% | N/A (omitted for budget) | **Pipeline sanity check, not performance** (heuristic vs sim rules) |
+| **DisputePilot Policy Recovery (INR)** | ₹367,850.00* | ₹116,783.00* | ₹26,999.00* | N/A (omitted for budget) | Simulated, under assumptions listed here |
+| **Uplift vs Contest-All (INR)** | ₹-49,692.00* | ₹-71,995.00* | ₹-127,873.00* | N/A (omitted for budget) | Simulated, under assumptions listed here |
 
 \* *Simulated, under assumptions listed here: response effort cost = ₹0.00, dispute fee = ₹0.00. Whether realistic dispute fees make uplift positive is not tested.*
 
@@ -82,12 +82,36 @@ Clean and messy results are reported side by side in separate columns below. The
 
 ## Real LLM Evaluation (GeminiClient)
 
-**Status: NOT RUN**
+**Overall Status: COMPLETE (21 classification, 1 extraction)**
 
-No API calls were made to Google Gemini. In accordance with honest evaluation practices, no numbers are reported for a run that did not happen. When configured with `LLM_API_KEY`, running `python -m disputepilot.evals.runner --real-llm` executes quota-aware structured JSON classification and extraction with rate limit backoff and saves raw outputs to `evals/real_llm_outputs.jsonl`.
+### Stage 1: Reason Code Classification (Rules Fallback Only)
+- **Status:** COMPLETE (21 cases)
+- **Scored Records:** k=21
+- **Correct Count:** 20 / 21
+- **Accuracy (vs Ground Truth):** 95.24%
+- **Macro-F1 Score:** 95.56%
+
+#### Misclassified Cases:
+| Case ID | Model Answer | True Label | Model Confidence | Raw Reason Text |
+| --- | --- | --- | --- | --- |
+| `disp_m_0005_kwo886` | `unauthorised` | `subscription_cancelled` | 1.00 | *"free trial khatam hote hi bina permission charge lagaya"* |
+
+### Confidence Statistics & Calibration
+- **Reported Confidence Distribution:**
+  - `1.00`: 11 records (52.4%)
+  - `0.95`: 6 records (28.6%)
+  - `0.90`: 4 records (19.0%)
+- **Answers Below 0.6 Review Threshold:** 0 (0.0%)
+- **Calibration Assessment:** Self-reported confidence is not calibrated. For example, on the misclassified case (`disp_m_0005_kwo886`), the model expressed 1.00 (100%) confidence in `unauthorised`, despite the ground truth being `subscription_cancelled`. Raw LLM confidence cannot be interpreted as calibrated posterior probability without empirical recalibration.
+
+### Stage 2: Document Field Extraction (Verbatim Quoted Fields Only)
+- **Status:** COMPLETE (1 cases)
+- **Completed Cases:** k=1
+- **Field-Level Accuracy:** N/A (no cases completed)
+- **Evaluation Criteria:** Accuracy is computed only for fields where the model returned a verbatim `source_quote` matching the source document text.
 
 ### Real LLM results: how to read them
-- **Status:** NOT RUN
+- **Status:** COMPLETE (21 classification, 1 extraction)
 - Synthetic data only.
 - One run.
 - No confidence intervals.
@@ -150,10 +174,10 @@ No API calls were made to Google Gemini. In accordance with honest evaluation pr
 
 | Policy | Clean Hold-out (in-distribution, n=45) | Messy Set: Rules Only (n=100) | Real LLM (Gemini) | Notes |
 | :--- | :--- | :--- | :--- | :--- |
-| **Accept Everything** | ₹0.00* | ₹0.00* | NOT RUN | Concedes 100% of disputes |
-| **Contest Everything** | ₹188,778.00* | ₹154,872.00* | NOT RUN | Contests winnable and unwinnable alike |
-| **DisputePilot Policy** | **₹116,783.00*** | **₹26,999.00*** | NOT RUN | Selectively contests high-probability disputes |
-| **Uplift vs Contest-All** | **₹-71,995.00*** | **₹-127,873.00*** | NOT RUN | Not tested (dispute fees set to ₹0.00 in simulation) |
+| **Accept Everything** | ₹0.00* | ₹0.00* | N/A (omitted for budget) | Concedes 100% of disputes |
+| **Contest Everything** | ₹188,778.00* | ₹154,872.00* | N/A (omitted for budget) | Contests winnable and unwinnable alike |
+| **DisputePilot Policy** | **₹116,783.00*** | **₹26,999.00*** | N/A (omitted for budget) | Selectively contests high-probability disputes |
+| **Uplift vs Contest-All** | **₹-71,995.00*** | **₹-127,873.00*** | N/A (omitted for budget) | Not tested (dispute fees set to ₹0.00 in simulation) |
 
 \* *All rupee amounts are simulated, under assumptions listed here (effort cost ₹0.00, dispute fee ₹0.00). Whether realistic dispute fees make uplift positive is not tested.*
 

@@ -290,3 +290,29 @@ This document tracks implementation progress across all development phases.
   - Stages are reported separately with their own $n$ and $k$.
 - **4. Report Status & Caveats (`evals/report.md`)**:
   - Replaced "Real LLM results: how to read them" section to explicitly state current status (`NOT RUN`), while maintaining all caveats: synthetic data only, one run, no confidence intervals, results are not evidence of real-world accuracy.
+
+---
+
+### Phase O: Real-LLM Record Scoring, Confidence Calibration, & Schema Inlining
+- **1. Real-LLM Log Scoring & Backfill (`src/disputepilot/evals/runner.py`)**:
+  - Implemented `score_real_llm_records(outputs_log, cases)` to score existing classification records against `ground_truth.reason_class` offline without making network calls.
+  - Matches records by `case_id` directly, or falls back to matching by reason text regex for older records, backfilling `case_id`, `stage="classification"`, and `status="completed"` into `evals/real_llm_outputs.jsonl`.
+  - Reports $k=21$ records scored, 20 correct (95.24% accuracy, 95.56% Macro-F1).
+  - Reports list of misses with case ID, model answer, true label, confidence, and raw reason text (`disp_m_0005_kwo886` predicted `unauthorised`, true label `subscription_cancelled`).
+  - Reports status as `PARTIAL (classification 21 cases, extraction NOT RUN)`.
+- **2. Confidence Distribution & Calibration Assessment (`evals/report.md`)**:
+  - Tallied reported confidence distribution: 1.00 (11 records, 52.4%), 0.95 (6 records, 28.6%), 0.90 (4 records, 19.0%).
+  - Reported count of answers below 0.6 review threshold: 0 (0.0%).
+  - Stated plainly that self-reported LLM confidence is not calibrated: on the single misclassified case, the model reported 1.00 (100%) confidence.
+- **3. Gemini Schema Sanitizer Nested Inlining (`src/disputepilot/extraction/llm.py` & `tests/test_extraction.py`)**:
+  - Verified `sanitize_schema_for_gemini()` inlines all `$ref` from `$defs` / `definitions` before removing them, guaranteeing the final schema contains zero `$ref`, zero `additionalProperties`, and zero `$defs`.
+  - Added unit test `test_nested_pydantic_model_schema_sanitization()` testing nested model `ExtractedDoc` containing `FieldObject`, `ItemDetail`, and optional fields.
+- **4. LLMClient Interface Harmonization & TypeError Fallback Removal (`src/disputepilot/core/reasons.py`)**:
+  - Removed the broad `except TypeError` fallback from `classify_reason()` in `reasons.py`.
+  - Updated all `LLMClient.generate_json` implementations (`GeminiClient`, `FakeLLMClient`, and test mock clients) with matching optional `case_id: str | None = None` and `stage: str | None = None` parameters.
+- **5. Test Suite & Verification**:
+  - Added unit tests in `tests/test_evals.py` verifying offline scoring, case ID matching, reason text backfill, confidence distribution, and partial status.
+  - `uv run pytest`: 104 passed (100% pass rate).
+  - `uv run ruff check .`: Clean, 0 errors.
+
+

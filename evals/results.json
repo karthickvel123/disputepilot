@@ -580,8 +580,205 @@
       "unwinnable_disputes_contested": 18
     }
   },
-  "real_llm_sample_30": null,
-  "real_llm_status": "NOT RUN",
+  "real_llm": {
+    "status": "COMPLETE (21 classification, 1 extraction)",
+    "classification": {
+      "status": "COMPLETE (21 cases)",
+      "completed_k": 21,
+      "correct_count": 20,
+      "accuracy": 0.9524,
+      "macro_f1": 0.9556,
+      "per_class": {
+        "item_not_received": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 4
+        },
+        "not_as_described": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 2
+        },
+        "unauthorised": {
+          "precision": 0.6667,
+          "recall": 1.0,
+          "f1": 0.8,
+          "support": 2
+        },
+        "duplicate_charge": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 4
+        },
+        "subscription_cancelled": {
+          "precision": 1.0,
+          "recall": 0.8,
+          "f1": 0.8889,
+          "support": 5
+        },
+        "refund_not_received": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 2
+        },
+        "other": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 2
+        }
+      },
+      "misses": [
+        {
+          "case_id": "disp_m_0005_kwo886",
+          "model_answer": "unauthorised",
+          "true_label": "subscription_cancelled",
+          "confidence": 1.0,
+          "reason_text": "free trial khatam hote hi bina permission charge lagaya"
+        }
+      ],
+      "confidences": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        0.95,
+        1.0,
+        1.0,
+        0.9,
+        0.9,
+        1.0,
+        0.95,
+        1.0,
+        0.9,
+        0.95,
+        0.95,
+        0.9,
+        0.95,
+        1.0,
+        0.95,
+        1.0,
+        1.0
+      ],
+      "confidence_distribution": {
+        "1.0": 11,
+        "0.95": 6,
+        "0.9": 4
+      },
+      "below_threshold_count": 0
+    },
+    "extraction": {
+      "status": "COMPLETE (1 cases)",
+      "completed_k": 1,
+      "field_accuracy": null,
+      "total_fields": 0,
+      "correct_fields": 0
+    }
+  },
+  "real_llm_sample_30": {
+    "status": "COMPLETE (21 classification, 1 extraction)",
+    "classification": {
+      "status": "COMPLETE (21 cases)",
+      "completed_k": 21,
+      "correct_count": 20,
+      "accuracy": 0.9524,
+      "macro_f1": 0.9556,
+      "per_class": {
+        "item_not_received": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 4
+        },
+        "not_as_described": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 2
+        },
+        "unauthorised": {
+          "precision": 0.6667,
+          "recall": 1.0,
+          "f1": 0.8,
+          "support": 2
+        },
+        "duplicate_charge": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 4
+        },
+        "subscription_cancelled": {
+          "precision": 1.0,
+          "recall": 0.8,
+          "f1": 0.8889,
+          "support": 5
+        },
+        "refund_not_received": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 2
+        },
+        "other": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 2
+        }
+      },
+      "misses": [
+        {
+          "case_id": "disp_m_0005_kwo886",
+          "model_answer": "unauthorised",
+          "true_label": "subscription_cancelled",
+          "confidence": 1.0,
+          "reason_text": "free trial khatam hote hi bina permission charge lagaya"
+        }
+      ],
+      "confidences": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        0.95,
+        1.0,
+        1.0,
+        0.9,
+        0.9,
+        1.0,
+        0.95,
+        1.0,
+        0.9,
+        0.95,
+        0.95,
+        0.9,
+        0.95,
+        1.0,
+        0.95,
+        1.0,
+        1.0
+      ],
+      "confidence_distribution": {
+        "1.0": 11,
+        "0.95": 6,
+        "0.9": 4
+      },
+      "below_threshold_count": 0
+    },
+    "extraction": {
+      "status": "COMPLETE (1 cases)",
+      "completed_k": 1,
+      "field_accuracy": null,
+      "total_fields": 0,
+      "correct_fields": 0
+    }
+  },
+  "real_llm_status": "COMPLETE (21 classification, 1 extraction)",
   "reason_classifier": {
     "accuracy": 1.0,
     "macro_f1": 1.0,

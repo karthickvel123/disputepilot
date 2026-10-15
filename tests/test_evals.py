@@ -240,3 +240,111 @@ def test_real_llm_eval_offline_not_run_when_nothing_completed(tmp_path: Path) ->
     assert res["classification"]["status"] == "NOT RUN"
     assert res["classification"]["completed_k"] == 0
     assert res["status"] == "NOT RUN"
+
+
+def test_score_real_llm_records_matching_and_confidence_stats(tmp_path: Path) -> None:
+    """Test offline scoring of real-LLM records by case_id with confidence distribution and misses."""
+    import json
+
+    from disputepilot.evals.runner import _load_cases_from_dir, score_real_llm_records
+
+    cases = _load_cases_from_dir("data/cases_messy", max_cases=5)
+    case1, case2, case3 = cases[0], cases[1], cases[2]
+
+    log_file = tmp_path / "real_llm_outputs.jsonl"
+    entries = [
+        # Correct answer with 0.95 confidence
+        {
+            "case_id": case1.case_id,
+            "stage": "classification",
+            "parsed_response": {
+                "reason_class": case1.ground_truth.reason_class.value,
+                "confidence": 0.95,
+            },
+        },
+        # Misclassification with 0.40 confidence (below threshold)
+        {
+            "case_id": case2.case_id,
+            "stage": "classification",
+            "parsed_response": {
+                "reason_class": "unauthorised" if case2.ground_truth.reason_class.value != "unauthorised" else "duplicate_charge",
+                "confidence": 0.40,
+            },
+        },
+        # Correct answer with 1.00 confidence
+        {
+            "case_id": case3.case_id,
+            "stage": "classification",
+            "parsed_response": {
+                "reason_class": case3.ground_truth.reason_class.value,
+                "confidence": 1.0,
+            },
+        },
+    ]
+    log_file.write_text("\n".join(json.dumps(e) for e in entries) + "\n", encoding="utf-8")
+
+    scored = score_real_llm_records(log_file, cases)
+
+    # Scored records: k=3, 2 correct, 1 miss
+    cls_metrics = scored["classification"]
+    assert cls_metrics["completed_k"] == 3
+    assert cls_metrics["correct_count"] == 2
+    assert cls_metrics["accuracy"] == round(2 / 3, 4)
+
+    # Misses list
+    assert len(cls_metrics["misses"]) == 1
+    miss = cls_metrics["misses"][0]
+    assert miss["case_id"] == case2.case_id
+    assert miss["true_label"] == case2.ground_truth.reason_class.value
+    assert miss["confidence"] == 0.40
+
+    # Confidence distribution & below 0.6 threshold count
+    conf_dist = cls_metrics["confidence_distribution"]
+    assert conf_dist[1.0] == 1
+    assert conf_dist[0.95] == 1
+    assert conf_dist[0.4] == 1
+    assert cls_metrics["below_threshold_count"] == 1
+
+    # Status
+    assert scored["status"] == "PARTIAL (classification 3 cases, extraction NOT RUN)"
+
+
+def test_score_real_llm_records_backfill_older_records(tmp_path: Path) -> None:
+    """Test that older records without case_id are matched by reason text and case_id is backfilled into file."""
+    import json
+
+    from disputepilot.evals.runner import _load_cases_from_dir, score_real_llm_records
+
+    cases = _load_cases_from_dir("data/cases_messy", max_cases=5)
+    target_case = cases[0]
+    reason_text = target_case.dispute.reason_code
+
+    log_file = tmp_path / "real_llm_outputs.jsonl"
+    # Older record without case_id, stage, or status
+    older_entry = {
+        "timestamp": 123456789.0,
+        "prompt": {
+            "system": "Classify",
+            "user": f"Dispute reason text to classify:\n<<<DISPUTE_REASON>>>\n{reason_text}\n<<<END_DISPUTE_REASON>>>",
+        },
+        "parsed_response": {
+            "reason_class": target_case.ground_truth.reason_class.value,
+            "confidence": 0.9,
+        },
+    }
+    log_file.write_text(json.dumps(older_entry) + "\n", encoding="utf-8")
+
+    scored = score_real_llm_records(log_file, cases)
+
+    assert scored["classification"]["completed_k"] == 1
+    assert scored["classification"]["correct_count"] == 1
+    assert scored["classification"]["accuracy"] == 1.0
+
+    # Verify backfill into file
+    lines = log_file.read_text(encoding="utf-8").strip().splitlines()
+    assert len(lines) == 1
+    updated_entry = json.loads(lines[0])
+    assert updated_entry["case_id"] == target_case.case_id
+    assert updated_entry["stage"] == "classification"
+    assert updated_entry["status"] == "completed"
+

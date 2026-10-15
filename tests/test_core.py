@@ -156,7 +156,14 @@ def test_reasons_edge_case_unknown_and_empty() -> None:
 def test_reasons_llm_classification_success() -> None:
     """Test LLM classification fallback with high confidence."""
     class MockLLM:
-        def generate_json(self, system: str, user: str, json_schema: object) -> dict[str, object]:
+        def generate_json(
+            self,
+            system: str,
+            user: str,
+            json_schema: object,
+            case_id: str | None = None,
+            stage: str | None = None,
+        ) -> dict[str, object]:
             return {
                 "reason_class": "item_not_received",
                 "confidence": 0.88,
@@ -174,7 +181,14 @@ def test_reasons_llm_classification_success() -> None:
 def test_reasons_llm_classification_low_confidence_or_unclassified() -> None:
     """Test LLM classification rejection when confidence < 0.6 or unclassified."""
     class LowConfLLM:
-        def generate_json(self, system: str, user: str, json_schema: object) -> dict[str, object]:
+        def generate_json(
+            self,
+            system: str,
+            user: str,
+            json_schema: object,
+            case_id: str | None = None,
+            stage: str | None = None,
+        ) -> dict[str, object]:
             return {
                 "reason_class": "unauthorised",
                 "confidence": 0.45,
@@ -186,7 +200,14 @@ def test_reasons_llm_classification_low_confidence_or_unclassified() -> None:
     assert match_low.needs_review is True
 
     class UnclassifiedLLM:
-        def generate_json(self, system: str, user: str, json_schema: object) -> dict[str, object]:
+        def generate_json(
+            self,
+            system: str,
+            user: str,
+            json_schema: object,
+            case_id: str | None = None,
+            stage: str | None = None,
+        ) -> dict[str, object]:
             return {
                 "reason_class": "unclassified",
                 "confidence": 0.95,
@@ -198,7 +219,14 @@ def test_reasons_llm_classification_low_confidence_or_unclassified() -> None:
     assert match_unclass.needs_review is True
 
     class FailingLLM:
-        def generate_json(self, system: str, user: str, json_schema: object) -> dict[str, object]:
+        def generate_json(
+            self,
+            system: str,
+            user: str,
+            json_schema: object,
+            case_id: str | None = None,
+            stage: str | None = None,
+        ) -> dict[str, object]:
             raise RuntimeError("API timeout")
 
     match_fail = classify_reason("failed call", llm_client=FailingLLM())

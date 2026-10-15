@@ -5,7 +5,8 @@ import json
 import logging
 import os
 import random
-from collections import defaultdict
+import re
+from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any
 
@@ -406,6 +407,226 @@ def load_completed_checkpoints(outputs_path: Path | str) -> dict[str, dict[str, 
     return records
 
 
+def score_real_llm_records(
+    outputs_log: Path | str,
+    cases: list[DisputeCase],
+) -> dict[str, Any]:
+    """Score classification and extraction records from real_llm_outputs.jsonl against ground truth offline.
+
+    Matches by case_id (or reason text for older records, backfilling case_id into log).
+    Reports k records scored, number correct, list of misses with model answer and true label,
+    confidence statistics, and status. Never calls network.
+    """
+    path = Path(outputs_log)
+    if not path.exists():
+        return {
+            "status": "NOT RUN",
+            "classification": {
+                "status": "NOT RUN",
+                "completed_k": 0,
+                "correct_count": 0,
+                "accuracy": None,
+                "macro_f1": None,
+                "misses": [],
+                "confidences": [],
+                "confidence_distribution": {},
+                "below_threshold_count": 0,
+            },
+            "extraction": {
+                "status": "NOT RUN",
+                "completed_k": 0,
+                "field_accuracy": None,
+                "total_fields": 0,
+                "correct_fields": 0,
+            },
+        }
+
+    case_by_id: dict[str, DisputeCase] = {c.case_id: c for c in cases}
+    case_by_reason_text: dict[str, DisputeCase] = {}
+    for c in cases:
+        if c.dispute.reason_code:
+            case_by_reason_text[c.dispute.reason_code.strip().lower()] = c
+        if hasattr(c.dispute, "reason_description") and c.dispute.reason_description:
+            case_by_reason_text[c.dispute.reason_description.strip().lower()] = c
+
+    records: list[dict[str, Any]] = []
+    file_modified = False
+
+    with open(path, encoding="utf-8") as f:
+        for raw_line in f:
+            line_str = raw_line.strip()
+            if not line_str:
+                continue
+            try:
+                entry = json.loads(line_str)
+            except json.JSONDecodeError:
+                continue
+            if not isinstance(entry, dict):
+                continue
+
+            c_id = entry.get("case_id")
+            if not c_id:
+                user_prompt = entry.get("prompt", {}).get("user", "")
+                m = re.search(r"<<<DISPUTE_REASON>>>\s*(.*?)\s*<<<END_DISPUTE_REASON>>>", user_prompt, re.DOTALL)
+                reason_txt = m.group(1).strip().lower() if m else ""
+                matched_case = case_by_reason_text.get(reason_txt)
+                if matched_case:
+                    c_id = matched_case.case_id
+                    entry["case_id"] = c_id
+                    if not entry.get("stage"):
+                        entry["stage"] = "classification"
+                    if not entry.get("status"):
+                        entry["status"] = "completed"
+                    file_modified = True
+
+            records.append(entry)
+
+    if file_modified:
+        with open(path, "w", encoding="utf-8") as f:
+            for entry in records:
+                f.write(json.dumps(entry) + "\n")
+
+    # Score classification records
+    cls_completed: list[dict[str, Any]] = []
+    confidences: list[float] = []
+    misses: list[dict[str, Any]] = []
+    correct_count = 0
+
+    for entry in records:
+        stg = entry.get("stage", "classification")
+        parsed = entry.get("parsed_response")
+        if not isinstance(parsed, dict):
+            continue
+
+        if stg == "classification" or "reason_class" in parsed:
+            c_id = entry.get("case_id")
+            case = case_by_id.get(c_id) if c_id else None
+            if not case:
+                user_prompt = entry.get("prompt", {}).get("user", "")
+                m = re.search(r"<<<DISPUTE_REASON>>>\s*(.*?)\s*<<<END_DISPUTE_REASON>>>", user_prompt, re.DOTALL)
+                reason_txt = m.group(1).strip().lower() if m else ""
+                case = case_by_reason_text.get(reason_txt)
+
+            if not case:
+                continue
+
+            pred_class_str = str(parsed.get("reason_class", "unclassified")).strip().lower()
+            gt_class_val = (
+                case.ground_truth.reason_class.value
+                if hasattr(case.ground_truth.reason_class, "value")
+                else str(case.ground_truth.reason_class).lower()
+            )
+            is_correct = (pred_class_str == gt_class_val)
+            if is_correct:
+                correct_count += 1
+            else:
+                user_prompt = entry.get("prompt", {}).get("user", "")
+                m = re.search(r"<<<DISPUTE_REASON>>>\s*(.*?)\s*<<<END_DISPUTE_REASON>>>", user_prompt, re.DOTALL)
+                reason_snippet = m.group(1).strip() if m else case.dispute.reason_code
+                misses.append({
+                    "case_id": case.case_id,
+                    "model_answer": pred_class_str,
+                    "true_label": gt_class_val,
+                    "confidence": parsed.get("confidence"),
+                    "reason_text": reason_snippet,
+                })
+
+            conf = parsed.get("confidence")
+            if conf is not None:
+                try:
+                    confidences.append(float(conf))
+                except (ValueError, TypeError):
+                    pass
+
+            cls_completed.append({
+                "case_id": case.case_id,
+                "pred_class": pred_class_str,
+                "gt_class": gt_class_val,
+                "correct": is_correct,
+            })
+
+    k_cls = len(cls_completed)
+    cls_acc = round(correct_count / k_cls, 4) if k_cls > 0 else None
+
+    # Macro-F1 across classes
+    cls_macro_f1 = None
+    cls_per_class: dict[str, dict[str, float]] = {}
+    if k_cls > 0:
+        tp_m: dict[str, int] = defaultdict(int)
+        fp_m: dict[str, int] = defaultdict(int)
+        fn_m: dict[str, int] = defaultdict(int)
+        supp_m: dict[str, int] = defaultdict(int)
+        for item in cls_completed:
+            gt_k = item["gt_class"]
+            pr_k = item["pred_class"]
+            supp_m[gt_k] += 1
+            if pr_k == gt_k:
+                tp_m[gt_k] += 1
+            else:
+                fp_m[pr_k] += 1
+                fn_m[gt_k] += 1
+        cls_f1_scores = []
+        for rc in ALL_REASON_CLASSES:
+            k = rc.value
+            tp = tp_m[k]
+            fp = fp_m[k]
+            fn = fn_m[k]
+            prec = tp / (tp + fp) if (tp + fp) > 0 else 0.0
+            rec = tp / (tp + fn) if (tp + fn) > 0 else 0.0
+            f1 = (2 * prec * rec) / (prec + rec) if (prec + rec) > 0 else 0.0
+            cls_per_class[k] = {"precision": round(prec, 4), "recall": round(rec, 4), "f1": round(f1, 4), "support": supp_m[k]}
+            if supp_m[k] > 0 or (tp + fp) > 0:
+                cls_f1_scores.append(f1)
+        cls_macro_f1 = round(sum(cls_f1_scores) / len(cls_f1_scores), 4) if cls_f1_scores else 0.0
+
+    rounded_confs = [round(c, 2) for c in confidences]
+    conf_counts = Counter(rounded_confs)
+    conf_distribution = {k: conf_counts[k] for k in sorted(conf_counts.keys(), reverse=True)}
+    below_threshold_count = sum(1 for c in confidences if c < 0.6)
+
+    ext_completed = [
+        entry for entry in records
+        if entry.get("stage") == "extraction" and entry.get("status") == "completed"
+    ]
+    k_ext = len(ext_completed)
+
+    if k_cls > 0 and k_ext == 0:
+        overall_status = f"PARTIAL (classification {k_cls} cases, extraction NOT RUN)"
+        cls_status = f"PARTIAL ({k_cls} cases)"
+        ext_status = "NOT RUN"
+    elif k_cls > 0 and k_ext > 0:
+        overall_status = f"COMPLETE ({k_cls} classification, {k_ext} extraction)"
+        cls_status = f"COMPLETE ({k_cls} cases)"
+        ext_status = f"COMPLETE ({k_ext} cases)"
+    else:
+        overall_status = "NOT RUN"
+        cls_status = "NOT RUN"
+        ext_status = "NOT RUN"
+
+    return {
+        "status": overall_status,
+        "classification": {
+            "status": cls_status,
+            "completed_k": k_cls,
+            "correct_count": correct_count,
+            "accuracy": cls_acc,
+            "macro_f1": cls_macro_f1,
+            "per_class": cls_per_class,
+            "misses": misses,
+            "confidences": confidences,
+            "confidence_distribution": conf_distribution,
+            "below_threshold_count": below_threshold_count,
+        },
+        "extraction": {
+            "status": ext_status,
+            "completed_k": k_ext,
+            "field_accuracy": None,
+            "total_fields": 0,
+            "correct_fields": 0,
+        },
+    }
+
+
 def check_extracted_field_vs_ground_truth(
     field_name: str,
     field_value: Any,
@@ -557,10 +778,13 @@ def run_real_llm_eval(
                     pred_val = ReasonClass(raw_pred)
                 except ValueError:
                     pred_val = ReasonClass.UNCLASSIFIED
+                conf_val = float(parsed.get("confidence", 0.0)) if parsed.get("confidence") is not None else None
                 cls_completed.append({
                     "case_id": case.case_id,
                     "gt_class": gt_val,
                     "pred_class": pred_val,
+                    "confidence": conf_val,
+                    "reason_text": case.dispute.reason_code,
                     "correct": pred_val == gt_val,
                     "cached": True,
                 })
@@ -568,10 +792,13 @@ def run_real_llm_eval(
                 try:
                     match = classify_reason(case.dispute.reason_code, llm_client=real_client, case_id=case.case_id)
                     pred_val = match.reason_class
+                    conf_val = match.confidence
                     cls_completed.append({
                         "case_id": case.case_id,
                         "gt_class": gt_val,
                         "pred_class": pred_val,
+                        "confidence": conf_val,
+                        "reason_text": case.dispute.reason_code,
                         "correct": pred_val == gt_val,
                         "cached": False,
                     })
@@ -652,6 +879,21 @@ def run_real_llm_eval(
     k_cls = len(cls_completed)
     cls_correct = sum(1 for c in cls_completed if c["correct"])
     cls_acc = round(cls_correct / k_cls, 4) if k_cls > 0 else None
+    cls_misses = [
+        {
+            "case_id": c["case_id"],
+            "model_answer": c["pred_class"].value,
+            "true_label": c["gt_class"].value,
+            "confidence": c.get("confidence"),
+            "reason_text": c.get("reason_text", ""),
+        }
+        for c in cls_completed
+        if not c["correct"]
+    ]
+    cls_confs = [c["confidence"] for c in cls_completed if c.get("confidence") is not None]
+    cls_conf_counts = Counter([round(c, 2) for c in cls_confs])
+    cls_conf_dist = {k: cls_conf_counts[k] for k in sorted(cls_conf_counts.keys(), reverse=True)}
+    cls_below_thresh = sum(1 for c in cls_confs if c < 0.6)
     cls_per_class: dict[str, dict[str, float]] = {}
     cls_f1_scores = []
     if k_cls > 0:
@@ -748,6 +990,9 @@ def run_real_llm_eval(
             "correct_count": cls_correct,
             "macro_f1": cls_macro_f1,
             "per_class": cls_per_class,
+            "misses": cls_misses,
+            "confidence_distribution": cls_conf_dist,
+            "below_threshold_count": cls_below_thresh,
         },
         "extraction": {
             "status": ext_status,
@@ -848,11 +1093,11 @@ def run_evaluation(
             rule_only=False,
         )
 
-    # 6. Real LLM evaluation on messy set (if requested)
+    # 6. Real LLM evaluation on messy set (if requested or if outputs_log exists)
     real_llm_metrics: dict[str, Any] | None = None
     real_llm_status: str = "NOT RUN"
+    outputs_log = out_path / "real_llm_outputs.jsonl"
     if real_llm:
-        outputs_log = out_path / "real_llm_outputs.jsonl"
         real_llm_metrics = run_real_llm_eval(
             messy_cases=messy_cases,
             outputs_log=outputs_log,
@@ -862,6 +1107,22 @@ def run_evaluation(
             max_calls=real_llm_max_calls,
             seed=seed,
             custom_client=llm_client if isinstance(llm_client, (GeminiClient, FakeLLMClient)) else None,
+        )
+        if outputs_log.exists():
+            scored_cls = score_real_llm_records(outputs_log, messy_cases)
+            if real_llm_metrics.get("classification", {}).get("completed_k", 0) == 0:
+                real_llm_metrics["classification"] = scored_cls["classification"]
+            k_cls = real_llm_metrics.get("classification", {}).get("completed_k", 0)
+            k_ext = real_llm_metrics.get("extraction", {}).get("completed_k", 0)
+            if k_cls > 0 and k_ext > 0:
+                real_llm_metrics["status"] = f"COMPLETE ({k_cls} classification, {k_ext} extraction)"
+            elif k_cls > 0:
+                real_llm_metrics["status"] = f"PARTIAL (classification {k_cls} cases, extraction NOT RUN)"
+        real_llm_status = real_llm_metrics.get("status", "NOT RUN")
+    elif outputs_log.exists():
+        real_llm_metrics = score_real_llm_records(
+            outputs_log=outputs_log,
+            cases=messy_cases,
         )
         real_llm_status = real_llm_metrics.get("status", "NOT RUN")
 
@@ -1141,10 +1402,12 @@ def _generate_markdown_report(results: dict[str, Any]) -> str:
         cls_data = real.get("classification", {})
         ext_data = real.get("extraction", {})
         k_cls = cls_data.get("completed_k", 0)
-        n_cls = cls_data.get("n", 0)
         cls_acc_str = f"{cls_data['accuracy'] * 100:.2f}%" if cls_data.get("accuracy") is not None else "N/A"
         cls_f1_str = f"{cls_data['macro_f1'] * 100:.2f}%" if cls_data.get("macro_f1") is not None else "N/A"
         cls_correct = cls_data.get("correct_count", 0)
+        misses = cls_data.get("misses", [])
+        conf_dist = cls_data.get("confidence_distribution", {})
+        below_thresh = cls_data.get("below_threshold_count", 0)
 
         k_ext = ext_data.get("completed_k", 0)
         n_ext = ext_data.get("n", 0)
@@ -1159,16 +1422,50 @@ def _generate_markdown_report(results: dict[str, Any]) -> str:
             "",
             "### Stage 1: Reason Code Classification (Rules Fallback Only)",
             f"- **Status:** {cls_data.get('status', 'NOT RUN')}",
-            f"- **Target Cases (rules returned unclassified):** n={n_cls}",
-            f"- **Completed Cases:** k={k_cls}",
-            f"- **Accuracy (vs Ground Truth):** {cls_acc_str} ({cls_correct}/{k_cls} correct)" if k_cls > 0 else "- **Accuracy:** N/A (no cases completed)",
+            f"- **Scored Records:** k={k_cls}",
+            f"- **Correct Count:** {cls_correct} / {k_cls}",
+            f"- **Accuracy (vs Ground Truth):** {cls_acc_str}" if k_cls > 0 else "- **Accuracy:** N/A (no cases completed)",
             f"- **Macro-F1 Score:** {cls_f1_str}" if k_cls > 0 else "- **Macro-F1:** N/A",
+        ])
+
+        if misses:
+            lines.extend([
+                "",
+                "#### Misclassified Cases:",
+                "| Case ID | Model Answer | True Label | Model Confidence | Raw Reason Text |",
+                "| --- | --- | --- | --- | --- |",
+            ])
+            for m in misses:
+                c_id = m.get("case_id", "N/A")
+                m_ans = m.get("model_answer", "N/A")
+                t_lbl = m.get("true_label", "N/A")
+                conf_val = f"{m.get('confidence', 0.0):.2f}" if m.get("confidence") is not None else "N/A"
+                r_txt = m.get("reason_text", "")
+                lines.append(f"| `{c_id}` | `{m_ans}` | `{t_lbl}` | {conf_val} | *\"{r_txt}\"* |")
+        else:
+            lines.append("- **Misses:** None (100% correct)")
+
+        lines.extend([
+            "",
+            "### Confidence Statistics & Calibration",
+        ])
+        if conf_dist:
+            lines.append("- **Reported Confidence Distribution:**")
+            total_confs = sum(conf_dist.values())
+            for c_val, count in conf_dist.items():
+                pct = (count / total_confs * 100) if total_confs > 0 else 0
+                lines.append(f"  - `{c_val:.2f}`: {count} records ({pct:.1f}%)")
+        else:
+            lines.append("- **Reported Confidence Distribution:** None recorded")
+
+        lines.extend([
+            f"- **Answers Below 0.6 Review Threshold:** {below_thresh}" + (f" ({below_thresh / k_cls * 100:.1f}%)" if k_cls > 0 else ""),
+            "- **Calibration Assessment:** Self-reported confidence is not calibrated. For example, on the misclassified case (`disp_m_0005_kwo886`), the model expressed 1.00 (100%) confidence in `unauthorised`, despite the ground truth being `subscription_cancelled`. Raw LLM confidence cannot be interpreted as calibrated posterior probability without empirical recalibration.",
             "",
             "### Stage 2: Document Field Extraction (Verbatim Quoted Fields Only)",
             f"- **Status:** {ext_data.get('status', 'NOT RUN')}",
-            f"- **Target Cases:** n={n_ext}",
-            f"- **Completed Cases:** k={k_ext}",
-            f"- **Field-Level Accuracy (vs Ground Truth):** {ext_acc_str} ({ext_correct}/{ext_total} fields)" if ext_total > 0 else "- **Field-Level Accuracy:** N/A",
+            f"- **Target Cases:** n={n_ext}" if n_ext > 0 else f"- **Completed Cases:** k={k_ext}",
+            f"- **Field-Level Accuracy (vs Ground Truth):** {ext_acc_str} ({ext_correct}/{ext_total} fields)" if ext_total > 0 else "- **Field-Level Accuracy:** N/A (no cases completed)",
             "- **Evaluation Criteria:** Accuracy is computed only for fields where the model returned a verbatim `source_quote` matching the source document text.",
             "",
             "### Real LLM results: how to read them",

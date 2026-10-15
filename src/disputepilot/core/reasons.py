@@ -162,20 +162,13 @@ def classify_reason(
                 },
                 "required": ["reason_class", "confidence", "quote"],
             }
-            try:
-                res = llm_client.generate_json(
-                    system=system_instruction,
-                    user=user_prompt,
-                    json_schema=schema,
-                    case_id=case_id,
-                    stage="classification",
-                )
-            except TypeError:
-                res = llm_client.generate_json(
-                    system=system_instruction,
-                    user=user_prompt,
-                    json_schema=schema,
-                )
+            res = llm_client.generate_json(
+                system=system_instruction,
+                user=user_prompt,
+                json_schema=schema,
+                case_id=case_id,
+                stage="classification",
+            )
             raw_class = str(res.get("reason_class", "unclassified")).strip().lower()
             try:
                 confidence = float(res.get("confidence", 0.0))
