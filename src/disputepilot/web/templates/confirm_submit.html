@@ -48,7 +48,7 @@
   </div>
 
   <form action="/cases/{{ case.case_id }}/submit" method="post" style="margin-top: 1.5rem;">
-    <input type="hidden" name="reviewer_name" value="{{ reviewer_name }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
     <input type="hidden" name="approval_token" value="{{ approval_token }}">
     <input type="hidden" name="payload_hash" value="{{ payload_hash }}">
     

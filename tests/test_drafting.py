@@ -251,3 +251,84 @@ def test_drafter_end_to_end_with_extracted_docs() -> None:
     assert "## Timeline of Events" in md
     assert "## Evidence Submitted" in md
     assert "## Conclusion & Requested Action" in md
+
+
+def test_verifier_regression_ungrounded_claims_and_token_boundaries() -> None:
+    """Regression test for token-boundary number checks, negation guard, and content-word grounding.
+
+    Given a fact:
+      text="Courier tracking AWB 4829105 shows the parcel was delivered on 2026-03-10.", raw_value=450000
+    Sentences a-e must be STRIPPED, and the passing sentence must PASS.
+    """
+    from disputepilot.drafting.facts import Fact, FactSet
+    from disputepilot.drafting.verifier import verify_sentence
+
+    fact = Fact(
+        fact_id="fact_courier_awb",
+        text="Courier tracking AWB 4829105 shows the parcel was delivered on 2026-03-10.",
+        source="doc:delivery_proof",
+        raw_value=450000,
+        entities=["4829105", "2026-03-10"],
+    )
+    fact_set = FactSet(case_id="case_test_verifier", facts=[fact])
+
+    # a) Negation guard check (uncited 'not')
+    s_a = DraftSentence(
+        sentence="The parcel was NOT delivered on 2026-03-10.",
+        cited_fact_ids=["fact_courier_awb"],
+    )
+    is_valid_a, stripped_a = verify_sentence(s_a, "timeline", fact_set)
+    assert is_valid_a is False
+    assert stripped_a is not None
+    assert any("Uncited negation" in r for r in stripped_a.reasons)
+
+    # b) Ungrounded content word ('signed')
+    s_b = DraftSentence(
+        sentence="The customer signed for the parcel, which was delivered on 2026-03-10.",
+        cited_fact_ids=["fact_courier_awb"],
+    )
+    is_valid_b, stripped_b = verify_sentence(s_b, "timeline", fact_set)
+    assert is_valid_b is False
+    assert stripped_b is not None
+    assert any("Ungrounded claim: 'signed'" in r for r in stripped_b.reasons)
+
+    # c) Token boundary number mismatch ('4' substring of 4829105) + ungrounded words
+    s_c = DraftSentence(
+        sentence="The order weighed 4 kg and was delivered on 2026-03-10.",
+        cited_fact_ids=["fact_courier_awb"],
+    )
+    is_valid_c, stripped_c = verify_sentence(s_c, "timeline", fact_set)
+    assert is_valid_c is False
+    assert stripped_c is not None
+    assert any("Fabricated number/amount: '4'" in r for r in stripped_c.reasons)
+
+    # d) Token boundary number mismatch ('50' substring of 450000) + negation ('never')
+    s_d = DraftSentence(
+        sentence="The refund of 50 was never requested.",
+        cited_fact_ids=["fact_courier_awb"],
+    )
+    is_valid_d, stripped_d = verify_sentence(s_d, "timeline", fact_set)
+    assert is_valid_d is False
+    assert stripped_d is not None
+    assert any("Fabricated number/amount: '50'" in r for r in stripped_d.reasons)
+    assert any("Uncited negation" in r for r in stripped_d.reasons)
+
+    # e) Ungrounded content word ('father')
+    s_e = DraftSentence(
+        sentence="The parcel was delivered on 2026-03-10 to the customer's father.",
+        cited_fact_ids=["fact_courier_awb"],
+    )
+    is_valid_e, stripped_e = verify_sentence(s_e, "timeline", fact_set)
+    assert is_valid_e is False
+    assert stripped_e is not None
+    assert any("Ungrounded claim: 'father'" in r for r in stripped_e.reasons)
+
+    # Passing sentence: completely grounded
+    s_pass = DraftSentence(
+        sentence="The parcel was delivered on 2026-03-10.",
+        cited_fact_ids=["fact_courier_awb"],
+    )
+    is_valid_pass, stripped_pass = verify_sentence(s_pass, "timeline", fact_set)
+    assert is_valid_pass is True
+    assert stripped_pass is None
+

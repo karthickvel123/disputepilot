@@ -1,6 +1,7 @@
 """End-to-end processing pipeline for dispute cases."""
 
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -33,8 +34,14 @@ class CaseProcessingResult(BaseModel):
     extracted_docs: list[ExtractedDocument] = Field(default_factory=list)
 
 
+CASE_ID_PATTERN = re.compile(r"^[a-zA-Z0-9_]+$")
+
+
 def _load_case_by_id(case_id: str, data_dir: Path | str = "data/cases") -> DisputeCase:
     """Load a DisputeCase by its case_id from disk."""
+    if not case_id or not CASE_ID_PATTERN.match(case_id):
+        raise FileNotFoundError(f"Case with ID '{case_id}' not found.")
+
     path = Path(data_dir)
     target = path / f"{case_id}.json"
     if not target.exists():

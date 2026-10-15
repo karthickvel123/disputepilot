@@ -3,15 +3,31 @@
 import pytest
 from fastapi.testclient import TestClient
 
-from disputepilot.pipeline.orchestrator import process_case
-from disputepilot.razorpay.approval import compute_contest_payload_hash
+from disputepilot.pipeline.orchestrator import _load_case_by_id, process_case
+from disputepilot.razorpay.approval import (
+    compute_accept_payload_hash,
+    compute_contest_payload_hash,
+)
 from disputepilot.web.app import app, approval_service, gateway
+from disputepilot.web.auth import (
+    SESSION_COOKIE_NAME,
+    create_session_cookie_value,
+)
 
 
 @pytest.fixture
 def client() -> TestClient:
     """Create FastAPI TestClient."""
     return TestClient(app)
+
+
+@pytest.fixture
+def auth_client() -> tuple[TestClient, str]:
+    """Create authenticated TestClient with reviewer session and valid CSRF token."""
+    c = TestClient(app)
+    cookie_val, csrf_token = create_session_cookie_value(user="Priya Sharma")
+    c.cookies.set(SESSION_COOKIE_NAME, cookie_val)
+    return c, csrf_token
 
 
 @pytest.fixture
@@ -65,11 +81,12 @@ def test_case_detail_404_for_unknown_case(client: TestClient) -> None:
     assert response.status_code == 404
 
 
-def test_confirm_submit_page_loads(client: TestClient, sample_case_id: str) -> None:
+def test_confirm_submit_page_loads(auth_client: tuple[TestClient, str], sample_case_id: str) -> None:
     """Confirm submit page must load from POST and display payload, hash, and approval token."""
+    client, csrf = auth_client
     response = client.post(
         f"/cases/{sample_case_id}/review",
-        data={"reviewer_name": "Priya Sharma"},
+        data={"csrf_token": csrf},
     )
     assert response.status_code == 200
     assert "Submission Payload Review" in response.text
@@ -85,19 +102,13 @@ def test_confirm_submit_rejects_get(client: TestClient, sample_case_id: str) -> 
     assert response_alias.status_code == 405
 
 
-def test_confirm_submit_rejects_missing_reviewer(client: TestClient, sample_case_id: str) -> None:
-    """Confirm submit page rejects when reviewer name is missing."""
-    response = client.post(f"/cases/{sample_case_id}/review", data={"reviewer_name": ""})
-    assert response.status_code == 400
-    assert "reviewer is strictly required" in response.text.lower()
-
-
-def test_submit_without_approval_fails(client: TestClient, sample_case_id: str) -> None:
+def test_submit_without_approval_fails(auth_client: tuple[TestClient, str], sample_case_id: str) -> None:
     """Submitting contest without an approval token must fail with 400."""
+    client, csrf = auth_client
     response = client.post(
         f"/cases/{sample_case_id}/submit",
         data={
-            "reviewer_name": "Priya Sharma",
+            "csrf_token": csrf,
             "approval_token": "",
             "payload_hash": "somehash",
         },
@@ -105,9 +116,9 @@ def test_submit_without_approval_fails(client: TestClient, sample_case_id: str) 
     assert response.status_code == 400
 
 
-def test_submit_with_tampered_payload_hash_fails(client: TestClient, sample_case_id: str) -> None:
+def test_submit_with_tampered_payload_hash_fails(auth_client: tuple[TestClient, str], sample_case_id: str) -> None:
     """Submitting with a mismatched payload hash must fail."""
-    # Issue a real token for a dummy hash
+    client, csrf = auth_client
     token = approval_service.issue_token(
         dispute_id="disp_test",
         action="submit",
@@ -118,7 +129,7 @@ def test_submit_with_tampered_payload_hash_fails(client: TestClient, sample_case
     response = client.post(
         f"/cases/{sample_case_id}/submit",
         data={
-            "reviewer_name": "Priya Sharma",
+            "csrf_token": csrf,
             "approval_token": token,
             "payload_hash": "tampered_fake_hash",
         },
@@ -127,18 +138,16 @@ def test_submit_with_tampered_payload_hash_fails(client: TestClient, sample_case
     assert "mismatch" in response.text.lower()
 
 
-def test_submit_with_valid_approval_succeeds(client: TestClient, sample_case_id: str) -> None:
+def test_submit_with_valid_approval_succeeds(auth_client: tuple[TestClient, str], sample_case_id: str) -> None:
     """Submitting with a valid, bound approval token succeeds and redirects."""
-    # First get the confirm-submit page via POST to issue token
-    reviewer = "Aarav Mehta"
+    client, csrf = auth_client
     post_review_resp = client.post(
         f"/cases/{sample_case_id}/review",
-        data={"reviewer_name": reviewer},
+        data={"csrf_token": csrf},
     )
     assert post_review_resp.status_code == 200
 
     # Extract clean draft to get exact payload hash
-    from disputepilot.pipeline.orchestrator import _load_case_by_id
     case = _load_case_by_id(sample_case_id)
     result = process_case(case_id=sample_case_id, gateway=gateway)
     clean_markdown = result.clean_draft.to_markdown()
@@ -153,13 +162,13 @@ def test_submit_with_valid_approval_succeeds(client: TestClient, sample_case_id:
         dispute_id=case.dispute.id,
         action="submit",
         payload=payload,
-        approver=reviewer,
+        approver="Priya Sharma",
     )
 
     post_resp = client.post(
         f"/cases/{sample_case_id}/submit",
         data={
-            "reviewer_name": reviewer,
+            "csrf_token": csrf,
             "approval_token": valid_token,
             "payload_hash": valid_hash,
         },
@@ -169,29 +178,38 @@ def test_submit_with_valid_approval_succeeds(client: TestClient, sample_case_id:
     assert "success=" in post_resp.headers["location"]
 
 
-def test_accept_requires_typed_amount(client: TestClient, sample_case_id: str) -> None:
-    """Accepting a dispute requires typing the exact amount to prevent accidental liability."""
-    from disputepilot.pipeline.orchestrator import _load_case_by_id
+def test_accept_two_step_flow_succeeds(auth_client: tuple[TestClient, str], sample_case_id: str) -> None:
+    """Accepting a dispute is a two-step flow: review shows confirm page & issues token, then accept consumes it."""
+    client, csrf = auth_client
     case = _load_case_by_id(sample_case_id)
     correct_rupees = case.dispute.amount / 100.0
 
-    # 1. Wrong amount
-    bad_resp = client.post(
-        f"/cases/{sample_case_id}/accept",
+    # Step 1: POST /accept-review
+    review_resp = client.post(
+        f"/cases/{sample_case_id}/accept-review",
         data={
-            "reviewer_name": "Priya Sharma",
-            "typed_amount": "999999.00",
+            "csrf_token": csrf,
+            "typed_amount": f"₹ {correct_rupees:.2f}",
         },
     )
-    assert bad_resp.status_code == 400
-    assert "Amount mismatch" in bad_resp.text
+    assert review_resp.status_code == 200
+    assert "Dispute Acceptance Review" in review_resp.text
+    assert "appr_" in review_resp.text
 
-    # 2. Correct amount with ₹ symbol and spaces
+    # Step 2: POST /accept with token
+    expected_hash = compute_accept_payload_hash(case.dispute.id, case.dispute.amount)
+    token = approval_service.issue_token(
+        dispute_id=case.dispute.id,
+        action="accept",
+        amount=case.dispute.amount,
+        approver="Priya Sharma",
+    )
     good_resp = client.post(
         f"/cases/{sample_case_id}/accept",
         data={
-            "reviewer_name": "Priya Sharma",
-            "typed_amount": f"₹ {correct_rupees:.2f}",
+            "csrf_token": csrf,
+            "approval_token": token,
+            "payload_hash": expected_hash,
         },
         follow_redirects=False,
     )
@@ -199,45 +217,184 @@ def test_accept_requires_typed_amount(client: TestClient, sample_case_id: str) -
     assert "success=" in good_resp.headers["location"]
 
 
-def test_missing_reviewer_name_is_rejected(client: TestClient, sample_case_id: str) -> None:
-    """All state mutating actions strictly reject missing reviewer name."""
-    # Save draft missing reviewer
-    r1 = client.post(
-        f"/cases/{sample_case_id}/save-draft",
-        data={"reviewer_name": "", "summary": "Custom draft"},
+def test_accept_without_token_fails(auth_client: tuple[TestClient, str], sample_case_id: str) -> None:
+    """POST /cases/{case_id}/accept without an approval token fails with 400."""
+    client, csrf = auth_client
+    resp = client.post(
+        f"/cases/{sample_case_id}/accept",
+        data={"csrf_token": csrf, "approval_token": ""},
     )
-    assert r1.status_code == 400
+    assert resp.status_code == 400
 
-    # Accept missing reviewer
+
+def test_accept_with_token_for_different_dispute_fails(
+    auth_client: tuple[TestClient, str], sample_case_id: str
+) -> None:
+    """Accepting with a token issued for a different dispute ID fails with 400."""
+    client, csrf = auth_client
+    diff_token = approval_service.issue_token(
+        dispute_id="disp_other_999999",
+        action="accept",
+        amount=50000,
+        approver="Priya Sharma",
+    )
+    resp = client.post(
+        f"/cases/{sample_case_id}/accept",
+        data={"csrf_token": csrf, "approval_token": diff_token},
+    )
+    assert resp.status_code == 400
+
+
+def test_accept_with_reused_token_fails(auth_client: tuple[TestClient, str], sample_case_id: str) -> None:
+    """Reusing an approval token for acceptance fails with 400."""
+    client, csrf = auth_client
+    case = _load_case_by_id(sample_case_id)
+    token = approval_service.issue_token(
+        dispute_id=case.dispute.id,
+        action="accept",
+        amount=case.dispute.amount,
+        approver="Priya Sharma",
+    )
+    # First acceptance succeeds
+    r1 = client.post(
+        f"/cases/{sample_case_id}/accept",
+        data={"csrf_token": csrf, "approval_token": token},
+        follow_redirects=False,
+    )
+    assert r1.status_code == 303
+
+    # Second acceptance with same token fails
     r2 = client.post(
         f"/cases/{sample_case_id}/accept",
-        data={"reviewer_name": "", "typed_amount": "100.00"},
+        data={"csrf_token": csrf, "approval_token": token},
     )
     assert r2.status_code == 400
 
-    # Needs evidence missing reviewer
-    r3 = client.post(
-        f"/cases/{sample_case_id}/needs-evidence",
-        data={"reviewer_name": "", "note": "Missing POD"},
+
+def test_accept_review_requires_typed_amount(auth_client: tuple[TestClient, str], sample_case_id: str) -> None:
+    """Accept review rejects mismatched or missing typed amount."""
+    client, csrf = auth_client
+
+    # Wrong amount
+    bad_resp = client.post(
+        f"/cases/{sample_case_id}/accept-review",
+        data={
+            "csrf_token": csrf,
+            "typed_amount": "999999.00",
+        },
     )
-    assert r3.status_code == 400
+    assert bad_resp.status_code == 400
+    assert "Amount mismatch" in bad_resp.text
+
+    # Missing amount
+    missing_resp = client.post(
+        f"/cases/{sample_case_id}/accept-review",
+        data={"csrf_token": csrf, "typed_amount": ""},
+    )
+    assert missing_resp.status_code == 400
 
 
-def test_save_draft_and_needs_evidence_actions(client: TestClient, sample_case_id: str) -> None:
+def test_post_without_login_fails(client: TestClient, sample_case_id: str) -> None:
+    """Every mutating POST route strictly requires a reviewer login session (401)."""
+    routes = [
+        f"/cases/{sample_case_id}/save-draft",
+        f"/cases/{sample_case_id}/review",
+        f"/cases/{sample_case_id}/confirm-submit",
+        f"/cases/{sample_case_id}/submit",
+        f"/cases/{sample_case_id}/accept-review",
+        f"/cases/{sample_case_id}/accept",
+        f"/cases/{sample_case_id}/needs-evidence",
+    ]
+    for r in routes:
+        resp = client.post(r, data={"summary": "test", "reviewer_name": "attacker"})
+        assert resp.status_code == 401, f"Route {r} failed to reject unauthenticated POST"
+
+
+def test_post_without_csrf_fails(client: TestClient, sample_case_id: str) -> None:
+    """Logged in reviewer POSTing without valid CSRF token strictly fails with 403."""
+    cookie_val, _ = create_session_cookie_value(user="Priya Sharma")
+    client.cookies.set(SESSION_COOKIE_NAME, cookie_val)
+
+    # Missing CSRF
+    r1 = client.post(f"/cases/{sample_case_id}/save-draft", data={"summary": "test"})
+    assert r1.status_code == 403
+
+    # Tampered CSRF
+    r2 = client.post(
+        f"/cases/{sample_case_id}/save-draft",
+        data={"summary": "test", "csrf_token": "tampered_fake_token"},
+    )
+    assert r2.status_code == 403
+
+
+def test_login_and_logout_flow(client: TestClient) -> None:
+    """Reviewer authentication flow sets signed session cookie and terminates on logout."""
+    # Invalid password
+    bad_login = client.post(
+        "/login",
+        data={"username": "reviewer", "password": "wrong_password"},
+    )
+    assert bad_login.status_code == 401
+
+    # Valid credentials
+    good_login = client.post(
+        "/login",
+        data={"username": "reviewer", "password": "password123"},
+        follow_redirects=False,
+    )
+    assert good_login.status_code == 303
+    assert SESSION_COOKIE_NAME in good_login.cookies
+
+    # Logout
+    logout_resp = client.get("/logout", follow_redirects=False)
+    assert logout_resp.status_code == 303
+
+
+def test_save_draft_and_needs_evidence_actions(
+    auth_client: tuple[TestClient, str], sample_case_id: str
+) -> None:
     """Saving draft and flagging needs-evidence succeed and redirect."""
+    client, csrf = auth_client
     r_draft = client.post(
         f"/cases/{sample_case_id}/save-draft",
-        data={"reviewer_name": "Devi Prasad", "summary": "Custom merchant drafted text."},
+        data={"csrf_token": csrf, "summary": "Custom merchant drafted text."},
         follow_redirects=False,
     )
     assert r_draft.status_code == 303
 
     r_ev = client.post(
         f"/cases/{sample_case_id}/needs-evidence",
-        data={"reviewer_name": "Devi Prasad", "note": "Awaiting customer cancellation log."},
+        data={"csrf_token": csrf, "note": "Awaiting customer cancellation log."},
         follow_redirects=False,
     )
     assert r_ev.status_code == 303
+
+
+def test_case_id_validation_returns_404(client: TestClient, auth_client: tuple[TestClient, str]) -> None:
+    """case_id must be validated against ^[a-zA-Z0-9_]+$ and return 404 for invalid IDs, including '../x'."""
+    c, csrf = auth_client
+
+    # Traversal test with '../x'
+    r_trav = client.get("/cases/../x")
+    assert r_trav.status_code == 404
+
+    # Invalid characters in case ID
+    r_inv = client.get("/cases/disp!invalid_chars")
+    assert r_inv.status_code == 404
+
+    # POST route with invalid case ID
+    r_post = c.post(
+        "/cases/../x/save-draft",
+        data={"csrf_token": csrf, "summary": "draft"},
+    )
+    assert r_post.status_code == 404
+
+    # _load_case_by_id raises FileNotFoundError for invalid formats
+    with pytest.raises(FileNotFoundError):
+        _load_case_by_id("../x")
+
+    with pytest.raises(FileNotFoundError):
+        _load_case_by_id("invalid/id")
 
 
 def test_unclassified_case_shows_visible_banner(client: TestClient) -> None:

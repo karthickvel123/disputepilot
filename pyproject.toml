@@ -10,10 +10,14 @@ dependencies = [
     "pydantic>=2.0,<3.0",
     "httpx",
     "pyyaml",
-    "pytest",
-    "ruff",
     "jinja2>=3.1.6",
     "google-genai>=2.30.1",
+]
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "ruff",
 ]
 
 [build-system]

@@ -20,15 +20,28 @@ from disputepilot.core.models import DisputeCase, ReasonClass
 from disputepilot.core.recommend import ContestDecision
 from disputepilot.core.triage import load_cases_from_directory, triage_cases
 from disputepilot.pipeline.audit import record_audit_event
-from disputepilot.pipeline.orchestrator import _load_case_by_id, process_case
+from disputepilot.pipeline.orchestrator import (
+    CASE_ID_PATTERN,
+    _load_case_by_id,
+    process_case,
+)
 from disputepilot.razorpay.approval import (
     ApprovalRequired,
     ApprovalService,
+    compute_accept_payload_hash,
     compute_contest_payload_hash,
 )
 from disputepilot.razorpay.gateway import DisputesGateway, SimGateway
 from disputepilot.razorpay.webhook import default_router as webhook_router
 from disputepilot.safety.ingest import ingest_document
+from disputepilot.web.auth import (
+    SESSION_COOKIE_NAME,
+    create_session_cookie_value,
+    get_configured_credentials,
+    get_session,
+    validate_csrf,
+    verify_password,
+)
 
 logger = logging.getLogger("disputepilot.web.app")
 
@@ -88,6 +101,26 @@ async def get_form_data(request: Request) -> dict[str, str]:
     return {k: v[0] if v else "" for k, v in parsed.items()}
 
 
+async def require_auth_and_csrf(request: Request) -> tuple[dict[str, Any], dict[str, str]]:
+    """Validate reviewer session and CSRF token on mutating requests."""
+    session = get_session(request)
+    if not session or not session.get("user"):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Authentication required. Please log in as an authorized reviewer.",
+        )
+
+    form = await get_form_data(request)
+    csrf_token = form.get("csrf_token") or request.headers.get("x-csrf-token")
+    if not validate_csrf(session, csrf_token):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="CSRF validation failed or token missing.",
+        )
+
+    return session, form
+
+
 def _get_case_result_or_process(case_id: str) -> Any:
     """Retrieve existing processed result or execute processing pipeline."""
     drafts_dir = Path("data/drafts")
@@ -105,10 +138,68 @@ def _get_case_result_or_process(case_id: str) -> Any:
     return process_case(case_id=case_id, gateway=gateway)
 
 
+@app.get("/login", response_class=HTMLResponse)
+def login_view(request: Request, next: str | None = None) -> Any:
+    """Render reviewer login form."""
+    session = get_session(request)
+    if session and session.get("user"):
+        return RedirectResponse(url=next or "/", status_code=status.HTTP_303_SEE_OTHER)
+    return templates.TemplateResponse(
+        request=request,
+        name="login.html",
+        context={"next": next or "/"},
+    )
+
+
+@app.post("/login")
+async def login_action(request: Request) -> Any:
+    """Authenticate single reviewer and issue signed session cookie with CSRF token."""
+    form = await get_form_data(request)
+    username = form.get("username", "").strip()
+    password = form.get("password", "")
+    next_url = form.get("next", "/").strip() or "/"
+
+    expected_user, expected_hash = get_configured_credentials()
+    if username != expected_user or not verify_password(password, expected_hash):
+        content_type = request.headers.get("content-type", "")
+        if "application/json" in content_type:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid username or password.")
+        return templates.TemplateResponse(
+            request=request,
+            name="login.html",
+            context={"error": "Invalid reviewer username or password.", "next": next_url},
+            status_code=status.HTTP_401_UNAUTHORIZED,
+        )
+
+    cookie_val, _ = create_session_cookie_value(user=username)
+    response = RedirectResponse(url=next_url, status_code=status.HTTP_303_SEE_OTHER)
+    response.set_cookie(
+        key=SESSION_COOKIE_NAME,
+        value=cookie_val,
+        httponly=True,
+        samesite="lax",
+        max_age=86400,
+    )
+    return response
+
+
+@app.get("/logout")
+@app.post("/logout")
+def logout_action() -> RedirectResponse:
+    """Terminate reviewer session."""
+    response = RedirectResponse(url="/login", status_code=status.HTTP_303_SEE_OTHER)
+    response.delete_cookie(SESSION_COOKIE_NAME)
+    return response
+
+
 @app.get("/", response_class=HTMLResponse)
 @app.get("/cases", response_class=HTMLResponse)
 def worklist_view(request: Request) -> HTMLResponse:
     """Render the prioritized merchant dispute worklist."""
+    session = get_session(request)
+    reviewer_name = session.get("user") if session else None
+    csrf_token = session.get("csrf_token") if session else None
+
     cases_dir = Path("data/cases")
     raw_cases = load_cases_from_directory(cases_dir) if cases_dir.exists() else []
     triage_items = triage_cases(raw_cases) if raw_cases else []
@@ -159,17 +250,28 @@ def worklist_view(request: Request) -> HTMLResponse:
     return templates.TemplateResponse(
         request=request,
         name="worklist.html",
-        context={"items": items},
+        context={
+            "items": items,
+            "reviewer_name": reviewer_name,
+            "csrf_token": csrf_token,
+        },
     )
 
 
 @app.get("/cases/{case_id}", response_class=HTMLResponse)
 def case_detail_view(request: Request, case_id: str) -> HTMLResponse:
     """Render full dispute case review console."""
+    if not CASE_ID_PATTERN.match(case_id):
+        raise HTTPException(status_code=404, detail=f"Invalid case ID: '{case_id}'.")
+
     try:
         case = _load_case_by_id(case_id)
     except FileNotFoundError:
         raise HTTPException(status_code=404, detail=f"Case '{case_id}' not found.")
+
+    session = get_session(request)
+    reviewer_name = session.get("user") if session else None
+    csrf_token = session.get("csrf_token") if session else None
 
     result = _get_case_result_or_process(case_id)
 
@@ -247,6 +349,8 @@ def case_detail_view(request: Request, case_id: str) -> HTMLResponse:
         name="case_detail.html",
         context={
             "case": case,
+            "reviewer_name": reviewer_name,
+            "csrf_token": csrf_token,
             "evidence_report": result.evidence_report,
             "recommendation": result.recommendation,
             "clean_draft": result.clean_draft,
@@ -269,14 +373,18 @@ async def save_draft_action(
     case_id: str,
 ) -> RedirectResponse:
     """Save merchant edits to the rebuttal draft without submitting to Razorpay."""
-    form = await get_form_data(request)
-    reviewer_name = form.get("reviewer_name", "").strip()
+    if not CASE_ID_PATTERN.match(case_id):
+        raise HTTPException(status_code=404, detail=f"Invalid case ID: '{case_id}'.")
+
+    session, form = await require_auth_and_csrf(request)
+    reviewer_name = session["user"]
     summary = form.get("summary", "")
 
-    if not reviewer_name:
-        raise HTTPException(status_code=400, detail="Reviewer name is required.")
+    try:
+        case = _load_case_by_id(case_id)
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail=f"Case '{case_id}' not found.")
 
-    case = _load_case_by_id(case_id)
     gateway.contest_dispute(
         dispute_id=case.dispute.id,
         action="draft",
@@ -300,15 +408,17 @@ async def review_and_confirm_submit_view(
     case_id: str,
 ) -> HTMLResponse:
     """Display exact contest payload and issue cryptographically bound approval token via POST."""
-    form = await get_form_data(request)
-    reviewer_name = form.get("reviewer_name", "").strip()
-    if not reviewer_name:
-        raise HTTPException(
-            status_code=400,
-            detail="A named human reviewer is strictly required to proceed with dispute submission.",
-        )
+    if not CASE_ID_PATTERN.match(case_id):
+        raise HTTPException(status_code=404, detail=f"Invalid case ID: '{case_id}'.")
 
-    case = _load_case_by_id(case_id)
+    session, _form = await require_auth_and_csrf(request)
+    reviewer_name = session["user"]
+
+    try:
+        case = _load_case_by_id(case_id)
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail=f"Case '{case_id}' not found.")
+
     result = _get_case_result_or_process(case_id)
 
     # Build the exact submission payload
@@ -340,6 +450,7 @@ async def review_and_confirm_submit_view(
         context={
             "case": case,
             "reviewer_name": reviewer_name,
+            "csrf_token": session.get("csrf_token"),
             "approval_token": token,
             "payload_hash": payload_hash,
             "payload_json": json.dumps(payload, indent=2),
@@ -353,17 +464,22 @@ async def submit_contest_action(
     case_id: str,
 ) -> RedirectResponse:
     """Submit rebuttal contest to Razorpay with human approval token."""
-    form = await get_form_data(request)
-    reviewer_name = form.get("reviewer_name", "").strip()
+    if not CASE_ID_PATTERN.match(case_id):
+        raise HTTPException(status_code=404, detail=f"Invalid case ID: '{case_id}'.")
+
+    session, form = await require_auth_and_csrf(request)
+    reviewer_name = session["user"]
     approval_token = form.get("approval_token", "").strip()
     payload_hash = form.get("payload_hash", "").strip()
 
-    if not reviewer_name:
-        raise HTTPException(status_code=400, detail="Reviewer name is required.")
     if not approval_token:
         raise HTTPException(status_code=400, detail="Approval token is required.")
 
-    case = _load_case_by_id(case_id)
+    try:
+        case = _load_case_by_id(case_id)
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail=f"Case '{case_id}' not found.")
+
     result = _get_case_result_or_process(case_id)
 
     # Reconstruct expected payload to check against bound hash
@@ -408,22 +524,26 @@ async def submit_contest_action(
     )
 
 
-@app.post("/cases/{case_id}/accept")
-async def accept_dispute_action(
+@app.post("/cases/{case_id}/accept-review", response_class=HTMLResponse)
+async def accept_review_view(
     request: Request,
     case_id: str,
-) -> RedirectResponse:
-    """Accept dispute liability. Requires typed amount verification and human approval token."""
-    form = await get_form_data(request)
-    reviewer_name = form.get("reviewer_name", "").strip()
+) -> HTMLResponse:
+    """Show acceptance confirmation page and issue approval token bound to accept payload hash."""
+    if not CASE_ID_PATTERN.match(case_id):
+        raise HTTPException(status_code=404, detail=f"Invalid case ID: '{case_id}'.")
+
+    session, form = await require_auth_and_csrf(request)
+    reviewer_name = session["user"]
     typed_amount = form.get("typed_amount", "").strip()
 
-    if not reviewer_name:
-        raise HTTPException(status_code=400, detail="Reviewer name is required.")
     if not typed_amount:
         raise HTTPException(status_code=400, detail="Dispute amount must be typed to confirm acceptance.")
 
-    case = _load_case_by_id(case_id)
+    try:
+        case = _load_case_by_id(case_id)
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail=f"Case '{case_id}' not found.")
 
     # Normalize typed amount
     cleaned_input = typed_amount.replace("₹", "").replace(",", "").strip()
@@ -436,14 +556,15 @@ async def accept_dispute_action(
         )
 
     expected_rupees = case.dispute.amount / 100.0
-    # Also allow if user typed exact amount in paise
     if abs(input_val - expected_rupees) > 0.01 and abs(input_val - case.dispute.amount) > 0.01:
         raise HTTPException(
             status_code=400,
             detail=f"Amount mismatch. You typed ₹{input_val:.2f}, but dispute amount is ₹{expected_rupees:.2f}.",
         )
 
-    # Issue single-use approval token for accept
+    payload_hash = compute_accept_payload_hash(case.dispute.id, case.dispute.amount)
+
+    # Issue single-use human approval token bound to exact accept payload hash
     token = approval_service.issue_token(
         dispute_id=case.dispute.id,
         action="accept",
@@ -451,15 +572,59 @@ async def accept_dispute_action(
         approver=reviewer_name,
     )
 
+    return templates.TemplateResponse(
+        request=request,
+        name="confirm_accept.html",
+        context={
+            "case": case,
+            "reviewer_name": reviewer_name,
+            "csrf_token": session.get("csrf_token"),
+            "approval_token": token,
+            "payload_hash": payload_hash,
+            "amount_rupees": expected_rupees,
+            "amount_paise": case.dispute.amount,
+        },
+    )
+
+
+@app.post("/cases/{case_id}/accept")
+async def accept_dispute_action(
+    request: Request,
+    case_id: str,
+) -> RedirectResponse:
+    """Accept dispute liability. Requires approval token bound to accept payload hash."""
+    if not CASE_ID_PATTERN.match(case_id):
+        raise HTTPException(status_code=404, detail=f"Invalid case ID: '{case_id}'.")
+
+    session, form = await require_auth_and_csrf(request)
+    reviewer_name = session["user"]
+    approval_token = form.get("approval_token", "").strip()
+    payload_hash = form.get("payload_hash", "").strip()
+
+    if not approval_token:
+        raise HTTPException(status_code=400, detail="Approval token is required.")
+
+    try:
+        case = _load_case_by_id(case_id)
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail=f"Case '{case_id}' not found.")
+
+    expected_hash = compute_accept_payload_hash(case.dispute.id, case.dispute.amount)
+    if payload_hash and payload_hash != expected_hash:
+        raise HTTPException(
+            status_code=400,
+            detail="Payload hash mismatch. The acceptance request does not match the approved dispute.",
+        )
+
     try:
         gateway.accept_dispute(
             dispute_id=case.dispute.id,
-            approval_token=token,
+            approval_token=approval_token,
         )
     except ApprovalRequired as err:
         raise HTTPException(status_code=400, detail=str(err))
 
-    token_hash = hashlib.sha256(token.encode("utf-8")).hexdigest()
+    token_hash = hashlib.sha256(approval_token.encode("utf-8")).hexdigest()
     record_audit_event(
         case_id=case_id,
         action="accept_dispute",
@@ -483,12 +648,17 @@ async def needs_evidence_action(
     case_id: str,
 ) -> RedirectResponse:
     """Flag dispute as needing merchant evidence."""
-    form = await get_form_data(request)
-    reviewer_name = form.get("reviewer_name", "").strip()
+    if not CASE_ID_PATTERN.match(case_id):
+        raise HTTPException(status_code=404, detail=f"Invalid case ID: '{case_id}'.")
+
+    session, form = await require_auth_and_csrf(request)
+    reviewer_name = session["user"]
     note = form.get("note", "")
 
-    if not reviewer_name:
-        raise HTTPException(status_code=400, detail="Reviewer name is required.")
+    try:
+        _load_case_by_id(case_id)
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail=f"Case '{case_id}' not found.")
 
     record_audit_event(
         case_id=case_id,

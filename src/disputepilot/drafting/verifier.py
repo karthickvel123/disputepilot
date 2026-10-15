@@ -76,6 +76,71 @@ def extract_entities_from_sentence(sentence: str) -> dict[str, list[str]]:
     return {"dates": dates, "ids": ids, "numbers": numbers}
 
 
+# Standard English stopwords (excluding negation terms which are audited separately)
+STOPWORDS = {
+    "a", "about", "above", "after", "again", "against", "all", "am", "an", "and",
+    "any", "are", "as", "at", "be", "because", "been", "before", "being",
+    "below", "between", "both", "but", "by", "can", "could", "did", "do", "does",
+    "doing", "down", "during", "each", "few", "for", "from", "further", "had",
+    "has", "have", "having", "he", "her", "here", "hers", "herself", "him",
+    "himself", "his", "how", "i", "if", "in", "into", "is", "it", "its", "itself",
+    "me", "more", "most", "my", "myself", "of", "off", "on", "once", "only", "or",
+    "other", "ought", "our", "ours", "ourselves", "out", "over", "own", "same",
+    "she", "should", "so", "some", "such", "than", "that", "the", "their", "theirs",
+    "them", "themselves", "then", "there", "these", "they", "this", "those",
+    "through", "to", "too", "under", "until", "up", "very", "was", "we", "were",
+    "what", "when", "where", "which", "while", "who", "whom", "why", "with",
+    "would", "you", "your", "yours", "yourself", "yourselves",
+}
+
+# Negation words guarded strictly against citation facts: any negation in the sentence
+# must explicitly appear in at least one cited fact to prevent reversing facts.
+NEGATION_WORDS = {"not", "never", "no", "none", "without", "neither", "nor", "n't"}
+
+# Small allowlist of neutral connectors and domain scaffolding terms commonly used
+# in formal merchant rebuttal sentences to link cited facts into coherent prose.
+# (e.g. parcel, order, customer, merchant, dispute, payment, was, the, on, to, of)
+NEUTRAL_CONNECTORS = {
+    # Prompt explicit examples:
+    "parcel", "order", "customer", "merchant", "dispute", "payment",
+    "was", "the", "on", "to", "of",
+    # Essential dispute & rebuttal connective scaffolding:
+    "we", "our", "formal", "formally", "contest", "contesting", "rebuttal",
+    "transaction", "paise", "inr", "rs", "rupees",
+    "legitimate", "cardholder", "placed", "epoch", "timestamp",
+    "requests", "request", "dismissal", "dismiss",
+    "maintain", "maintains", "terms", "service", "reversal",
+    "summary", "timeline", "evidence", "submitted", "conclusion",
+    "confirmed", "dispatched", "carrier", "courier", "tracking",
+    "shipment", "delivery", "delivered", "status", "documentation",
+    "tax", "invoice", "issued", "lawfully", "fulfilled", "regarding",
+    "case", "reference", "amount", "date", "id", "number", "package",
+    "received", "receive", "completed", "complete", "confirms", "confirm",
+    "immediate", "awb", "as", "full", "fully", "invalid", "valid", "validity",
+}
+
+
+def simple_stem(word: str) -> str:
+    """Simple rule-based suffix stemmer for English content word normalization."""
+    w = word.lower().strip()
+    if w.endswith(("'s", "’s")):
+        w = w[:-2]
+    if len(w) > 4 and w.endswith("ing"):
+        w = w[:-3]
+    elif len(w) > 4 and w.endswith("tion"):
+        w = w[:-4]
+    elif len(w) > 4 and w.endswith("ery"):
+        w = w[:-3]
+    elif len(w) > 3 and w.endswith(("ed", "ly", "es")):
+        w = w[:-2]
+    elif len(w) > 3 and w.endswith("s") and not w.endswith("ss"):
+        w = w[:-1]
+    return w
+
+
+NEUTRAL_STEMS = {simple_stem(c) for c in NEUTRAL_CONNECTORS}
+
+
 def _normalize_text_for_lookup(text: str) -> str:
     """Normalize text by lowercasing and standardizing whitespace and punctuation."""
     return re.sub(r"[\s,\.\-_:/]+", " ", text).lower().strip()
@@ -91,7 +156,10 @@ def verify_sentence(
     Rules:
     1. Sentence must cite at least one fact ID.
     2. Every cited fact ID must exist in the FactSet.
-    3. Every number, date, and ID in the sentence must appear in at least one cited fact.
+    3. Every number, date, and ID must match whole tokens (never substring).
+    4. Negation guard: any negation word must appear in at least one cited fact.
+    5. Content-word grounding: any non-stopword, non-connector content word must appear
+       in at least one cited fact (exact or simple-stemmed).
 
     Args:
         sentence: DraftSentence with text and cited fact IDs.
@@ -144,26 +212,33 @@ def verify_sentence(
     raw_reference = " ".join(reference_corpus_parts)
     norm_reference = _normalize_text_for_lookup(raw_reference)
 
-    # Rule 3: Check all numbers, dates, and IDs
+    # Rule 3: Check all numbers, dates, and IDs using whole-token boundary matching
     entities = extract_entities_from_sentence(sentence.sentence)
 
-    # Check dates
+    # Check dates (whole-token boundary)
     for dt in entities["dates"]:
         norm_dt = _normalize_text_for_lookup(dt)
-        if norm_dt not in norm_reference and dt not in raw_reference:
+        found = (
+            re.search(rf"(?<![a-zA-Z0-9]){re.escape(dt)}(?![a-zA-Z0-9])", raw_reference)
+            or re.search(rf"(?<![a-zA-Z0-9]){re.escape(norm_dt)}(?![a-zA-Z0-9])", norm_reference)
+        )
+        if not found:
             reasons.append(f"Fabricated date: '{dt}' does not appear in any cited fact.")
             ungrounded.append(dt)
 
-    # Check IDs
+    # Check IDs (whole-token boundary)
     for item_id in entities["ids"]:
         norm_id = _normalize_text_for_lookup(item_id)
-        if norm_id not in norm_reference and item_id not in raw_reference:
+        found = (
+            re.search(rf"(?<![a-zA-Z0-9_-]){re.escape(item_id)}(?![a-zA-Z0-9_-])", raw_reference)
+            or re.search(rf"(?<![a-zA-Z0-9_-]){re.escape(norm_id)}(?![a-zA-Z0-9_-])", norm_reference)
+        )
+        if not found:
             reasons.append(f"Fabricated ID: '{item_id}' does not appear in any cited fact.")
             ungrounded.append(item_id)
 
-    # Check numbers
+    # Check numbers (whole-token boundary, never substring)
     for num in entities["numbers"]:
-        # Strip trailing .00 or leading zeros for numeric comparison
         num_variants = [num]
         try:
             val_float = float(num)
@@ -172,10 +247,56 @@ def verify_sentence(
         except ValueError:
             pass
 
-        found = any(v in raw_reference or _normalize_text_for_lookup(v) in norm_reference for v in num_variants)
+        found = any(
+            re.search(rf"(?<![a-zA-Z0-9]){re.escape(v)}(?![a-zA-Z0-9])", raw_reference)
+            or re.search(rf"(?<![a-zA-Z0-9]){re.escape(_normalize_text_for_lookup(v))}(?![a-zA-Z0-9])", norm_reference)
+            for v in num_variants
+        )
         if not found:
             reasons.append(f"Fabricated number/amount: '{num}' does not appear in any cited fact.")
             ungrounded.append(num)
+
+    # Rule 4: Negation guard
+    sentence_tokens = re.findall(r"\b[a-zA-Z]+(?:'[a-zA-Z]+)?\b", sentence.sentence)
+    fact_tokens_lower = set(re.findall(r"\b[a-zA-Z]+(?:'[a-zA-Z]+)?\b", raw_reference.lower()))
+
+    for token in sentence_tokens:
+        tok_lower = token.lower()
+        is_neg = tok_lower in NEGATION_WORDS or tok_lower.endswith("n't")
+        if is_neg:
+            fact_has_neg = (
+                tok_lower in fact_tokens_lower
+                or (tok_lower.endswith("n't") and ("not" in fact_tokens_lower or "n't" in raw_reference.lower()))
+            )
+            if not fact_has_neg:
+                reasons.append(f"Uncited negation: '{token}' does not appear in any cited fact.")
+                ungrounded.append(token)
+
+    # Rule 5: Content-word grounding check
+    fact_stems = {simple_stem(w) for w in fact_tokens_lower}
+
+    # Entity tokens to ignore during content-word check
+    entity_tokens = set()
+    for dt in entities["dates"]:
+        entity_tokens.update(re.findall(r"\b[a-zA-Z]+\b", dt.lower()))
+    for item_id in entities["ids"]:
+        entity_tokens.update(re.findall(r"\b[a-zA-Z]+\b", item_id.lower()))
+
+    for token in sentence_tokens:
+        tok_lower = token.lower()
+        if tok_lower in NEGATION_WORDS or tok_lower.endswith("n't"):
+            # Negations handled by Rule 4
+            continue
+        if tok_lower in STOPWORDS or tok_lower in NEUTRAL_CONNECTORS:
+            continue
+        if tok_lower in entity_tokens:
+            continue
+        if simple_stem(tok_lower) in NEUTRAL_STEMS:
+            continue
+        if tok_lower in fact_tokens_lower or simple_stem(tok_lower) in fact_stems:
+            continue
+        reasons.append(f"Ungrounded claim: '{token}'")
+        ungrounded.append(token)
 
     if reasons:
         return False, StrippedSentence(

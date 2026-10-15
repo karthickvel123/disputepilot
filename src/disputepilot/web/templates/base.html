@@ -13,8 +13,14 @@
       <span class="brand-badge">Defense Console</span>
     </a>
     <nav>
-      <a href="/" class="active">Worklist</a>
+      <a href="/">Worklist</a>
       <a href="/webhook/razorpay/health" target="_blank">Webhook Status</a>
+      {% if reviewer_name %}
+      <span class="text-muted" style="font-size: 0.85rem; margin-left: 0.75rem;">Reviewer: <strong>{{ reviewer_name }}</strong></span>
+      <a href="/logout" style="margin-left: 0.5rem; font-size: 0.85rem;">Logout</a>
+      {% else %}
+      <a href="/login" style="margin-left: 0.5rem; font-size: 0.85rem;">Login</a>
+      {% endif %}
     </nav>
   </header>
 

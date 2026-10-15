@@ -325,7 +325,14 @@
     Non-negotiable: No dispute is contested or accepted without a named reviewer and explicit confirmation.
   </p>
 
-  <!-- Reviewer Identity Form Shared -->
+  <!-- Reviewer Session Banner -->
+  <div style="background-color: var(--bg-card); padding: 0.75rem 1rem; border-radius: 6px; margin-bottom: 1rem; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+    <div>Authenticated Reviewer: <strong>{{ reviewer_name or "Not logged in" }}</strong></div>
+    {% if not reviewer_name %}
+    <a href="/login" class="btn btn-secondary" style="font-size: 0.85rem; padding: 0.35rem 0.75rem;">Log In to Take Actions</a>
+    {% endif %}
+  </div>
+
   <div class="grid-2">
     <!-- Option A: Contest with Verified Draft -->
     <div class="card" style="background-color: var(--bg-card);">
@@ -334,10 +341,7 @@
         Review the submission payload, generate a cryptographically bound approval token, and submit the rebuttal to Razorpay.
       </p>
       <form action="/cases/{{ case.case_id }}/review" method="post">
-        <div class="form-group">
-          <label for="approver_contest">Reviewer Name (Required):</label>
-          <input type="text" id="approver_contest" name="reviewer_name" placeholder="e.g. Priya Sharma (Compliance)" required>
-        </div>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
         <button type="submit" class="btn" style="width: 100%;">Proceed to Submission Review &rarr;</button>
       </form>
     </div>
@@ -348,16 +352,13 @@
       <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
         Accept the chargeback liability. To prevent accidental acceptance, you must type the dispute amount in Rupees (₹{{ "%.2f"|format(case.dispute.amount / 100) }}).
       </p>
-      <form action="/cases/{{ case.case_id }}/accept" method="post">
-        <div class="form-group">
-          <label for="approver_accept">Reviewer Name (Required):</label>
-          <input type="text" id="approver_accept" name="reviewer_name" placeholder="e.g. Priya Sharma (Compliance)" required>
-        </div>
+      <form action="/cases/{{ case.case_id }}/accept-review" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
         <div class="form-group">
           <label for="typed_amount">Confirm Dispute Amount (₹):</label>
           <input type="text" id="typed_amount" name="typed_amount" placeholder="{{ "%.2f"|format(case.dispute.amount / 100) }}" required>
         </div>
-        <button type="submit" class="btn btn-danger" style="width: 100%;">Confirm Acceptance</button>
+        <button type="submit" class="btn btn-danger" style="width: 100%;">Proceed to Acceptance Review &rarr;</button>
       </form>
     </div>
   </div>
@@ -370,10 +371,7 @@
         Edit and save custom rebuttal text without submitting to Razorpay.
       </p>
       <form action="/cases/{{ case.case_id }}/save-draft" method="post">
-        <div class="form-group">
-          <label for="approver_draft">Reviewer Name (Required):</label>
-          <input type="text" id="approver_draft" name="reviewer_name" placeholder="e.g. Priya Sharma" required>
-        </div>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
         <div class="form-group">
           <label for="draft_summary">Rebuttal Text:</label>
           <textarea id="draft_summary" name="summary" rows="4">{{ clean_draft.to_markdown() }}</textarea>
@@ -389,10 +387,7 @@
         Flag this case as blocked on missing documentation and notify operations.
       </p>
       <form action="/cases/{{ case.case_id }}/needs-evidence" method="post">
-        <div class="form-group">
-          <label for="approver_evidence">Reviewer Name (Required):</label>
-          <input type="text" id="approver_evidence" name="reviewer_name" placeholder="e.g. Priya Sharma" required>
-        </div>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
         <div class="form-group">
           <label for="evidence_note">Note / Missing Item:</label>
           <textarea id="evidence_note" name="note" rows="4" placeholder="Request signed POD from Bluedart..."></textarea>
