@@ -1,4 +1,8 @@
-"""Tests for the DisputePilot web interface and approval workflows."""
+import base64
+import hashlib
+import hmac
+import json
+import time
 
 import pytest
 from fastapi.testclient import TestClient
@@ -12,6 +16,7 @@ from disputepilot.web.app import app, approval_service, gateway
 from disputepilot.web.auth import (
     SESSION_COOKIE_NAME,
     create_session_cookie_value,
+    hash_password,
 )
 
 
@@ -22,10 +27,16 @@ def client() -> TestClient:
 
 
 @pytest.fixture
-def auth_client() -> tuple[TestClient, str]:
+def auth_client(monkeypatch: pytest.MonkeyPatch) -> tuple[TestClient, str]:
     """Create authenticated TestClient with reviewer session and valid CSRF token."""
+    secret = "test_session_hmac_secret_key_at_least_32_chars_long"
+    user = "Priya Sharma"
+    pwd_hash = hash_password("password123")
+    monkeypatch.setenv("REVIEWER_USER", user)
+    monkeypatch.setenv("REVIEWER_PASSWORD_HASH", pwd_hash)
+    monkeypatch.setenv("SESSION_SECRET", secret)
     c = TestClient(app)
-    cookie_val, csrf_token = create_session_cookie_value(user="Priya Sharma")
+    cookie_val, csrf_token = create_session_cookie_value(user=user)
     c.cookies.set(SESSION_COOKIE_NAME, cookie_val)
     return c, csrf_token
 
@@ -310,9 +321,16 @@ def test_post_without_login_fails(client: TestClient, sample_case_id: str) -> No
         assert resp.status_code == 401, f"Route {r} failed to reject unauthenticated POST"
 
 
-def test_post_without_csrf_fails(client: TestClient, sample_case_id: str) -> None:
+def test_post_without_csrf_fails(client: TestClient, sample_case_id: str, monkeypatch: pytest.MonkeyPatch) -> None:
     """Logged in reviewer POSTing without valid CSRF token strictly fails with 403."""
-    cookie_val, _ = create_session_cookie_value(user="Priya Sharma")
+    secret = "test_session_hmac_secret_key_at_least_32_chars_long"
+    user = "Priya Sharma"
+    pwd_hash = hash_password("password123")
+    monkeypatch.setenv("REVIEWER_USER", user)
+    monkeypatch.setenv("REVIEWER_PASSWORD_HASH", pwd_hash)
+    monkeypatch.setenv("SESSION_SECRET", secret)
+
+    cookie_val, _ = create_session_cookie_value(user=user)
     client.cookies.set(SESSION_COOKIE_NAME, cookie_val)
 
     # Missing CSRF
@@ -327,8 +345,16 @@ def test_post_without_csrf_fails(client: TestClient, sample_case_id: str) -> Non
     assert r2.status_code == 403
 
 
-def test_login_and_logout_flow(client: TestClient) -> None:
+def test_login_and_logout_flow(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
     """Reviewer authentication flow sets signed session cookie and terminates on logout."""
+    secret = "test_session_hmac_secret_key_at_least_32_chars_long"
+    user = "reviewer"
+    pwd = "password123"
+    pwd_hash = hash_password(pwd)
+    monkeypatch.setenv("REVIEWER_USER", user)
+    monkeypatch.setenv("REVIEWER_PASSWORD_HASH", pwd_hash)
+    monkeypatch.setenv("SESSION_SECRET", secret)
+
     # Invalid password
     bad_login = client.post(
         "/login",
@@ -432,3 +458,170 @@ def test_unclassified_case_shows_visible_banner(client: TestClient) -> None:
         draft_file = Path("data/drafts/disp_unclass_test_result.json")
         if draft_file.exists():
             draft_file.unlink()
+
+
+def test_login_rejected_when_auth_env_unset(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
+    """When auth env vars are unset or empty, login is rejected (401/403) and no Set-Cookie is issued."""
+    monkeypatch.delenv("REVIEWER_USER", raising=False)
+    monkeypatch.delenv("REVIEWER_PASSWORD_HASH", raising=False)
+    monkeypatch.delenv("SESSION_SECRET", raising=False)
+
+    resp = client.post(
+        "/login",
+        data={"username": "reviewer", "password": "password123"},
+        follow_redirects=False,
+    )
+    assert resp.status_code in (401, 403)
+    assert SESSION_COOKIE_NAME not in resp.cookies
+    assert "set-cookie" not in resp.headers
+
+
+def test_forged_cookie_rejected_when_auth_env_unset(
+    client: TestClient, sample_case_id: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """With all three auth env vars unset, a cookie forged with the old constant secret is rejected on POST (401)."""
+    monkeypatch.delenv("REVIEWER_USER", raising=False)
+    monkeypatch.delenv("REVIEWER_PASSWORD_HASH", raising=False)
+    monkeypatch.delenv("SESSION_SECRET", raising=False)
+
+    old_secret = b"disputepilot_session_hmac_secret_key_2026"
+    payload = {
+        "user": "attacker",
+        "csrf_token": "forged_csrf_token_1234567890",
+        "created_at": int(time.time()),
+    }
+    payload_json = json.dumps(payload, separators=(",", ":"))
+    payload_b64 = base64.urlsafe_b64encode(payload_json.encode("utf-8")).decode("ascii")
+    sig = hmac.new(old_secret, payload_b64.encode("ascii"), hashlib.sha256).hexdigest()
+    forged_cookie = f"{payload_b64}.{sig}"
+
+    client.cookies.set(SESSION_COOKIE_NAME, forged_cookie)
+    resp = client.post(
+        f"/cases/{sample_case_id}/needs-evidence",
+        data={"csrf_token": "forged_csrf_token_1234567890", "note": "malicious POST"},
+    )
+    assert resp.status_code == 401
+
+
+def test_wrong_password_rejected_and_correct_password_accepted(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Wrong password is rejected with 401; correct password is accepted with 303 and session cookie."""
+    secret = "secure_test_session_secret_key_with_at_least_32_characters"
+    user = "alice_reviewer"
+    pwd = "CorrectHorseBatteryStaple99!"
+    pwd_hash = hash_password(pwd)
+    monkeypatch.setenv("REVIEWER_USER", user)
+    monkeypatch.setenv("REVIEWER_PASSWORD_HASH", pwd_hash)
+    monkeypatch.setenv("SESSION_SECRET", secret)
+
+    # Wrong password
+    bad_pwd = client.post(
+        "/login",
+        data={"username": user, "password": "WrongPassword123!"},
+        follow_redirects=False,
+    )
+    assert bad_pwd.status_code == 401
+    assert SESSION_COOKIE_NAME not in bad_pwd.cookies
+
+    # Wrong username
+    bad_user = client.post(
+        "/login",
+        data={"username": "wrong_username", "password": pwd},
+        follow_redirects=False,
+    )
+    assert bad_user.status_code == 401
+    assert SESSION_COOKIE_NAME not in bad_user.cookies
+
+    # Correct password
+    good_pwd = client.post(
+        "/login",
+        data={"username": user, "password": pwd},
+        follow_redirects=False,
+    )
+    assert good_pwd.status_code == 303
+    assert SESSION_COOKIE_NAME in good_pwd.cookies
+
+
+def test_session_cookie_older_than_eight_hours_rejected(
+    client: TestClient, sample_case_id: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A session cookie older than 8 hours (created_at check) is rejected with 401."""
+    secret = "secure_test_session_secret_key_with_at_least_32_characters"
+    user = "Priya Sharma"
+    pwd_hash = hash_password("password123")
+    monkeypatch.setenv("REVIEWER_USER", user)
+    monkeypatch.setenv("REVIEWER_PASSWORD_HASH", pwd_hash)
+    monkeypatch.setenv("SESSION_SECRET", secret)
+
+    csrf_token = "valid_csrf_token_for_test_123456"
+    # Created 8 hours and 5 minutes ago
+    expired_time = int(time.time()) - (8 * 3600 + 300)
+    payload = {
+        "user": user,
+        "csrf_token": csrf_token,
+        "created_at": expired_time,
+    }
+    payload_json = json.dumps(payload, separators=(",", ":"))
+    payload_b64 = base64.urlsafe_b64encode(payload_json.encode("utf-8")).decode("ascii")
+    sig = hmac.new(secret.encode("utf-8"), payload_b64.encode("ascii"), hashlib.sha256).hexdigest()
+    expired_cookie = f"{payload_b64}.{sig}"
+
+    client.cookies.set(SESSION_COOKIE_NAME, expired_cookie)
+    resp = client.post(
+        f"/cases/{sample_case_id}/needs-evidence",
+        data={"csrf_token": csrf_token, "note": "Action on expired session"},
+    )
+    assert resp.status_code == 401
+
+
+def test_webhook_razorpay_hmac_authentication_without_session(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Razorpay webhook requires HMAC signature only, never reviewer session.
+
+    - POST without signature returns webhook's own rejection (400, not login 401).
+    - Correctly signed POST is accepted (200 OK) even with reviewer auth env unset.
+    """
+    webhook_secret = "test_razorpay_webhook_secret_key"
+    monkeypatch.setenv("RAZORPAY_WEBHOOK_SECRET", webhook_secret)
+    # Ensure reviewer auth env is unset to guarantee webhook does not depend on reviewer session
+    monkeypatch.delenv("REVIEWER_USER", raising=False)
+    monkeypatch.delenv("REVIEWER_PASSWORD_HASH", raising=False)
+    monkeypatch.delenv("SESSION_SECRET", raising=False)
+
+    payload_bytes = json.dumps({
+        "event": "dispute.created",
+        "id": "evt_test_webhook_hmac_1",
+        "payload": {
+            "dispute": {
+                "entity": {
+                    "id": "disp_test_webhook_1",
+                    "payment_id": "pay_test_webhook_1",
+                }
+            }
+        },
+    }).encode("utf-8")
+
+    # 1. POST without signature returns webhook's own rejection (400, not login 401)
+    unsigned_resp = client.post(
+        "/webhook/razorpay/webhook",
+        content=payload_bytes,
+        headers={"Content-Type": "application/json"},
+    )
+    assert unsigned_resp.status_code == 400
+    assert "Invalid webhook signature" in unsigned_resp.text
+
+    # 2. Correctly signed POST is accepted (200 OK)
+    valid_sig = hmac.new(webhook_secret.encode("utf-8"), payload_bytes, hashlib.sha256).hexdigest()
+    signed_resp = client.post(
+        "/webhook/razorpay/webhook",
+        content=payload_bytes,
+        headers={
+            "Content-Type": "application/json",
+            "X-Razorpay-Signature": valid_sig,
+            "X-Razorpay-Event-Id": "evt_test_webhook_hmac_1",
+        },
+    )
+    assert signed_resp.status_code == 200
+    assert signed_resp.json().get("status") in ("processed", "duplicate_ignored")

@@ -332,3 +332,108 @@ def test_verifier_regression_ungrounded_claims_and_token_boundaries() -> None:
     assert is_valid_pass is True
     assert stripped_pass is None
 
+
+def test_verifier_tightened_allowlist_regression() -> None:
+    """Regression test: NEUTRAL_CONNECTORS contains only generic nouns and function words.
+
+    Given the fact:
+      'Courier tracking AWB 4829105 shows the parcel was delivered on 2026-03-10.' (raw_value=450000)
+    Sentences 1-4 containing ungrounded assertions must be STRIPPED.
+    """
+    from disputepilot.drafting.facts import Fact, FactSet
+    from disputepilot.drafting.verifier import verify_sentence
+
+    fact = Fact(
+        fact_id="f1",
+        text="Courier tracking AWB 4829105 shows the parcel was delivered on 2026-03-10.",
+        source="api",
+        raw_value=450000,
+        entities=["4829105", "2026-03-10"],
+    )
+    fs = FactSet(case_id="c", facts=[fact])
+
+    # 1. "The customer received the parcel and confirmed delivery on 2026-03-10."
+    s1 = DraftSentence(
+        sentence="The customer received the parcel and confirmed delivery on 2026-03-10.",
+        cited_fact_ids=["f1"],
+    )
+    v1, str1 = verify_sentence(s1, "Summary", fs)
+    assert v1 is False
+    assert str1 is not None
+    assert any("Ungrounded claim: 'received'" in r for r in str1.reasons)
+    assert any("Ungrounded claim: 'confirmed'" in r for r in str1.reasons)
+    assert any("Ungrounded claim: 'delivery'" in r for r in str1.reasons)
+
+    # 2. "The parcel was dispatched on 2026-03-10."
+    s2 = DraftSentence(
+        sentence="The parcel was dispatched on 2026-03-10.",
+        cited_fact_ids=["f1"],
+    )
+    v2, str2 = verify_sentence(s2, "Summary", fs)
+    assert v2 is False
+    assert str2 is not None
+    assert any("Ungrounded claim: 'dispatched'" in r for r in str2.reasons)
+
+    # 3. "The carrier confirmed the cardholder received the shipment and the transaction is valid."
+    s3 = DraftSentence(
+        sentence="The carrier confirmed the cardholder received the shipment and the transaction is valid.",
+        cited_fact_ids=["f1"],
+    )
+    v3, str3 = verify_sentence(s3, "Summary", fs)
+    assert v3 is False
+    assert str3 is not None
+    assert any("Ungrounded claim: 'carrier'" in r for r in str3.reasons)
+    assert any("Ungrounded claim: 'confirmed'" in r for r in str3.reasons)
+    assert any("Ungrounded claim: 'cardholder'" in r for r in str3.reasons)
+    assert any("Ungrounded claim: 'valid'" in r for r in str3.reasons)
+
+    # 4. "The order was fulfilled and the customer confirmed receipt of the package."
+    s4 = DraftSentence(
+        sentence="The order was fulfilled and the customer confirmed receipt of the package.",
+        cited_fact_ids=["f1"],
+    )
+    v4, str4 = verify_sentence(s4, "Summary", fs)
+    assert v4 is False
+    assert str4 is not None
+    assert any("Ungrounded claim: 'fulfilled'" in r for r in str4.reasons)
+    assert any("Ungrounded claim: 'confirmed'" in r for r in str4.reasons)
+
+    # Required passing sentence
+    s_pass = DraftSentence(
+        sentence="The parcel was delivered on 2026-03-10.",
+        cited_fact_ids=["f1"],
+    )
+    v_pass, str_pass = verify_sentence(s_pass, "Summary", fs)
+    assert v_pass is True
+    assert str_pass is None
+
+    # Required regression strip sentences
+    # Negation
+    s_neg = DraftSentence(
+        sentence="The parcel was NOT delivered on 2026-03-10.",
+        cited_fact_ids=["f1"],
+    )
+    v_neg, str_neg = verify_sentence(s_neg, "Summary", fs)
+    assert v_neg is False
+    assert any("Uncited negation" in r for r in str_neg.reasons)
+
+    # Fabricated number + negation
+    s_ref = DraftSentence(
+        sentence="The refund of 50 was never requested.",
+        cited_fact_ids=["f1"],
+    )
+    v_ref, str_ref = verify_sentence(s_ref, "Summary", fs)
+    assert v_ref is False
+    assert any("Fabricated number/amount: '50'" in r for r in str_ref.reasons)
+    assert any("Uncited negation: 'never'" in r for r in str_ref.reasons)
+
+    # Fabricated number substring + ungrounded claims
+    s_wt = DraftSentence(
+        sentence="The order weighed 4 kg and was delivered on 2026-03-10.",
+        cited_fact_ids=["f1"],
+    )
+    v_wt, str_wt = verify_sentence(s_wt, "Summary", fs)
+    assert v_wt is False
+    assert any("Fabricated number/amount: '4'" in r for r in str_wt.reasons)
+
+

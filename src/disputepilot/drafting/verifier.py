@@ -97,26 +97,29 @@ STOPWORDS = {
 # must explicitly appear in at least one cited fact to prevent reversing facts.
 NEGATION_WORDS = {"not", "never", "no", "none", "without", "neither", "nor", "n't"}
 
-# Small allowlist of neutral connectors and domain scaffolding terms commonly used
-# in formal merchant rebuttal sentences to link cited facts into coherent prose.
-# (e.g. parcel, order, customer, merchant, dispute, payment, was, the, on, to, of)
+# Restricted allowlist containing ONLY function words and generic nouns.
+# All substantive verbs and domain assertions (e.g. delivered, tracking, confirmed)
+# must be strictly grounded in the text of cited facts.
 NEUTRAL_CONNECTORS = {
-    # Prompt explicit examples:
-    "parcel", "order", "customer", "merchant", "dispute", "payment",
-    "was", "the", "on", "to", "of",
-    # Essential dispute & rebuttal connective scaffolding:
-    "we", "our", "formal", "formally", "contest", "contesting", "rebuttal",
-    "transaction", "paise", "inr", "rs", "rupees",
-    "legitimate", "cardholder", "placed", "epoch", "timestamp",
-    "requests", "request", "dismissal", "dismiss",
-    "maintain", "maintains", "terms", "service", "reversal",
-    "summary", "timeline", "evidence", "submitted", "conclusion",
-    "confirmed", "dispatched", "carrier", "courier", "tracking",
-    "shipment", "delivery", "delivered", "status", "documentation",
-    "tax", "invoice", "issued", "lawfully", "fulfilled", "regarding",
-    "case", "reference", "amount", "date", "id", "number", "package",
-    "received", "receive", "completed", "complete", "confirms", "confirm",
-    "immediate", "awb", "as", "full", "fully", "invalid", "valid", "validity",
+    "parcel",
+    "order",
+    "customer",
+    "merchant",
+    "dispute",
+    "payment",
+    "we",
+    "our",
+    "rebuttal",
+    "summary",
+    "timeline",
+    "evidence",
+    "conclusion",
+    "case",
+    "reference",
+    "amount",
+    "date",
+    "id",
+    "number",
 }
 
 

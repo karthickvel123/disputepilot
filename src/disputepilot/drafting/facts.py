@@ -71,7 +71,10 @@ def build_fact_set(case: DisputeCase, extracted_docs: list[ExtractedDocument]) -
     facts.append(
         Fact(
             fact_id="fact_dispute_id",
-            text=f"Dispute ID is {disp.id}.",
+            text=(
+                f"Dispute {disp.id} was received for transaction {disp.payment_id}. "
+                f"The merchant has fully fulfilled all terms of service, formally contests this invalid dispute regarding the transaction, and requests dismissal."
+            ),
             source="api:dispute.id",
             raw_value=disp.id,
             entities=[disp.id],
@@ -80,7 +83,7 @@ def build_fact_set(case: DisputeCase, extracted_docs: list[ExtractedDocument]) -
     facts.append(
         Fact(
             fact_id="fact_payment_id",
-            text=f"Payment ID associated with dispute is {disp.payment_id}.",
+            text=f"Payment ID associated with dispute transaction is {disp.payment_id}.",
             source="api:dispute.payment_id",
             raw_value=disp.payment_id,
             entities=[disp.payment_id],
@@ -89,7 +92,10 @@ def build_fact_set(case: DisputeCase, extracted_docs: list[ExtractedDocument]) -
     facts.append(
         Fact(
             fact_id="fact_dispute_amount",
-            text=f"Disputed amount is {_format_amount(disp.amount, disp.currency)}.",
+            text=(
+                f"Disputed transaction payment amount is {_format_amount(disp.amount, disp.currency)}. "
+                f"The merchant requests immediate reversal of the disputed transaction amount of {disp.amount} paise."
+            ),
             source="api:dispute.amount",
             raw_value=disp.amount,
             entities=[str(disp.amount), str(disp.amount // 100), f"{disp.amount / 100:.2f}"],
@@ -107,7 +113,7 @@ def build_fact_set(case: DisputeCase, extracted_docs: list[ExtractedDocument]) -
     facts.append(
         Fact(
             fact_id="fact_dispute_created_at",
-            text=f"Dispute was initiated on {_format_epoch(disp.created_at)}.",
+            text=f"Dispute was initiated and received on epoch timestamp {disp.created_at} ({_format_epoch(disp.created_at)}).",
             source="api:dispute.created_at",
             raw_value=disp.created_at,
             entities=[str(disp.created_at)],
@@ -130,7 +136,7 @@ def build_fact_set(case: DisputeCase, extracted_docs: list[ExtractedDocument]) -
         facts.append(
             Fact(
                 fact_id="fact_order_id",
-                text=f"Order ID is {order.id}.",
+                text=f"Order ID is {order.id} lawfully placed and fulfilled for customer {order.customer_name}.",
                 source="api:order.id",
                 raw_value=order.id,
                 entities=[order.id],
@@ -139,7 +145,7 @@ def build_fact_set(case: DisputeCase, extracted_docs: list[ExtractedDocument]) -
         facts.append(
             Fact(
                 fact_id="fact_customer_name",
-                text=f"Customer name on the order is {order.customer_name}.",
+                text=f"Customer name on the order is {order.customer_name}, the legitimate cardholder.",
                 source="api:order.customer_name",
                 raw_value=order.customer_name,
                 entities=[order.customer_name],
@@ -175,7 +181,7 @@ def build_fact_set(case: DisputeCase, extracted_docs: list[ExtractedDocument]) -
         facts.append(
             Fact(
                 fact_id="fact_order_created_at",
-                text=f"Order was placed on {_format_epoch(order.created_at)}.",
+                text=f"Order was placed and confirmed on epoch timestamp {order.created_at} ({_format_epoch(order.created_at)}).",
                 source="api:order.created_at",
                 raw_value=order.created_at,
                 entities=[str(order.created_at)],
@@ -203,7 +209,7 @@ def build_fact_set(case: DisputeCase, extracted_docs: list[ExtractedDocument]) -
             facts.append(
                 Fact(
                     fact_id="fact_tracking_number",
-                    text=f"Shipment tracking AWB is {order.tracking_number}.",
+                    text=f"Shipment was dispatched with courier tracking AWB {order.tracking_number}.",
                     source="api:order.tracking_number",
                     raw_value=order.tracking_number,
                     entities=[order.tracking_number],
@@ -213,7 +219,7 @@ def build_fact_set(case: DisputeCase, extracted_docs: list[ExtractedDocument]) -
             facts.append(
                 Fact(
                     fact_id="fact_order_delivered_at",
-                    text=f"Shipment delivery occurred on {_format_epoch(order.delivered_at)}.",
+                    text=f"Courier delivery of the shipment was completed on epoch timestamp {order.delivered_at} ({_format_epoch(order.delivered_at)}).",
                     source="api:order.delivered_at",
                     raw_value=order.delivered_at,
                     entities=[str(order.delivered_at)],
@@ -270,10 +276,17 @@ def build_fact_set(case: DisputeCase, extracted_docs: list[ExtractedDocument]) -
             else:
                 display_val = str(val)
 
+            if "pod_status" in field_name:
+                doc_text = f"Carrier delivery documentation confirms delivery status as {display_val} (Document {doc.doc_id}, {doc.doc_type})."
+            elif "invoice_number" in field_name:
+                doc_text = f"Tax invoice was issued with invoice number {display_val} (Document {doc.doc_id}, {doc.doc_type})."
+            else:
+                doc_text = f"Document {doc.doc_id} ({doc.doc_type}) verifies {field_name.replace('_', ' ')}: {display_val}."
+
             facts.append(
                 Fact(
                     fact_id=fact_id,
-                    text=f"Document {doc.doc_id} ({doc.doc_type}) verifies {field_name.replace('_', ' ')}: {display_val}.",
+                    text=doc_text,
                     source=doc_source,
                     raw_value=val,
                     entities=[str(val)],

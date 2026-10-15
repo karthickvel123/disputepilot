@@ -168,11 +168,31 @@ uv run python scripts/smoke_razorpay.py
 
 ---
 
+## 🔐 Reviewer Authentication & Fail-Closed Security
+
+DisputePilot enforces fail-closed authentication for all merchant reviewer actions. If any required authentication environment variable is unset or `SESSION_SECRET` is shorter than 32 characters, all login attempts and authenticated actions are rejected (HTTP 401), and a warning is logged at startup naming the missing variables. No default credentials or fallback secrets exist in the repository.
+
+### Required Environment Variables
+
+- **`REVIEWER_USER`**: The authorized reviewer username (e.g., `reviewer`).
+- **`REVIEWER_PASSWORD_HASH`**: The scrypt password hash formatted as `<salt_hex>:<key_hex>`. Generate one securely using:
+  ```bash
+  uv run python scripts/make_password_hash.py
+  ```
+- **`SESSION_SECRET`**: The HMAC-SHA256 secret key for signing session cookies (minimum 32 characters). Generate a secure 256-bit token with:
+  ```bash
+  python -c "import secrets; print(secrets.token_hex(32))"
+  ```
+
+Session cookies are issued with `HttpOnly`, `SameSite=Lax`, `Secure=True` (when request is HTTPS), and reject sessions older than 8 hours.
+
+---
+
 ## 🚀 Production Readiness Checklist
 
 Before connecting DisputePilot to live Razorpay webhooks:
 
-1. [ ] **Credentials**: Configure `.env` with `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, and `RAZORPAY_WEBHOOK_SECRET`.
+1. [ ] **Credentials & Auth**: Configure `.env` with `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET`, `REVIEWER_USER`, `REVIEWER_PASSWORD_HASH`, and `SESSION_SECRET`.
 2. [ ] **LLM Activation**: Set `LLM_API_KEY` for Google Gemini SDK integration (offline mode uses `FakeLLMClient`, which is a fake regex baseline, not a model result, and is not evidence about real LLM behaviour).
 3. [ ] **Database Migration**: Switch SQLite storage (`data/audit.db`, `data/disputes.db`, `data/reminders.db`) to a managed PostgreSQL instance with automated backups.
 4. [ ] **TLS & Network**: Terminate TLS at reverse proxy / load balancer for webhook reception.

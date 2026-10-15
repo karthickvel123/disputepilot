@@ -38,12 +38,24 @@ from disputepilot.web.auth import (
     SESSION_COOKIE_NAME,
     create_session_cookie_value,
     get_configured_credentials,
+    get_missing_auth_env_vars,
     get_session,
+    is_auth_configured,
     validate_csrf,
     verify_password,
 )
 
 logger = logging.getLogger("disputepilot.web.app")
+
+# Startup fail-closed check: log warning naming missing auth variables
+_missing_auth = get_missing_auth_env_vars()
+if _missing_auth:
+    logger.warning(
+        "Authentication is not configured at startup: missing %s. "
+        "Reviewer login will be rejected and authenticated actions will fail closed.",
+        ", ".join(_missing_auth),
+    )
+
 
 BASE_DIR = Path(__file__).parent
 TEMPLATES_DIR = BASE_DIR / "templates"
@@ -103,6 +115,12 @@ async def get_form_data(request: Request) -> dict[str, str]:
 
 async def require_auth_and_csrf(request: Request) -> tuple[dict[str, Any], dict[str, str]]:
     """Validate reviewer session and CSRF token on mutating requests."""
+    if not is_auth_configured():
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Authentication is not configured on this server.",
+        )
+
     session = get_session(request)
     if not session or not session.get("user"):
         raise HTTPException(
@@ -160,9 +178,17 @@ async def login_action(request: Request) -> Any:
     next_url = form.get("next", "/").strip() or "/"
 
     expected_user, expected_hash = get_configured_credentials()
-    if username != expected_user or not verify_password(password, expected_hash):
-        content_type = request.headers.get("content-type", "")
-        if "application/json" in content_type:
+    content_type = request.headers.get("content-type", "")
+    is_json = "application/json" in content_type
+
+    if (
+        not is_auth_configured()
+        or not expected_user
+        or not expected_hash
+        or username != expected_user
+        or not verify_password(password, expected_hash)
+    ):
+        if is_json:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid username or password.")
         return templates.TemplateResponse(
             request=request,
@@ -173,12 +199,14 @@ async def login_action(request: Request) -> Any:
 
     cookie_val, _ = create_session_cookie_value(user=username)
     response = RedirectResponse(url=next_url, status_code=status.HTTP_303_SEE_OTHER)
+    is_https = request.url.scheme == "https" or request.headers.get("x-forwarded-proto") == "https"
     response.set_cookie(
         key=SESSION_COOKIE_NAME,
         value=cookie_val,
         httponly=True,
         samesite="lax",
-        max_age=86400,
+        secure=is_https,
+        max_age=8 * 3600,
     )
     return response
 
