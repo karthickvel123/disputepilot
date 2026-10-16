@@ -31,7 +31,12 @@ from disputepilot.razorpay.approval import (
     compute_accept_payload_hash,
     compute_contest_payload_hash,
 )
-from disputepilot.razorpay.gateway import DisputesGateway, SimGateway
+from disputepilot.razorpay.gateway import (
+    DisputesGateway,
+    HybridGateway,
+    RazorpayGateway,
+    create_gateway,
+)
 from disputepilot.razorpay.webhook import default_router as webhook_router
 from disputepilot.safety.ingest import ingest_document
 from disputepilot.web.auth import (
@@ -74,7 +79,7 @@ app.include_router(webhook_router, prefix="/webhook/razorpay")
 
 # Global dependencies (can be overridden in tests)
 approval_service = ApprovalService()
-gateway: DisputesGateway = SimGateway(approval_service=approval_service)
+gateway: DisputesGateway = create_gateway(approval_service=approval_service)
 
 
 class RecommendationSummary(BaseModel):
@@ -113,7 +118,9 @@ async def get_form_data(request: Request) -> dict[str, str]:
     return {k: v[0] if v else "" for k, v in parsed.items()}
 
 
-async def require_auth_and_csrf(request: Request) -> tuple[dict[str, Any], dict[str, str]]:
+async def require_auth_and_csrf(
+    request: Request,
+) -> tuple[dict[str, Any], dict[str, str]]:
     """Validate reviewer session and CSRF token on mutating requests."""
     if not is_auth_configured():
         raise HTTPException(
@@ -189,17 +196,26 @@ async def login_action(request: Request) -> Any:
         or not verify_password(password, expected_hash)
     ):
         if is_json:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid username or password.")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid username or password.",
+            )
         return templates.TemplateResponse(
             request=request,
             name="login.html",
-            context={"error": "Invalid reviewer username or password.", "next": next_url},
+            context={
+                "error": "Invalid reviewer username or password.",
+                "next": next_url,
+            },
             status_code=status.HTTP_401_UNAUTHORIZED,
         )
 
     cookie_val, _ = create_session_cookie_value(user=username)
     response = RedirectResponse(url=next_url, status_code=status.HTTP_303_SEE_OTHER)
-    is_https = request.url.scheme == "https" or request.headers.get("x-forwarded-proto") == "https"
+    is_https = (
+        request.url.scheme == "https"
+        or request.headers.get("x-forwarded-proto") == "https"
+    )
     response.set_cookie(
         key=SESSION_COOKIE_NAME,
         value=cookie_val,
@@ -252,15 +268,23 @@ def worklist_view(request: Request) -> HTMLResponse:
                     is_uncertain=bool(rec_data.get("is_uncertain", False)),
                 )
             except (json.JSONDecodeError, OSError, ValueError):
-                rec = RecommendationSummary(decision=ContestDecision.CONTEST, is_uncertain=False)
+                rec = RecommendationSummary(
+                    decision=ContestDecision.CONTEST, is_uncertain=False
+                )
         else:
             # Deterministic heuristic fallback from p_win
             if 0.35 <= t_item.p_win <= 0.55:
-                rec = RecommendationSummary(decision=ContestDecision.CONTEST, is_uncertain=True)
+                rec = RecommendationSummary(
+                    decision=ContestDecision.CONTEST, is_uncertain=True
+                )
             elif t_item.p_win >= 0.50:
-                rec = RecommendationSummary(decision=ContestDecision.CONTEST, is_uncertain=False)
+                rec = RecommendationSummary(
+                    decision=ContestDecision.CONTEST, is_uncertain=False
+                )
             else:
-                rec = RecommendationSummary(decision=ContestDecision.ACCEPT, is_uncertain=False)
+                rec = RecommendationSummary(
+                    decision=ContestDecision.ACCEPT, is_uncertain=False
+                )
 
         items.append(
             WorklistItem(
@@ -270,7 +294,9 @@ def worklist_view(request: Request) -> HTMLResponse:
                 amount=t_item.amount_paise,
                 urgency=t_item.urgency,
                 hours_remaining=t_item.hours_remaining or 0.0,
-                reason_class=t_item.reason_class.value if isinstance(t_item.reason_class, ReasonClass) else str(t_item.reason_class),
+                reason_class=t_item.reason_class.value
+                if isinstance(t_item.reason_class, ReasonClass)
+                else str(t_item.reason_class),
                 recommendation=rec,
             )
         )
@@ -306,7 +332,9 @@ def case_detail_view(request: Request, case_id: str) -> HTMLResponse:
     # Deadline & Urgency
     dl = calculate_deadline(case.dispute.model_dump())
     respond_by_dt = (
-        datetime.datetime.fromtimestamp(case.dispute.respond_by, tz=datetime.UTC).strftime("%Y-%m-%d %H:%M:%S UTC")
+        datetime.datetime.fromtimestamp(
+            case.dispute.respond_by, tz=datetime.UTC
+        ).strftime("%Y-%m-%d %H:%M:%S UTC")
         if case.dispute.respond_by
         else "N/A"
     )
@@ -316,9 +344,12 @@ def case_detail_view(request: Request, case_id: str) -> HTMLResponse:
     requirements = get_requirements_for_class(reason_class_val)
 
     # Detect if adversarial prompt injection was flagged
-    adv_types = case.ground_truth.adversarial.adversarial_types if case.ground_truth else []
+    adv_types = (
+        case.ground_truth.adversarial.adversarial_types if case.ground_truth else []
+    )
     injection_detected = "prompt_injection" in adv_types or any(
-        "ignore previous instructions" in (d.content or "").lower() for d in case.documents
+        "ignore previous instructions" in (d.content or "").lower()
+        for d in case.documents
     )
 
     # Compute safety findings per document
@@ -328,7 +359,9 @@ def case_detail_view(request: Request, case_id: str) -> HTMLResponse:
         case.dispute.payment_id,
         case.order.tracking_number if case.order else "",
     }
-    known_names = [case.order.customer_name] if case.order and case.order.customer_name else []
+    known_names = (
+        [case.order.customer_name] if case.order and case.order.customer_name else []
+    )
 
     safety_findings: list[dict[str, Any]] = []
     for doc in case.documents:
@@ -345,7 +378,9 @@ def case_detail_view(request: Request, case_id: str) -> HTMLResponse:
         if card_count == 1:
             card_str = f"1 card number redacted (last 4: {last_4_list[0]})"
         elif card_count > 1:
-            card_str = f"{card_count} card numbers redacted (last 4: {', '.join(last_4_list)})"
+            card_str = (
+                f"{card_count} card numbers redacted (last 4: {', '.join(last_4_list)})"
+            )
         else:
             card_str = "0 card numbers redacted"
 
@@ -358,19 +393,21 @@ def case_detail_view(request: Request, case_id: str) -> HTMLResponse:
         pii_count = len(ingest_res.vault)
         pii_str = f"{pii_count} PII token(s) replaced"
 
-        safety_findings.append({
-            "doc_id": doc.doc_id,
-            "doc_type": doc.doc_type,
-            "file_name": doc.file_name,
-            "card_count": card_count,
-            "card_str": card_str,
-            "last_4": last_4_list,
-            "injection_count": inj_count,
-            "injection_str": inj_str,
-            "injection_flags": ingest_res.injection_flags,
-            "pii_count": pii_count,
-            "pii_str": pii_str,
-        })
+        safety_findings.append(
+            {
+                "doc_id": doc.doc_id,
+                "doc_type": doc.doc_type,
+                "file_name": doc.file_name,
+                "card_count": card_count,
+                "card_str": card_str,
+                "last_4": last_4_list,
+                "injection_count": inj_count,
+                "injection_str": inj_str,
+                "injection_flags": ingest_res.injection_flags,
+                "pii_count": pii_count,
+                "pii_str": pii_str,
+            }
+        )
 
     return templates.TemplateResponse(
         request=request,
@@ -426,7 +463,10 @@ async def save_draft_action(
         details={"summary_length": len(summary)},
     )
 
-    return RedirectResponse(url=f"/cases/{case_id}?success=Draft+saved", status_code=status.HTTP_303_SEE_OTHER)
+    return RedirectResponse(
+        url=f"/cases/{case_id}?success=Draft+saved",
+        status_code=status.HTTP_303_SEE_OTHER,
+    )
 
 
 @app.post("/cases/{case_id}/review", response_class=HTMLResponse)
@@ -566,7 +606,10 @@ async def accept_review_view(
     typed_amount = form.get("typed_amount", "").strip()
 
     if not typed_amount:
-        raise HTTPException(status_code=400, detail="Dispute amount must be typed to confirm acceptance.")
+        raise HTTPException(
+            status_code=400,
+            detail="Dispute amount must be typed to confirm acceptance.",
+        )
 
     try:
         case = _load_case_by_id(case_id)
@@ -584,7 +627,10 @@ async def accept_review_view(
         )
 
     expected_rupees = case.dispute.amount / 100.0
-    if abs(input_val - expected_rupees) > 0.01 and abs(input_val - case.dispute.amount) > 0.01:
+    if (
+        abs(input_val - expected_rupees) > 0.01
+        and abs(input_val - case.dispute.amount) > 0.01
+    ):
         raise HTTPException(
             status_code=400,
             detail=f"Amount mismatch. You typed ₹{input_val:.2f}, but dispute amount is ₹{expected_rupees:.2f}.",
@@ -699,3 +745,109 @@ async def needs_evidence_action(
         url=f"/cases/{case_id}?success=Case+flagged+as+Needs+Evidence",
         status_code=status.HTTP_303_SEE_OTHER,
     )
+
+
+# ---------------------------------------------------------------------------
+# JSON API Endpoints — for programmatic access and live connectivity checks
+# ---------------------------------------------------------------------------
+
+
+@app.get("/api/health")
+def api_health() -> dict:
+    """Health check showing gateway mode, Razorpay connectivity, and credential status."""
+    import os
+
+    key_id = (os.environ.get("RAZORPAY_KEY_ID") or "").strip()
+    has_key = bool(key_id)
+    is_test = key_id.startswith("rzp_test_") if has_key else False
+
+    gw_type = type(gateway).__name__
+
+    # Probe live API if credentials are present
+    razorpay_reachable = False
+    razorpay_dispute_count: int | None = None
+    if is_test:
+        try:
+            live_gw: RazorpayGateway | None = None
+            if isinstance(gateway, RazorpayGateway):
+                live_gw = gateway
+            elif isinstance(gateway, HybridGateway):
+                live_gw = gateway.live
+
+            if live_gw:
+                disputes = live_gw.list_disputes(count=1)
+                razorpay_reachable = True
+                razorpay_dispute_count = len(disputes)
+        except Exception as exc:  # noqa: BLE001
+            logger.debug("Live Razorpay health probe failed: %s", exc)
+
+    return {
+        "status": "ok",
+        "gateway_mode": gw_type,
+        "razorpay_key_configured": has_key,
+        "razorpay_test_mode": is_test,
+        "razorpay_reachable": razorpay_reachable,
+        "razorpay_live_disputes": razorpay_dispute_count,
+        "llm_configured": bool((os.environ.get("LLM_API_KEY") or "").strip()),
+        "auth_configured": is_auth_configured(),
+    }
+
+
+@app.get("/api/disputes")
+def api_list_disputes(
+    status_filter: str | None = None,
+    phase: str | None = None,
+    limit: int = 25,
+    skip: int = 0,
+) -> dict:
+    """List disputes from the active gateway (live, hybrid, or sim)."""
+    disputes = gateway.list_disputes(
+        status=status_filter,
+        phase=phase,
+        limit=limit,
+        skip=skip,
+    )
+    return {
+        "count": len(disputes),
+        "gateway": type(gateway).__name__,
+        "items": [d.model_dump() for d in disputes],
+    }
+
+
+@app.get("/api/disputes/{dispute_id}")
+def api_fetch_dispute(dispute_id: str) -> dict:
+    """Fetch a single dispute by ID from the active gateway."""
+    try:
+        d = gateway.fetch_dispute(dispute_id)
+        return {"gateway": type(gateway).__name__, "dispute": d.model_dump()}
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+    except Exception as exc:  # noqa: BLE001
+        raise HTTPException(status_code=404, detail=str(exc))
+
+
+@app.post("/api/upload-document")
+async def api_upload_document(request: Request) -> dict:
+    """Upload a document via the active gateway (goes to live Razorpay in hybrid/live mode).
+
+    Accepts multipart form with 'file' field and optional 'purpose' field.
+    """
+    content_type = request.headers.get("content-type", "")
+    if "multipart" not in content_type:
+        raise HTTPException(status_code=400, detail="Multipart form data required.")
+
+    form = await request.form()
+    upload = form.get("file")
+    if not upload or not hasattr(upload, "read"):
+        raise HTTPException(status_code=400, detail="'file' field is required.")
+
+    file_content = await upload.read()
+    file_name = getattr(upload, "filename", "evidence.pdf") or "evidence.pdf"
+    purpose = form.get("purpose", "dispute_evidence") or "dispute_evidence"
+
+    result = gateway.upload_document(
+        file_content=file_content,
+        file_name=file_name,
+        purpose=str(purpose),
+    )
+    return {"gateway": type(gateway).__name__, "document": result}

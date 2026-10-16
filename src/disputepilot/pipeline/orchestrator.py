@@ -19,7 +19,7 @@ from disputepilot.extraction.extractor import ExtractedDocument
 from disputepilot.extraction.llm import LLMClient, get_llm_client
 from disputepilot.pipeline.audit import record_audit_event
 from disputepilot.pipeline.reminders import compute_and_record_reminders
-from disputepilot.razorpay.gateway import DisputesGateway, SimGateway
+from disputepilot.razorpay.gateway import DisputesGateway, create_gateway
 
 
 class CaseProcessingResult(BaseModel):
@@ -101,14 +101,16 @@ def process_case(
         CaseProcessingResult instance containing all pipeline artifacts.
     """
     client = llm_client or get_llm_client()
-    gw = gateway or SimGateway(data_dir=Path(data_dir), drafts_dir=Path(drafts_dir))
+    gw = gateway or create_gateway(data_dir=data_dir, drafts_dir=drafts_dir)
 
     # 1. Load case
     case = _load_case_by_id(case_id, data_dir=data_dir)
 
     # 2. Evidence Agent Audit
     registry = ReadOnlyToolRegistry(case=case, llm_client=client)
-    agent = EvidenceAgent(tool_registry=registry, llm_client=client, rule_only_reasons=rule_only_reasons)
+    agent = EvidenceAgent(
+        tool_registry=registry, llm_client=client, rule_only_reasons=rule_only_reasons
+    )
     evidence_report = agent.audit_case(case_id)
 
     # 3. Recommendation Engine

@@ -171,7 +171,9 @@ class SimGateway(DisputesGateway):
         idempotency_key: str | None = None,
     ) -> RazorpayDispute:
         orig = self.fetch_dispute(dispute_id)
-        expected_hash = compute_accept_payload_hash(dispute_id=dispute_id, amount=orig.amount)
+        expected_hash = compute_accept_payload_hash(
+            dispute_id=dispute_id, amount=orig.amount
+        )
 
         self.approval_service.require_approval(
             token=approval_token,
@@ -203,7 +205,11 @@ class SimGateway(DisputesGateway):
 
         evidence_obj = orig.evidence.model_copy()
         if evidence:
-            ev_dict = evidence.model_dump() if isinstance(evidence, RazorpayEvidence) else evidence
+            ev_dict = (
+                evidence.model_dump()
+                if isinstance(evidence, RazorpayEvidence)
+                else evidence
+            )
             for k, v in ev_dict.items():
                 if hasattr(evidence_obj, k) and isinstance(v, list):
                     setattr(evidence_obj, k, v)
@@ -352,7 +358,13 @@ class RazorpayGateway(DisputesGateway):
                 if resp.status_code not in (429, 500, 502, 503, 504):
                     return resp
 
-            except (httpx.ConnectError, httpx.ReadTimeout, httpx.WriteTimeout, httpx.NetworkError, httpx.TimeoutException):
+            except (
+                httpx.ConnectError,
+                httpx.ReadTimeout,
+                httpx.WriteTimeout,
+                httpx.NetworkError,
+                httpx.TimeoutException,
+            ):
                 if attempt == self.max_retries - 1:
                     raise
 
@@ -409,7 +421,9 @@ class RazorpayGateway(DisputesGateway):
         initial_status = current.status
 
         # Recompute accept payload hash (dispute_id and amount) at call time
-        expected_hash = compute_accept_payload_hash(dispute_id=dispute_id, amount=current.amount)
+        expected_hash = compute_accept_payload_hash(
+            dispute_id=dispute_id, amount=current.amount
+        )
         self.approval_service.require_approval(
             token=approval_token,
             action="accept",
@@ -461,7 +475,11 @@ class RazorpayGateway(DisputesGateway):
             payload["amount"] = amount
 
         if evidence:
-            ev_dict = evidence.model_dump() if isinstance(evidence, RazorpayEvidence) else evidence
+            ev_dict = (
+                evidence.model_dump()
+                if isinstance(evidence, RazorpayEvidence)
+                else evidence
+            )
             for k, v in ev_dict.items():
                 if v:
                     payload[k] = v
@@ -515,8 +533,11 @@ class RazorpayGateway(DisputesGateway):
         idempotency_key: str | None = None,
     ) -> dict[str, Any]:
         """Upload document: POST /v1/documents (Docs: https://razorpay.com/docs/api/documents/#upload-a-document)."""
+        import mimetypes
+
         idem_key = idempotency_key or f"doc_{uuid.uuid4().hex}"
-        files = {"file": (file_name, file_content)}
+        mime_type = mimetypes.guess_type(file_name)[0] or "application/pdf"
+        files = {"file": (file_name, file_content, mime_type)}
         data = {"purpose": purpose}
 
         result = self._execute_with_retry(
@@ -531,3 +552,219 @@ class RazorpayGateway(DisputesGateway):
 
         result.raise_for_status()
         return result.json()
+
+
+class HybridGateway(DisputesGateway):
+    """Hybrid gateway: live RazorpayGateway for API writes, SimGateway for case data.
+
+    This is the recommended mode for development and demos. Since Razorpay test
+    accounts typically contain zero disputes, case listing and fetching fall
+    through to local JSON fixtures so the UI stays populated. If a dispute
+    exists on live Razorpay, accept and contest submit call the real Razorpay API.
+    If a dispute only exists in local case data (sim), accept and contest route
+    to SimGateway. Document uploads go to the real Razorpay Documents API with
+    fallback to local storage.
+
+    For contest(action="draft"), SimGateway is used (saves to disk only).
+    """
+
+    def __init__(
+        self,
+        live: RazorpayGateway,
+        sim: SimGateway,
+    ) -> None:
+        self.live = live
+        self.sim = sim
+
+    def list_disputes(
+        self,
+        status: str | None = None,
+        phase: str | None = None,
+        limit: int = 10,
+        skip: int = 0,
+        count: int | None = None,
+    ) -> list[RazorpayDispute]:
+        """Try live API first; if it returns nothing, fall back to sim data."""
+        try:
+            live_results = self.live.list_disputes(
+                status=status,
+                phase=phase,
+                limit=limit,
+                skip=skip,
+                count=count,
+            )
+            if live_results:
+                return live_results
+            logger.info(
+                "Live Razorpay returned 0 disputes; falling back to local case data."
+            )
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("Live list_disputes failed (%s); falling back to sim.", exc)
+        return self.sim.list_disputes(
+            status=status,
+            phase=phase,
+            limit=limit,
+            skip=skip,
+            count=count,
+        )
+
+    def fetch_dispute(self, dispute_id: str) -> RazorpayDispute:
+        """Try live API; fall back to sim on 404 or error."""
+        try:
+            return self.live.fetch_dispute(dispute_id)
+        except Exception:  # noqa: BLE001
+            logger.debug("Live fetch_dispute(%s) failed; trying sim.", dispute_id)
+        return self.sim.fetch_dispute(dispute_id)
+
+    def _is_live_dispute(self, dispute_id: str) -> bool:
+        """Check if dispute exists on live Razorpay API."""
+        try:
+            self.live.fetch_dispute(dispute_id)
+            return True
+        except Exception:  # noqa: BLE001
+            return False
+
+    def accept_dispute(
+        self,
+        dispute_id: str,
+        approval_token: str,
+        idempotency_key: str | None = None,
+    ) -> RazorpayDispute:
+        """Route accept to live API if dispute exists on Razorpay; fall back to sim."""
+        if self._is_live_dispute(dispute_id):
+            return self.live.accept_dispute(
+                dispute_id=dispute_id,
+                approval_token=approval_token,
+                idempotency_key=idempotency_key,
+            )
+        return self.sim.accept_dispute(
+            dispute_id=dispute_id,
+            approval_token=approval_token,
+            idempotency_key=idempotency_key,
+        )
+
+    def contest_dispute(
+        self,
+        dispute_id: str,
+        action: str,
+        summary: str | None = None,
+        amount: int | None = None,
+        evidence: dict[str, list[str]] | RazorpayEvidence | None = None,
+        approval_token: str | None = None,
+        idempotency_key: str | None = None,
+    ) -> RazorpayDispute:
+        """Route draft to sim (local save); route submit to live API if dispute is on Razorpay, else sim."""
+        if action.lower() == "draft":
+            return self.sim.contest_dispute(
+                dispute_id=dispute_id,
+                action="draft",
+                summary=summary,
+                amount=amount,
+                evidence=evidence,
+            )
+        if self._is_live_dispute(dispute_id):
+            return self.live.contest_dispute(
+                dispute_id=dispute_id,
+                action=action,
+                summary=summary,
+                amount=amount,
+                evidence=evidence,
+                approval_token=approval_token,
+                idempotency_key=idempotency_key,
+            )
+        return self.sim.contest_dispute(
+            dispute_id=dispute_id,
+            action=action,
+            summary=summary,
+            amount=amount,
+            evidence=evidence,
+            approval_token=approval_token,
+            idempotency_key=idempotency_key,
+        )
+
+    def upload_document(
+        self,
+        file_content: bytes,
+        file_name: str,
+        purpose: str = "dispute_evidence",
+        idempotency_key: str | None = None,
+    ) -> dict[str, Any]:
+        """Upload to live Razorpay Documents API, fallback to sim if it fails."""
+        try:
+            return self.live.upload_document(
+                file_content=file_content,
+                file_name=file_name,
+                purpose=purpose,
+                idempotency_key=idempotency_key,
+            )
+        except Exception as exc:  # noqa: BLE001
+            logger.warning(
+                "Live upload_document failed (%s); falling back to sim.", exc
+            )
+            return self.sim.upload_document(
+                file_content=file_content,
+                file_name=file_name,
+                purpose=purpose,
+                idempotency_key=idempotency_key,
+            )
+
+
+def create_gateway(
+    approval_service: ApprovalService | None = None,
+    data_dir: Path | str = "data/cases",
+    drafts_dir: Path | str = "data/drafts",
+) -> DisputesGateway:
+    """Factory: build the right gateway from environment variables.
+
+    Env vars consulted:
+        RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET — Razorpay test credentials.
+        GATEWAY_MODE — "live", "hybrid", or "sim" (default: auto-detect).
+
+    Selection logic:
+        - "sim" → SimGateway (pure local, no Razorpay calls).
+        - "live" → RazorpayGateway (all calls go to Razorpay; fails if 0 test disputes).
+        - "hybrid" → HybridGateway (live writes, sim reads).
+        - unset/auto → hybrid if credentials present, else sim.
+    """
+    import os
+
+    svc = approval_service or ApprovalService()
+    key_id = (os.environ.get("RAZORPAY_KEY_ID") or "").strip()
+    key_secret = (os.environ.get("RAZORPAY_KEY_SECRET") or "").strip()
+    mode = (os.environ.get("GATEWAY_MODE") or "").strip().lower()
+
+    sim = SimGateway(
+        data_dir=Path(data_dir),
+        drafts_dir=Path(drafts_dir),
+        approval_service=svc,
+    )
+
+    has_creds = bool(key_id and key_secret and key_id.startswith("rzp_test_"))
+
+    if mode == "sim" or (not mode and not has_creds):
+        logger.info("Gateway mode: sim (local case data only).")
+        return sim
+
+    if not has_creds:
+        logger.warning(
+            "GATEWAY_MODE=%s but RAZORPAY_KEY_ID/KEY_SECRET not set or not test-mode. "
+            "Falling back to sim.",
+            mode,
+        )
+        return sim
+
+    live = RazorpayGateway(
+        key_id=key_id,
+        key_secret=key_secret,
+        approval_service=svc,
+    )
+
+    if mode == "live":
+        logger.info("Gateway mode: live (all calls to Razorpay API).")
+        return live
+
+    # Default: hybrid
+    logger.info(
+        "Gateway mode: hybrid (live Razorpay for writes, local case data for reads)."
+    )
+    return HybridGateway(live=live, sim=sim)

@@ -31,15 +31,26 @@ def run_smoke(
     Returns:
         Exit code (0 for success, 1 for failure or refusal).
     """
-    resolved_key_id = (key_id or os.environ.get("RAZORPAY_KEY_ID") or "").strip()
-    resolved_key_secret = (key_secret or os.environ.get("RAZORPAY_KEY_SECRET") or "").strip()
+    resolved_key_id = (
+        key_id.strip()
+        if key_id is not None
+        else (os.environ.get("RAZORPAY_KEY_ID") or "").strip()
+    )
+    resolved_key_secret = (
+        key_secret.strip()
+        if key_secret is not None
+        else (os.environ.get("RAZORPAY_KEY_SECRET") or "").strip()
+    )
 
     if not resolved_key_id:
         print("Refusing to run: RAZORPAY_KEY_ID is not set.", file=sys.stderr)
         return 1
 
     if not resolved_key_id.startswith("rzp_test_"):
-        print("Refusing to run: RAZORPAY_KEY_ID must start with 'rzp_test_'.", file=sys.stderr)
+        print(
+            "Refusing to run: RAZORPAY_KEY_ID must start with 'rzp_test_'.",
+            file=sys.stderr,
+        )
         return 1
 
     if not resolved_key_secret:
