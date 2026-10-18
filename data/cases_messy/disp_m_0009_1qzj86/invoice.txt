@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5008
+**Date:** 17.03.2024
+**Customer:** Vikram Singh
+**Address:** Shop No 4, Opp Station, Andheri East, Mumbai
+**Item:** Monthly Cloud SaaS Subscription (Qty: 1)
+**Amount Total:** Rs. 1499.00
+**Payment Ref:** order_av90ric7phkq
+*Computer generated voucher. Signature not needed.*

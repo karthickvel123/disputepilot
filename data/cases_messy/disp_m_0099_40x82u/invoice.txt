@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5098
+**Date:** 15.06.2024
+**Customer:** Aditya Joshi
+**Address:** 12A Barakhamba Road, Connaught Place, New Delhi 110001
+**Item:** USB-C Fast Charging Hub 100W (Qty: 1)
+**Amount Total:** Rs. 1899.00
+**Payment Ref:** order_jzgdcsi7geuk
+*Computer generated voucher. Signature not needed.*

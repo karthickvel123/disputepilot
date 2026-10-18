@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5093
+**Date:** 10.06.2024
+**Customer:** Rohan Gupta
+**Address:** Flat 301, Gera Emerald, Kharadi, Pune 411014
+**Item:** Wireless ANC Headphones Pro (Qty: 1)
+**Amount Total:** Rs. 2999.00
+**Payment Ref:** order_0qojr0gd1gbs
+*Computer generated voucher. Signature not needed.*

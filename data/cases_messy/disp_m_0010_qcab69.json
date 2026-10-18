@@ -1,0 +1,89 @@
+{
+  "case_id": "disp_m_0010_qcab69",
+  "dispute": {
+    "id": "disp_m_0010_qcab69",
+    "entity": "dispute",
+    "payment_id": "pay_158z6tnovmiz",
+    "amount": 899900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "suspicious debit txn while I was in hospital",
+    "phase": "pre_arbitration",
+    "status": "open",
+    "respond_by": 1712833197,
+    "created_at": 1712151574,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [
+        "disp_m_0010_qcab69/invoice.txt"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_m_0010_qcab69/chat_transcript.txt"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_wdiaeq1kdfy6",
+    "entity": "order",
+    "amount": 899900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1710820441,
+    "customer_name": "Priya Sharma",
+    "customer_email": "priya_sharma@yahoo.co.in",
+    "customer_phone": "+916796080901",
+    "shipping_address": "Flat 376, Sector 8, Mumbai, Maharashtra 400050",
+    "items": [
+      {
+        "name": "Ergonomic Mesh Office Chair",
+        "quantity": 1,
+        "amount": 899900
+      }
+    ],
+    "tracking_number": "AWB-83426945",
+    "delivered_at": 1711056735
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "unauthorised",
+    "available_evidence": [
+      "billing_proof",
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "Missing 3DS authentication records or delivery link to cardholder.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0010_qcab69_doc_inv",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.txt",
+      "file_path": "disp_m_0010_qcab69/invoice.txt",
+      "content": "# TAX INVOICE / CASH MEMO\n**Bill No:** INV-5009\n**Date:** 19th of March around 03 AM\n**Customer:** Priya Sharma\n**Address:** B-402, Sea Breeze Apts, Hill Rd, Bandra West, Mum-50\n**Item:** Ergonomic Mesh Office Chair (Qty: 1)\n**Amount Total:** Rs. 8999.00\n**Payment Ref:** order_wdiaeq1kdfy6\n*Computer generated voucher. Signature not needed.*\n"
+    },
+    {
+      "doc_id": "disp_m_0010_qcab69_doc_chat",
+      "doc_type": "customer_communication",
+      "file_name": "chat_transcript.txt",
+      "file_path": "disp_m_0010_qcab69/chat_transcript.txt",
+      "content": "--- Chat Conversation Log ---\nDate: 20th Mar 2024, 03:54 AM\nUser: Priya Sharma\nAgent: Support Team (Harish)\n\n[User]: Hello sir, package track nahi ho raha hai theek se.\n[Agent]: Checking your consignment AWB-83426945. Please note tracking updates within 24h.\n[User]: Ok sending alternate address: B-402, Sea Breeze Apts, Hill Rd, Bandra West, Mum-50. Please expedite.\n[Agent]: Noted sir. Have escalated to courier partner.\n\n--- Log Closed ---\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 9,
+    "mode": "messy"
+  }
+}

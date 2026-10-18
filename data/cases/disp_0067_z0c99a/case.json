@@ -1,0 +1,87 @@
+{
+  "case_id": "disp_0067_z0c99a",
+  "dispute": {
+    "id": "disp_0067_z0c99a",
+    "entity": "dispute",
+    "payment_id": "pay_do3v94x2hgoavw",
+    "amount": 1799900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "INR_106",
+    "phase": "pre_arbitration",
+    "status": "open",
+    "respond_by": 1718006498,
+    "created_at": 1717298703,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [
+        "disp_0067_z0c99a/refund_receipt.md"
+      ],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_s97xgck5i0gqmm",
+    "entity": "order",
+    "amount": 1799900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1715713913,
+    "customer_name": "Ananya Rao",
+    "customer_email": "ananya.rao@mail.in",
+    "customer_phone": "+919835579048",
+    "shipping_address": "Flat 211, Sector 13, Pune, Maharashtra 411014",
+    "items": [
+      {
+        "name": "4K HDR Computer Monitor 27in",
+        "quantity": 1,
+        "amount": 1799900
+      }
+    ],
+    "tracking_number": "TRK-BD-70465703",
+    "delivered_at": null
+  },
+  "refund": {
+    "id": "rfnd_6i5a7d9146llig",
+    "entity": "refund",
+    "payment_id": "pay_do3v94x2hgoavw",
+    "amount": 1799900,
+    "currency": "INR",
+    "status": "processed",
+    "created_at": 1715886713,
+    "arn": "ARN747073144369"
+  },
+  "ground_truth": {
+    "reason_class": "duplicate_charge",
+    "available_evidence": [
+      "refund_confirmation"
+    ],
+    "winnable": true,
+    "rule_explanation": "Second charge was already refunded to cardholder with bank ARN confirmation.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0067_z0c99a_1",
+      "doc_type": "refund_confirmation",
+      "file_name": "refund_receipt.md",
+      "file_path": "disp_0067_z0c99a/refund_receipt.md",
+      "content": "# Razorpay Electronic Refund Confirmation\n\n**Refund ID:** rfnd_6i5a7d9146llig  \n**Payment ID:** pay_do3v94x2hgoavw  \n**Refund Amount:** INR 17999.00 (1799900 paise)  \n**Status:** PROCESSED  \n**Acquirer Reference Number (ARN):** ARN747073144369  \n**Refund Processed At:** 2024-05-16 19:11:53 UTC  \n**Settlement Route:** Original Payment Source (Bank / Card / UPI)  \n\n### Bank Traceability:\nThis transaction was routed via Razorpay Gateway to the acquiring bank. The cardholder's issuing bank can locate the credited funds using the ARN provided above.\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 66
+  }
+}

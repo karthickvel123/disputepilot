@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5071
+**Date:** 20th May 2024, 02:43 AM
+**Customer:** Ananya Rao
+**Address:** F-692, Sector 4, nr water tank, Pune 411014
+**Item:** Wireless ANC Headphones Pro (Qty: 1)
+**Amount Total:** Rs. 2999.00
+**Payment Ref:** order_hdie5la9k5os
+*Computer generated voucher. Signature not needed.*

@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5009
+**Date:** 19th of March around 03 AM
+**Customer:** Priya Sharma
+**Address:** B-402, Sea Breeze Apts, Hill Rd, Bandra West, Mum-50
+**Item:** Ergonomic Mesh Office Chair (Qty: 1)
+**Amount Total:** Rs. 8999.00
+**Payment Ref:** order_wdiaeq1kdfy6
+*Computer generated voucher. Signature not needed.*

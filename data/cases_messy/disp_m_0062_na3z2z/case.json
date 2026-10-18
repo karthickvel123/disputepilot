@@ -1,0 +1,79 @@
+{
+  "case_id": "disp_m_0062_na3z2z",
+  "dispute": {
+    "id": "disp_m_0062_na3z2z",
+    "entity": "dispute",
+    "payment_id": "pay_q9vemfltw3w1",
+    "amount": 299900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "support agent ne bola 3 din me aayega par 15 din ho gaye",
+    "phase": "chargeback",
+    "status": "open",
+    "respond_by": 1717008920,
+    "created_at": 1716351601,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_m_0062_na3z2z/chat_transcript.txt"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_e5ulrq8bkrpb",
+    "entity": "order",
+    "amount": 299900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1715277125,
+    "customer_name": "Vikram Singh",
+    "customer_email": "vikram_singh@outlook.in",
+    "customer_phone": "+918783542338",
+    "shipping_address": "Flat 302, Sector 4, Bengaluru, Karnataka 560103",
+    "items": [
+      {
+        "name": "Wireless ANC Headphones Pro",
+        "quantity": 1,
+        "amount": 299900
+      }
+    ],
+    "tracking_number": "AWB-20644593",
+    "delivered_at": 1715554670
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "refund_not_received",
+    "available_evidence": [
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "No verified bank refund record found for customer's transaction.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0062_na3z2z_doc_chat",
+      "doc_type": "customer_communication",
+      "file_name": "chat_transcript.txt",
+      "file_path": "disp_m_0062_na3z2z/chat_transcript.txt",
+      "content": "--- Chat Conversation Log ---\nDate: 10.05.2024\nUser: Vikram Singh\nAgent: Support Team (Harish)\n\n[User]: Hello sir, package track nahi ho raha hai theek se.\n[Agent]: Checking your consignment AWB-20644593. Please note tracking updates within 24h.\n[User]: Ok sending alternate address: #42, 2nd Cross, Koramangala 4th Blk, Bangalore-34. Please expedite.\n[Agent]: Noted sir. Have escalated to courier partner.\n\n--- Log Closed ---\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 61,
+    "mode": "messy"
+  }
+}

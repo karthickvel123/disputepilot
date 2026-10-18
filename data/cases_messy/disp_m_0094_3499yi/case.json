@@ -1,0 +1,89 @@
+{
+  "case_id": "disp_m_0094_3499yi",
+  "dispute": {
+    "id": "disp_m_0094_3499yi",
+    "entity": "dispute",
+    "payment_id": "pay_ji7iudko1kf2",
+    "amount": 299900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "sleep kar raha tha tab alert aaya debit ka",
+    "phase": "retrieval",
+    "status": "open",
+    "respond_by": 1719679203,
+    "created_at": 1718846220,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [
+        "disp_m_0094_3499yi/invoice.txt"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_m_0094_3499yi/chat_transcript.txt"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_0qojr0gd1gbs",
+    "entity": "order",
+    "amount": 299900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1718057737,
+    "customer_name": "Rohan Gupta",
+    "customer_email": "rohan_gupta@yahoo.co.in",
+    "customer_phone": "+916315002661",
+    "shipping_address": "Flat 408, Sector 9, Pune, Maharashtra 411014",
+    "items": [
+      {
+        "name": "Wireless ANC Headphones Pro",
+        "quantity": 1,
+        "amount": 299900
+      }
+    ],
+    "tracking_number": "AWB-77054320",
+    "delivered_at": 1718428053
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "unauthorised",
+    "available_evidence": [
+      "billing_proof",
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "Missing 3DS authentication records or delivery link to cardholder.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0094_3499yi_doc_inv",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.txt",
+      "file_path": "disp_m_0094_3499yi/invoice.txt",
+      "content": "# TAX INVOICE / CASH MEMO\n**Bill No:** INV-5093\n**Date:** 10.06.2024\n**Customer:** Rohan Gupta\n**Address:** Flat 301, Gera Emerald, Kharadi, Pune 411014\n**Item:** Wireless ANC Headphones Pro (Qty: 1)\n**Amount Total:** Rs. 2999.00\n**Payment Ref:** order_0qojr0gd1gbs\n*Computer generated voucher. Signature not needed.*\n"
+    },
+    {
+      "doc_id": "disp_m_0094_3499yi_doc_chat",
+      "doc_type": "customer_communication",
+      "file_name": "chat_transcript.txt",
+      "file_path": "disp_m_0094_3499yi/chat_transcript.txt",
+      "content": "--- Chat Conversation Log ---\nDate: 11/06/2024\nUser: Rohan Gupta\nAgent: Support Team (Harish)\n\n[User]: Hello sir, package track nahi ho raha hai theek se.\n[Agent]: Checking your consignment AWB-77054320. Please note tracking updates within 24h.\n[User]: Ok sending alternate address: Flat 301, Gera Emerald, Kharadi, Pune 411014. Please expedite.\n[Agent]: Noted sir. Have escalated to courier partner.\n\n--- Log Closed ---\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 93,
+    "mode": "messy"
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "case_id": "disp_m_0074_rt8fmi",
+  "dispute": {
+    "id": "disp_m_0074_rt8fmi",
+    "entity": "dispute",
+    "payment_id": "pay_awmjtdlvw24p",
+    "amount": 189900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "glitch on payment screen caused twin debits for one order",
+    "phase": "retrieval",
+    "status": "open",
+    "respond_by": 1717592655,
+    "created_at": 1716979014,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_m_0074_rt8fmi/chat_transcript.txt"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_vxlhte93g9hk",
+    "entity": "order",
+    "amount": 189900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1716336572,
+    "customer_name": "Priya Sharma",
+    "customer_email": "priya_sharma@outlook.in",
+    "customer_phone": "+918487810350",
+    "shipping_address": "Flat 523, Sector 3, Bengaluru, Karnataka 560103",
+    "items": [
+      {
+        "name": "USB-C Fast Charging Hub 100W",
+        "quantity": 1,
+        "amount": 189900
+      }
+    ],
+    "tracking_number": "AWB-60293087",
+    "delivered_at": null
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "duplicate_charge",
+    "available_evidence": [
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "Duplicate transaction unrefunded without proof of separate legitimate fulfillment.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0074_rt8fmi_doc_chat",
+      "doc_type": "customer_communication",
+      "file_name": "chat_transcript.txt",
+      "file_path": "disp_m_0074_rt8fmi/chat_transcript.txt",
+      "content": "--- Chat Conversation Log ---\nDate: 23/05/2024\nUser: Priya Sharma\nAgent: Support Team (Harish)\n\n[User]: Hello sir, package track nahi ho raha hai theek se.\n[Agent]: Checking your consignment AWB-60293087. Please note tracking updates within 24h.\n[User]: Ok sending alternate address: Nr Apollo Pharmacy, Green Glen Layout, Bellandur, Bengaluru. Please expedite.\n[Agent]: Noted sir. Have escalated to courier partner.\n\n--- Log Closed ---\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 73,
+    "mode": "messy"
+  }
+}

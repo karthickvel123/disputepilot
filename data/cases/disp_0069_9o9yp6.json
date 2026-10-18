@@ -1,0 +1,97 @@
+{
+  "case_id": "disp_0069_9o9yp6",
+  "dispute": {
+    "id": "disp_0069_9o9yp6",
+    "entity": "dispute",
+    "payment_id": "pay_aqm2ox8mms2lel",
+    "amount": 379800,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "credit_not_processed",
+    "phase": "retrieval",
+    "status": "open",
+    "respond_by": 1718228976,
+    "created_at": 1717583595,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [
+        "disp_0069_9o9yp6/invoice.md"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [
+        "disp_0069_9o9yp6/refund_receipt.md"
+      ],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_l6hyc1r9qikqav",
+    "entity": "order",
+    "amount": 379800,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1715909361,
+    "customer_name": "Priya Sharma",
+    "customer_email": "priya.sharma@example.com",
+    "customer_phone": "+919853302669",
+    "shipping_address": "Flat 741, Sector 10, Bengaluru, Karnataka 560103",
+    "items": [
+      {
+        "name": "USB-C Fast Charging Hub 100W",
+        "quantity": 2,
+        "amount": 189900
+      }
+    ],
+    "tracking_number": "TRK-SF-19781894",
+    "delivered_at": 1716268201
+  },
+  "refund": {
+    "id": "rfnd_l7e6k088zfwonv",
+    "entity": "refund",
+    "payment_id": "pay_aqm2ox8mms2lel",
+    "amount": 379800,
+    "currency": "INR",
+    "status": "processed",
+    "created_at": 1716254961,
+    "arn": "ARN342774723210"
+  },
+  "ground_truth": {
+    "reason_class": "refund_not_received",
+    "available_evidence": [
+      "billing_proof",
+      "refund_confirmation"
+    ],
+    "winnable": true,
+    "rule_explanation": "Merchant successfully processed refund with traceable bank ARN reference.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0069_9o9yp6_1",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.md",
+      "file_path": "disp_0069_9o9yp6/invoice.md",
+      "content": "# TAX INVOICE\n\n**Invoice Number:** INV-2024-01068  \n**Invoice Date:** 2024-05-17 01:29:21 UTC  \n**Order Reference:** order_l6hyc1r9qikqav  \n**Payment ID:** pay_aqm2ox8mms2lel  \n\n### Merchant Details:\n**Seller:** Apex Retail Solutions Private Limited  \n**GSTIN:** 29AABCA1234F1Z5  \n**State:** Karnataka (Code 29)  \n**Registered Address:** Outer Ring Road, Bellandur, Bengaluru, Karnataka 560103  \n\n### Customer Details:\n**Billed To:** Priya Sharma  \n**Address:** Flat 741, Sector 10, Bengaluru, Karnataka 560103  \n**Email:** priya.sharma@example.com  \n**Phone:** +919853302669  \n\n### Itemized Particulars:\n| Description | HSN | Qty | Unit Price | Tax Rate | Total Amount |\n| --- | --- | --- | --- | --- | --- |\n| USB-C Fast Charging Hub 100W | 8471 | 2 | INR 1899.00 | 18% | INR 1899.00 |\n\n**Grand Total:** INR 3798.00 (379800 paise)  \n**Payment Method:** Razorpay Checkout (3D-Secure 2.0 Authenticated)  \n**Transaction Reference:** pay_aqm2ox8mms2lel  \n\n---\n*Authorized Signatory for Apex Retail Solutions Private Limited.*\n"
+    },
+    {
+      "doc_id": "doc_0069_9o9yp6_2",
+      "doc_type": "refund_confirmation",
+      "file_name": "refund_receipt.md",
+      "file_path": "disp_0069_9o9yp6/refund_receipt.md",
+      "content": "# Razorpay Electronic Refund Confirmation\n\n**Refund ID:** rfnd_l7e6k088zfwonv  \n**Payment ID:** pay_aqm2ox8mms2lel  \n**Refund Amount:** INR 3798.00 (379800 paise)  \n**Status:** PROCESSED  \n**Acquirer Reference Number (ARN):** ARN342774723210  \n**Refund Processed At:** 2024-05-21 01:29:21 UTC  \n**Settlement Route:** Original Payment Source (Bank / Card / UPI)  \n\n### Bank Traceability:\nThis transaction was routed via Razorpay Gateway to the acquiring bank. The cardholder's issuing bank can locate the credited funds using the ARN provided above.\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 68
+  }
+}

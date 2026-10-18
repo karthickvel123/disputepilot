@@ -1,0 +1,87 @@
+{
+  "case_id": "disp_0070_sn749a",
+  "dispute": {
+    "id": "disp_0070_sn749a",
+    "entity": "dispute",
+    "payment_id": "pay_hyq8sb7x6625cs",
+    "amount": 599800,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "other_dispute",
+    "phase": "chargeback",
+    "status": "open",
+    "respond_by": 1718327896,
+    "created_at": 1717538877,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [
+        "disp_0070_sn749a/refund_receipt.md"
+      ],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_mu6fgk88aenn1g",
+    "entity": "order",
+    "amount": 599800,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1715978672,
+    "customer_name": "Manish Tiwari",
+    "customer_email": "manish.tiwari@mail.in",
+    "customer_phone": "+919896779969",
+    "shipping_address": "Flat 803, Sector 3, Mumbai, Maharashtra 400050",
+    "items": [
+      {
+        "name": "Wireless ANC Headphones Pro",
+        "quantity": 2,
+        "amount": 299900
+      }
+    ],
+    "tracking_number": "TRK-SF-15085015",
+    "delivered_at": 1716292441
+  },
+  "refund": {
+    "id": "rfnd_q9eoq0y2z1ubyh",
+    "entity": "refund",
+    "payment_id": "pay_hyq8sb7x6625cs",
+    "amount": 599800,
+    "currency": "INR",
+    "status": "processed",
+    "created_at": 1716410672,
+    "arn": "ARN972642831598"
+  },
+  "ground_truth": {
+    "reason_class": "other",
+    "available_evidence": [
+      "refund_confirmation"
+    ],
+    "winnable": false,
+    "rule_explanation": "Insufficient documentation to counter general dispute inquiry.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0070_sn749a_1",
+      "doc_type": "refund_confirmation",
+      "file_name": "refund_receipt.md",
+      "file_path": "disp_0070_sn749a/refund_receipt.md",
+      "content": "# Razorpay Electronic Refund Confirmation\n\n**Refund ID:** rfnd_q9eoq0y2z1ubyh  \n**Payment ID:** pay_hyq8sb7x6625cs  \n**Refund Amount:** INR 5998.00 (599800 paise)  \n**Status:** PROCESSED  \n**Acquirer Reference Number (ARN):** ARN972642831598  \n**Refund Processed At:** 2024-05-22 20:44:32 UTC  \n**Settlement Route:** Original Payment Source (Bank / Card / UPI)  \n\n### Bank Traceability:\nThis transaction was routed via Razorpay Gateway to the acquiring bank. The cardholder's issuing bank can locate the credited funds using the ARN provided above.\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 69
+  }
+}

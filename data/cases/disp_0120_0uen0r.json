@@ -1,0 +1,78 @@
+{
+  "case_id": "disp_0120_0uen0r",
+  "dispute": {
+    "id": "disp_0120_0uen0r",
+    "entity": "dispute",
+    "payment_id": "pay_mbpt35911cmkri",
+    "amount": 450000,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "merchandise_not_received",
+    "phase": "retrieval",
+    "status": "open",
+    "respond_by": 1722526569,
+    "created_at": 1721689583,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_0120_0uen0r/customer_chat.md"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_bqr9lc5bdfute0",
+    "entity": "order",
+    "amount": 450000,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1720309018,
+    "customer_name": "Arjun Patel",
+    "customer_email": "arjun.patel@mail.in",
+    "customer_phone": "+919828865664",
+    "shipping_address": "Flat 215, Sector 10, Hyderabad, Telangana 500081",
+    "items": [
+      {
+        "name": "Mechanical Gaming Keyboard",
+        "quantity": 1,
+        "amount": 450000
+      }
+    ],
+    "tracking_number": "TRK-DT-22112987",
+    "delivered_at": 1720657892
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "item_not_received",
+    "available_evidence": [
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "Missing courier proof of delivery or fulfillment unverified before dispute inception.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0120_0uen0r_1",
+      "doc_type": "customer_communication",
+      "file_name": "customer_chat.md",
+      "file_path": "disp_0120_0uen0r/customer_chat.md",
+      "content": "# Customer Support Communication Record\n\n**Support Ticket:** TIK-05119  \n**Channel:** Razorpay Merchant Web Chat  \n**Customer Name:** Arjun Patel  \n**Timestamp:** 2024-07-07 23:36:58 UTC  \n**Context Reference:** Order order_bqr9lc5bdfute0  \n\n---\n**[2024-07-07 23:36:58 UTC] Arjun Patel:** Hello, I am inquiring regarding my purchase order_bqr9lc5bdfute0.\n**[2024-07-07 23:36:58 UTC] Support Agent (Kiran):** Welcome to customer support, Arjun Patel. How may I help you today?\n**[2024-07-07 23:36:58 UTC] Arjun Patel:** Where is my package? I haven't received it yet.\n**[2024-07-07 23:36:58 UTC] Support Agent (Kiran):** Tracking details indicate courier handover. Please check your building security desk or OTP confirmation.\n\n---\n*Transcript archived by Merchant Customer Experience CRM.*\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 119
+  }
+}

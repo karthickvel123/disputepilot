@@ -1,0 +1,89 @@
+{
+  "case_id": "disp_m_0076_jqb1z7",
+  "dispute": {
+    "id": "disp_m_0076_jqb1z7",
+    "entity": "dispute",
+    "payment_id": "pay_p6dpevgcnltv",
+    "amount": 299900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "ARN number fake nikla bank bola koi refund nahi aaya",
+    "phase": "pre_arbitration",
+    "status": "open",
+    "respond_by": 1718630820,
+    "created_at": 1717935759,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [
+        "disp_m_0076_jqb1z7/invoice.txt"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_m_0076_jqb1z7/chat_transcript.txt"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_f3lau00cfpj6",
+    "entity": "order",
+    "amount": 299900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1716494553,
+    "customer_name": "Rohan Gupta",
+    "customer_email": "rohan_gupta@gmail.com",
+    "customer_phone": "+916851265266",
+    "shipping_address": "Flat 803, Sector 6, Mumbai, Maharashtra 400050",
+    "items": [
+      {
+        "name": "Wireless ANC Headphones Pro",
+        "quantity": 1,
+        "amount": 299900
+      }
+    ],
+    "tracking_number": "AWB-15063883",
+    "delivered_at": 1716706998
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "refund_not_received",
+    "available_evidence": [
+      "billing_proof",
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "No verified bank refund record found for customer's transaction.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0076_jqb1z7_doc_inv",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.txt",
+      "file_path": "disp_m_0076_jqb1z7/invoice.txt",
+      "content": "# TAX INVOICE / CASH MEMO\n**Bill No:** INV-5075\n**Date:** 23/05/2024\n**Customer:** Rohan Gupta\n**Address:** Shop No 4, Opp Station, Andheri East, Mumbai\n**Item:** Wireless ANC Headphones Pro (Qty: 1)\n**Amount Total:** Rs. 2999.00\n**Payment Ref:** order_f3lau00cfpj6\n*Computer generated voucher. Signature not needed.*\n"
+    },
+    {
+      "doc_id": "disp_m_0076_jqb1z7_doc_chat",
+      "doc_type": "customer_communication",
+      "file_name": "chat_transcript.txt",
+      "file_path": "disp_m_0076_jqb1z7/chat_transcript.txt",
+      "content": "--- Chat Conversation Log ---\nDate: 24-May-24\nUser: Rohan Gupta\nAgent: Support Team (Harish)\n\n[User]: Hello sir, package track nahi ho raha hai theek se.\n[Agent]: Checking your consignment AWB-15063883. Please note tracking updates within 24h.\n[User]: Ok sending alternate address: Shop No 4, Opp Station, Andheri East, Mumbai. Please expedite.\n[Agent]: Noted sir. Have escalated to courier partner.\n\n--- Log Closed ---\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 75,
+    "mode": "messy"
+  }
+}

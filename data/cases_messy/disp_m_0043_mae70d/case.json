@@ -1,0 +1,89 @@
+{
+  "case_id": "disp_m_0043_mae70d",
+  "dispute": {
+    "id": "disp_m_0043_mae70d",
+    "entity": "dispute",
+    "payment_id": "pay_a04irplxckxa",
+    "amount": 450000,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "courier wala bola deliver ho gaya par box gayab hai",
+    "phase": "retrieval",
+    "status": "open",
+    "respond_by": 1715419396,
+    "created_at": 1714807875,
+    "evidence": {
+      "shipping_proof": [
+        "disp_m_0043_mae70d/delivery_slip.md"
+      ],
+      "billing_proof": [
+        "disp_m_0043_mae70d/invoice.txt"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_w727ehwpuyds",
+    "entity": "order",
+    "amount": 450000,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1713664827,
+    "customer_name": "Rohan Gupta",
+    "customer_email": "",
+    "customer_phone": "+917045986914",
+    "shipping_address": "Flat 330, Sector 10, Bengaluru, Karnataka 560103",
+    "items": [
+      {
+        "name": "Mechanical Gaming Keyboard",
+        "quantity": 1,
+        "amount": 450000
+      }
+    ],
+    "tracking_number": "AWB-43615914",
+    "delivered_at": 1713954658
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "item_not_received",
+    "available_evidence": [
+      "billing_proof",
+      "shipping_proof"
+    ],
+    "winnable": true,
+    "rule_explanation": "Valid courier proof of delivery with OTP/signature confirmed prior to dispute.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0043_mae70d_doc_inv",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.txt",
+      "file_path": "disp_m_0043_mae70d/invoice.txt",
+      "content": "# TAX INVOICE / CASH MEMO\n**Bill No:** INV-5042\n**Date:** 21-Apr-24\n**Customer:** Rohan Gupta\n**Address:** Plot 12, Behind Silk Board, Outer Ring Rd, BLR 103\n**Item:** Mechanical Gaming Keyboard (Qty: 1)\n**Amount Total:** Rs. 4500.00\n**Payment Ref:** order_w727ehwpuyds\n*Computer generated voucher. Signature not needed.*\n"
+    },
+    {
+      "doc_id": "disp_m_0043_mae70d_doc_pod",
+      "doc_type": "shipping_proof",
+      "file_name": "delivery_slip.md",
+      "file_path": "disp_m_0043_mae70d/delivery_slip.md",
+      "content": "# Courier Handover Sheet\nCourier: Shadofax Logistics\nDocket Number: AWB-43615914\nDelivered To: Rohan Gupta\nDelivery Location: Plot 12, Behind Silk Board, Outer Ring Rd, BLR 103\nHandover Time: 24.04.2024\nReceived By: Self / Family member\nOTP Status: Verified electronically on driver handset\n\nStatus: COMPLETE_DELIVERY\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 42,
+    "mode": "messy"
+  }
+}

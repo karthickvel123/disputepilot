@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5053
+**Date:** 02.05.2024
+**Customer:** Ananya Rao
+**Address:** Near Mehboob Studio, Bandra (W), Mumbai 400050
+**Item:** Ergonomic Mesh Office Chair (Qty: 1)
+**Amount Total:** Rs. 8999.00
+**Payment Ref:** order_26dn16i5mc9q
+*Computer generated voucher. Signature not needed.*

@@ -1,0 +1,79 @@
+{
+  "case_id": "disp_m_0014_1bz99n",
+  "dispute": {
+    "id": "disp_m_0014_1bz99n",
+    "entity": "dispute",
+    "payment_id": "pay_5d9ik40vstqq",
+    "amount": 299900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "want audit clarification from merchant finance department",
+    "phase": "chargeback",
+    "status": "open",
+    "respond_by": 1713085030,
+    "created_at": 1712242660,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_m_0014_1bz99n/chat_transcript.txt"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_zpt49zhkken6",
+    "entity": "order",
+    "amount": 299900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1711162870,
+    "customer_name": "Deepika Nair",
+    "customer_email": "deepika_nair@yahoo.co.in",
+    "customer_phone": "+917835767930",
+    "shipping_address": "Flat 661, Sector 4, Mumbai, Maharashtra 400050",
+    "items": [
+      {
+        "name": "Wireless ANC Headphones Pro",
+        "quantity": 1,
+        "amount": 299900
+      }
+    ],
+    "tracking_number": "AWB-84608157",
+    "delivered_at": 1711393348
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "other",
+    "available_evidence": [
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "Insufficient documentation to counter general dispute inquiry.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0014_1bz99n_doc_chat",
+      "doc_type": "customer_communication",
+      "file_name": "chat_transcript.txt",
+      "file_path": "disp_m_0014_1bz99n/chat_transcript.txt",
+      "content": "--- Chat Conversation Log ---\nDate: 24/03/2024\nUser: Deepika Nair\nAgent: Support Team (Harish)\n\n[User]: Hello sir, package track nahi ho raha hai theek se.\n[Agent]: Checking your consignment AWB-84608157. Please note tracking updates within 24h.\n[User]: Ok sending alternate address: B-402, Sea Breeze Apts, Hill Rd, Bandra West, Mum-50. Please expedite.\n[Agent]: Noted sir. Have escalated to courier partner.\n\n--- Log Closed ---\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 13,
+    "mode": "messy"
+  }
+}

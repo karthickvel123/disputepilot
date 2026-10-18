@@ -1,0 +1,17 @@
+{
+  "_note": "Ratchet: these are the CURRENT measured counts (rules only). Tests fail if a count goes UP. After improving the classifier, lower the numbers here; never raise them.",
+  "reason_wrong_answer_count": {
+    "ambiguous": 0,
+    "control": 0,
+    "degenerate": 0,
+    "hinglish_typo": 0,
+    "injection_in_reason": 0,
+    "keyword_trap": 0,
+    "non_latin_script": 0,
+    "paraphrase_en": 0
+  },
+  "reason_ambiguous_answered_max": 0.125,
+  "injection_evasive_missed": 7,
+  "injection_benign_false_positives": 3,
+  "cases_sha256": "54664ffd96b3a4082783d868e10f419fc781fda3a49f9cbdc9619cdb980d8227"
+}

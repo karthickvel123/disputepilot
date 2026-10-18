@@ -1,0 +1,78 @@
+{
+  "case_id": "disp_0140_3vvt0v",
+  "dispute": {
+    "id": "disp_0140_3vvt0v",
+    "entity": "dispute",
+    "payment_id": "pay_o3np4vynzlaxae",
+    "amount": 299900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "general_inquiry",
+    "phase": "retrieval",
+    "status": "open",
+    "respond_by": 1724317683,
+    "created_at": 1723644202,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_0140_3vvt0v/customer_chat.md"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_wb9hjs2mxcbmms",
+    "entity": "order",
+    "amount": 299900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1722024612,
+    "customer_name": "Manish Tiwari",
+    "customer_email": "manish.tiwari@example.com",
+    "customer_phone": "+919855609531",
+    "shipping_address": "Flat 283, Sector 4, Hyderabad, Telangana 500081",
+    "items": [
+      {
+        "name": "Wireless ANC Headphones Pro",
+        "quantity": 1,
+        "amount": 299900
+      }
+    ],
+    "tracking_number": "TRK-SF-23581521",
+    "delivered_at": 1722254807
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "other",
+    "available_evidence": [
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "Insufficient documentation to counter general dispute inquiry.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0140_3vvt0v_1",
+      "doc_type": "customer_communication",
+      "file_name": "customer_chat.md",
+      "file_path": "disp_0140_3vvt0v/customer_chat.md",
+      "content": "# Customer Support Communication Record\n\n**Support Ticket:** TIK-05139  \n**Channel:** Razorpay Merchant Web Chat  \n**Customer Name:** Manish Tiwari  \n**Timestamp:** 2024-07-27 20:10:12 UTC  \n**Context Reference:** Order order_wb9hjs2mxcbmms  \n\n---\n**[2024-07-27 20:10:12 UTC] Manish Tiwari:** Hello, I am inquiring regarding my purchase order_wb9hjs2mxcbmms.\n**[2024-07-27 20:10:12 UTC] Support Agent (Kiran):** Welcome to customer support, Manish Tiwari. How may I help you today?\n**[2024-07-27 20:10:12 UTC] Manish Tiwari:** I see an unauthorized charge on my statement.\n**[2024-07-27 20:10:12 UTC] Support Agent (Kiran):** The transaction was authenticated via 3DS OTP sent to your registered mobile number.\n\n---\n*Transcript archived by Merchant Customer Experience CRM.*\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 139
+  }
+}

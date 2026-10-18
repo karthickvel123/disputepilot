@@ -1,0 +1,97 @@
+{
+  "case_id": "disp_0027_s4i42a",
+  "dispute": {
+    "id": "disp_0027_s4i42a",
+    "entity": "dispute",
+    "payment_id": "pay_hspthdp03eh58b",
+    "amount": 1799900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "13.6",
+    "phase": "pre_arbitration",
+    "status": "open",
+    "respond_by": 1714318599,
+    "created_at": 1713507646,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [
+        "disp_0027_s4i42a/invoice.md"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [
+        "disp_0027_s4i42a/refund_receipt.md"
+      ],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_6pjs1awp0lf7xe",
+    "entity": "order",
+    "amount": 1799900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1712284475,
+    "customer_name": "Kavita Reddy",
+    "customer_email": "kavita.reddy@webmail.in",
+    "customer_phone": "+919812729224",
+    "shipping_address": "Flat 582, Sector 1, Kolkata, West Bengal 700016",
+    "items": [
+      {
+        "name": "4K HDR Computer Monitor 27in",
+        "quantity": 1,
+        "amount": 1799900
+      }
+    ],
+    "tracking_number": "TRK-SF-12179995",
+    "delivered_at": 1712599902
+  },
+  "refund": {
+    "id": "rfnd_wpgvicw8vl34li",
+    "entity": "refund",
+    "payment_id": "pay_hspthdp03eh58b",
+    "amount": 1799900,
+    "currency": "INR",
+    "status": "processed",
+    "created_at": 1712630075,
+    "arn": "ARN176401111736"
+  },
+  "ground_truth": {
+    "reason_class": "refund_not_received",
+    "available_evidence": [
+      "billing_proof",
+      "refund_confirmation"
+    ],
+    "winnable": true,
+    "rule_explanation": "Merchant successfully processed refund with traceable bank ARN reference.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0027_s4i42a_1",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.md",
+      "file_path": "disp_0027_s4i42a/invoice.md",
+      "content": "# TAX INVOICE\n\n**Invoice Number:** INV-2024-01026  \n**Invoice Date:** 2024-04-05 02:34:35 UTC  \n**Order Reference:** order_6pjs1awp0lf7xe  \n**Payment ID:** pay_hspthdp03eh58b  \n\n### Merchant Details:\n**Seller:** Apex Retail Solutions Private Limited  \n**GSTIN:** 29AABCA1234F1Z5  \n**State:** Karnataka (Code 29)  \n**Registered Address:** Outer Ring Road, Bellandur, Bengaluru, Karnataka 560103  \n\n### Customer Details:\n**Billed To:** Kavita Reddy  \n**Address:** Flat 582, Sector 1, Kolkata, West Bengal 700016  \n**Email:** kavita.reddy@webmail.in  \n**Phone:** +919812729224  \n\n### Itemized Particulars:\n| Description | HSN | Qty | Unit Price | Tax Rate | Total Amount |\n| --- | --- | --- | --- | --- | --- |\n| 4K HDR Computer Monitor 27in | 8471 | 1 | INR 17999.00 | 18% | INR 17999.00 |\n\n**Grand Total:** INR 17999.00 (1799900 paise)  \n**Payment Method:** Razorpay Checkout (3D-Secure 2.0 Authenticated)  \n**Transaction Reference:** pay_hspthdp03eh58b  \n\n---\n*Authorized Signatory for Apex Retail Solutions Private Limited.*\n"
+    },
+    {
+      "doc_id": "doc_0027_s4i42a_2",
+      "doc_type": "refund_confirmation",
+      "file_name": "refund_receipt.md",
+      "file_path": "disp_0027_s4i42a/refund_receipt.md",
+      "content": "# Razorpay Electronic Refund Confirmation\n\n**Refund ID:** rfnd_wpgvicw8vl34li  \n**Payment ID:** pay_hspthdp03eh58b  \n**Refund Amount:** INR 17999.00 (1799900 paise)  \n**Status:** PROCESSED  \n**Acquirer Reference Number (ARN):** ARN176401111736  \n**Refund Processed At:** 2024-04-09 02:34:35 UTC  \n**Settlement Route:** Original Payment Source (Bank / Card / UPI)  \n\n### Bank Traceability:\nThis transaction was routed via Razorpay Gateway to the acquiring bank. The cardholder's issuing bank can locate the credited funds using the ARN provided above.\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 26
+  }
+}

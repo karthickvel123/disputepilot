@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5024
+**Date:** 2nd of April around 09 PM
+**Customer:** Priya Sharma
+**Address:** House No 89, Gali 4, Laxmi Nagar, Delhi 92
+**Item:** Ergonomic Mesh Office Chair (Qty: 2)
+**Amount Total:** Rs. 17998.00
+**Payment Ref:** order_uacojs106xdi
+*Computer generated voucher. Signature not needed.*

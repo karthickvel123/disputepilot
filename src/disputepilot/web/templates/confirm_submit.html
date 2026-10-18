@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Confirm Submission - Case {{ case.case_id }}{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 1.5rem;">
+  <a href="/cases/{{ case.case_id }}" class="btn btn-secondary">&larr; Back to Case Review</a>
+</div>
+
+<div class="card" style="border: 2px solid var(--accent-primary);">
+  <div class="card-title">
+    <h2>Submission Payload Review & Approval Binding</h2>
+    <span class="badge badge-warning">Pre-Submission Verification</span>
+  </div>
+
+  <p class="disclaimer-text" style="margin-bottom: 1rem;">
+    Razorpay Non-Negotiable: The approval token below is cryptographically bound to the SHA-256 hash of the exact JSON payload. Any modification to the payload invalidates the token.
+  </p>
+
+  <div class="grid-2" style="margin-bottom: 1.5rem;">
+    <div>
+      <label>Reviewer (Approver)</label>
+      <div style="font-weight: 600;">{{ reviewer_name }}</div>
+    </div>
+    <div>
+      <label>Dispute ID</label>
+      <div><code>{{ case.dispute.id }}</code> (Case: <code>{{ case.case_id }}</code>)</div>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label>Cryptographic Payload Hash (SHA-256):</label>
+    <div style="background-color: var(--bg-primary); border: 1px solid var(--border-color); padding: 0.75rem; border-radius: 6px; font-family: monospace; color: #93c5fd; word-break: break-all;">
+      {{ payload_hash }}
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label>Approval Token (Single-Use, Bound):</label>
+    <div style="background-color: var(--bg-primary); border: 1px solid var(--border-color); padding: 0.75rem; border-radius: 6px; font-family: monospace; color: #10b981; word-break: break-all;">
+      {{ approval_token }}
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label>Exact Contest Payload to be Submitted to Razorpay API:</label>
+    <div class="draft-box" style="max-height: 350px; overflow-y: auto;">{{ payload_json }}</div>
+  </div>
+
+  <form action="/cases/{{ case.case_id }}/submit" method="post" style="margin-top: 1.5rem;">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <input type="hidden" name="approval_token" value="{{ approval_token }}">
+    <input type="hidden" name="payload_hash" value="{{ payload_hash }}">
+    
+    <div style="display: flex; gap: 1rem;">
+      <button type="submit" class="btn" style="flex: 2; padding: 0.85rem; font-size: 1rem; font-weight: 600;">
+        Confirm & Submit Rebuttal to Razorpay &rarr;
+      </button>
+      <a href="/cases/{{ case.case_id }}" class="btn btn-secondary" style="flex: 1; text-align: center; padding: 0.85rem;">
+        Cancel
+      </a>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5026
+**Date:** 4th Apr 2024, 08:41 PM
+**Customer:** Deepika Nair
+**Address:** F-692, Sector 4, nr water tank, Pune 411014
+**Item:** Smart Fitness Watch v3 (Qty: 2)
+**Amount Total:** Rs. 6998.00
+**Payment Ref:** order_917qsnf6akqp
+*Computer generated voucher. Signature not needed.*

@@ -1,0 +1,97 @@
+{
+  "case_id": "disp_0055_m7p8by",
+  "dispute": {
+    "id": "disp_0055_m7p8by",
+    "entity": "dispute",
+    "payment_id": "pay_rlbuobrd47wokg",
+    "amount": 1799800,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "4860",
+    "phase": "chargeback",
+    "status": "open",
+    "respond_by": 1716731218,
+    "created_at": 1715978672,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [
+        "disp_0055_m7p8by/invoice.md"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [
+        "disp_0055_m7p8by/refund_receipt.md"
+      ],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_ppr8doywllpuwb",
+    "entity": "order",
+    "amount": 1799800,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1714692247,
+    "customer_name": "Rohan Gupta",
+    "customer_email": "rohan.gupta@webmail.in",
+    "customer_phone": "+919835264294",
+    "shipping_address": "Flat 656, Sector 5, Ahmedabad, Gujarat 380015",
+    "items": [
+      {
+        "name": "Ergonomic Mesh Office Chair",
+        "quantity": 2,
+        "amount": 899900
+      }
+    ],
+    "tracking_number": "TRK-BD-22114140",
+    "delivered_at": 1715113443
+  },
+  "refund": {
+    "id": "rfnd_ob74avmivludbj",
+    "entity": "refund",
+    "payment_id": "pay_rlbuobrd47wokg",
+    "amount": 1799800,
+    "currency": "INR",
+    "status": "processed",
+    "created_at": 1715037847,
+    "arn": "ARN762424073287"
+  },
+  "ground_truth": {
+    "reason_class": "refund_not_received",
+    "available_evidence": [
+      "billing_proof",
+      "refund_confirmation"
+    ],
+    "winnable": true,
+    "rule_explanation": "Merchant successfully processed refund with traceable bank ARN reference.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0055_m7p8by_1",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.md",
+      "file_path": "disp_0055_m7p8by/invoice.md",
+      "content": "# TAX INVOICE\n\n**Invoice Number:** INV-2024-01054  \n**Invoice Date:** 2024-05-02 23:24:07 UTC  \n**Order Reference:** order_ppr8doywllpuwb  \n**Payment ID:** pay_rlbuobrd47wokg  \n\n### Merchant Details:\n**Seller:** Apex Retail Solutions Private Limited  \n**GSTIN:** 29AABCA1234F1Z5  \n**State:** Karnataka (Code 29)  \n**Registered Address:** Outer Ring Road, Bellandur, Bengaluru, Karnataka 560103  \n\n### Customer Details:\n**Billed To:** Rohan Gupta  \n**Address:** Flat 656, Sector 5, Ahmedabad, Gujarat 380015  \n**Email:** rohan.gupta@webmail.in  \n**Phone:** +919835264294  \n\n### Itemized Particulars:\n| Description | HSN | Qty | Unit Price | Tax Rate | Total Amount |\n| --- | --- | --- | --- | --- | --- |\n| Ergonomic Mesh Office Chair | 8471 | 2 | INR 8999.00 | 18% | INR 8999.00 |\n\n**Grand Total:** INR 17998.00 (1799800 paise)  \n**Payment Method:** Razorpay Checkout (3D-Secure 2.0 Authenticated)  \n**Transaction Reference:** pay_rlbuobrd47wokg  \n\n---\n*Authorized Signatory for Apex Retail Solutions Private Limited.*\n"
+    },
+    {
+      "doc_id": "doc_0055_m7p8by_2",
+      "doc_type": "refund_confirmation",
+      "file_name": "refund_receipt.md",
+      "file_path": "disp_0055_m7p8by/refund_receipt.md",
+      "content": "# Razorpay Electronic Refund Confirmation\n\n**Refund ID:** rfnd_ob74avmivludbj  \n**Payment ID:** pay_rlbuobrd47wokg  \n**Refund Amount:** INR 17998.00 (1799800 paise)  \n**Status:** PROCESSED  \n**Acquirer Reference Number (ARN):** ARN762424073287  \n**Refund Processed At:** 2024-05-06 23:24:07 UTC  \n**Settlement Route:** Original Payment Source (Bank / Card / UPI)  \n\n### Bank Traceability:\nThis transaction was routed via Razorpay Gateway to the acquiring bank. The cardholder's issuing bank can locate the credited funds using the ARN provided above.\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 54
+  }
+}

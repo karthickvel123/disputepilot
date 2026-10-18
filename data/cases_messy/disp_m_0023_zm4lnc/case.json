@@ -1,0 +1,79 @@
+{
+  "case_id": "disp_m_0023_zm4lnc",
+  "dispute": {
+    "id": "disp_m_0023_zm4lnc",
+    "entity": "dispute",
+    "payment_id": "pay_jpmc9cuhy39t",
+    "amount": 450000,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "box khola toh wrong variant nikla exchange bhi reject kiya",
+    "phase": "chargeback",
+    "status": "open",
+    "respond_by": 1713813179,
+    "created_at": 1713008215,
+    "evidence": {
+      "shipping_proof": [
+        "disp_m_0023_zm4lnc/delivery_slip.md"
+      ],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_0tp1yx262lba",
+    "entity": "order",
+    "amount": 450000,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1711934892,
+    "customer_name": "Neha Kulkarni",
+    "customer_email": "neha_kulkarni@gmail.com",
+    "customer_phone": "",
+    "shipping_address": "Flat 510, Sector 2, Pune, Maharashtra 411014",
+    "items": [
+      {
+        "name": "Mechanical Gaming Keyboard",
+        "quantity": 1,
+        "amount": 450000
+      }
+    ],
+    "tracking_number": "AWB-59034073",
+    "delivered_at": 1712169361
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "not_as_described",
+    "available_evidence": [
+      "shipping_proof"
+    ],
+    "winnable": false,
+    "rule_explanation": "Insufficient evidence proving product specifications and customer adherence to return terms.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0023_zm4lnc_doc_pod",
+      "doc_type": "shipping_proof",
+      "file_name": "delivery_slip.md",
+      "file_path": "disp_m_0023_zm4lnc/delivery_slip.md",
+      "content": "# Courier Handover Sheet\nCourier: DTDC Air\nDocket Number: AWB-59034073\nDelivered To: Neha Kulkarni\nDelivery Location: F-692, Sector 4, nr water tank, Pune 411014\nHandover Time: 03.04.2024\nReceived By: Self / Family member\nOTP Status: Verified electronically on driver handset\n\nStatus: COMPLETE_DELIVERY\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 22,
+    "mode": "messy"
+  }
+}

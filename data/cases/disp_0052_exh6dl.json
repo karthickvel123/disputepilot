@@ -1,0 +1,78 @@
+{
+  "case_id": "disp_0052_exh6dl",
+  "dispute": {
+    "id": "disp_0052_exh6dl",
+    "entity": "dispute",
+    "payment_id": "pay_uf93axmstp3x5m",
+    "amount": 189900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "fraud_card_not_present",
+    "phase": "retrieval",
+    "status": "open",
+    "respond_by": 1716526079,
+    "created_at": 1715663562,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_0052_exh6dl/customer_chat.md"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_8pja0bo8wavayt",
+    "entity": "order",
+    "amount": 189900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1714416812,
+    "customer_name": "Ananya Rao",
+    "customer_email": "ananya.rao@mail.in",
+    "customer_phone": "+919876038997",
+    "shipping_address": "Flat 246, Sector 12, Bengaluru, Karnataka 560103",
+    "items": [
+      {
+        "name": "USB-C Fast Charging Hub 100W",
+        "quantity": 1,
+        "amount": 189900
+      }
+    ],
+    "tracking_number": "TRK-BD-41067722",
+    "delivered_at": 1714643402
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "unauthorised",
+    "available_evidence": [
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "Missing 3DS authentication records or delivery link to cardholder.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0052_exh6dl_1",
+      "doc_type": "customer_communication",
+      "file_name": "customer_chat.md",
+      "file_path": "disp_0052_exh6dl/customer_chat.md",
+      "content": "# Customer Support Communication Record\n\n**Support Ticket:** TIK-05051  \n**Channel:** Razorpay Merchant Web Chat  \n**Customer Name:** Ananya Rao  \n**Timestamp:** 2024-04-30 18:53:32 UTC  \n**Context Reference:** Order order_8pja0bo8wavayt  \n\n---\n**[2024-04-30 18:53:32 UTC] Ananya Rao:** Hello, I am inquiring regarding my purchase order_8pja0bo8wavayt.\n**[2024-04-30 18:53:32 UTC] Support Agent (Kiran):** Welcome to customer support, Ananya Rao. How may I help you today?\n**[2024-04-30 18:53:32 UTC] Ananya Rao:** I see an unauthorized charge on my statement.\n**[2024-04-30 18:53:32 UTC] Support Agent (Kiran):** The transaction was authenticated via 3DS OTP sent to your registered mobile number.\n\n---\n*Transcript archived by Merchant Customer Experience CRM.*\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 51
+  }
+}

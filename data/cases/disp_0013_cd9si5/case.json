@@ -1,0 +1,97 @@
+{
+  "case_id": "disp_0013_cd9si5",
+  "dispute": {
+    "id": "disp_0013_cd9si5",
+    "entity": "dispute",
+    "payment_id": "pay_dq4hez5edjjtfp",
+    "amount": 3599800,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "13.6",
+    "phase": "chargeback",
+    "status": "open",
+    "respond_by": 1713064020,
+    "created_at": 1712437938,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [
+        "disp_0013_cd9si5/invoice.md"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [
+        "disp_0013_cd9si5/refund_receipt.md"
+      ],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_h90o7y22t1tdgn",
+    "entity": "order",
+    "amount": 3599800,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1711054229,
+    "customer_name": "Rohan Gupta",
+    "customer_email": "rohan.gupta@example.com",
+    "customer_phone": "+919833328859",
+    "shipping_address": "Flat 261, Sector 1, Mumbai, Maharashtra 400050",
+    "items": [
+      {
+        "name": "4K HDR Computer Monitor 27in",
+        "quantity": 2,
+        "amount": 1799900
+      }
+    ],
+    "tracking_number": "TRK-DT-49092160",
+    "delivered_at": 1711296404
+  },
+  "refund": {
+    "id": "rfnd_s3eoqm1h8ojrje",
+    "entity": "refund",
+    "payment_id": "pay_dq4hez5edjjtfp",
+    "amount": 3599800,
+    "currency": "INR",
+    "status": "processed",
+    "created_at": 1711399829,
+    "arn": "ARN414526795461"
+  },
+  "ground_truth": {
+    "reason_class": "refund_not_received",
+    "available_evidence": [
+      "billing_proof",
+      "refund_confirmation"
+    ],
+    "winnable": true,
+    "rule_explanation": "Merchant successfully processed refund with traceable bank ARN reference.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0013_cd9si5_1",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.md",
+      "file_path": "disp_0013_cd9si5/invoice.md",
+      "content": "# TAX INVOICE\n\n**Invoice Number:** INV-2024-01012  \n**Invoice Date:** 2024-03-21 20:50:29 UTC  \n**Order Reference:** order_h90o7y22t1tdgn  \n**Payment ID:** pay_dq4hez5edjjtfp  \n\n### Merchant Details:\n**Seller:** Apex Retail Solutions Private Limited  \n**GSTIN:** 29AABCA1234F1Z5  \n**State:** Karnataka (Code 29)  \n**Registered Address:** Outer Ring Road, Bellandur, Bengaluru, Karnataka 560103  \n\n### Customer Details:\n**Billed To:** Rohan Gupta  \n**Address:** Flat 261, Sector 1, Mumbai, Maharashtra 400050  \n**Email:** rohan.gupta@example.com  \n**Phone:** +919833328859  \n\n### Itemized Particulars:\n| Description | HSN | Qty | Unit Price | Tax Rate | Total Amount |\n| --- | --- | --- | --- | --- | --- |\n| 4K HDR Computer Monitor 27in | 8471 | 2 | INR 17999.00 | 18% | INR 17999.00 |\n\n**Grand Total:** INR 35998.00 (3599800 paise)  \n**Payment Method:** Razorpay Checkout (3D-Secure 2.0 Authenticated)  \n**Transaction Reference:** pay_dq4hez5edjjtfp  \n\n---\n*Authorized Signatory for Apex Retail Solutions Private Limited.*\n"
+    },
+    {
+      "doc_id": "doc_0013_cd9si5_2",
+      "doc_type": "refund_confirmation",
+      "file_name": "refund_receipt.md",
+      "file_path": "disp_0013_cd9si5/refund_receipt.md",
+      "content": "# Razorpay Electronic Refund Confirmation\n\n**Refund ID:** rfnd_s3eoqm1h8ojrje  \n**Payment ID:** pay_dq4hez5edjjtfp  \n**Refund Amount:** INR 35998.00 (3599800 paise)  \n**Status:** PROCESSED  \n**Acquirer Reference Number (ARN):** ARN414526795461  \n**Refund Processed At:** 2024-03-25 20:50:29 UTC  \n**Settlement Route:** Original Payment Source (Bank / Card / UPI)  \n\n### Bank Traceability:\nThis transaction was routed via Razorpay Gateway to the acquiring bank. The cardholder's issuing bank can locate the credited funds using the ARN provided above.\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 12
+  }
+}

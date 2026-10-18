@@ -1,0 +1,78 @@
+{
+  "case_id": "disp_0050_yhp5e7",
+  "dispute": {
+    "id": "disp_0050_yhp5e7",
+    "entity": "dispute",
+    "payment_id": "pay_l4ebeaqncdz6s6",
+    "amount": 1799900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "13.1",
+    "phase": "retrieval",
+    "status": "open",
+    "respond_by": 1716131793,
+    "created_at": 1715373263,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_0050_yhp5e7/customer_chat.md"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_01zf88jrftf6nj",
+    "entity": "order",
+    "amount": 1799900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1714272352,
+    "customer_name": "Pooja Verma",
+    "customer_email": "pooja.verma@webmail.in",
+    "customer_phone": "+919896322745",
+    "shipping_address": "Flat 418, Sector 12, Mumbai, Maharashtra 400050",
+    "items": [
+      {
+        "name": "4K HDR Computer Monitor 27in",
+        "quantity": 1,
+        "amount": 1799900
+      }
+    ],
+    "tracking_number": "TRK-BD-42813517",
+    "delivered_at": 1714530807
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "item_not_received",
+    "available_evidence": [
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "Missing courier proof of delivery or fulfillment unverified before dispute inception.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0050_yhp5e7_1",
+      "doc_type": "customer_communication",
+      "file_name": "customer_chat.md",
+      "file_path": "disp_0050_yhp5e7/customer_chat.md",
+      "content": "# Customer Support Communication Record\n\n**Support Ticket:** TIK-05049  \n**Channel:** Razorpay Merchant Web Chat  \n**Customer Name:** Pooja Verma  \n**Timestamp:** 2024-04-29 02:45:52 UTC  \n**Context Reference:** Order order_01zf88jrftf6nj  \n\n---\n**[2024-04-29 02:45:52 UTC] Pooja Verma:** Hello, I am inquiring regarding my purchase order_01zf88jrftf6nj.\n**[2024-04-29 02:45:52 UTC] Support Agent (Kiran):** Welcome to customer support, Pooja Verma. How may I help you today?\n**[2024-04-29 02:45:52 UTC] Pooja Verma:** Where is my package? I haven't received it yet.\n**[2024-04-29 02:45:52 UTC] Support Agent (Kiran):** Tracking details indicate courier handover. Please check your building security desk or OTP confirmation.\n\n---\n*Transcript archived by Merchant Customer Experience CRM.*\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 49
+  }
+}

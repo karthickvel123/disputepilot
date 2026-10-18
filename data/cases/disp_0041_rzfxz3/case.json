@@ -1,0 +1,107 @@
+{
+  "case_id": "disp_0041_rzfxz3",
+  "dispute": {
+    "id": "disp_0041_rzfxz3",
+    "entity": "dispute",
+    "payment_id": "pay_y94dakf51vg7co",
+    "amount": 899900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "INR_108",
+    "phase": "chargeback",
+    "status": "open",
+    "respond_by": 1715078821,
+    "created_at": 1714326183,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [
+        "disp_0041_rzfxz3/invoice.md"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_0041_rzfxz3/customer_chat.md"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [
+        "disp_0041_rzfxz3/cancellation_policy.md"
+      ],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_n4rcer8clubnjz",
+    "entity": "order",
+    "amount": 899900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1713464642,
+    "customer_name": "Ananya Rao",
+    "customer_email": "ananya.rao@webmail.in",
+    "customer_phone": "+919862231715",
+    "shipping_address": "Flat 494, Sector 13, Pune, Maharashtra 411014",
+    "items": [
+      {
+        "name": "Ergonomic Mesh Office Chair",
+        "quantity": 1,
+        "amount": 899900
+      }
+    ],
+    "tracking_number": "TRK-SF-17207013",
+    "delivered_at": 1713715895
+  },
+  "refund": {
+    "id": "rfnd_evzubr25ow9y1l",
+    "entity": "refund",
+    "payment_id": "pay_y94dakf51vg7co",
+    "amount": 899900,
+    "currency": "INR",
+    "status": "processed",
+    "created_at": 1713810242,
+    "arn": "ARN355280350219"
+  },
+  "ground_truth": {
+    "reason_class": "refund_not_received",
+    "available_evidence": [
+      "billing_proof",
+      "customer_communication",
+      "refund_cancellation_policy"
+    ],
+    "winnable": false,
+    "rule_explanation": "No verified bank refund record found for customer's transaction.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0041_rzfxz3_1",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.md",
+      "file_path": "disp_0041_rzfxz3/invoice.md",
+      "content": "# TAX INVOICE\n\n**Invoice Number:** INV-2024-01040  \n**Invoice Date:** 2024-04-18 18:24:02 UTC  \n**Order Reference:** order_n4rcer8clubnjz  \n**Payment ID:** pay_y94dakf51vg7co  \n\n### Merchant Details:\n**Seller:** Apex Retail Solutions Private Limited  \n**GSTIN:** 29AABCA1234F1Z5  \n**State:** Karnataka (Code 29)  \n**Registered Address:** Outer Ring Road, Bellandur, Bengaluru, Karnataka 560103  \n\n### Customer Details:\n**Billed To:** Ananya Rao  \n**Address:** Flat 494, Sector 13, Pune, Maharashtra 411014  \n**Email:** ananya.rao@webmail.in  \n**Phone:** +919862231715  \n\n### Itemized Particulars:\n| Description | HSN | Qty | Unit Price | Tax Rate | Total Amount |\n| --- | --- | --- | --- | --- | --- |\n| Ergonomic Mesh Office Chair | 8471 | 1 | INR 8999.00 | 18% | INR 8999.00 |\n\n**Grand Total:** INR 8999.00 (899900 paise)  \n**Payment Method:** Razorpay Checkout (3D-Secure 2.0 Authenticated)  \n**Transaction Reference:** pay_y94dakf51vg7co  \n\n---\n*Authorized Signatory for Apex Retail Solutions Private Limited.*\n"
+    },
+    {
+      "doc_id": "doc_0041_rzfxz3_2",
+      "doc_type": "customer_communication",
+      "file_name": "customer_chat.md",
+      "file_path": "disp_0041_rzfxz3/customer_chat.md",
+      "content": "# Customer Support Communication Record\n\n**Support Ticket:** TIK-05040  \n**Channel:** Razorpay Merchant Web Chat  \n**Customer Name:** Ananya Rao  \n**Timestamp:** 2024-04-19 18:24:02 UTC  \n**Context Reference:** Order order_n4rcer8clubnjz  \n\n---\n**[2024-04-19 18:24:02 UTC] Ananya Rao:** Hello, I am inquiring regarding my purchase order_n4rcer8clubnjz.\n**[2024-04-19 18:24:02 UTC] Support Agent (Kiran):** Welcome to customer support, Ananya Rao. How may I help you today?\n**[2024-04-19 18:24:02 UTC] Ananya Rao:** I see an unauthorized charge on my statement.\n**[2024-04-19 18:24:02 UTC] Support Agent (Kiran):** The transaction was authenticated via 3DS OTP sent to your registered mobile number.\n\n---\n*Transcript archived by Merchant Customer Experience CRM.*\n"
+    },
+    {
+      "doc_id": "doc_0041_rzfxz3_3",
+      "doc_type": "refund_cancellation_policy",
+      "file_name": "cancellation_policy.md",
+      "file_path": "disp_0041_rzfxz3/cancellation_policy.md",
+      "content": "# Apex Retail Solutions Private Limited \u2014 Terms of Sale, Cancellation & Refund Policy\n\n**Document Reference:** TOS-POL-2024-V2  \n**Effective Date:** 2024-01-01  \n**Public Policy URL:** https://apexsolutions.example.in/terms-and-policies  \n\n### 1. Order Cancellation Policy\nCustomers may cancel orders within 2 hours of payment or before the consignment is marked as 'Dispatched'. Once dispatched with our logistics partners, transit cancellation cannot be executed.\n\n### 2. Returns and Defect Reporting\n- Return requests must be lodged within 7 calendar days of verified courier delivery.\n- Goods must be returned in unblemished original packaging with intact security seals.\n- Defective or variant discrepancies must include unboxing photographs submitted within 48 hours of receipt.\n\n### 3. Subscription Cancellations\n- Subscription renewals auto-debit on the anniversary date.\n- Cancellation requests must be logged at least 48 hours prior to the next billing cycle.\n- Continued usage or access to merchant software/services after billing constitutes acceptance of the billing cycle.\n\n### 4. Dispute Escalation & Refund SLA\n- Approved refunds are routed directly through Razorpay to the originating payment instrument within 5\u20137 banking days.\n- A valid Acquirer Reference Number (ARN) will be provided upon processing.\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 40
+  }
+}

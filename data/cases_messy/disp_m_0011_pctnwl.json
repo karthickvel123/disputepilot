@@ -1,0 +1,76 @@
+{
+  "case_id": "disp_m_0011_pctnwl",
+  "dispute": {
+    "id": "disp_m_0011_pctnwl",
+    "entity": "dispute",
+    "payment_id": "pay_6mp6afqfjzcz",
+    "amount": 1799900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "merchant portal gave error but debited account two times",
+    "phase": "chargeback",
+    "status": "open",
+    "respond_by": 1713170577,
+    "created_at": 1712346811,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_bttof7jyu5js",
+    "entity": "order",
+    "amount": 1799900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1710877086,
+    "customer_name": "Aditya Joshi",
+    "customer_email": "aditya_joshi@outlook.in",
+    "customer_phone": "+919011000956",
+    "shipping_address": "Flat 637, Sector 9, Mumbai, Maharashtra 400050",
+    "items": [
+      {
+        "name": "4K HDR Computer Monitor 27in",
+        "quantity": 1,
+        "amount": 1799900
+      }
+    ],
+    "tracking_number": "AWB-21420815",
+    "delivered_at": null
+  },
+  "refund": {
+    "id": "rfnd_bcixgy29db8p",
+    "entity": "refund",
+    "payment_id": "pay_6mp6afqfjzcz",
+    "amount": 1799900,
+    "currency": "INR",
+    "status": "processed",
+    "created_at": 1711049886,
+    "arn": "ARN389864311919"
+  },
+  "ground_truth": {
+    "reason_class": "duplicate_charge",
+    "available_evidence": [],
+    "winnable": false,
+    "rule_explanation": "Duplicate transaction unrefunded without proof of separate legitimate fulfillment.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [],
+  "metadata": {
+    "seed": 7,
+    "case_index": 10,
+    "mode": "messy"
+  }
+}

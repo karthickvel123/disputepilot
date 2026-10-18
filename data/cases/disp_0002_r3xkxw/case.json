@@ -1,0 +1,78 @@
+{
+  "case_id": "disp_0002_r3xkxw",
+  "dispute": {
+    "id": "disp_0002_r3xkxw",
+    "entity": "dispute",
+    "payment_id": "pay_yr9oudocuzrenu",
+    "amount": 1799900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "13.3",
+    "phase": "pre_arbitration",
+    "status": "open",
+    "respond_by": 1712064022,
+    "created_at": 1711329850,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_0002_r3xkxw/customer_chat.md"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_n5z3jqip98q1zx",
+    "entity": "order",
+    "amount": 1799900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1710104373,
+    "customer_name": "Arjun Patel",
+    "customer_email": "arjun.patel@example.com",
+    "customer_phone": "+919824716857",
+    "shipping_address": "Flat 743, Sector 3, New Delhi, Delhi 110001",
+    "items": [
+      {
+        "name": "4K HDR Computer Monitor 27in",
+        "quantity": 1,
+        "amount": 1799900
+      }
+    ],
+    "tracking_number": "TRK-DT-61220073",
+    "delivered_at": 1710313435
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "not_as_described",
+    "available_evidence": [
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "Insufficient evidence proving product specifications and customer adherence to return terms.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0002_r3xkxw_1",
+      "doc_type": "customer_communication",
+      "file_name": "customer_chat.md",
+      "file_path": "disp_0002_r3xkxw/customer_chat.md",
+      "content": "# Customer Support Communication Record\n\n**Support Ticket:** TIK-05001  \n**Channel:** Razorpay Merchant Web Chat  \n**Customer Name:** Arjun Patel  \n**Timestamp:** 2024-03-11 20:59:33 UTC  \n**Context Reference:** Order order_n5z3jqip98q1zx  \n\n---\n**[2024-03-11 20:59:33 UTC] Arjun Patel:** Hello, I am inquiring regarding my purchase order_n5z3jqip98q1zx.\n**[2024-03-11 20:59:33 UTC] Support Agent (Kiran):** Welcome to customer support, Arjun Patel. How may I help you today?\n**[2024-03-11 20:59:33 UTC] Arjun Patel:** The item delivered doesn't match the specifications on your catalog.\n**[2024-03-11 20:59:33 UTC] Support Agent (Kiran):** We checked your invoice specifications; the product delivered is the exact SKU ordered under our standard 7-day exchange policy.\n\n---\n*Transcript archived by Merchant Customer Experience CRM.*\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 1
+  }
+}

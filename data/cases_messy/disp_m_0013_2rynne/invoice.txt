@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5012
+**Date:** 21-Mar-24
+**Customer:** Ananya Rao
+**Address:** Flat 104, Sec-3, Nr Metro Pillar 240, Dwarka, ND-75
+**Item:** Smart Fitness Watch v3 (Qty: 1)
+**Amount Total:** Rs. 3499.00
+**Payment Ref:** order_2ztj0wyuhvau
+*Computer generated voucher. Signature not needed.*

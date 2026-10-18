@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5032
+**Date:** 10-Apr-24
+**Customer:** Priya Sharma
+**Address:** Flat 104, Sec-3, Nr Metro Pillar 240, Dwarka, ND-75
+**Item:** USB-C Fast Charging Hub 100W (Qty: 1)
+**Amount Total:** Rs. 1899.00
+**Payment Ref:** order_451fxjtydfui
+*Computer generated voucher. Signature not needed.*

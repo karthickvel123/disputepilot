@@ -1,0 +1,88 @@
+{
+  "case_id": "disp_m_0083_6d29cc",
+  "dispute": {
+    "id": "disp_m_0083_6d29cc",
+    "entity": "dispute",
+    "payment_id": "pay_vv7on9ns8bol",
+    "amount": 149900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "consignment returned to warehouse 3 weeks ago no credit yet",
+    "phase": "chargeback",
+    "status": "open",
+    "respond_by": 1719251353,
+    "created_at": 1718419103,
+    "evidence": {
+      "shipping_proof": [
+        "disp_m_0083_6d29cc/delivery_slip.md"
+      ],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_b6r1xerfhzy6",
+    "entity": "order",
+    "amount": 149900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1717115206,
+    "customer_name": "Priya Sharma",
+    "customer_email": "priya_sharma@yahoo.co.in",
+    "customer_phone": "+918282940370",
+    "shipping_address": "Flat 774, Sector 5, New Delhi, Delhi 110001",
+    "items": [
+      {
+        "name": "Monthly Cloud SaaS Subscription",
+        "quantity": 1,
+        "amount": 149900
+      }
+    ],
+    "tracking_number": "AWB-67891967",
+    "delivered_at": 1717347324
+  },
+  "refund": {
+    "id": "rfnd_33mvmhzksme7",
+    "entity": "refund",
+    "payment_id": "pay_vv7on9ns8bol",
+    "amount": 149900,
+    "currency": "INR",
+    "status": "processed",
+    "created_at": 1717374406,
+    "arn": "ARN581107333642"
+  },
+  "ground_truth": {
+    "reason_class": "refund_not_received",
+    "available_evidence": [
+      "shipping_proof"
+    ],
+    "winnable": false,
+    "rule_explanation": "No verified bank refund record found for customer's transaction.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0083_6d29cc_doc_pod",
+      "doc_type": "shipping_proof",
+      "file_name": "delivery_slip.md",
+      "file_path": "disp_m_0083_6d29cc/delivery_slip.md",
+      "content": "# Courier Handover Sheet\nCourier: Delhivry Surface\nDocket Number: AWB-67891967\nDelivered To: Priya Sharma\nDelivery Location: Flat 104, Sec-3, Nr Metro Pillar 240, Dwarka, ND-75\nHandover Time: 02.06.2024\nReceived By: Self / Family member\nOTP Status: Verified electronically on driver handset\n\nStatus: COMPLETE_DELIVERY\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 82,
+    "mode": "messy"
+  }
+}

@@ -1,0 +1,97 @@
+{
+  "case_id": "disp_0097_tv82di",
+  "dispute": {
+    "id": "disp_0097_tv82di",
+    "entity": "dispute",
+    "payment_id": "pay_zl2wtvm8f3if3g",
+    "amount": 149900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "4860",
+    "phase": "pre_arbitration",
+    "status": "open",
+    "respond_by": 1719819095,
+    "created_at": 1719089689,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [
+        "disp_0097_tv82di/invoice.md"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [
+        "disp_0097_tv82di/refund_receipt.md"
+      ],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_3t34oojqxzlvu3",
+    "entity": "order",
+    "amount": 149900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1718329949,
+    "customer_name": "Arjun Patel",
+    "customer_email": "arjun.patel@mail.in",
+    "customer_phone": "+919874243595",
+    "shipping_address": "Flat 275, Sector 5, Ahmedabad, Gujarat 380015",
+    "items": [
+      {
+        "name": "Monthly Cloud SaaS Subscription",
+        "quantity": 1,
+        "amount": 149900
+      }
+    ],
+    "tracking_number": "TRK-BD-64450250",
+    "delivered_at": 1718510682
+  },
+  "refund": {
+    "id": "rfnd_et83z0pp9k4yev",
+    "entity": "refund",
+    "payment_id": "pay_zl2wtvm8f3if3g",
+    "amount": 149900,
+    "currency": "INR",
+    "status": "processed",
+    "created_at": 1718675549,
+    "arn": "ARN711284955856"
+  },
+  "ground_truth": {
+    "reason_class": "refund_not_received",
+    "available_evidence": [
+      "billing_proof",
+      "refund_confirmation"
+    ],
+    "winnable": true,
+    "rule_explanation": "Merchant successfully processed refund with traceable bank ARN reference.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0097_tv82di_1",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.md",
+      "file_path": "disp_0097_tv82di/invoice.md",
+      "content": "# TAX INVOICE\n\n**Invoice Number:** INV-2024-01096  \n**Invoice Date:** 2024-06-14 01:52:29 UTC  \n**Order Reference:** order_3t34oojqxzlvu3  \n**Payment ID:** pay_zl2wtvm8f3if3g  \n\n### Merchant Details:\n**Seller:** Apex Retail Solutions Private Limited  \n**GSTIN:** 29AABCA1234F1Z5  \n**State:** Karnataka (Code 29)  \n**Registered Address:** Outer Ring Road, Bellandur, Bengaluru, Karnataka 560103  \n\n### Customer Details:\n**Billed To:** Arjun Patel  \n**Address:** Flat 275, Sector 5, Ahmedabad, Gujarat 380015  \n**Email:** arjun.patel@mail.in  \n**Phone:** +919874243595  \n\n### Itemized Particulars:\n| Description | HSN | Qty | Unit Price | Tax Rate | Total Amount |\n| --- | --- | --- | --- | --- | --- |\n| Monthly Cloud SaaS Subscription | 8471 | 1 | INR 1499.00 | 18% | INR 1499.00 |\n\n**Grand Total:** INR 1499.00 (149900 paise)  \n**Payment Method:** Razorpay Checkout (3D-Secure 2.0 Authenticated)  \n**Transaction Reference:** pay_zl2wtvm8f3if3g  \n\n---\n*Authorized Signatory for Apex Retail Solutions Private Limited.*\n"
+    },
+    {
+      "doc_id": "doc_0097_tv82di_2",
+      "doc_type": "refund_confirmation",
+      "file_name": "refund_receipt.md",
+      "file_path": "disp_0097_tv82di/refund_receipt.md",
+      "content": "# Razorpay Electronic Refund Confirmation\n\n**Refund ID:** rfnd_et83z0pp9k4yev  \n**Payment ID:** pay_zl2wtvm8f3if3g  \n**Refund Amount:** INR 1499.00 (149900 paise)  \n**Status:** PROCESSED  \n**Acquirer Reference Number (ARN):** ARN711284955856  \n**Refund Processed At:** 2024-06-18 01:52:29 UTC  \n**Settlement Route:** Original Payment Source (Bank / Card / UPI)  \n\n### Bank Traceability:\nThis transaction was routed via Razorpay Gateway to the acquiring bank. The cardholder's issuing bank can locate the credited funds using the ARN provided above.\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 96
+  }
+}

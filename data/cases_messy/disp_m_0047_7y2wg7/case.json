@@ -1,0 +1,67 @@
+{
+  "case_id": "disp_m_0047_7y2wg7",
+  "dispute": {
+    "id": "disp_m_0047_7y2wg7",
+    "entity": "dispute",
+    "payment_id": "pay_mr7g4ri0ga09",
+    "amount": 899900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "opted out of membership via email but amount deducted again",
+    "phase": "pre_arbitration",
+    "status": "open",
+    "respond_by": 1715907991,
+    "created_at": 1715157609,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_h5zj0rhy23sw",
+    "entity": "order",
+    "amount": 899900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1714001131,
+    "customer_name": "Aditya Joshi",
+    "customer_email": "aditya_joshi@outlook.in",
+    "customer_phone": "+917382952715",
+    "shipping_address": "Flat 612, Sector 7, Bengaluru, Karnataka 560103",
+    "items": [
+      {
+        "name": "Ergonomic Mesh Office Chair",
+        "quantity": 1,
+        "amount": 899900
+      }
+    ],
+    "tracking_number": "AWB-29460311",
+    "delivered_at": null
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "subscription_cancelled",
+    "available_evidence": [],
+    "winnable": false,
+    "rule_explanation": "Merchant failed to prove ongoing service usage or customer acknowledgement of renewal window.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [],
+  "metadata": {
+    "seed": 7,
+    "case_index": 46,
+    "mode": "messy"
+  }
+}

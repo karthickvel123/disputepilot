@@ -1,0 +1,88 @@
+{
+  "case_id": "disp_0053_fg6ize",
+  "dispute": {
+    "id": "disp_0053_fg6ize",
+    "entity": "dispute",
+    "payment_id": "pay_uu2roemigjgk23",
+    "amount": 299900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "INR_106",
+    "phase": "retrieval",
+    "status": "open",
+    "respond_by": 1716276535,
+    "created_at": 1715452603,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [
+        "disp_0053_fg6ize/invoice.md"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_0053_fg6ize/customer_chat.md"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_u0h8wn2t3qhfkt",
+    "entity": "order",
+    "amount": 299900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1714535938,
+    "customer_name": "Deepika Nair",
+    "customer_email": "deepika.nair@example.com",
+    "customer_phone": "+919822242388",
+    "shipping_address": "Flat 465, Sector 7, Hyderabad, Telangana 500081",
+    "items": [
+      {
+        "name": "Wireless ANC Headphones Pro",
+        "quantity": 1,
+        "amount": 299900
+      }
+    ],
+    "tracking_number": "TRK-SF-33336132",
+    "delivered_at": null
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "duplicate_charge",
+    "available_evidence": [
+      "billing_proof",
+      "customer_communication"
+    ],
+    "winnable": true,
+    "rule_explanation": "Documented separate orders and invoices confirm distinct legitimate transactions.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0053_fg6ize_1",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.md",
+      "file_path": "disp_0053_fg6ize/invoice.md",
+      "content": "# TAX INVOICE\n\n**Invoice Number:** INV-2024-01052  \n**Invoice Date:** 2024-05-01 03:58:58 UTC  \n**Order Reference:** order_u0h8wn2t3qhfkt  \n**Payment ID:** pay_uu2roemigjgk23  \n\n### Merchant Details:\n**Seller:** Apex Retail Solutions Private Limited  \n**GSTIN:** 29AABCA1234F1Z5  \n**State:** Karnataka (Code 29)  \n**Registered Address:** Outer Ring Road, Bellandur, Bengaluru, Karnataka 560103  \n\n### Customer Details:\n**Billed To:** Deepika Nair  \n**Address:** Flat 465, Sector 7, Hyderabad, Telangana 500081  \n**Email:** deepika.nair@example.com  \n**Phone:** +919822242388  \n\n### Itemized Particulars:\n| Description | HSN | Qty | Unit Price | Tax Rate | Total Amount |\n| --- | --- | --- | --- | --- | --- |\n| Wireless ANC Headphones Pro | 8471 | 1 | INR 2999.00 | 18% | INR 2999.00 |\n\n**Grand Total:** INR 2999.00 (299900 paise)  \n**Payment Method:** Razorpay Checkout (3D-Secure 2.0 Authenticated)  \n**Transaction Reference:** pay_uu2roemigjgk23  \n\n---\n*Authorized Signatory for Apex Retail Solutions Private Limited.*\n"
+    },
+    {
+      "doc_id": "doc_0053_fg6ize_2",
+      "doc_type": "customer_communication",
+      "file_name": "customer_chat.md",
+      "file_path": "disp_0053_fg6ize/customer_chat.md",
+      "content": "# Customer Support Communication Record\n\n**Support Ticket:** TIK-05052  \n**Channel:** Razorpay Merchant Web Chat  \n**Customer Name:** Deepika Nair  \n**Timestamp:** 2024-05-02 03:58:58 UTC  \n**Context Reference:** Order order_u0h8wn2t3qhfkt  \n\n---\n**[2024-05-02 03:58:58 UTC] Deepika Nair:** Hello, I am inquiring regarding my purchase order_u0h8wn2t3qhfkt.\n**[2024-05-02 03:58:58 UTC] Support Agent (Kiran):** Welcome to customer support, Deepika Nair. How may I help you today?\n**[2024-05-02 03:58:58 UTC] Deepika Nair:** I see an unauthorized charge on my statement.\n**[2024-05-02 03:58:58 UTC] Support Agent (Kiran):** The transaction was authenticated via 3DS OTP sent to your registered mobile number.\n\n---\n*Transcript archived by Merchant Customer Experience CRM.*\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 52
+  }
+}

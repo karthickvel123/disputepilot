@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5035
+**Date:** 13/04/2024
+**Customer:** Priya Sharma
+**Address:** #42, 2nd Cross, Koramangala 4th Blk, Bangalore-34
+**Item:** Monthly Cloud SaaS Subscription (Qty: 1)
+**Amount Total:** Rs. 1499.00
+**Payment Ref:** order_0gaxit9qtl0c
+*Computer generated voucher. Signature not needed.*

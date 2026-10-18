@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5051
+**Date:** 29th Apr 2024, 08:13 PM
+**Customer:** Deepika Nair
+**Address:** Nr Apollo Pharmacy, Green Glen Layout, Bellandur, Bengaluru
+**Item:** 4K HDR Computer Monitor 27in (Qty: 2)
+**Amount Total:** Rs. 35998.00
+**Payment Ref:** order_ih6f8rybjtay
+*Computer generated voucher. Signature not needed.*

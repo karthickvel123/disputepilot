@@ -1,0 +1,89 @@
+{
+  "case_id": "disp_m_0030_6kyo3i",
+  "dispute": {
+    "id": "disp_m_0030_6kyo3i",
+    "entity": "dispute",
+    "payment_id": "pay_29uk32qoiv3p",
+    "amount": 1799900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "product specification totally mismatched from website promise",
+    "phase": "pre_arbitration",
+    "status": "open",
+    "respond_by": 1714522022,
+    "created_at": 1713890535,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [
+        "disp_m_0030_6kyo3i/invoice.txt"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_m_0030_6kyo3i/chat_transcript.txt"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_6mrtjjpu7wkp",
+    "entity": "order",
+    "amount": 1799900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1712521604,
+    "customer_name": "Rohan Gupta",
+    "customer_email": "rohan_gupta@outlook.in",
+    "customer_phone": "+916436531840",
+    "shipping_address": "Flat 494, Sector 3, Mumbai, Maharashtra 400050",
+    "items": [
+      {
+        "name": "4K HDR Computer Monitor 27in",
+        "quantity": 1,
+        "amount": 1799900
+      }
+    ],
+    "tracking_number": "AWB-68374377",
+    "delivered_at": 1712762217
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "not_as_described",
+    "available_evidence": [
+      "billing_proof",
+      "customer_communication"
+    ],
+    "winnable": true,
+    "rule_explanation": "Detailed invoice confirms item specifications and policy/communication refutes defect claim.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0030_6kyo3i_doc_inv",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.txt",
+      "file_path": "disp_m_0030_6kyo3i/invoice.txt",
+      "content": "# TAX INVOICE / CASH MEMO\n**Bill No:** INV-5029\n**Date:** 7th of April around 08 PM\n**Customer:** Rohan Gupta\n**Address:** B-402, Sea Breeze Apts, Hill Rd, Bandra West, Mum-50\n**Item:** 4K HDR Computer Monitor 27in (Qty: 1)\n**Amount Total:** Rs. 17999.00\n**Payment Ref:** order_6mrtjjpu7wkp\n*Computer generated voucher. Signature not needed.*\n"
+    },
+    {
+      "doc_id": "disp_m_0030_6kyo3i_doc_chat",
+      "doc_type": "customer_communication",
+      "file_name": "chat_transcript.txt",
+      "file_path": "disp_m_0030_6kyo3i/chat_transcript.txt",
+      "content": "--- Chat Conversation Log ---\nDate: 8th Apr 2024, 08:26 PM\nUser: Rohan Gupta\nAgent: Support Team (Harish)\n\n[User]: Hello sir, package track nahi ho raha hai theek se.\n[Agent]: Checking your consignment AWB-68374377. Please note tracking updates within 24h.\n[User]: Ok sending alternate address: B-402, Sea Breeze Apts, Hill Rd, Bandra West, Mum-50. Please expedite.\n[Agent]: Noted sir. Have escalated to courier partner.\n\n--- Log Closed ---\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 29,
+    "mode": "messy"
+  }
+}

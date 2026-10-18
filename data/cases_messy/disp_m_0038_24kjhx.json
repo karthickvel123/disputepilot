@@ -1,0 +1,79 @@
+{
+  "case_id": "disp_m_0038_24kjhx",
+  "dispute": {
+    "id": "disp_m_0038_24kjhx",
+    "entity": "dispute",
+    "payment_id": "pay_vsrdvajt1pyy",
+    "amount": 1799900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "card mere paas wallet me tha fir bhi amount cut ho gaya",
+    "phase": "pre_arbitration",
+    "status": "open",
+    "respond_by": 1714990318,
+    "created_at": 1714129831,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_m_0038_24kjhx/chat_transcript.txt"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_yo2sauqr1kcs",
+    "entity": "order",
+    "amount": 1799900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1713237880,
+    "customer_name": "Neha Kulkarni",
+    "customer_email": "neha_kulkarni@yahoo.co.in",
+    "customer_phone": "+918295906469",
+    "shipping_address": "Flat 653, Sector 9, Bengaluru, Karnataka 560103",
+    "items": [
+      {
+        "name": "4K HDR Computer Monitor 27in",
+        "quantity": 1,
+        "amount": 1799900
+      }
+    ],
+    "tracking_number": "AWB-41411273",
+    "delivered_at": 1713449214
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "unauthorised",
+    "available_evidence": [
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "Missing 3DS authentication records or delivery link to cardholder.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0038_24kjhx_doc_chat",
+      "doc_type": "customer_communication",
+      "file_name": "chat_transcript.txt",
+      "file_path": "disp_m_0038_24kjhx/chat_transcript.txt",
+      "content": "--- Chat Conversation Log ---\nDate: 17th of April around 03 AM\nUser: Neha Kulkarni\nAgent: Support Team (Harish)\n\n[User]: Hello sir, package track nahi ho raha hai theek se.\n[Agent]: Checking your consignment AWB-41411273. Please note tracking updates within 24h.\n[User]: Ok sending alternate address: Nr Apollo Pharmacy, Green Glen Layout, Bellandur, Bengaluru. Please expedite.\n[Agent]: Noted sir. Have escalated to courier partner.\n\n--- Log Closed ---\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 37,
+    "mode": "messy"
+  }
+}

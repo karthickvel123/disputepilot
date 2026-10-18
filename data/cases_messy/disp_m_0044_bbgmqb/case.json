@@ -1,0 +1,79 @@
+{
+  "case_id": "disp_m_0044_bbgmqb",
+  "dispute": {
+    "id": "disp_m_0044_bbgmqb",
+    "entity": "dispute",
+    "payment_id": "pay_glcrh356rhhh",
+    "amount": 1799900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "dusra maal bhej diya color and size bilkul alag hai",
+    "phase": "chargeback",
+    "status": "open",
+    "respond_by": 1715212479,
+    "created_at": 1714404018,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_m_0044_bbgmqb/chat_transcript.txt"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_zi8ooj3zkby0",
+    "entity": "order",
+    "amount": 1799900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1713744728,
+    "customer_name": "Deepika Nair",
+    "customer_email": "deepika_nair@yahoo.co.in",
+    "customer_phone": "+917721022622",
+    "shipping_address": "Flat 444, Sector 7, Mumbai, Maharashtra 400050",
+    "items": [
+      {
+        "name": "4K HDR Computer Monitor 27in",
+        "quantity": 1,
+        "amount": 1799900
+      }
+    ],
+    "tracking_number": "AWB-85306979",
+    "delivered_at": 1714171936
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "not_as_described",
+    "available_evidence": [
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "Insufficient evidence proving product specifications and customer adherence to return terms.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0044_bbgmqb_doc_chat",
+      "doc_type": "customer_communication",
+      "file_name": "chat_transcript.txt",
+      "file_path": "disp_m_0044_bbgmqb/chat_transcript.txt",
+      "content": "--- Chat Conversation Log ---\nDate: 23/04/2024\nUser: Deepika Nair\nAgent: Support Team (Harish)\n\n[User]: Hello sir, package track nahi ho raha hai theek se.\n[Agent]: Checking your consignment AWB-85306979. Please note tracking updates within 24h.\n[User]: Ok sending alternate address: Shop No 4, Opp Station, Andheri East, Mumbai. Please expedite.\n[Agent]: Noted sir. Have escalated to courier partner.\n\n--- Log Closed ---\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 43,
+    "mode": "messy"
+  }
+}

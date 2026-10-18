@@ -1,0 +1,99 @@
+{
+  "case_id": "disp_m_0093_lob3f2",
+  "dispute": {
+    "id": "disp_m_0093_lob3f2",
+    "entity": "dispute",
+    "payment_id": "pay_tumezbkax4oe",
+    "amount": 450000,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "screen shattered on opening and accessories missing",
+    "phase": "pre_arbitration",
+    "status": "open",
+    "respond_by": 1719656368,
+    "created_at": 1719005036,
+    "evidence": {
+      "shipping_proof": [
+        "disp_m_0093_lob3f2/delivery_slip.md"
+      ],
+      "billing_proof": [
+        "disp_m_0093_lob3f2/invoice.txt"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [
+        "disp_m_0093_lob3f2/policy.txt"
+      ],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_4x65nnm4mt3r",
+    "entity": "order",
+    "amount": 450000,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1717973488,
+    "customer_name": "Deepika Nair",
+    "customer_email": "deepika_nair@yahoo.co.in",
+    "customer_phone": "+918871908664",
+    "shipping_address": "Flat 683, Sector 6, Bengaluru, Karnataka 560103",
+    "items": [
+      {
+        "name": "Mechanical Gaming Keyboard",
+        "quantity": 1,
+        "amount": 450000
+      }
+    ],
+    "tracking_number": "AWB-91542373",
+    "delivered_at": 1718154615
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "not_as_described",
+    "available_evidence": [
+      "billing_proof",
+      "shipping_proof",
+      "refund_cancellation_policy"
+    ],
+    "winnable": true,
+    "rule_explanation": "Detailed invoice confirms item specifications and policy/communication refutes defect claim.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0093_lob3f2_doc_inv",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.txt",
+      "file_path": "disp_m_0093_lob3f2/invoice.txt",
+      "content": "# TAX INVOICE / CASH MEMO\n**Bill No:** INV-5092\n**Date:** 09-Jun-24\n**Customer:** Deepika Nair\n**Address:** Plot 12, Behind Silk Board, Outer Ring Rd, BLR 103\n**Item:** Mechanical Gaming Keyboard (Qty: 1)\n**Amount Total:** Rs. 4500.00\n**Payment Ref:** order_4x65nnm4mt3r\n*Computer generated voucher. Signature not needed.*\n"
+    },
+    {
+      "doc_id": "disp_m_0093_lob3f2_doc_pod",
+      "doc_type": "shipping_proof",
+      "file_name": "delivery_slip.md",
+      "file_path": "disp_m_0093_lob3f2/delivery_slip.md",
+      "content": "# Courier Handover Sheet\nCourier: Delhivry Surface\nDocket Number: AWB-91542373\nDelivered To: Deepika Nair\nDelivery Location: Plot 12, Behind Silk Board, Outer Ring Rd, BLR 103\nHandover Time: 12.06.2024\nReceived By: Self / Family member\nOTP Status: Verified electronically on driver handset\n\nStatus: COMPLETE_DELIVERY\n"
+    },
+    {
+      "doc_id": "disp_m_0093_lob3f2_doc_pol",
+      "doc_type": "refund_cancellation_policy",
+      "file_name": "policy.txt",
+      "file_path": "disp_m_0093_lob3f2/policy.txt",
+      "content": "# Terms of Service & Returns\nReturn Window: Return request must be registered within 7 calendar days.\nCancellation: Free cancellation before consignment dispatch only.\nAuto Renewals: Subscription renewals recur monthly unless paused 48 hours prior.\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 92,
+    "mode": "messy"
+  }
+}

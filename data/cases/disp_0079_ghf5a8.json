@@ -1,0 +1,88 @@
+{
+  "case_id": "disp_0079_ghf5a8",
+  "dispute": {
+    "id": "disp_0079_ghf5a8",
+    "entity": "dispute",
+    "payment_id": "pay_6rzoid7148c6wz",
+    "amount": 399800,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "INR_103",
+    "phase": "retrieval",
+    "status": "open",
+    "respond_by": 1718388846,
+    "created_at": 1717721882,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [
+        "disp_0079_ghf5a8/invoice.md"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [
+        "disp_0079_ghf5a8/cancellation_policy.md"
+      ],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_l3h73uaanyguxq",
+    "entity": "order",
+    "amount": 399800,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1716755065,
+    "customer_name": "Vikram Singh",
+    "customer_email": "vikram.singh@mail.in",
+    "customer_phone": "+919892286747",
+    "shipping_address": "Flat 475, Sector 3, Pune, Maharashtra 411014",
+    "items": [
+      {
+        "name": "Wireless Bluetooth Earbuds",
+        "quantity": 2,
+        "amount": 199900
+      }
+    ],
+    "tracking_number": "TRK-DL-66249702",
+    "delivered_at": 1717071667
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "not_as_described",
+    "available_evidence": [
+      "billing_proof",
+      "refund_cancellation_policy"
+    ],
+    "winnable": true,
+    "rule_explanation": "Detailed invoice confirms item specifications and policy/communication refutes defect claim.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0079_ghf5a8_1",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.md",
+      "file_path": "disp_0079_ghf5a8/invoice.md",
+      "content": "# TAX INVOICE\n\n**Invoice Number:** INV-2024-01078  \n**Invoice Date:** 2024-05-26 20:24:25 UTC  \n**Order Reference:** order_l3h73uaanyguxq  \n**Payment ID:** pay_6rzoid7148c6wz  \n\n### Merchant Details:\n**Seller:** Apex Retail Solutions Private Limited  \n**GSTIN:** 29AABCA1234F1Z5  \n**State:** Karnataka (Code 29)  \n**Registered Address:** Outer Ring Road, Bellandur, Bengaluru, Karnataka 560103  \n\n### Customer Details:\n**Billed To:** Vikram Singh  \n**Address:** Flat 475, Sector 3, Pune, Maharashtra 411014  \n**Email:** vikram.singh@mail.in  \n**Phone:** +919892286747  \n\n### Itemized Particulars:\n| Description | HSN | Qty | Unit Price | Tax Rate | Total Amount |\n| --- | --- | --- | --- | --- | --- |\n| Wireless Bluetooth Earbuds | 8471 | 2 | INR 1999.00 | 18% | INR 1999.00 |\n\n**Grand Total:** INR 3998.00 (399800 paise)  \n**Payment Method:** Razorpay Checkout (3D-Secure 2.0 Authenticated)  \n**Transaction Reference:** pay_6rzoid7148c6wz  \n\n---\n*Authorized Signatory for Apex Retail Solutions Private Limited.*\n"
+    },
+    {
+      "doc_id": "doc_0079_ghf5a8_2",
+      "doc_type": "refund_cancellation_policy",
+      "file_name": "cancellation_policy.md",
+      "file_path": "disp_0079_ghf5a8/cancellation_policy.md",
+      "content": "# Apex Retail Solutions Private Limited \u2014 Terms of Sale, Cancellation & Refund Policy\n\n**Document Reference:** TOS-POL-2024-V2  \n**Effective Date:** 2024-01-01  \n**Public Policy URL:** https://apexsolutions.example.in/terms-and-policies  \n\n### 1. Order Cancellation Policy\nCustomers may cancel orders within 2 hours of payment or before the consignment is marked as 'Dispatched'. Once dispatched with our logistics partners, transit cancellation cannot be executed.\n\n### 2. Returns and Defect Reporting\n- Return requests must be lodged within 7 calendar days of verified courier delivery.\n- Goods must be returned in unblemished original packaging with intact security seals.\n- Defective or variant discrepancies must include unboxing photographs submitted within 48 hours of receipt.\n\n### 3. Subscription Cancellations\n- Subscription renewals auto-debit on the anniversary date.\n- Cancellation requests must be logged at least 48 hours prior to the next billing cycle.\n- Continued usage or access to merchant software/services after billing constitutes acceptance of the billing cycle.\n\n### 4. Dispute Escalation & Refund SLA\n- Approved refunds are routed directly through Razorpay to the originating payment instrument within 5\u20137 banking days.\n- A valid Acquirer Reference Number (ARN) will be provided upon processing.\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 78
+  }
+}

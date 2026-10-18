@@ -1,0 +1,107 @@
+{
+  "case_id": "disp_0083_pkyyoq",
+  "dispute": {
+    "id": "disp_0083_pkyyoq",
+    "entity": "dispute",
+    "payment_id": "pay_0melish32r5mub",
+    "amount": 299900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "13.6",
+    "phase": "chargeback",
+    "status": "open",
+    "respond_by": 1718702733,
+    "created_at": 1718008303,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [
+        "disp_0083_pkyyoq/invoice.md"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_0083_pkyyoq/customer_chat.md"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [
+        "disp_0083_pkyyoq/refund_receipt.md"
+      ],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_jd8blgsri2aofj",
+    "entity": "order",
+    "amount": 299900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1717089365,
+    "customer_name": "Aditya Joshi",
+    "customer_email": "aditya.joshi@mail.in",
+    "customer_phone": "+919876893545",
+    "shipping_address": "Flat 575, Sector 12, Pune, Maharashtra 411014",
+    "items": [
+      {
+        "name": "Wireless ANC Headphones Pro",
+        "quantity": 1,
+        "amount": 299900
+      }
+    ],
+    "tracking_number": "TRK-BD-29607576",
+    "delivered_at": 1717391553
+  },
+  "refund": {
+    "id": "rfnd_ze84lmqyahpy2p",
+    "entity": "refund",
+    "payment_id": "pay_0melish32r5mub",
+    "amount": 299900,
+    "currency": "INR",
+    "status": "processed",
+    "created_at": 1717434965,
+    "arn": "ARN951548148749"
+  },
+  "ground_truth": {
+    "reason_class": "refund_not_received",
+    "available_evidence": [
+      "billing_proof",
+      "customer_communication",
+      "refund_confirmation"
+    ],
+    "winnable": true,
+    "rule_explanation": "Merchant successfully processed refund with traceable bank ARN reference.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0083_pkyyoq_1",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.md",
+      "file_path": "disp_0083_pkyyoq/invoice.md",
+      "content": "# TAX INVOICE\n\n**Invoice Number:** INV-2024-01082  \n**Invoice Date:** 2024-05-30 17:16:05 UTC  \n**Order Reference:** order_jd8blgsri2aofj  \n**Payment ID:** pay_0melish32r5mub  \n\n### Merchant Details:\n**Seller:** Apex Retail Solutions Private Limited  \n**GSTIN:** 29AABCA1234F1Z5  \n**State:** Karnataka (Code 29)  \n**Registered Address:** Outer Ring Road, Bellandur, Bengaluru, Karnataka 560103  \n\n### Customer Details:\n**Billed To:** Aditya Joshi  \n**Address:** Flat 575, Sector 12, Pune, Maharashtra 411014  \n**Email:** aditya.joshi@mail.in  \n**Phone:** +919876893545  \n\n### Itemized Particulars:\n| Description | HSN | Qty | Unit Price | Tax Rate | Total Amount |\n| --- | --- | --- | --- | --- | --- |\n| Wireless ANC Headphones Pro | 8471 | 1 | INR 2999.00 | 18% | INR 2999.00 |\n\n**Grand Total:** INR 2999.00 (299900 paise)  \n**Payment Method:** Razorpay Checkout (3D-Secure 2.0 Authenticated)  \n**Transaction Reference:** pay_0melish32r5mub  \n\n---\n*Authorized Signatory for Apex Retail Solutions Private Limited.*\n"
+    },
+    {
+      "doc_id": "doc_0083_pkyyoq_2",
+      "doc_type": "customer_communication",
+      "file_name": "customer_chat.md",
+      "file_path": "disp_0083_pkyyoq/customer_chat.md",
+      "content": "# Customer Support Communication Record\n\n**Support Ticket:** TIK-05082  \n**Channel:** Razorpay Merchant Web Chat  \n**Customer Name:** Aditya Joshi  \n**Timestamp:** 2024-05-31 17:16:05 UTC  \n**Context Reference:** Order order_jd8blgsri2aofj  \n\n---\n**[2024-05-31 17:16:05 UTC] Aditya Joshi:** Hello, I am inquiring regarding my purchase order_jd8blgsri2aofj.\n**[2024-05-31 17:16:05 UTC] Support Agent (Kiran):** Welcome to customer support, Aditya Joshi. How may I help you today?\n**[2024-05-31 17:16:05 UTC] Aditya Joshi:** I see an unauthorized charge on my statement.\n**[2024-05-31 17:16:05 UTC] Support Agent (Kiran):** The transaction was authenticated via 3DS OTP sent to your registered mobile number.\n\n---\n*Transcript archived by Merchant Customer Experience CRM.*\n"
+    },
+    {
+      "doc_id": "doc_0083_pkyyoq_3",
+      "doc_type": "refund_confirmation",
+      "file_name": "refund_receipt.md",
+      "file_path": "disp_0083_pkyyoq/refund_receipt.md",
+      "content": "# Razorpay Electronic Refund Confirmation\n\n**Refund ID:** rfnd_ze84lmqyahpy2p  \n**Payment ID:** pay_0melish32r5mub  \n**Refund Amount:** INR 2999.00 (299900 paise)  \n**Status:** PROCESSED  \n**Acquirer Reference Number (ARN):** ARN951548148749  \n**Refund Processed At:** 2024-06-03 17:16:05 UTC  \n**Settlement Route:** Original Payment Source (Bank / Card / UPI)  \n\n### Bank Traceability:\nThis transaction was routed via Razorpay Gateway to the acquiring bank. The cardholder's issuing bank can locate the credited funds using the ARN provided above.\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 82
+  }
+}

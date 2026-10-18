@@ -1,0 +1,79 @@
+{
+  "case_id": "disp_m_0098_3mlntq",
+  "dispute": {
+    "id": "disp_m_0098_3mlntq",
+    "entity": "dispute",
+    "payment_id": "pay_tzu7tdufsdu6",
+    "amount": 1799800,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "want audit clarification from merchant finance department",
+    "phase": "pre_arbitration",
+    "status": "open",
+    "respond_by": 1720461424,
+    "created_at": 1719836980,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_m_0098_3mlntq/chat_transcript.txt"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_pjlp3bmuh67x",
+    "entity": "order",
+    "amount": 1799800,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1718419085,
+    "customer_name": "Arjun Patel",
+    "customer_email": "arjun_patel@outlook.in",
+    "customer_phone": "+916300878681",
+    "shipping_address": "Flat 548, Sector 8, Pune, Maharashtra 411014",
+    "items": [
+      {
+        "name": "Ergonomic Mesh Office Chair",
+        "quantity": 2,
+        "amount": 899900
+      }
+    ],
+    "tracking_number": "AWB-70347845",
+    "delivered_at": 1718673351
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "other",
+    "available_evidence": [
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "Insufficient documentation to counter general dispute inquiry.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0098_3mlntq_doc_chat",
+      "doc_type": "customer_communication",
+      "file_name": "chat_transcript.txt",
+      "file_path": "disp_m_0098_3mlntq/chat_transcript.txt",
+      "content": "--- Chat Conversation Log ---\nDate: 16th of June around 02 AM\nUser: Arjun Patel\nAgent: Support Team (Harish)\n\n[User]: Hello sir, package track nahi ho raha hai theek se.\n[Agent]: Checking your consignment AWB-70347845. Please note tracking updates within 24h.\n[User]: Ok sending alternate address: F-692, Sector 4, nr water tank, Pune 411014. Please expedite.\n[Agent]: Noted sir. Have escalated to courier partner.\n\n--- Log Closed ---\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 97,
+    "mode": "messy"
+  }
+}

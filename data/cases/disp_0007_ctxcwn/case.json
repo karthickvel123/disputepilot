@@ -1,0 +1,78 @@
+{
+  "case_id": "disp_0007_ctxcwn",
+  "dispute": {
+    "id": "disp_0007_ctxcwn",
+    "entity": "dispute",
+    "payment_id": "pay_l0blv0prkgyc4o",
+    "amount": 189900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "retrieval_request",
+    "phase": "retrieval",
+    "status": "open",
+    "respond_by": 1712821112,
+    "created_at": 1711959110,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [
+        "disp_0007_ctxcwn/invoice.md"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_m3wtoobmzvrerw",
+    "entity": "order",
+    "amount": 189900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1710555384,
+    "customer_name": "Kavita Reddy",
+    "customer_email": "kavita.reddy@mail.in",
+    "customer_phone": "+919813704481",
+    "shipping_address": "Flat 368, Sector 3, Mumbai, Maharashtra 400050",
+    "items": [
+      {
+        "name": "USB-C Fast Charging Hub 100W",
+        "quantity": 1,
+        "amount": 189900
+      }
+    ],
+    "tracking_number": "TRK-BD-90070438",
+    "delivered_at": 1710832957
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "other",
+    "available_evidence": [
+      "billing_proof"
+    ],
+    "winnable": false,
+    "rule_explanation": "Insufficient documentation to counter general dispute inquiry.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0007_ctxcwn_1",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.md",
+      "file_path": "disp_0007_ctxcwn/invoice.md",
+      "content": "# TAX INVOICE\n\n**Invoice Number:** INV-2024-01006  \n**Invoice Date:** 2024-03-16 02:16:24 UTC  \n**Order Reference:** order_m3wtoobmzvrerw  \n**Payment ID:** pay_l0blv0prkgyc4o  \n\n### Merchant Details:\n**Seller:** Apex Retail Solutions Private Limited  \n**GSTIN:** 29AABCA1234F1Z5  \n**State:** Karnataka (Code 29)  \n**Registered Address:** Outer Ring Road, Bellandur, Bengaluru, Karnataka 560103  \n\n### Customer Details:\n**Billed To:** Kavita Reddy  \n**Address:** Flat 368, Sector 3, Mumbai, Maharashtra 400050  \n**Email:** kavita.reddy@mail.in  \n**Phone:** +919813704481  \n\n### Itemized Particulars:\n| Description | HSN | Qty | Unit Price | Tax Rate | Total Amount |\n| --- | --- | --- | --- | --- | --- |\n| USB-C Fast Charging Hub 100W | 8471 | 1 | INR 1899.00 | 18% | INR 1899.00 |\n\n**Grand Total:** INR 1899.00 (189900 paise)  \n**Payment Method:** Razorpay Checkout (3D-Secure 2.0 Authenticated)  \n**Transaction Reference:** pay_l0blv0prkgyc4o  \n\n---\n*Authorized Signatory for Apex Retail Solutions Private Limited.*\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 6
+  }
+}

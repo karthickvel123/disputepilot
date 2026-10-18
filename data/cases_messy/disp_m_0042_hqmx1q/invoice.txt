@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5041
+**Date:** 19th Apr 2024, 09:11 PM
+**Customer:** Arjun Patel
+**Address:** F-692, Sector 4, nr water tank, Pune 411014
+**Item:** Mechanical Gaming Keyboard (Qty: 2)
+**Amount Total:** Rs. 9000.00
+**Payment Ref:** order_7slx1c0nrlil
+*Computer generated voucher. Signature not needed.*

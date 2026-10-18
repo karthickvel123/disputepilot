@@ -1,0 +1,89 @@
+{
+  "case_id": "disp_m_0028_kwjbbc",
+  "dispute": {
+    "id": "disp_m_0028_kwjbbc",
+    "entity": "dispute",
+    "payment_id": "pay_m8eygpnnhccf",
+    "amount": 299900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "tax and surcharge calculation weird lag rahi hai need clarity",
+    "phase": "retrieval",
+    "status": "open",
+    "respond_by": 1713871832,
+    "created_at": 1713254343,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [
+        "disp_m_0028_kwjbbc/invoice.txt"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_m_0028_kwjbbc/chat_transcript.txt"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_s4gignsuv1qb",
+    "entity": "order",
+    "amount": 299900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1712353223,
+    "customer_name": "Deepika Nair",
+    "customer_email": "deepika_nair@yahoo.co.in",
+    "customer_phone": "+919303849890",
+    "shipping_address": "Flat 395, Sector 10, Pune, Maharashtra 411014",
+    "items": [
+      {
+        "name": "Wireless ANC Headphones Pro",
+        "quantity": 1,
+        "amount": 299900
+      }
+    ],
+    "tracking_number": "AWB-68579271",
+    "delivered_at": 1712769842
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "other",
+    "available_evidence": [
+      "billing_proof",
+      "customer_communication"
+    ],
+    "winnable": true,
+    "rule_explanation": "Sufficient composite documentation of transaction legitimacy and fulfillment.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0028_kwjbbc_doc_inv",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.txt",
+      "file_path": "disp_m_0028_kwjbbc/invoice.txt",
+      "content": "# TAX INVOICE / CASH MEMO\n**Bill No:** INV-5027\n**Date:** 05-Apr-24\n**Customer:** Deepika Nair\n**Address:** Flat 301, Gera Emerald, Kharadi, Pune 411014\n**Item:** Wireless ANC Headphones Pro (Qty: 1)\n**Amount Total:** Rs. 2999.00\n**Payment Ref:** order_s4gignsuv1qb\n*Computer generated voucher. Signature not needed.*\n"
+    },
+    {
+      "doc_id": "disp_m_0028_kwjbbc_doc_chat",
+      "doc_type": "customer_communication",
+      "file_name": "chat_transcript.txt",
+      "file_path": "disp_m_0028_kwjbbc/chat_transcript.txt",
+      "content": "--- Chat Conversation Log ---\nDate: 6th of April around 09 PM\nUser: Deepika Nair\nAgent: Support Team (Harish)\n\n[User]: Hello sir, package track nahi ho raha hai theek se.\n[Agent]: Checking your consignment AWB-68579271. Please note tracking updates within 24h.\n[User]: Ok sending alternate address: Flat 301, Gera Emerald, Kharadi, Pune 411014. Please expedite.\n[Agent]: Noted sir. Have escalated to courier partner.\n\n--- Log Closed ---\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 27,
+    "mode": "messy"
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "case_id": "disp_0084_3g7n4y",
+  "dispute": {
+    "id": "disp_0084_3g7n4y",
+    "entity": "dispute",
+    "payment_id": "pay_4tmxdnhp1uakrh",
+    "amount": 149900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "retrieval_request",
+    "phase": "pre_arbitration",
+    "status": "open",
+    "respond_by": 1719190950,
+    "created_at": 1718545802,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_0084_3g7n4y/customer_chat.md"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_zpac4jxfpk5fvd",
+    "entity": "order",
+    "amount": 149900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1717178717,
+    "customer_name": "Manish Tiwari",
+    "customer_email": "manish.tiwari@webmail.in",
+    "customer_phone": "+919824413864",
+    "shipping_address": "Flat 600, Sector 4, New Delhi, Delhi 110001",
+    "items": [
+      {
+        "name": "Monthly Cloud SaaS Subscription",
+        "quantity": 1,
+        "amount": 149900
+      }
+    ],
+    "tracking_number": "TRK-DT-35899364",
+    "delivered_at": 1717444713
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "other",
+    "available_evidence": [
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "Insufficient documentation to counter general dispute inquiry.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0084_3g7n4y_1",
+      "doc_type": "customer_communication",
+      "file_name": "customer_chat.md",
+      "file_path": "disp_0084_3g7n4y/customer_chat.md",
+      "content": "# Customer Support Communication Record\n\n**Support Ticket:** TIK-05083  \n**Channel:** Razorpay Merchant Web Chat  \n**Customer Name:** Manish Tiwari  \n**Timestamp:** 2024-06-01 18:05:17 UTC  \n**Context Reference:** Order order_zpac4jxfpk5fvd  \n\n---\n**[2024-06-01 18:05:17 UTC] Manish Tiwari:** Hello, I am inquiring regarding my purchase order_zpac4jxfpk5fvd.\n**[2024-06-01 18:05:17 UTC] Support Agent (Kiran):** Welcome to customer support, Manish Tiwari. How may I help you today?\n**[2024-06-01 18:05:17 UTC] Manish Tiwari:** I see an unauthorized charge on my statement.\n**[2024-06-01 18:05:17 UTC] Support Agent (Kiran):** The transaction was authenticated via 3DS OTP sent to your registered mobile number.\n\n---\n*Transcript archived by Merchant Customer Experience CRM.*\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 83
+  }
+}

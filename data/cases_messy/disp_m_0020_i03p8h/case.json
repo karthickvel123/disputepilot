@@ -1,0 +1,79 @@
+{
+  "case_id": "disp_m_0020_i03p8h",
+  "dispute": {
+    "id": "disp_m_0020_i03p8h",
+    "entity": "dispute",
+    "payment_id": "pay_qm2plppjsmue",
+    "amount": 900000,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "merchant promised compensation but ghosted on emails",
+    "phase": "pre_arbitration",
+    "status": "open",
+    "respond_by": 1713579717,
+    "created_at": 1712735219,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_m_0020_i03p8h/chat_transcript.txt"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_zqp67og3cga4",
+    "entity": "order",
+    "amount": 900000,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1711660346,
+    "customer_name": "Deepika Nair",
+    "customer_email": "deepika_nair@gmail.com",
+    "customer_phone": "+919766180312",
+    "shipping_address": "Flat 339, Sector 2, New Delhi, Delhi 110001",
+    "items": [
+      {
+        "name": "Mechanical Gaming Keyboard",
+        "quantity": 2,
+        "amount": 450000
+      }
+    ],
+    "tracking_number": "AWB-20081977",
+    "delivered_at": 1712053492
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "refund_not_received",
+    "available_evidence": [
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "No verified bank refund record found for customer's transaction.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0020_i03p8h_doc_chat",
+      "doc_type": "customer_communication",
+      "file_name": "chat_transcript.txt",
+      "file_path": "disp_m_0020_i03p8h/chat_transcript.txt",
+      "content": "--- Chat Conversation Log ---\nDate: 29th Mar 2024, 09:12 PM\nUser: Deepika Nair\nAgent: Support Team (Harish)\n\n[User]: Hello sir, package track nahi ho raha hai theek se.\n[Agent]: Checking your consignment AWB-20081977. Please note tracking updates within 24h.\n[User]: Ok sending alternate address: Flat 104, Sec-3, Nr Metro Pillar 240, Dwarka, ND-75. Please expedite.\n[Agent]: Noted sir. Have escalated to courier partner.\n\n--- Log Closed ---\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 19,
+    "mode": "messy"
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "case_id": "disp_m_0048_yofvup",
+  "dispute": {
+    "id": "disp_m_0048_yofvup",
+    "entity": "dispute",
+    "payment_id": "pay_q5t8t81771y3",
+    "amount": 1799800,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "paisa wapas kab karoge return approve hone ke baad bhi",
+    "phase": "pre_arbitration",
+    "status": "open",
+    "respond_by": 1715953154,
+    "created_at": 1715307927,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [
+        "disp_m_0048_yofvup/invoice.txt"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_m_0048_yofvup/chat_transcript.txt"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_wcw2ae7og0x6",
+    "entity": "order",
+    "amount": 1799800,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1714101187,
+    "customer_name": "Ananya Rao",
+    "customer_email": "ananya_rao@yahoo.co.in",
+    "customer_phone": "+918090416698",
+    "shipping_address": "Flat 551, Sector 10, Pune, Maharashtra 411014",
+    "items": [
+      {
+        "name": "Ergonomic Mesh Office Chair",
+        "quantity": 2,
+        "amount": 899900
+      }
+    ],
+    "tracking_number": "AWB-32913962",
+    "delivered_at": 1714517364
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "refund_not_received",
+    "available_evidence": [
+      "billing_proof",
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "No verified bank refund record found for customer's transaction.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0048_yofvup_doc_inv",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.txt",
+      "file_path": "disp_m_0048_yofvup/invoice.txt",
+      "content": "# TAX INVOICE / CASH MEMO\n**Bill No:** INV-5047\n**Date:** 26-Apr-24\n**Customer:** Ananya Rao\n**Address:** Flat 301, Gera Emerald, Kharadi, Pune 411014\n**Item:** Ergonomic Mesh Office Chair (Qty: 2)\n**Amount Total:** Rs. 17998.00\n**Payment Ref:** order_wcw2ae7og0x6\n*Computer generated voucher. Signature not needed.*\n"
+    },
+    {
+      "doc_id": "disp_m_0048_yofvup_doc_chat",
+      "doc_type": "customer_communication",
+      "file_name": "chat_transcript.txt",
+      "file_path": "disp_m_0048_yofvup/chat_transcript.txt",
+      "content": "--- Chat Conversation Log ---\nDate: 27th of April around 03 AM\nUser: Ananya Rao\nAgent: Support Team (Harish)\n\n[User]: Hello sir, package track nahi ho raha hai theek se.\n[Agent]: Checking your consignment AWB-32913962. Please note tracking updates within 24h.\n[User]: Ok sending alternate address: Flat 301, Gera Emerald, Kharadi, Pune 411014. Please expedite.\n[Agent]: Noted sir. Have escalated to courier partner.\n\n--- Log Closed ---\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 47,
+    "mode": "messy"
+  }
+}

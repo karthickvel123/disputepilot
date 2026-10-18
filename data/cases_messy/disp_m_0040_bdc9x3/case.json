@@ -1,0 +1,89 @@
+{
+  "case_id": "disp_m_0040_bdc9x3",
+  "dispute": {
+    "id": "disp_m_0040_bdc9x3",
+    "entity": "dispute",
+    "payment_id": "pay_uof6zl2kxpol",
+    "amount": 3599800,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "account delete kar diya tha last month still charged renewal",
+    "phase": "pre_arbitration",
+    "status": "open",
+    "respond_by": 1714855929,
+    "created_at": 1714004877,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [
+        "disp_m_0040_bdc9x3/invoice.txt"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_m_0040_bdc9x3/chat_transcript.txt"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_cqwd9bdq64dg",
+    "entity": "order",
+    "amount": 3599800,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1713394019,
+    "customer_name": "Ananya Rao",
+    "customer_email": "ananya_rao@outlook.in",
+    "customer_phone": "+919213594874",
+    "shipping_address": "Flat 704, Sector 10, New Delhi, Delhi 110001",
+    "items": [
+      {
+        "name": "4K HDR Computer Monitor 27in",
+        "quantity": 2,
+        "amount": 1799900
+      }
+    ],
+    "tracking_number": "AWB-73179690",
+    "delivered_at": null
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "subscription_cancelled",
+    "available_evidence": [
+      "billing_proof",
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "Merchant failed to prove ongoing service usage or customer acknowledgement of renewal window.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0040_bdc9x3_doc_inv",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.txt",
+      "file_path": "disp_m_0040_bdc9x3/invoice.txt",
+      "content": "# TAX INVOICE / CASH MEMO\n**Bill No:** INV-5039\n**Date:** 17th of April around 10 PM\n**Customer:** Ananya Rao\n**Address:** 12A Barakhamba Road, Connaught Place, New Delhi 110001\n**Item:** 4K HDR Computer Monitor 27in (Qty: 2)\n**Amount Total:** Rs. 35998.00\n**Payment Ref:** order_cqwd9bdq64dg\n*Computer generated voucher. Signature not needed.*\n"
+    },
+    {
+      "doc_id": "disp_m_0040_bdc9x3_doc_chat",
+      "doc_type": "customer_communication",
+      "file_name": "chat_transcript.txt",
+      "file_path": "disp_m_0040_bdc9x3/chat_transcript.txt",
+      "content": "--- Chat Conversation Log ---\nDate: 18th Apr 2024, 10:46 PM\nUser: Ananya Rao\nAgent: Support Team (Harish)\n\n[User]: Hello sir, package track nahi ho raha hai theek se.\n[Agent]: Checking your consignment AWB-73179690. Please note tracking updates within 24h.\n[User]: Ok sending alternate address: 12A Barakhamba Road, Connaught Place, New Delhi 110001. Please expedite.\n[Agent]: Noted sir. Have escalated to courier partner.\n\n--- Log Closed ---\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 39,
+    "mode": "messy"
+  }
+}

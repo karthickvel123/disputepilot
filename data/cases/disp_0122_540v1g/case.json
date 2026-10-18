@@ -1,0 +1,78 @@
+{
+  "case_id": "disp_0122_540v1g",
+  "dispute": {
+    "id": "disp_0122_540v1g",
+    "entity": "dispute",
+    "payment_id": "pay_3bdl2iazmtufhk",
+    "amount": 349900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "4837",
+    "phase": "chargeback",
+    "status": "open",
+    "respond_by": 1722075040,
+    "created_at": 1721367088,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_0122_540v1g/customer_chat.md"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_p7i0u24iqlusmf",
+    "entity": "order",
+    "amount": 349900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1720485164,
+    "customer_name": "Aditya Joshi",
+    "customer_email": "aditya.joshi@webmail.in",
+    "customer_phone": "+919840130153",
+    "shipping_address": "Flat 124, Sector 15, Bengaluru, Karnataka 560103",
+    "items": [
+      {
+        "name": "Smart Fitness Watch v3",
+        "quantity": 1,
+        "amount": 349900
+      }
+    ],
+    "tracking_number": "TRK-DT-36610839",
+    "delivered_at": 1720754328
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "unauthorised",
+    "available_evidence": [
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "Missing 3DS authentication records or delivery link to cardholder.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0122_540v1g_1",
+      "doc_type": "customer_communication",
+      "file_name": "customer_chat.md",
+      "file_path": "disp_0122_540v1g/customer_chat.md",
+      "content": "# Customer Support Communication Record\n\n**Support Ticket:** TIK-05121  \n**Channel:** Razorpay Merchant Web Chat  \n**Customer Name:** Aditya Joshi  \n**Timestamp:** 2024-07-10 00:32:44 UTC  \n**Context Reference:** Order order_p7i0u24iqlusmf  \n\n---\n**[2024-07-10 00:32:44 UTC] Aditya Joshi:** Hello, I am inquiring regarding my purchase order_p7i0u24iqlusmf.\n**[2024-07-10 00:32:44 UTC] Support Agent (Kiran):** Welcome to customer support, Aditya Joshi. How may I help you today?\n**[2024-07-10 00:32:44 UTC] Aditya Joshi:** I see an unauthorized charge on my statement.\n**[2024-07-10 00:32:44 UTC] Support Agent (Kiran):** The transaction was authenticated via 3DS OTP sent to your registered mobile number.\n\n---\n*Transcript archived by Merchant Customer Experience CRM.*\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 121
+  }
+}

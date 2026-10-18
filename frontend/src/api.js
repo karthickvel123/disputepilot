@@ -1,0 +1,225 @@
+// Frontend API Client for DisputePilot REST API
+
+const API_BASE = '/api/v1';
+
+let currentCsrfToken = '';
+
+export function setCsrfToken(token) {
+  currentCsrfToken = token || '';
+}
+
+export function getCsrfToken() {
+  return currentCsrfToken;
+}
+
+async function request(endpoint, options = {}) {
+  const url = `${API_BASE}${endpoint}`;
+  const headers = {
+    'Accept': 'application/json',
+    ...(options.headers || {}),
+  };
+
+  if (currentCsrfToken && !headers['x-csrf-token']) {
+    headers['x-csrf-token'] = currentCsrfToken;
+  }
+
+  const config = {
+    ...options,
+    headers,
+    credentials: 'include', // sends and receives cookies
+  };
+
+  const response = await fetch(url, config);
+
+  if (response.status === 401 && endpoint !== '/auth/login' && endpoint !== '/auth/me') {
+    window.dispatchEvent(new CustomEvent('auth:unauthorized'));
+  }
+
+  const contentType = response.headers.get('content-type');
+  let data = null;
+  if (contentType && contentType.includes('application/json')) {
+    data = await response.json();
+  } else {
+    data = { detail: await response.text() };
+  }
+
+  if (!response.ok) {
+    const errorMsg = data?.detail || data?.message || `HTTP ${response.status} Error`;
+    const err = new Error(errorMsg);
+    err.status = response.status;
+    err.data = data;
+    throw err;
+  }
+
+  return data;
+}
+
+// ---------------------------------------------------------------------------
+// Authentication
+// ---------------------------------------------------------------------------
+
+export async function login(username, password) {
+  const data = await request('/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password }),
+  });
+  if (data?.csrf_token) {
+    setCsrfToken(data.csrf_token);
+  }
+  return data;
+}
+
+export async function logout() {
+  const data = await request('/auth/logout', { method: 'POST' });
+  setCsrfToken('');
+  return data;
+}
+
+export async function getMe() {
+  const data = await request('/auth/me');
+  if (data?.csrf_token) {
+    setCsrfToken(data.csrf_token);
+  }
+  return data;
+}
+
+// ---------------------------------------------------------------------------
+// Dashboard
+// ---------------------------------------------------------------------------
+
+export async function getDashboardMetrics() {
+  return request('/dashboard/metrics');
+}
+
+// ---------------------------------------------------------------------------
+// Disputes
+// ---------------------------------------------------------------------------
+
+export async function listDisputes({
+  page = 1,
+  per_page = 25,
+  status_filter = 'all',
+  reason_filter = 'all',
+  search = '',
+} = {}) {
+  const params = new URLSearchParams({
+    page: String(page),
+    per_page: String(per_page),
+    ...(status_filter && status_filter !== 'all' ? { status_filter } : {}),
+    ...(reason_filter && reason_filter !== 'all' ? { reason_filter } : {}),
+    ...(search ? { search } : {}),
+  });
+  return request(`/disputes?${params.toString()}`);
+}
+
+export async function getDispute(caseId) {
+  return request(`/disputes/${encodeURIComponent(caseId)}`);
+}
+
+export async function analyzeDispute(caseId) {
+  return request(`/disputes/${encodeURIComponent(caseId)}/analyze`, {
+    method: 'POST',
+  });
+}
+
+export async function saveDraft(caseId, summary) {
+  return request(`/disputes/${encodeURIComponent(caseId)}/draft`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ summary, csrf_token: currentCsrfToken }),
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Approval & Submission
+// ---------------------------------------------------------------------------
+
+export async function requestContestApproval(caseId) {
+  return request(`/disputes/${encodeURIComponent(caseId)}/request-approval`, {
+    method: 'POST',
+  });
+}
+
+export async function submitContest(caseId, approvalToken, payloadHash) {
+  return request(`/disputes/${encodeURIComponent(caseId)}/submit`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      approval_token: approvalToken,
+      payload_hash: payloadHash,
+      csrf_token: currentCsrfToken,
+    }),
+  });
+}
+
+export async function requestAccept(caseId, typedAmount) {
+  return request(`/disputes/${encodeURIComponent(caseId)}/request-accept`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      typed_amount: String(typedAmount),
+      csrf_token: currentCsrfToken,
+    }),
+  });
+}
+
+export async function acceptDispute(caseId, approvalToken, payloadHash) {
+  return request(`/disputes/${encodeURIComponent(caseId)}/accept`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      approval_token: approvalToken,
+      payload_hash: payloadHash,
+      csrf_token: currentCsrfToken,
+    }),
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Evidence Upload
+// ---------------------------------------------------------------------------
+
+export async function uploadEvidence(caseId, { file, category, attestNoCardData, excerpt }) {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('category', category);
+  formData.append('attest_no_card_data', attestNoCardData ? 'yes' : 'no');
+  if (excerpt) {
+    formData.append('excerpt', excerpt);
+  }
+  formData.append('csrf_token', currentCsrfToken);
+
+  return request(`/disputes/${encodeURIComponent(caseId)}/evidence`, {
+    method: 'POST',
+    body: formData,
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Audit Ledger
+// ---------------------------------------------------------------------------
+
+export async function getCaseAudit(caseId) {
+  return request(`/disputes/${encodeURIComponent(caseId)}/audit`);
+}
+
+export async function getGlobalAudit(page = 1, perPage = 50) {
+  return request(`/audit?page=${page}&per_page=${perPage}`);
+}
+
+export async function verifyAuditLedger() {
+  return request('/audit/verify');
+}
+
+// ---------------------------------------------------------------------------
+// System & Settings
+// ---------------------------------------------------------------------------
+
+export async function getSettings() {
+  return request('/settings');
+}
+
+export async function getHealth() {
+  return request('/health');
+}

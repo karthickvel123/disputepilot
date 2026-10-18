@@ -1,0 +1,79 @@
+{
+  "case_id": "disp_m_0032_8nkm7w",
+  "dispute": {
+    "id": "disp_m_0032_8nkm7w",
+    "entity": "dispute",
+    "payment_id": "pay_bx7v03nlz6hw",
+    "amount": 3599800,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "ek hi baar buy kiya par bank SMS do alag alag aaye",
+    "phase": "retrieval",
+    "status": "open",
+    "respond_by": 1714788778,
+    "created_at": 1714078996,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_m_0032_8nkm7w/chat_transcript.txt"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_dqryzdae00wq",
+    "entity": "order",
+    "amount": 3599800,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1712696708,
+    "customer_name": "Ananya Rao",
+    "customer_email": "ananya_rao@yahoo.co.in",
+    "customer_phone": "+917984775465",
+    "shipping_address": "Flat 269, Sector 3, Mumbai, Maharashtra 400050",
+    "items": [
+      {
+        "name": "4K HDR Computer Monitor 27in",
+        "quantity": 2,
+        "amount": 1799900
+      }
+    ],
+    "tracking_number": "AWB-72969404",
+    "delivered_at": null
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "duplicate_charge",
+    "available_evidence": [
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "Duplicate transaction unrefunded without proof of separate legitimate fulfillment.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0032_8nkm7w_doc_chat",
+      "doc_type": "customer_communication",
+      "file_name": "chat_transcript.txt",
+      "file_path": "disp_m_0032_8nkm7w/chat_transcript.txt",
+      "content": "--- Chat Conversation Log ---\nDate: 10.04.2024\nUser: Ananya Rao\nAgent: Support Team (Harish)\n\n[User]: Hello sir, package track nahi ho raha hai theek se.\n[Agent]: Checking your consignment AWB-72969404. Please note tracking updates within 24h.\n[User]: Ok sending alternate address: B-402, Sea Breeze Apts, Hill Rd, Bandra West, Mum-50. Please expedite.\n[Agent]: Noted sir. Have escalated to courier partner.\n\n--- Log Closed ---\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 31,
+    "mode": "messy"
+  }
+}

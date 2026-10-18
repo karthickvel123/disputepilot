@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}DisputePilot{% endblock %} - Razorpay Chargeback Defense</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header>
+    <a href="/" class="brand">
+      <span>DisputePilot</span>
+      <span class="brand-badge">Defense Console</span>
+    </a>
+    <nav>
+      <a href="/">Worklist</a>
+      <a href="/app" style="color: #818cf8; font-weight: 600; margin-left: 0.5rem; background: rgba(99, 102, 241, 0.15); padding: 0.2rem 0.6rem; border-radius: 4px; border: 1px solid rgba(99, 102, 241, 0.3);">✨ Modern React Console</a>
+      <a href="/webhook/razorpay/health" target="_blank">Webhook Status</a>
+      {% if reviewer_name %}
+      <span class="text-muted" style="font-size: 0.85rem; margin-left: 0.75rem;">Reviewer: <strong>{{ reviewer_name }}</strong></span>
+      <form action="/logout" method="post" style="display: inline; margin-left: 0.5rem;">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token or '' }}">
+        <button type="submit" class="btn-link" style="font-size: 0.85rem;">Logout</button>
+      </form>
+      {% else %}
+      <a href="/login" style="margin-left: 0.5rem; font-size: 0.85rem;">Login</a>
+      {% endif %}
+    </nav>
+  </header>
+
+  <main class="container">
+    {% if data_mode == "sim" %}
+    <div class="alert alert-danger"><strong>SIMULATED DATA.</strong> This console is reading synthetic fixtures, not Razorpay. Nothing here reflects a real dispute.</div>
+    {% elif data_mode == "live" %}
+    <div class="alert alert-info">Connected to Razorpay <strong>{{ key_mode }}</strong> mode.{% if not has_llm %} AI reading and drafting are off (set LLM_API_KEY); reason classification is rule-based and drafts use verified facts only.{% endif %}</div>
+    {% endif %}
+    {% if error %}
+    <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
+    {% if success %}
+    <div class="alert alert-info">{{ success }}</div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

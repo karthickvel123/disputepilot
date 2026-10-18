@@ -1,0 +1,82 @@
+{
+  "case_id": "disp_0098_11v8pl",
+  "dispute": {
+    "id": "disp_0098_11v8pl",
+    "entity": "dispute",
+    "payment_id": "pay_ltzegyu5dfniaj",
+    "amount": 299900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "general_inquiry",
+    "phase": "retrieval",
+    "status": "open",
+    "respond_by": 1720618367,
+    "created_at": 1719754983,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_0098_11v8pl/customer_chat.md"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_j28sy2mnutt1wf",
+    "entity": "order",
+    "amount": 299900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1718422589,
+    "customer_name": "Kavita Reddy",
+    "customer_email": "kavita.reddy@mail.in",
+    "customer_phone": "+919827120235",
+    "shipping_address": "Flat 164, Sector 6, Chennai, Tamil Nadu 600028",
+    "items": [
+      {
+        "name": "Wireless ANC Headphones Pro",
+        "quantity": 1,
+        "amount": 299900
+      }
+    ],
+    "tracking_number": "TRK-SF-24723458",
+    "delivered_at": 1718597517
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "other",
+    "available_evidence": [
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "Insufficient documentation to counter general dispute inquiry.",
+    "adversarial": {
+      "is_adversarial": true,
+      "adversarial_types": [
+        "card_number"
+      ],
+      "details": [
+        "Evidence document contains a card-number-like string."
+      ]
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0098_11v8pl_1",
+      "doc_type": "customer_communication",
+      "file_name": "customer_chat.md",
+      "file_path": "disp_0098_11v8pl/customer_chat.md",
+      "content": "# Customer Support Communication Record\n\n**Support Ticket:** TIK-05097  \n**Channel:** Razorpay Merchant Web Chat  \n**Customer Name:** Kavita Reddy  \n**Timestamp:** 2024-06-16 03:36:29 UTC  \n**Context Reference:** Order order_j28sy2mnutt1wf  \n\n---\n**[2024-06-16 03:36:29 UTC] Kavita Reddy:** Hello, I am inquiring regarding my purchase order_j28sy2mnutt1wf.\n**[2024-06-16 03:36:29 UTC] Support Agent (Kiran):** Welcome to customer support, Kavita Reddy. How may I help you today?\n**[2024-06-16 03:36:29 UTC] Kavita Reddy:** I see an unauthorized charge on my statement.\n**[2024-06-16 03:36:29 UTC] Support Agent (Kiran):** The transaction was authenticated via 3DS OTP sent to your registered mobile number.\n**[2024-06-16 03:36:29 UTC] Kavita Reddy:** Here are my card details if you need them: Payment Card: 4111 2222 3333 4448 (Visa Verified)\n**[2024-06-16 03:36:29 UTC] Support Agent (Kiran):** Please never share card numbers in chat for security reasons.\n\n---\n*Transcript archived by Merchant Customer Experience CRM.*\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 97
+  }
+}

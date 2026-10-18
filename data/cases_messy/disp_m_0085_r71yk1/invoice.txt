@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5084
+**Date:** 2nd of June around 01 AM
+**Customer:** Neha Kulkarni
+**Address:** Nr Apollo Pharmacy, Green Glen Layout, Bellandur, Bengaluru
+**Item:** Monthly Cloud SaaS Subscription (Qty: 2)
+**Amount Total:** Rs. 2998.00
+**Payment Ref:** order_35napnwyggim
+*Computer generated voucher. Signature not needed.*

@@ -1,0 +1,99 @@
+{
+  "case_id": "disp_m_0021_6l2qag",
+  "dispute": {
+    "id": "disp_m_0021_6l2qag",
+    "entity": "dispute",
+    "payment_id": "pay_cnqcnau0xlte",
+    "amount": 299800,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "bank branch manager ne bola dispute dalo investigation ke liye",
+    "phase": "pre_arbitration",
+    "status": "open",
+    "respond_by": 1713752196,
+    "created_at": 1713076312,
+    "evidence": {
+      "shipping_proof": [
+        "disp_m_0021_6l2qag/delivery_slip.md"
+      ],
+      "billing_proof": [
+        "disp_m_0021_6l2qag/invoice.txt"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [
+        "disp_m_0021_6l2qag/policy.txt"
+      ],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_nc594e0gz9j8",
+    "entity": "order",
+    "amount": 299800,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1711742327,
+    "customer_name": "Aditya Joshi",
+    "customer_email": "aditya_joshi@yahoo.co.in",
+    "customer_phone": "+918868226158",
+    "shipping_address": "Flat 528, Sector 1, New Delhi, Delhi 110001",
+    "items": [
+      {
+        "name": "Monthly Cloud SaaS Subscription",
+        "quantity": 2,
+        "amount": 149900
+      }
+    ],
+    "tracking_number": "AWB-65576880",
+    "delivered_at": 1712019400
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "other",
+    "available_evidence": [
+      "billing_proof",
+      "shipping_proof",
+      "refund_cancellation_policy"
+    ],
+    "winnable": true,
+    "rule_explanation": "Sufficient composite documentation of transaction legitimacy and fulfillment.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0021_6l2qag_doc_inv",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.txt",
+      "file_path": "disp_m_0021_6l2qag/invoice.txt",
+      "content": "# TAX INVOICE / CASH MEMO\n**Bill No:** INV-5020\n**Date:** 29/03/2024\n**Customer:** Aditya Joshi\n**Address:** 12A Barakhamba Road, Connaught Place, New Delhi 110001\n**Item:** Monthly Cloud SaaS Subscription (Qty: 2)\n**Amount Total:** Rs. 2998.00\n**Payment Ref:** order_nc594e0gz9j8\n*Computer generated voucher. Signature not needed.*\n"
+    },
+    {
+      "doc_id": "disp_m_0021_6l2qag_doc_pod",
+      "doc_type": "shipping_proof",
+      "file_name": "delivery_slip.md",
+      "file_path": "disp_m_0021_6l2qag/delivery_slip.md",
+      "content": "# Courier Handover Sheet\nCourier: Shadofax Logistics\nDocket Number: AWB-65576880\nDelivered To: Aditya Joshi\nDelivery Location: 12A Barakhamba Road, Connaught Place, New Delhi 110001\nHandover Time: 2nd Apr 2024, 12:56 AM\nReceived By: Self / Family member\nOTP Status: Verified electronically on driver handset\n\nStatus: COMPLETE_DELIVERY\n"
+    },
+    {
+      "doc_id": "disp_m_0021_6l2qag_doc_pol",
+      "doc_type": "refund_cancellation_policy",
+      "file_name": "policy.txt",
+      "file_path": "disp_m_0021_6l2qag/policy.txt",
+      "content": "# Terms of Service & Returns\nReturn Window: Return request must be registered within 7 calendar days.\nCancellation: Free cancellation before consignment dispatch only.\nAuto Renewals: Subscription renewals recur monthly unless paused 48 hours prior.\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 20,
+    "mode": "messy"
+  }
+}

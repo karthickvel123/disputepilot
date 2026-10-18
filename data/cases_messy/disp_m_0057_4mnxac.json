@@ -1,0 +1,99 @@
+{
+  "case_id": "disp_m_0057_4mnxac",
+  "dispute": {
+    "id": "disp_m_0057_4mnxac",
+    "entity": "dispute",
+    "payment_id": "pay_60ve2alkysa2",
+    "amount": 149900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "courier wala bola deliver ho gaya par box gayab hai",
+    "phase": "retrieval",
+    "status": "open",
+    "respond_by": 1716851748,
+    "created_at": 1716160037,
+    "evidence": {
+      "shipping_proof": [
+        "disp_m_0057_4mnxac/delivery_slip.md"
+      ],
+      "billing_proof": [
+        "disp_m_0057_4mnxac/invoice.txt"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [
+        "disp_m_0057_4mnxac/policy.txt"
+      ],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_wm4f8u7318jz",
+    "entity": "order",
+    "amount": 149900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1714845932,
+    "customer_name": "Vikram Singh",
+    "customer_email": "",
+    "customer_phone": "+918452964970",
+    "shipping_address": "Flat 478, Sector 8, Pune, Maharashtra 411014",
+    "items": [
+      {
+        "name": "Monthly Cloud SaaS Subscription",
+        "quantity": 1,
+        "amount": 149900
+      }
+    ],
+    "tracking_number": "AWB-56091547",
+    "delivered_at": 1715208201
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "item_not_received",
+    "available_evidence": [
+      "billing_proof",
+      "shipping_proof",
+      "refund_cancellation_policy"
+    ],
+    "winnable": true,
+    "rule_explanation": "Valid courier proof of delivery with OTP/signature confirmed prior to dispute.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0057_4mnxac_doc_inv",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.txt",
+      "file_path": "disp_m_0057_4mnxac/invoice.txt",
+      "content": "# TAX INVOICE / CASH MEMO\n**Bill No:** INV-5056\n**Date:** 4th May 2024, 06:05 PM\n**Customer:** Vikram Singh\n**Address:** Flat 301, Gera Emerald, Kharadi, Pune 411014\n**Item:** Monthly Cloud SaaS Subscription (Qty: 1)\n**Amount Total:** Rs. 1499.00\n**Payment Ref:** order_wm4f8u7318jz\n*Computer generated voucher. Signature not needed.*\n"
+    },
+    {
+      "doc_id": "disp_m_0057_4mnxac_doc_pod",
+      "doc_type": "shipping_proof",
+      "file_name": "delivery_slip.md",
+      "file_path": "disp_m_0057_4mnxac/delivery_slip.md",
+      "content": "# Courier Handover Sheet\nCourier: Shadofax Logistics\nDocket Number: AWB-56091547\nDelivered To: Vikram Singh\nDelivery Location: Flat 301, Gera Emerald, Kharadi, Pune 411014\nHandover Time: 08-May-24\nReceived By: Self / Family member\nOTP Status: Verified electronically on driver handset\n\nStatus: COMPLETE_DELIVERY\n"
+    },
+    {
+      "doc_id": "disp_m_0057_4mnxac_doc_pol",
+      "doc_type": "refund_cancellation_policy",
+      "file_name": "policy.txt",
+      "file_path": "disp_m_0057_4mnxac/policy.txt",
+      "content": "# Terms of Service & Returns\nReturn Window: Return request must be registered within 7 calendar days.\nCancellation: Free cancellation before consignment dispatch only.\nAuto Renewals: Subscription renewals recur monthly unless paused 48 hours prior.\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 56,
+    "mode": "messy"
+  }
+}

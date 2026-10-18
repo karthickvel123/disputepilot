@@ -1,0 +1,112 @@
+{
+  "case_id": "disp_m_0069_xw77t2",
+  "dispute": {
+    "id": "disp_m_0069_xw77t2",
+    "entity": "dispute",
+    "payment_id": "pay_24l7jaix57px",
+    "amount": 349900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "ARN number fake nikla bank bola koi refund nahi aaya",
+    "phase": "pre_arbitration",
+    "status": "open",
+    "respond_by": 1717530856,
+    "created_at": 1716859047,
+    "evidence": {
+      "shipping_proof": [
+        "disp_m_0069_xw77t2/delivery_slip.md"
+      ],
+      "billing_proof": [
+        "disp_m_0069_xw77t2/invoice.txt"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [
+        "disp_m_0069_xw77t2/policy.txt"
+      ],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_7vyqb9maqdlt",
+    "entity": "order",
+    "amount": 349900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1715914494,
+    "customer_name": "Ananya Rao",
+    "customer_email": "ananya_rao@yahoo.co.in",
+    "customer_phone": "+919582609762",
+    "shipping_address": "Flat 194, Sector 9, Pune, Maharashtra 411014",
+    "items": [
+      {
+        "name": "Smart Fitness Watch v3",
+        "quantity": 1,
+        "amount": 349900
+      }
+    ],
+    "tracking_number": "AWB-27220196",
+    "delivered_at": 1717031847
+  },
+  "refund": {
+    "id": "rfnd_1sxc2yxcs01q",
+    "entity": "refund",
+    "payment_id": "pay_24l7jaix57px",
+    "amount": 349900,
+    "currency": "INR",
+    "status": "processed",
+    "created_at": 1716173694,
+    "arn": "ARN363506347586"
+  },
+  "ground_truth": {
+    "reason_class": "refund_not_received",
+    "available_evidence": [
+      "billing_proof",
+      "shipping_proof",
+      "refund_cancellation_policy"
+    ],
+    "winnable": false,
+    "rule_explanation": "No verified bank refund record found for customer's transaction.",
+    "adversarial": {
+      "is_adversarial": true,
+      "adversarial_types": [
+        "delivery_after_dispute"
+      ],
+      "details": [
+        "POD date is recorded after dispute creation."
+      ]
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0069_xw77t2_doc_inv",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.txt",
+      "file_path": "disp_m_0069_xw77t2/invoice.txt",
+      "content": "# TAX INVOICE / CASH MEMO\n**Bill No:** INV-5068\n**Date:** 17.05.2024\n**Customer:** Ananya Rao\n**Address:** Flat 301, Gera Emerald, Kharadi, Pune 411014\n**Item:** Smart Fitness Watch v3 (Qty: 1)\n**Amount Total:** Rs. 3499.00\n**Payment Ref:** order_7vyqb9maqdlt\n*Computer generated voucher. Signature not needed.*\n"
+    },
+    {
+      "doc_id": "disp_m_0069_xw77t2_doc_pod",
+      "doc_type": "shipping_proof",
+      "file_name": "delivery_slip.md",
+      "file_path": "disp_m_0069_xw77t2/delivery_slip.md",
+      "content": "# Courier Handover Sheet\nCourier: Delhivry Surface\nDocket Number: AWB-27220196\nDelivered To: Ananya Rao\nDelivery Location: Flat 301, Gera Emerald, Kharadi, Pune 411014\nHandover Time: 30th of May around 01 AM\nReceived By: Self / Family member\nOTP Status: Verified electronically on driver handset\n\nStatus: COMPLETE_DELIVERY\n"
+    },
+    {
+      "doc_id": "disp_m_0069_xw77t2_doc_pol",
+      "doc_type": "refund_cancellation_policy",
+      "file_name": "policy.txt",
+      "file_path": "disp_m_0069_xw77t2/policy.txt",
+      "content": "# Terms of Service & Returns\nReturn Window: Return request must be registered within 7 calendar days.\nCancellation: Free cancellation before consignment dispatch only.\nAuto Renewals: Subscription renewals recur monthly unless paused 48 hours prior.\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 68,
+    "mode": "messy"
+  }
+}

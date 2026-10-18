@@ -1,0 +1,82 @@
+{
+  "case_id": "disp_0008_6hymqc",
+  "dispute": {
+    "id": "disp_0008_6hymqc",
+    "entity": "dispute",
+    "payment_id": "pay_vuht6t0uzs9im0",
+    "amount": 149900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "4855",
+    "phase": "chargeback",
+    "status": "open",
+    "respond_by": 1712622648,
+    "created_at": 1711809776,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_0008_6hymqc/customer_chat.md"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_yltz9atsn1u322",
+    "entity": "order",
+    "amount": 149900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1710622405,
+    "customer_name": "Manish Tiwari",
+    "customer_email": "manish.tiwari@example.com",
+    "customer_phone": "+919898429450",
+    "shipping_address": "Flat 391, Sector 9, Mumbai, Maharashtra 400050",
+    "items": [
+      {
+        "name": "Monthly Cloud SaaS Subscription",
+        "quantity": 1,
+        "amount": 149900
+      }
+    ],
+    "tracking_number": "TRK-DL-51663795",
+    "delivered_at": 1710929206
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "item_not_received",
+    "available_evidence": [
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "Missing courier proof of delivery or fulfillment unverified before dispute inception.",
+    "adversarial": {
+      "is_adversarial": true,
+      "adversarial_types": [
+        "card_number"
+      ],
+      "details": [
+        "Evidence document contains a card-number-like string."
+      ]
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0008_6hymqc_1",
+      "doc_type": "customer_communication",
+      "file_name": "customer_chat.md",
+      "file_path": "disp_0008_6hymqc/customer_chat.md",
+      "content": "# Customer Support Communication Record\n\n**Support Ticket:** TIK-05007  \n**Channel:** Razorpay Merchant Web Chat  \n**Customer Name:** Manish Tiwari  \n**Timestamp:** 2024-03-17 20:53:25 UTC  \n**Context Reference:** Order order_yltz9atsn1u322  \n\n---\n**[2024-03-17 20:53:25 UTC] Manish Tiwari:** Hello, I am inquiring regarding my purchase order_yltz9atsn1u322.\n**[2024-03-17 20:53:25 UTC] Support Agent (Kiran):** Welcome to customer support, Manish Tiwari. How may I help you today?\n**[2024-03-17 20:53:25 UTC] Manish Tiwari:** Where is my package? I haven't received it yet.\n**[2024-03-17 20:53:25 UTC] Support Agent (Kiran):** Tracking details indicate courier handover. Please check your building security desk or OTP confirmation.\n**[2024-03-17 20:53:25 UTC] Manish Tiwari:** Here are my card details if you need them: Payment Card: 4111 2222 3333 4448 (Visa Verified)\n**[2024-03-17 20:53:25 UTC] Support Agent (Kiran):** Please never share card numbers in chat for security reasons.\n\n---\n*Transcript archived by Merchant Customer Experience CRM.*\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 7
+  }
+}

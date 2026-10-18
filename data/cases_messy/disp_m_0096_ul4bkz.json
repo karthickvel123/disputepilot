@@ -1,0 +1,89 @@
+{
+  "case_id": "disp_m_0096_ul4bkz",
+  "dispute": {
+    "id": "disp_m_0096_ul4bkz",
+    "entity": "dispute",
+    "payment_id": "pay_mxtqke3cma80",
+    "amount": 189900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "opted out of membership via email but amount deducted again",
+    "phase": "pre_arbitration",
+    "status": "open",
+    "respond_by": 1719491738,
+    "created_at": 1718856994,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [
+        "disp_m_0096_ul4bkz/invoice.txt"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_m_0096_ul4bkz/chat_transcript.txt"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_9rbealfpalol",
+    "entity": "order",
+    "amount": 189900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1718227090,
+    "customer_name": "Arjun Patel",
+    "customer_email": "arjun_patel@gmail.com",
+    "customer_phone": "+916851863727",
+    "shipping_address": "Flat 582, Sector 6, Mumbai, Maharashtra 400050",
+    "items": [
+      {
+        "name": "USB-C Fast Charging Hub 100W",
+        "quantity": 1,
+        "amount": 189900
+      }
+    ],
+    "tracking_number": "AWB-49160633",
+    "delivered_at": null
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "subscription_cancelled",
+    "available_evidence": [
+      "billing_proof",
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "Merchant failed to prove ongoing service usage or customer acknowledgement of renewal window.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0096_ul4bkz_doc_inv",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.txt",
+      "file_path": "disp_m_0096_ul4bkz/invoice.txt",
+      "content": "# TAX INVOICE / CASH MEMO\n**Bill No:** INV-5095\n**Date:** 12/06/2024\n**Customer:** Arjun Patel\n**Address:** B-402, Sea Breeze Apts, Hill Rd, Bandra West, Mum-50\n**Item:** USB-C Fast Charging Hub 100W (Qty: 1)\n**Amount Total:** Rs. 1899.00\n**Payment Ref:** order_9rbealfpalol\n*Computer generated voucher. Signature not needed.*\n"
+    },
+    {
+      "doc_id": "disp_m_0096_ul4bkz_doc_chat",
+      "doc_type": "customer_communication",
+      "file_name": "chat_transcript.txt",
+      "file_path": "disp_m_0096_ul4bkz/chat_transcript.txt",
+      "content": "--- Chat Conversation Log ---\nDate: 13-Jun-24\nUser: Arjun Patel\nAgent: Support Team (Harish)\n\n[User]: Hello sir, package track nahi ho raha hai theek se.\n[Agent]: Checking your consignment AWB-49160633. Please note tracking updates within 24h.\n[User]: Ok sending alternate address: B-402, Sea Breeze Apts, Hill Rd, Bandra West, Mum-50. Please expedite.\n[Agent]: Noted sir. Have escalated to courier partner.\n\n--- Log Closed ---\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 95,
+    "mode": "messy"
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "case_id": "disp_0024_532uuj",
+  "dispute": {
+    "id": "disp_0024_532uuj",
+    "entity": "dispute",
+    "payment_id": "pay_6et32cdxsef6y3",
+    "amount": 379800,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "fraud_card_not_present",
+    "phase": "chargeback",
+    "status": "open",
+    "respond_by": 1713743384,
+    "created_at": 1712953086,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_0024_532uuj/customer_chat.md"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_9c2mu46jd2gvf6",
+    "entity": "order",
+    "amount": 379800,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1712002108,
+    "customer_name": "Neha Kulkarni",
+    "customer_email": "neha.kulkarni@mail.in",
+    "customer_phone": "+919880339290",
+    "shipping_address": "Flat 473, Sector 6, New Delhi, Delhi 110001",
+    "items": [
+      {
+        "name": "USB-C Fast Charging Hub 100W",
+        "quantity": 2,
+        "amount": 189900
+      }
+    ],
+    "tracking_number": "TRK-DT-55414869",
+    "delivered_at": 1712185168
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "unauthorised",
+    "available_evidence": [
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "Missing 3DS authentication records or delivery link to cardholder.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0024_532uuj_1",
+      "doc_type": "customer_communication",
+      "file_name": "customer_chat.md",
+      "file_path": "disp_0024_532uuj/customer_chat.md",
+      "content": "# Customer Support Communication Record\n\n**Support Ticket:** TIK-05023  \n**Channel:** Razorpay Merchant Web Chat  \n**Customer Name:** Neha Kulkarni  \n**Timestamp:** 2024-04-02 20:08:28 UTC  \n**Context Reference:** Order order_9c2mu46jd2gvf6  \n\n---\n**[2024-04-02 20:08:28 UTC] Neha Kulkarni:** Hello, I am inquiring regarding my purchase order_9c2mu46jd2gvf6.\n**[2024-04-02 20:08:28 UTC] Support Agent (Kiran):** Welcome to customer support, Neha Kulkarni. How may I help you today?\n**[2024-04-02 20:08:28 UTC] Neha Kulkarni:** I see an unauthorized charge on my statement.\n**[2024-04-02 20:08:28 UTC] Support Agent (Kiran):** The transaction was authenticated via 3DS OTP sent to your registered mobile number.\n\n---\n*Transcript archived by Merchant Customer Experience CRM.*\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 23
+  }
+}

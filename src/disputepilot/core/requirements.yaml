@@ -1,0 +1,120 @@
+# Evidence requirements per ReasonClass
+item_not_received:
+  required:
+    - shipping_proof
+  helpful:
+    - billing_proof
+    - customer_communication
+    - explanation_letter
+  irrelevant:
+    - cancellation_proof
+    - refund_confirmation
+    - refund_cancellation_policy
+    - access_activity_log
+    - proof_of_service
+    - others
+
+not_as_described:
+  required:
+    - billing_proof
+  helpful:
+    - refund_cancellation_policy
+    - customer_communication
+    - proof_of_service
+    - explanation_letter
+  irrelevant:
+    - shipping_proof
+    - refund_confirmation
+    - access_activity_log
+    - cancellation_proof
+    - others
+
+unauthorised:
+  required:
+    - billing_proof
+  helpful:
+    - shipping_proof
+    - access_activity_log
+    - proof_of_service
+    - customer_communication
+    - explanation_letter
+  irrelevant:
+    - cancellation_proof
+    - refund_confirmation
+    - refund_cancellation_policy
+    - others
+
+duplicate_charge:
+  required:
+    - billing_proof
+  helpful:
+    - refund_confirmation
+    - customer_communication
+    - explanation_letter
+  irrelevant:
+    - shipping_proof
+    - cancellation_proof
+    - refund_cancellation_policy
+    - access_activity_log
+    - proof_of_service
+    - others
+
+subscription_cancelled:
+  required:
+    - refund_cancellation_policy
+  helpful:
+    - access_activity_log
+    - cancellation_proof
+    - customer_communication
+    - billing_proof
+    - explanation_letter
+  irrelevant:
+    - shipping_proof
+    - refund_confirmation
+    - proof_of_service
+    - others
+
+refund_not_received:
+  required:
+    - refund_confirmation
+  helpful:
+    - billing_proof
+    - customer_communication
+    - explanation_letter
+  irrelevant:
+    - shipping_proof
+    - cancellation_proof
+    - access_activity_log
+    - proof_of_service
+    - refund_cancellation_policy
+    - others
+
+other:
+  required:
+    - billing_proof
+  helpful:
+    - customer_communication
+    - shipping_proof
+    - proof_of_service
+    - explanation_letter
+    - refund_cancellation_policy
+  irrelevant:
+    - cancellation_proof
+    - refund_confirmation
+    - access_activity_log
+    - others
+
+unclassified:
+  required: []
+  helpful:
+    - billing_proof
+    - customer_communication
+    - shipping_proof
+    - proof_of_service
+    - explanation_letter
+    - refund_cancellation_policy
+    - cancellation_proof
+    - refund_confirmation
+    - access_activity_log
+  irrelevant:
+    - others

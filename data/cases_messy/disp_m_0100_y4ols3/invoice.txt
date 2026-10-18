@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5099
+**Date:** 16th of June around 09 PM
+**Customer:** Deepika Nair
+**Address:** F-692, Sector 4, nr water tank, Pune 411014
+**Item:** Mechanical Gaming Keyboard (Qty: 1)
+**Amount Total:** Rs. 4500.00
+**Payment Ref:** order_m0daowaqccuo
+*Computer generated voucher. Signature not needed.*

@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5090
+**Date:** 07/06/2024
+**Customer:** Deepika Nair
+**Address:** B-402, Sea Breeze Apts, Hill Rd, Bandra West, Mum-50
+**Item:** Wireless ANC Headphones Pro (Qty: 2)
+**Amount Total:** Rs. 5998.00
+**Payment Ref:** order_395fzh54lo12
+*Computer generated voucher. Signature not needed.*

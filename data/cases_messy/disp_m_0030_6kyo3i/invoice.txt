@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5029
+**Date:** 7th of April around 08 PM
+**Customer:** Rohan Gupta
+**Address:** B-402, Sea Breeze Apts, Hill Rd, Bandra West, Mum-50
+**Item:** 4K HDR Computer Monitor 27in (Qty: 1)
+**Amount Total:** Rs. 17999.00
+**Payment Ref:** order_6mrtjjpu7wkp
+*Computer generated voucher. Signature not needed.*

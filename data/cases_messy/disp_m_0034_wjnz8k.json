@@ -1,0 +1,89 @@
+{
+  "case_id": "disp_m_0034_wjnz8k",
+  "dispute": {
+    "id": "disp_m_0034_wjnz8k",
+    "entity": "dispute",
+    "payment_id": "pay_7f2h9hq0oi45",
+    "amount": 149900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "merchant promised compensation but ghosted on emails",
+    "phase": "pre_arbitration",
+    "status": "open",
+    "respond_by": 1714962578,
+    "created_at": 1714210304,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [
+        "disp_m_0034_wjnz8k/invoice.txt"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_m_0034_wjnz8k/chat_transcript.txt"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_9d43j5p5k8ak",
+    "entity": "order",
+    "amount": 149900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1712875816,
+    "customer_name": "Neha Kulkarni",
+    "customer_email": "neha_kulkarni@outlook.in",
+    "customer_phone": "",
+    "shipping_address": "Flat 484, Sector 7, Pune, Maharashtra 411014",
+    "items": [
+      {
+        "name": "Monthly Cloud SaaS Subscription",
+        "quantity": 1,
+        "amount": 149900
+      }
+    ],
+    "tracking_number": "AWB-95502184",
+    "delivered_at": 1713171289
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "refund_not_received",
+    "available_evidence": [
+      "billing_proof",
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "No verified bank refund record found for customer's transaction.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0034_wjnz8k_doc_inv",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.txt",
+      "file_path": "disp_m_0034_wjnz8k/invoice.txt",
+      "content": "# TAX INVOICE / CASH MEMO\n**Bill No:** INV-5033\n**Date:** 11.04.2024\n**Customer:** Neha Kulkarni\n**Address:** Opposite Ganesh Temple, Nagar Rd, Viman Nagar, Pune - 14\n**Item:** Monthly Cloud SaaS Subscription (Qty: 1)\n**Amount Total:** Rs. 1499.00\n**Payment Ref:** order_9d43j5p5k8ak\n*Computer generated voucher. Signature not needed.*\n"
+    },
+    {
+      "doc_id": "disp_m_0034_wjnz8k_doc_chat",
+      "doc_type": "customer_communication",
+      "file_name": "chat_transcript.txt",
+      "file_path": "disp_m_0034_wjnz8k/chat_transcript.txt",
+      "content": "--- Chat Conversation Log ---\nDate: 12/04/2024\nUser: Neha Kulkarni\nAgent: Support Team (Harish)\n\n[User]: Hello sir, package track nahi ho raha hai theek se.\n[Agent]: Checking your consignment AWB-95502184. Please note tracking updates within 24h.\n[User]: Ok sending alternate address: Opposite Ganesh Temple, Nagar Rd, Viman Nagar, Pune - 14. Please expedite.\n[Agent]: Noted sir. Have escalated to courier partner.\n\n--- Log Closed ---\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 33,
+    "mode": "messy"
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "case_id": "disp_m_0017_0xzmas",
+  "dispute": {
+    "id": "disp_m_0017_0xzmas",
+    "entity": "dispute",
+    "payment_id": "pay_mo3oqsg5lo50",
+    "amount": 349900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "phone lost last night and someone did this payment",
+    "phase": "retrieval",
+    "status": "open",
+    "respond_by": 1712755699,
+    "created_at": 1712130095,
+    "evidence": {
+      "shipping_proof": [
+        "disp_m_0017_0xzmas/delivery_slip.md"
+      ],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [
+        "disp_m_0017_0xzmas/policy.txt"
+      ],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_djzdnbj0ddlz",
+    "entity": "order",
+    "amount": 349900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1711406591,
+    "customer_name": "Rohan Gupta",
+    "customer_email": "rohan_gupta@yahoo.co.in",
+    "customer_phone": "+916818979512",
+    "shipping_address": "Flat 769, Sector 9, Mumbai, Maharashtra 400050",
+    "items": [
+      {
+        "name": "Smart Fitness Watch v3",
+        "quantity": 1,
+        "amount": 349900
+      }
+    ],
+    "tracking_number": "AWB-99178266",
+    "delivered_at": 1711771470
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "unauthorised",
+    "available_evidence": [
+      "shipping_proof",
+      "refund_cancellation_policy"
+    ],
+    "winnable": false,
+    "rule_explanation": "Missing 3DS authentication records or delivery link to cardholder.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0017_0xzmas_doc_pod",
+      "doc_type": "shipping_proof",
+      "file_name": "delivery_slip.md",
+      "file_path": "disp_m_0017_0xzmas/delivery_slip.md",
+      "content": "# Courier Handover Sheet\nCourier: Shadofax Logistics\nDocket Number: AWB-99178266\nDelivered To: Rohan Gupta\nDelivery Location: Shop No 4, Opp Station, Andheri East, Mumbai\nHandover Time: 30-Mar-24\nReceived By: Self / Family member\nOTP Status: Verified electronically on driver handset\n\nStatus: COMPLETE_DELIVERY\n"
+    },
+    {
+      "doc_id": "disp_m_0017_0xzmas_doc_pol",
+      "doc_type": "refund_cancellation_policy",
+      "file_name": "policy.txt",
+      "file_path": "disp_m_0017_0xzmas/policy.txt",
+      "content": "# Terms of Service & Returns\nReturn Window: Return request must be registered within 7 calendar days.\nCancellation: Free cancellation before consignment dispatch only.\nAuto Renewals: Subscription renewals recur monthly unless paused 48 hours prior.\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 16,
+    "mode": "messy"
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "case_id": "disp_m_0015_upxqmb",
+  "dispute": {
+    "id": "disp_m_0015_upxqmb",
+    "entity": "dispute",
+    "payment_id": "pay_rvd5rxi67nfr",
+    "amount": 379800,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "samaan nahi mila abhi tak parcel gayab",
+    "phase": "pre_arbitration",
+    "status": "open",
+    "respond_by": 1713431661,
+    "created_at": 1712688486,
+    "evidence": {
+      "shipping_proof": [
+        "disp_m_0015_upxqmb/delivery_slip.md"
+      ],
+      "billing_proof": [
+        "disp_m_0015_upxqmb/invoice.txt"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_pyz21tbic145",
+    "entity": "order",
+    "amount": 379800,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1711217993,
+    "customer_name": "Neha Kulkarni",
+    "customer_email": "",
+    "customer_phone": "+917067150258",
+    "shipping_address": "Flat 330, Sector 3, Bengaluru, Karnataka 560103",
+    "items": [
+      {
+        "name": "USB-C Fast Charging Hub 100W",
+        "quantity": 2,
+        "amount": 189900
+      }
+    ],
+    "tracking_number": "AWB-96885593",
+    "delivered_at": 1712861286
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "item_not_received",
+    "available_evidence": [
+      "billing_proof",
+      "shipping_proof"
+    ],
+    "winnable": false,
+    "rule_explanation": "Delivery timestamp is after the dispute date; merchant cannot prove timely fulfillment.",
+    "adversarial": {
+      "is_adversarial": true,
+      "adversarial_types": [
+        "delivery_after_dispute"
+      ],
+      "details": [
+        "POD date is recorded after dispute creation."
+      ]
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0015_upxqmb_doc_inv",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.txt",
+      "file_path": "disp_m_0015_upxqmb/invoice.txt",
+      "content": "# TAX INVOICE / CASH MEMO\n**Bill No:** INV-5014\n**Date:** 23rd of March around 06 PM\n**Customer:** Neha Kulkarni\n**Address:** Plot 12, Behind Silk Board, Outer Ring Rd, BLR 103\n**Item:** USB-C Fast Charging Hub 100W (Qty: 2)\n**Amount Total:** Rs. 3798.00\n**Payment Ref:** order_pyz21tbic145\n*Computer generated voucher. Signature not needed.*\n"
+    },
+    {
+      "doc_id": "disp_m_0015_upxqmb_doc_pod",
+      "doc_type": "shipping_proof",
+      "file_name": "delivery_slip.md",
+      "file_path": "disp_m_0015_upxqmb/delivery_slip.md",
+      "content": "# Courier Handover Sheet\nCourier: Bluedart Express Courier\nDocket Number: AWB-96885593\nDelivered To: Neha Kulkarni\nDelivery Location: Plot 12, Behind Silk Board, Outer Ring Rd, BLR 103\nHandover Time: 11/04/2024\nReceived By: Self / Family member\nOTP Status: Verified electronically on driver handset\n\nStatus: COMPLETE_DELIVERY\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 14,
+    "mode": "messy"
+  }
+}

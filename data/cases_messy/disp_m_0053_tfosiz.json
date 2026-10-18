@@ -1,0 +1,79 @@
+{
+  "case_id": "disp_m_0053_tfosiz",
+  "dispute": {
+    "id": "disp_m_0053_tfosiz",
+    "entity": "dispute",
+    "payment_id": "pay_lbxw0b3pzwgl",
+    "amount": 189900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "two debits for single item in merchant mobile application",
+    "phase": "retrieval",
+    "status": "open",
+    "respond_by": 1716199599,
+    "created_at": 1715429791,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [
+        "disp_m_0053_tfosiz/policy.txt"
+      ],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_shroczck1mtj",
+    "entity": "order",
+    "amount": 189900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1714498971,
+    "customer_name": "Rohan Gupta",
+    "customer_email": "rohan_gupta@outlook.in",
+    "customer_phone": "+919605476344",
+    "shipping_address": "Flat 684, Sector 8, Mumbai, Maharashtra 400050",
+    "items": [
+      {
+        "name": "USB-C Fast Charging Hub 100W",
+        "quantity": 1,
+        "amount": 189900
+      }
+    ],
+    "tracking_number": "AWB-99943824",
+    "delivered_at": null
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "duplicate_charge",
+    "available_evidence": [
+      "refund_cancellation_policy"
+    ],
+    "winnable": false,
+    "rule_explanation": "Duplicate transaction unrefunded without proof of separate legitimate fulfillment.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0053_tfosiz_doc_pol",
+      "doc_type": "refund_cancellation_policy",
+      "file_name": "policy.txt",
+      "file_path": "disp_m_0053_tfosiz/policy.txt",
+      "content": "# Terms of Service & Returns\nReturn Window: Return request must be registered within 7 calendar days.\nCancellation: Free cancellation before consignment dispatch only.\nAuto Renewals: Subscription renewals recur monthly unless paused 48 hours prior.\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 52,
+    "mode": "messy"
+  }
+}

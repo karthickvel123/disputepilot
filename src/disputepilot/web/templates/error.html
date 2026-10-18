@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title or "Something went wrong" }}{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-title"><h2>{{ title or "Something went wrong" }}</h2>{% if status_code %}<span class="badge badge-info">HTTP {{ status_code }}</span>{% endif %}</div>
+  <p>{{ message }}</p>
+  {% if details %}
+  <ul>
+    {% for d in details %}<li>{{ d }}</li>{% endfor %}
+  </ul>
+  {% endif %}
+  <p><a href="/" class="btn btn-secondary">Back to worklist</a></p>
+</div>
+{% endblock %}

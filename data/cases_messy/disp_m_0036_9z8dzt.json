@@ -1,0 +1,89 @@
+{
+  "case_id": "disp_m_0036_9z8dzt",
+  "dispute": {
+    "id": "disp_m_0036_9z8dzt",
+    "entity": "dispute",
+    "payment_id": "pay_68yjfnc3lglc",
+    "amount": 149900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "delivery associate signed himself parcel nahi pahuncha",
+    "phase": "chargeback",
+    "status": "open",
+    "respond_by": 1715000612,
+    "created_at": 1714227578,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [
+        "disp_m_0036_9z8dzt/invoice.txt"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_m_0036_9z8dzt/chat_transcript.txt"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_0gaxit9qtl0c",
+    "entity": "order",
+    "amount": 149900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1713028936,
+    "customer_name": "Priya Sharma",
+    "customer_email": "",
+    "customer_phone": "+918437425658",
+    "shipping_address": "Flat 222, Sector 7, Bengaluru, Karnataka 560103",
+    "items": [
+      {
+        "name": "Monthly Cloud SaaS Subscription",
+        "quantity": 1,
+        "amount": 149900
+      }
+    ],
+    "tracking_number": "AWB-19021960",
+    "delivered_at": 1713314634
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "item_not_received",
+    "available_evidence": [
+      "billing_proof",
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "Missing courier proof of delivery or fulfillment unverified before dispute inception.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0036_9z8dzt_doc_inv",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.txt",
+      "file_path": "disp_m_0036_9z8dzt/invoice.txt",
+      "content": "# TAX INVOICE / CASH MEMO\n**Bill No:** INV-5035\n**Date:** 13/04/2024\n**Customer:** Priya Sharma\n**Address:** #42, 2nd Cross, Koramangala 4th Blk, Bangalore-34\n**Item:** Monthly Cloud SaaS Subscription (Qty: 1)\n**Amount Total:** Rs. 1499.00\n**Payment Ref:** order_0gaxit9qtl0c\n*Computer generated voucher. Signature not needed.*\n"
+    },
+    {
+      "doc_id": "disp_m_0036_9z8dzt_doc_chat",
+      "doc_type": "customer_communication",
+      "file_name": "chat_transcript.txt",
+      "file_path": "disp_m_0036_9z8dzt/chat_transcript.txt",
+      "content": "--- Chat Conversation Log ---\nDate: 14-Apr-24\nUser: Priya Sharma\nAgent: Support Team (Harish)\n\n[User]: Hello sir, package track nahi ho raha hai theek se.\n[Agent]: Checking your consignment AWB-19021960. Please note tracking updates within 24h.\n[User]: Ok sending alternate address: #42, 2nd Cross, Koramangala 4th Blk, Bangalore-34. Please expedite.\n[Agent]: Noted sir. Have escalated to courier partner.\n\n--- Log Closed ---\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 35,
+    "mode": "messy"
+  }
+}

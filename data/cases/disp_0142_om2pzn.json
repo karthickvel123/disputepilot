@@ -1,0 +1,87 @@
+{
+  "case_id": "disp_0142_om2pzn",
+  "dispute": {
+    "id": "disp_0142_om2pzn",
+    "entity": "dispute",
+    "payment_id": "pay_ifs27woc36v123",
+    "amount": 349900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "INR_103",
+    "phase": "pre_arbitration",
+    "status": "open",
+    "respond_by": 1724502468,
+    "created_at": 1723766134,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [
+        "disp_0142_om2pzn/refund_receipt.md"
+      ],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_10x5urybl2oqew",
+    "entity": "order",
+    "amount": 349900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1722191401,
+    "customer_name": "Kavita Reddy",
+    "customer_email": "kavita.reddy@webmail.in",
+    "customer_phone": "+919896389831",
+    "shipping_address": "Flat 384, Sector 15, Mumbai, Maharashtra 400050",
+    "items": [
+      {
+        "name": "Smart Fitness Watch v3",
+        "quantity": 1,
+        "amount": 349900
+      }
+    ],
+    "tracking_number": "TRK-BD-19576257",
+    "delivered_at": 1722441407
+  },
+  "refund": {
+    "id": "rfnd_mvqtrmi8qatswz",
+    "entity": "refund",
+    "payment_id": "pay_ifs27woc36v123",
+    "amount": 349900,
+    "currency": "INR",
+    "status": "processed",
+    "created_at": 1722623401,
+    "arn": "ARN465932530459"
+  },
+  "ground_truth": {
+    "reason_class": "not_as_described",
+    "available_evidence": [
+      "refund_confirmation"
+    ],
+    "winnable": false,
+    "rule_explanation": "Insufficient evidence proving product specifications and customer adherence to return terms.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0142_om2pzn_1",
+      "doc_type": "refund_confirmation",
+      "file_name": "refund_receipt.md",
+      "file_path": "disp_0142_om2pzn/refund_receipt.md",
+      "content": "# Razorpay Electronic Refund Confirmation\n\n**Refund ID:** rfnd_mvqtrmi8qatswz  \n**Payment ID:** pay_ifs27woc36v123  \n**Refund Amount:** INR 3499.00 (349900 paise)  \n**Status:** PROCESSED  \n**Acquirer Reference Number (ARN):** ARN465932530459  \n**Refund Processed At:** 2024-08-02 18:30:01 UTC  \n**Settlement Route:** Original Payment Source (Bank / Card / UPI)  \n\n### Bank Traceability:\nThis transaction was routed via Razorpay Gateway to the acquiring bank. The cardholder's issuing bank can locate the credited funds using the ARN provided above.\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 141
+  }
+}

@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5075
+**Date:** 23/05/2024
+**Customer:** Rohan Gupta
+**Address:** Shop No 4, Opp Station, Andheri East, Mumbai
+**Item:** Wireless ANC Headphones Pro (Qty: 1)
+**Amount Total:** Rs. 2999.00
+**Payment Ref:** order_f3lau00cfpj6
+*Computer generated voucher. Signature not needed.*

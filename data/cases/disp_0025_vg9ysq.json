@@ -1,0 +1,78 @@
+{
+  "case_id": "disp_0025_vg9ysq",
+  "dispute": {
+    "id": "disp_0025_vg9ysq",
+    "entity": "dispute",
+    "payment_id": "pay_ft9yvi7f16xbxt",
+    "amount": 899900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "duplicate_processing",
+    "phase": "pre_arbitration",
+    "status": "open",
+    "respond_by": 1713958537,
+    "created_at": 1713123996,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [
+        "disp_0025_vg9ysq/invoice.md"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_lnv5moijesg687",
+    "entity": "order",
+    "amount": 899900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1712079673,
+    "customer_name": "Siddharth Menon",
+    "customer_email": "siddharth.menon@example.com",
+    "customer_phone": "+919890161060",
+    "shipping_address": "Flat 258, Sector 3, Kolkata, West Bengal 700016",
+    "items": [
+      {
+        "name": "Ergonomic Mesh Office Chair",
+        "quantity": 1,
+        "amount": 899900
+      }
+    ],
+    "tracking_number": "TRK-DT-15864298",
+    "delivered_at": null
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "duplicate_charge",
+    "available_evidence": [
+      "billing_proof"
+    ],
+    "winnable": true,
+    "rule_explanation": "Documented separate orders and invoices confirm distinct legitimate transactions.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "doc_0025_vg9ysq_1",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.md",
+      "file_path": "disp_0025_vg9ysq/invoice.md",
+      "content": "# TAX INVOICE\n\n**Invoice Number:** INV-2024-01024  \n**Invoice Date:** 2024-04-02 17:41:13 UTC  \n**Order Reference:** order_lnv5moijesg687  \n**Payment ID:** pay_ft9yvi7f16xbxt  \n\n### Merchant Details:\n**Seller:** Apex Retail Solutions Private Limited  \n**GSTIN:** 29AABCA1234F1Z5  \n**State:** Karnataka (Code 29)  \n**Registered Address:** Outer Ring Road, Bellandur, Bengaluru, Karnataka 560103  \n\n### Customer Details:\n**Billed To:** Siddharth Menon  \n**Address:** Flat 258, Sector 3, Kolkata, West Bengal 700016  \n**Email:** siddharth.menon@example.com  \n**Phone:** +919890161060  \n\n### Itemized Particulars:\n| Description | HSN | Qty | Unit Price | Tax Rate | Total Amount |\n| --- | --- | --- | --- | --- | --- |\n| Ergonomic Mesh Office Chair | 8471 | 1 | INR 8999.00 | 18% | INR 8999.00 |\n\n**Grand Total:** INR 8999.00 (899900 paise)  \n**Payment Method:** Razorpay Checkout (3D-Secure 2.0 Authenticated)  \n**Transaction Reference:** pay_ft9yvi7f16xbxt  \n\n---\n*Authorized Signatory for Apex Retail Solutions Private Limited.*\n"
+    }
+  ],
+  "metadata": {
+    "seed": 42,
+    "case_index": 24
+  }
+}

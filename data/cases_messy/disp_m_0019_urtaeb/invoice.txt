@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5018
+**Date:** 27.03.2024
+**Customer:** Arjun Patel
+**Address:** Nr Apollo Pharmacy, Green Glen Layout, Bellandur, Bengaluru
+**Item:** Smart Fitness Watch v3 (Qty: 2)
+**Amount Total:** Rs. 6998.00
+**Payment Ref:** order_xf6mzkp0ec49
+*Computer generated voucher. Signature not needed.*

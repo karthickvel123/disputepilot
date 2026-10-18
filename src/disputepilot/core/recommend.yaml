@@ -1,0 +1,33 @@
+# Configurable heuristic weights for DisputePilot Recommendation Engine
+# All weights are calibrated on synthetic simulator data as a deterministic baseline.
+
+reason_priors:
+  item_not_received: 0.60
+  unauthorised: 0.45
+  duplicate_charge: 0.85
+  not_as_described: 0.40
+  subscription_cancelled: 0.50
+  refund_not_received: 0.65
+  other: 0.35
+
+evidence_weights:
+  all_required_present_bonus: 0.20
+  any_required_missing_penalty: -0.35
+  required_partial_penalty: -0.15
+  helpful_present_bonus: 0.08
+
+cross_check_penalties:
+  DELIVERY_AFTER_DISPUTE: -0.40
+  INVOICE_AMOUNT_MISMATCH: -0.25
+  ADDRESS_MISMATCH: -0.25
+  REFUND_EXISTS_UNMENTIONED: -0.20
+
+delivery_proof_boost: 0.15
+
+effort_cost_paise: 0  # Configurable handling & filing effort cost (default 0 unless supplied)
+fee_per_dispute_paise: 0  # Configurable dispute fee (default 0 unless supplied)
+
+thresholds:
+  uncertain_band_min: 0.35
+  uncertain_band_max: 0.55
+  uncertain_range_width: 0.30

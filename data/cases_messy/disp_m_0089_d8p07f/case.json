@@ -1,0 +1,83 @@
+{
+  "case_id": "disp_m_0089_d8p07f",
+  "dispute": {
+    "id": "disp_m_0089_d8p07f",
+    "entity": "dispute",
+    "payment_id": "pay_hl2kszpvqbfn",
+    "amount": 899900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "opted out of membership via email but amount deducted again",
+    "phase": "retrieval",
+    "status": "open",
+    "respond_by": 1719435237,
+    "created_at": 1718800851,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [
+        "disp_m_0089_d8p07f/policy.txt"
+      ],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_qjeezteee8ae",
+    "entity": "order",
+    "amount": 899900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1717611681,
+    "customer_name": "Neha Kulkarni",
+    "customer_email": "neha_kulkarni@outlook.in",
+    "customer_phone": "",
+    "shipping_address": "Flat 561, Sector 3, New Delhi, Delhi 110001",
+    "items": [
+      {
+        "name": "Ergonomic Mesh Office Chair",
+        "quantity": 1,
+        "amount": 899900
+      }
+    ],
+    "tracking_number": "AWB-64887416",
+    "delivered_at": null
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "subscription_cancelled",
+    "available_evidence": [
+      "refund_cancellation_policy"
+    ],
+    "winnable": false,
+    "rule_explanation": "Merchant failed to prove ongoing service usage or customer acknowledgement of renewal window.",
+    "adversarial": {
+      "is_adversarial": true,
+      "adversarial_types": [
+        "card_number"
+      ],
+      "details": [
+        "Evidence document contains a payment card string."
+      ]
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0089_d8p07f_doc_pol",
+      "doc_type": "refund_cancellation_policy",
+      "file_name": "policy.txt",
+      "file_path": "disp_m_0089_d8p07f/policy.txt",
+      "content": "# Terms of Service & Returns\nReturn Window: Return request must be registered within 7 calendar days.\nCancellation: Free cancellation before consignment dispatch only.\nAuto Renewals: Subscription renewals recur monthly unless paused 48 hours prior.\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 88,
+    "mode": "messy"
+  }
+}

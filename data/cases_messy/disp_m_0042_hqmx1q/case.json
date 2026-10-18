@@ -1,0 +1,89 @@
+{
+  "case_id": "disp_m_0042_hqmx1q",
+  "dispute": {
+    "id": "disp_m_0042_hqmx1q",
+    "entity": "dispute",
+    "payment_id": "pay_kdsjb26v6i2a",
+    "amount": 900000,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "bank disputed this entry due to compliance query",
+    "phase": "pre_arbitration",
+    "status": "open",
+    "respond_by": 1715006424,
+    "created_at": 1714350058,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [
+        "disp_m_0042_hqmx1q/invoice.txt"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_m_0042_hqmx1q/chat_transcript.txt"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_7slx1c0nrlil",
+    "entity": "order",
+    "amount": 900000,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1713561100,
+    "customer_name": "Arjun Patel",
+    "customer_email": "arjun_patel@gmail.com",
+    "customer_phone": "+919819623122",
+    "shipping_address": "Flat 381, Sector 3, Pune, Maharashtra 411014",
+    "items": [
+      {
+        "name": "Mechanical Gaming Keyboard",
+        "quantity": 2,
+        "amount": 450000
+      }
+    ],
+    "tracking_number": "AWB-88239956",
+    "delivered_at": 1713920446
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "other",
+    "available_evidence": [
+      "billing_proof",
+      "customer_communication"
+    ],
+    "winnable": true,
+    "rule_explanation": "Sufficient composite documentation of transaction legitimacy and fulfillment.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0042_hqmx1q_doc_inv",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.txt",
+      "file_path": "disp_m_0042_hqmx1q/invoice.txt",
+      "content": "# TAX INVOICE / CASH MEMO\n**Bill No:** INV-5041\n**Date:** 19th Apr 2024, 09:11 PM\n**Customer:** Arjun Patel\n**Address:** F-692, Sector 4, nr water tank, Pune 411014\n**Item:** Mechanical Gaming Keyboard (Qty: 2)\n**Amount Total:** Rs. 9000.00\n**Payment Ref:** order_7slx1c0nrlil\n*Computer generated voucher. Signature not needed.*\n"
+    },
+    {
+      "doc_id": "disp_m_0042_hqmx1q_doc_chat",
+      "doc_type": "customer_communication",
+      "file_name": "chat_transcript.txt",
+      "file_path": "disp_m_0042_hqmx1q/chat_transcript.txt",
+      "content": "--- Chat Conversation Log ---\nDate: 20.04.2024\nUser: Arjun Patel\nAgent: Support Team (Harish)\n\n[User]: Hello sir, package track nahi ho raha hai theek se.\n[Agent]: Checking your consignment AWB-88239956. Please note tracking updates within 24h.\n[User]: Ok sending alternate address: F-692, Sector 4, nr water tank, Pune 411014. Please expedite.\n[Agent]: Noted sir. Have escalated to courier partner.\n\n--- Log Closed ---\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 41,
+    "mode": "messy"
+  }
+}

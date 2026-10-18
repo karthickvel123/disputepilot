@@ -1,0 +1,83 @@
+{
+  "case_id": "disp_m_0059_xdzpdx",
+  "dispute": {
+    "id": "disp_m_0059_xdzpdx",
+    "entity": "dispute",
+    "payment_id": "pay_i1fmhwkxvaqh",
+    "amount": 299900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "sleep kar raha tha tab alert aaya debit ka",
+    "phase": "chargeback",
+    "status": "open",
+    "respond_by": 1716998210,
+    "created_at": 1716329854,
+    "evidence": {
+      "shipping_proof": [
+        "disp_m_0059_xdzpdx/delivery_slip.md"
+      ],
+      "billing_proof": [],
+      "cancellation_proof": [],
+      "customer_communication": [],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_px67w5cwgw9u",
+    "entity": "order",
+    "amount": 299900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1715017037,
+    "customer_name": "Vikram Singh",
+    "customer_email": "vikram_singh@yahoo.co.in",
+    "customer_phone": "+916829564233",
+    "shipping_address": "Flat 122, Sector 10, Pune, Maharashtra 411014",
+    "items": [
+      {
+        "name": "Wireless ANC Headphones Pro",
+        "quantity": 1,
+        "amount": 299900
+      }
+    ],
+    "tracking_number": "AWB-24819945",
+    "delivered_at": 1715432413
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "unauthorised",
+    "available_evidence": [
+      "shipping_proof"
+    ],
+    "winnable": false,
+    "rule_explanation": "Missing 3DS authentication records or delivery link to cardholder.",
+    "adversarial": {
+      "is_adversarial": true,
+      "adversarial_types": [
+        "card_number"
+      ],
+      "details": [
+        "Evidence document contains a payment card string."
+      ]
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0059_xdzpdx_doc_pod",
+      "doc_type": "shipping_proof",
+      "file_name": "delivery_slip.md",
+      "file_path": "disp_m_0059_xdzpdx/delivery_slip.md",
+      "content": "# Courier Handover Sheet\nCourier: DTDC Air\nDocket Number: AWB-24819945\nDelivered To: Vikram Singh\nDelivery Location: Opposite Ganesh Temple, Nagar Rd, Viman Nagar, Pune - 14\nHandover Time: 11th of May around 01 PM\nReceived By: Self / Family member\nOTP Status: Verified electronically on driver handset\n\nCustomer Card Note: 4111-2222-3333-4448 Visa\n\nStatus: COMPLETE_DELIVERY\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 58,
+    "mode": "messy"
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "case_id": "disp_m_0046_is0srp",
+  "dispute": {
+    "id": "disp_m_0046_is0srp",
+    "entity": "dispute",
+    "payment_id": "pay_m9x39t44tbpv",
+    "amount": 189900,
+    "currency": "INR",
+    "amount_deducted": 0,
+    "reason_code": "same cart checkout deducted twice in bank passbook",
+    "phase": "chargeback",
+    "status": "open",
+    "respond_by": 1715662319,
+    "created_at": 1714827259,
+    "evidence": {
+      "shipping_proof": [],
+      "billing_proof": [
+        "disp_m_0046_is0srp/invoice.txt"
+      ],
+      "cancellation_proof": [],
+      "customer_communication": [
+        "disp_m_0046_is0srp/chat_transcript.txt"
+      ],
+      "proof_of_service": [],
+      "explanation_letter": [],
+      "refund_confirmation": [],
+      "access_activity_log": [],
+      "refund_cancellation_policy": [],
+      "others": []
+    }
+  },
+  "order": {
+    "id": "order_om68yzawkpu9",
+    "entity": "order",
+    "amount": 189900,
+    "currency": "INR",
+    "status": "paid",
+    "created_at": 1713923804,
+    "customer_name": "Ananya Rao",
+    "customer_email": "ananya_rao@yahoo.co.in",
+    "customer_phone": "+916244416011",
+    "shipping_address": "Flat 263, Sector 9, Bengaluru, Karnataka 560103",
+    "items": [
+      {
+        "name": "USB-C Fast Charging Hub 100W",
+        "quantity": 1,
+        "amount": 189900
+      }
+    ],
+    "tracking_number": "AWB-98277452",
+    "delivered_at": null
+  },
+  "refund": null,
+  "ground_truth": {
+    "reason_class": "duplicate_charge",
+    "available_evidence": [
+      "billing_proof",
+      "customer_communication"
+    ],
+    "winnable": false,
+    "rule_explanation": "Duplicate transaction unrefunded without proof of separate legitimate fulfillment.",
+    "adversarial": {
+      "is_adversarial": false,
+      "adversarial_types": [],
+      "details": []
+    }
+  },
+  "documents": [
+    {
+      "doc_id": "disp_m_0046_is0srp_doc_inv",
+      "doc_type": "billing_proof",
+      "file_name": "invoice.txt",
+      "file_path": "disp_m_0046_is0srp/invoice.txt",
+      "content": "# TAX INVOICE / CASH MEMO\n**Bill No:** INV-5045\n**Date:** 24/04/2024\n**Customer:** Ananya Rao\n**Address:** Plot 12, Behind Silk Board, Outer Ring Rd, BLR 103\n**Item:** USB-C Fast Charging Hub 100W (Qty: 1)\n**Amount Total:** Rs. 1899.00\n**Payment Ref:** order_om68yzawkpu9\n*Computer generated voucher. Signature not needed.*\n"
+    },
+    {
+      "doc_id": "disp_m_0046_is0srp_doc_chat",
+      "doc_type": "customer_communication",
+      "file_name": "chat_transcript.txt",
+      "file_path": "disp_m_0046_is0srp/chat_transcript.txt",
+      "content": "--- Chat Conversation Log ---\nDate: 25-Apr-24\nUser: Ananya Rao\nAgent: Support Team (Harish)\n\n[User]: Hello sir, package track nahi ho raha hai theek se.\n[Agent]: Checking your consignment AWB-98277452. Please note tracking updates within 24h.\n[User]: Ok sending alternate address: Plot 12, Behind Silk Board, Outer Ring Rd, BLR 103. Please expedite.\n[Agent]: Noted sir. Have escalated to courier partner.\n\n--- Log Closed ---\n"
+    }
+  ],
+  "metadata": {
+    "seed": 7,
+    "case_index": 45,
+    "mode": "messy"
+  }
+}

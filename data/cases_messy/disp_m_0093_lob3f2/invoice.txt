@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5092
+**Date:** 09-Jun-24
+**Customer:** Deepika Nair
+**Address:** Plot 12, Behind Silk Board, Outer Ring Rd, BLR 103
+**Item:** Mechanical Gaming Keyboard (Qty: 1)
+**Amount Total:** Rs. 4500.00
+**Payment Ref:** order_4x65nnm4mt3r
+*Computer generated voucher. Signature not needed.*

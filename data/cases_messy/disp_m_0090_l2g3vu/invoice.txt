@@ -1,0 +1,9 @@
+# TAX INVOICE / CASH MEMO
+**Bill No:** INV-5089
+**Date:** 6th of June around 07 PM
+**Customer:** Rohan Gupta
+**Address:** Flat 104, Sec-3, Nr Metro Pillar 240, Dwarka, ND-75
+**Item:** USB-C Fast Charging Hub 100W (Qty: 2)
+**Amount Total:** Rs. 3798.00
+**Payment Ref:** order_j4gdyqfodesa
+*Computer generated voucher. Signature not needed.*
