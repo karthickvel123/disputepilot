@@ -358,6 +358,7 @@ def _ensure_letter_uploaded(case: DisputeCase, clean_markdown: str, reviewer: st
         uploaded = _require_gateway().upload_document(pdf, name, purpose="dispute_evidence")
     except (httpx.HTTPError, ValueError) as err:
         raise _upstream_error(err) from err
+    doc_id = str(uploaded.get("id", "")) or None
     locker.add(
         dispute_id=case.dispute.id,
         category="explanation_letter",
@@ -366,7 +367,21 @@ def _ensure_letter_uploaded(case: DisputeCase, clean_markdown: str, reviewer: st
         size=len(pdf),
         sha256=digest,
         uploaded_by=reviewer,
-        razorpay_doc_id=str(uploaded.get("id", "")) or None,
+        razorpay_doc_id=doc_id,
+    )
+    record_audit_event(
+        case_id=case.case_id,
+        action="preparatory_letter_upload",
+        actor=reviewer,
+        details={
+            "operation_tier": "external_preparatory",
+            "purpose": "dispute_evidence",
+            "file_name": name,
+            "size": len(pdf),
+            "sha256": digest,
+            "razorpay_document_id": doc_id,
+            "policy": "External preparatory document upload prior to final human contest approval.",
+        },
     )
 
 

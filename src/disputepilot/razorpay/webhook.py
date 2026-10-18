@@ -37,8 +37,7 @@ def init_db(db_path: Path | str = DEFAULT_DB_PATH) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)
 
     with sqlite3.connect(str(path)) as conn:
-        cursor = conn.cursor()
-        cursor.execute(
+        conn.executescript(
             """
             CREATE TABLE IF NOT EXISTS dispute_events (
                 event_id TEXT PRIMARY KEY UNIQUE,
@@ -47,10 +46,11 @@ def init_db(db_path: Path | str = DEFAULT_DB_PATH) -> None:
                 payment_id TEXT,
                 payload TEXT NOT NULL,
                 received_at INTEGER NOT NULL
-            )
+            );
+            CREATE INDEX IF NOT EXISTS idx_dispute_events_received ON dispute_events (received_at);
+            CREATE INDEX IF NOT EXISTS idx_dispute_events_dispute ON dispute_events (dispute_id);
             """
         )
-        conn.commit()
 
 
 def is_event_processed(event_id: str, db_path: Path | str = DEFAULT_DB_PATH) -> bool:
@@ -98,6 +98,72 @@ def record_dispute_event_atomic(
 
 # Backwards compatibility alias
 record_dispute_event = record_dispute_event_atomic
+
+
+def sanitize_webhook_payload(event_json: dict[str, Any]) -> dict[str, Any]:
+    """Prune sensitive customer information and retain only necessary fields for dispute processing."""
+    if not isinstance(event_json, dict):
+        return {}
+
+    sanitized: dict[str, Any] = {
+        "entity": str(event_json.get("entity", "event")),
+        "event": str(event_json.get("event", "unknown")),
+    }
+    if "account_id" in event_json:
+        sanitized["account_id"] = str(event_json["account_id"])
+    if "created_at" in event_json:
+        sanitized["created_at"] = event_json["created_at"]
+    if "id" in event_json:
+        sanitized["id"] = event_json["id"]
+
+    # Extract only the dispute entity if present
+    dispute_entity = (
+        event_json.get("payload", {})
+        .get("dispute", {})
+        .get("entity", {})
+    )
+    if isinstance(dispute_entity, dict) and dispute_entity:
+        allowed_dispute_fields = {
+            "id",
+            "entity",
+            "payment_id",
+            "amount",
+            "currency",
+            "amount_deducted",
+            "reason_code",
+            "status",
+            "phase",
+            "created_at",
+            "respond_by",
+        }
+        sanitized_dispute = {
+            k: v for k, v in dispute_entity.items() if k in allowed_dispute_fields
+        }
+        sanitized["payload"] = {"dispute": {"entity": sanitized_dispute}}
+    else:
+        sanitized["payload"] = {}
+
+    return sanitized
+
+
+def prune_dispute_events(max_age_days: int = 90, db_path: Path | str = DEFAULT_DB_PATH) -> int:
+    """Prune webhook dispute events older than max_age_days for data retention compliance.
+
+    Args:
+        max_age_days: Retention horizon in days (default 90).
+        db_path: Path to SQLite dispute events database.
+
+    Returns:
+        Number of pruned event rows.
+    """
+    cutoff = int(time.time()) - (max_age_days * 86400)
+    init_db(db_path)
+    with sqlite3.connect(str(db_path), timeout=30.0) as conn:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM dispute_events WHERE received_at < ?", (cutoff,))
+        pruned = cursor.rowcount
+        conn.commit()
+        return pruned
 
 
 def verify_webhook_signature(raw_body: bytes, signature: str | None, secret: str | None) -> bool:
@@ -207,13 +273,14 @@ def create_webhook_router(
         payment_id = dispute_entity.get("payment_id")
         received_at = int(time.time())
 
-        # 5. Atomic Deduplication via INSERT OR IGNORE / IntegrityError
+        # 5. Atomic Deduplication with Sanitized Storage
+        sanitized_payload = sanitize_webhook_payload(event_json)
         inserted = record_dispute_event_atomic(
             event_id=event_id,
             event_type=event_type,
             dispute_id=dispute_id,
             payment_id=payment_id,
-            payload_json=json.dumps(event_json),
+            payload_json=json.dumps(sanitized_payload),
             received_at=received_at,
             db_path=db_path,
         )

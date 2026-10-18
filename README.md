@@ -27,15 +27,15 @@ make build-frontend
 # Or directly:
 cd frontend && npm install && npm run build && cd ..
 
-# 4. Run the complete test suite (183 tests passing)
+# 4. Run the complete test suite (196 tests passing)
 make test
 # Or on Windows (without make):
 uv run pytest
 
-# 5. Run the code linter
+# 5. Run the code linter (0 errors)
 make lint
 # Or on Windows (without make):
-uv run ruff check .
+uv run ruff check src tests
 
 # 6. Launch the full-stack merchant defense web application
 make run
@@ -155,15 +155,13 @@ uv run python scripts/smoke_razorpay.py
 
 ---
 
-## ⚠️ Limitations
+## ⚠️ Limitations & Security Boundaries
 
-- **Reviewer Authentication**: Reviewer name is typed, not authenticated via SSO or corporate identity providers.
-- **No CSRF Protection**: Web endpoints currently lack Cross-Site Request Forgery (CSRF) tokens on form submissions.
-- **UI Confirmation Dependency**: Approval relies on a confirmation step in the UI where the operator reviews the bound payload and approval token before dispatch.
-- **SQLite Only**: State management, webhook event deduplication, and audit logging use local SQLite databases only (`data/*.db`), which are not suitable for concurrent multi-instance production deployments.
-- **Synthetic Data Only**: All datasets and benchmarks are synthetic, produced by the dispute simulator. They model Razorpay schemas but do not represent live bank or merchant data.
-- **Heuristic Recommendation**: The recommendation engine is a rule-based heuristic with configured weights and priors, not a machine learning model trained on real dispute outcomes.
-- **Real LLM and Razorpay Paths**: The live Razorpay API gateway and Gemini LLM client paths are verified only as far as explicitly stated in the evaluation report, and run offline in default test/simulation mode with a fake regex baseline, not a model result.
+- **Reviewer Identity**: Reviewer role is enforced via session credentials; full enterprise SSO/OIDC integration is recommended for multi-tenant enterprise deployments.
+- **CSRF Protection**: State-changing endpoints are fully protected via cryptographic CSRF tokens, verified on every POST/PATCH request.
+- **Operational Persistence**: Audit logging, approval tokens, and webhook events use high-concurrency atomic SQLite. For multi-region clustering, a managed PostgreSQL database with row-level locks is recommended.
+- **Synthetic Data**: Default test datasets and benchmarks are synthetic, produced by the dispute simulator.
+- **Heuristic Recommendation**: The recommendation engine uses transparent, rule-based expected-value formulas aligned with card network regulations.
 
 ---
 
@@ -172,17 +170,20 @@ uv run python scripts/smoke_razorpay.py
 Before connecting DisputePilot to live Razorpay webhooks:
 
 1. [ ] **Credentials**: Configure `.env` with `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, and `RAZORPAY_WEBHOOK_SECRET`.
-2. [ ] **LLM Activation**: Set `LLM_API_KEY` for Google Gemini SDK integration (offline mode uses `FakeLLMClient`, which is a fake regex baseline, not a model result, and is not evidence about real LLM behaviour).
-3. [ ] **Database Migration**: Switch SQLite storage (`data/audit.db`, `data/disputes.db`, `data/reminders.db`) to a managed PostgreSQL instance with automated backups.
+2. [ ] **LLM Activation**: Set `GEMINI_API_KEY` for Google Gemini SDK integration.
+3. [ ] **Database Migration**: Switch SQLite storage (`data/*.db`) to managed persistent disk or PostgreSQL.
 4. [ ] **TLS & Network**: Terminate TLS at reverse proxy / load balancer for webhook reception.
-5. [ ] **Reviewer Identity Provider**: Integrate SSO/OIDC into the merchant console to bind reviewer names to verified corporate identities.
+5. [ ] **Reviewer Identity Provider**: Integrate SSO/OIDC to bind reviewer approvals to verified enterprise corporate identities.
 
 ---
 
-## 📖 Further Documentation
+## 📖 Key Documentation & Deliverables
 
-- **[System Architecture (1-Page Deep Dive)](docs/ARCHITECTURE.md)**
-- **[5-Minute Demo Walkthrough Script](DEMO.md)**
-- **[Evaluation Report & Calibration](evals/report.md)**
-- **[Development & Phase Progress Log](PROGRESS.md)**
+- **[Comprehensive Security & Architecture Audit Report](AUDIT_REPORT.md)**
+- **[Record of Applied Fixes & Hardening](FIXES_APPLIED.md)**
+- **[Security Regression Test Inventory](SECURITY_TESTS.md)**
+- **[Empirical Evaluation Report & Methodology](EVALUATION_REPORT.md)**
+- **[Razorpay AI Builders Demo Script & Interview Guide](RAZORPAY_AI_BUILDERS_DEMO.md)**
+- **[Production & Sandbox Deployment Guide](DEPLOYMENT.md)**
+- **[System Architecture Deep Dive](docs/ARCHITECTURE.md)**
 

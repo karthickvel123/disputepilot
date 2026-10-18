@@ -1,14 +1,16 @@
-"""Approval service and token validation for sensitive dispute operations."""
-
 import hashlib
 import json
+import logging
 import secrets
 import sqlite3
+import threading
 import time
 from pathlib import Path
 from typing import Any
 
 from pydantic import BaseModel, Field
+
+logger = logging.getLogger("disputepilot.razorpay.approval")
 
 
 class ApprovalRequired(Exception):
@@ -71,6 +73,7 @@ class ApprovalService:
         """
         self.token_ttl_seconds = token_ttl_seconds
         self.db_path = Path(db_path) if db_path is not None else None
+        self._lock = threading.RLock()
         self._tokens: dict[str, ApprovalToken] = {}
         if self.db_path:
             self._init_db()
@@ -78,7 +81,7 @@ class ApprovalService:
     def _init_db(self) -> None:
         if self.db_path:
             self.db_path.parent.mkdir(parents=True, exist_ok=True)
-            with sqlite3.connect(str(self.db_path)) as conn:
+            with sqlite3.connect(str(self.db_path), timeout=30.0) as conn:
                 conn.execute(
                     """
                     CREATE TABLE IF NOT EXISTS approval_tokens (
@@ -93,6 +96,12 @@ class ApprovalService:
                         metadata TEXT NOT NULL DEFAULT '{}'
                     )
                     """
+                )
+                conn.execute(
+                    "CREATE INDEX IF NOT EXISTS idx_approval_dispute ON approval_tokens (dispute_id)"
+                )
+                conn.execute(
+                    "CREATE INDEX IF NOT EXISTS idx_approval_used ON approval_tokens (used)"
                 )
                 conn.commit()
 
@@ -150,60 +159,65 @@ class ApprovalService:
             expires_at=current_time + self.token_ttl_seconds,
             used=False,
         )
-        self._tokens[token_str] = record
 
-        if self.db_path:
-            with sqlite3.connect(str(self.db_path)) as conn:
-                conn.execute(
-                    """
-                    INSERT OR REPLACE INTO approval_tokens
-                    (token, dispute_id, action, payload_hash, approver, created_at, expires_at, used, metadata)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                    """,
-                    (
-                        record.token,
-                        record.dispute_id,
-                        record.action,
-                        record.payload_hash,
-                        record.approver,
-                        record.created_at,
-                        record.expires_at,
-                        1 if record.used else 0,
-                        json.dumps(record.metadata),
-                    ),
-                )
-                conn.commit()
+        with self._lock:
+            self._tokens[token_str] = record
+
+            if self.db_path:
+                with sqlite3.connect(str(self.db_path), timeout=30.0) as conn:
+                    conn.execute(
+                        """
+                        INSERT OR REPLACE INTO approval_tokens
+                        (token, dispute_id, action, payload_hash, approver, created_at, expires_at, used, metadata)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        """,
+                        (
+                            record.token,
+                            record.dispute_id,
+                            record.action,
+                            record.payload_hash,
+                            record.approver,
+                            record.created_at,
+                            record.expires_at,
+                            1 if record.used else 0,
+                            json.dumps(record.metadata),
+                        ),
+                    )
+                    conn.commit()
 
         return token_str
 
     def get_token_record(self, token: str | None) -> ApprovalToken | None:
-        """Retrieve token record if it exists."""
+        """Retrieve token record if it exists, reading fresh state from persistent storage."""
         if not token:
             return None
-        if token in self._tokens:
-            return self._tokens[token]
-        if self.db_path:
-            with sqlite3.connect(str(self.db_path)) as conn:
-                cursor = conn.execute(
-                    "SELECT token, dispute_id, action, payload_hash, approver, created_at, expires_at, used, metadata FROM approval_tokens WHERE token = ?",
-                    (token,),
-                )
-                row = cursor.fetchone()
-                if row:
-                    record = ApprovalToken(
-                        token=row[0],
-                        dispute_id=row[1],
-                        action=row[2],
-                        payload_hash=row[3],
-                        approver=row[4],
-                        created_at=row[5],
-                        expires_at=row[6],
-                        used=bool(row[7]),
-                        metadata=json.loads(row[8]) if row[8] else {},
+
+        with self._lock:
+            if self.db_path:
+                with sqlite3.connect(str(self.db_path), timeout=30.0) as conn:
+                    cursor = conn.execute(
+                        "SELECT token, dispute_id, action, payload_hash, approver, created_at, expires_at, used, metadata "
+                        "FROM approval_tokens WHERE token = ?",
+                        (token,),
                     )
-                    self._tokens[token] = record
-                    return record
-        return None
+                    row = cursor.fetchone()
+                    if row:
+                        record = ApprovalToken(
+                            token=row[0],
+                            dispute_id=row[1],
+                            action=row[2],
+                            payload_hash=row[3],
+                            approver=row[4],
+                            created_at=row[5],
+                            expires_at=row[6],
+                            used=bool(row[7]),
+                            metadata=json.loads(row[8]) if row[8] else {},
+                        )
+                        self._tokens[token] = record
+                        return record
+                return None
+
+            return self._tokens.get(token)
 
     def verify_token(
         self,
@@ -211,51 +225,108 @@ class ApprovalService:
         action: str,
         dispute_id: str,
         expected_payload_hash: str | None = None,
+        expected_approver: str | None = None,
         now: int | None = None,
         consume: bool = True,
     ) -> bool:
         """Verify that a given approval token is valid, unused, unexpired, and matches content.
+
+        Atomic execution:
+        - When persistent DB is configured, uses an atomic conditional UPDATE with rowcount check
+          to prevent double-consumption race conditions across concurrent processes/threads.
+        - When in-memory, guarded by thread lock.
 
         Args:
             token: The token string to verify.
             action: Expected action ('accept' or 'submit').
             dispute_id: Expected dispute ID.
             expected_payload_hash: SHA-256 hash recomputed at call time.
+            expected_approver: Optional expected approver identity.
             now: Current unix timestamp in seconds (injectable).
             consume: Whether to mark the token as used upon successful verification.
 
         Returns:
-            True if valid, False otherwise.
+            True if valid and successfully consumed, False otherwise.
         """
-        if not token:
-            return False
-
-        record = self.get_token_record(token)
-        if record is None:
+        if not token or not str(token).strip():
             return False
 
         current_time = int(time.time()) if now is None else int(now)
+        act = action.lower().strip()
 
-        if record.used:
-            return False
-        if record.expires_at < current_time:
-            return False
-        if record.dispute_id != dispute_id:
-            return False
-        if record.action != action.lower():
-            return False
-        if expected_payload_hash is not None and record.payload_hash != expected_payload_hash:
-            return False
+        if self.db_path:
+            with self._lock:
+                try:
+                    with sqlite3.connect(str(self.db_path), timeout=30.0, isolation_level="EXCLUSIVE") as conn:
+                        cursor = conn.cursor()
+                        if consume:
+                            query = """
+                                UPDATE approval_tokens
+                                SET used = 1
+                                WHERE token = ?
+                                  AND used = 0
+                                  AND expires_at >= ?
+                                  AND dispute_id = ?
+                                  AND action = ?
+                            """
+                            params: list[Any] = [token, current_time, dispute_id, act]
+                            if expected_payload_hash is not None:
+                                query += " AND payload_hash = ?"
+                                params.append(expected_payload_hash)
+                            if expected_approver is not None:
+                                query += " AND approver = ?"
+                                params.append(expected_approver)
 
-        if consume:
-            record.used = True
-            if self.db_path:
-                with sqlite3.connect(str(self.db_path)) as conn:
-                    conn.execute("UPDATE approval_tokens SET used = 1 WHERE token = ?", (token,))
-                    conn.commit()
+                            cursor.execute(query, tuple(params))
+                            conn.commit()
+                            if cursor.rowcount == 1:
+                                if token in self._tokens:
+                                    self._tokens[token].used = True
+                                return True
+                            return False
+                        else:
+                            query = """
+                                SELECT 1 FROM approval_tokens
+                                WHERE token = ?
+                                  AND used = 0
+                                  AND expires_at >= ?
+                                  AND dispute_id = ?
+                                  AND action = ?
+                            """
+                            params = [token, current_time, dispute_id, act]
+                            if expected_payload_hash is not None:
+                                query += " AND payload_hash = ?"
+                                params.append(expected_payload_hash)
+                            if expected_approver is not None:
+                                query += " AND approver = ?"
+                                params.append(expected_approver)
 
-        return True
+                            cursor.execute(query, tuple(params))
+                            return cursor.fetchone() is not None
+                except sqlite3.Error as exc:
+                    logger.error("Database error during token verification for token %s: %s", token, exc)
+                    return False
+        else:
+            with self._lock:
+                record = self._tokens.get(token)
+                if record is None:
+                    return False
+                if record.used:
+                    return False
+                if record.expires_at < current_time:
+                    return False
+                if record.dispute_id != dispute_id:
+                    return False
+                if record.action != act:
+                    return False
+                if expected_payload_hash is not None and record.payload_hash != expected_payload_hash:
+                    return False
+                if expected_approver is not None and record.approver != expected_approver:
+                    return False
 
+                if consume:
+                    record.used = True
+                return True
 
     def require_approval(
         self,
@@ -263,7 +334,9 @@ class ApprovalService:
         action: str,
         dispute_id: str,
         expected_payload_hash: str | None = None,
+        expected_approver: str | None = None,
         now: int | None = None,
+        consume: bool = True,
     ) -> None:
         """Validate approval token and content binding or raise ApprovalRequired.
 
@@ -272,7 +345,9 @@ class ApprovalService:
             action: Expected action ('accept' or 'submit').
             dispute_id: Expected dispute ID.
             expected_payload_hash: Recomputed hash of exact payload being acted on.
+            expected_approver: Optional expected approver identity.
             now: Current unix timestamp in seconds.
+            consume: Whether to consume the token on successful verification.
 
         Raises:
             ApprovalRequired: If token is missing, invalid, expired, used, or payload hash mismatches.
@@ -282,7 +357,9 @@ class ApprovalService:
             action=action,
             dispute_id=dispute_id,
             expected_payload_hash=expected_payload_hash,
+            expected_approver=expected_approver,
             now=now,
+            consume=consume,
         ):
             raise ApprovalRequired(
                 f"Action '{action}' on dispute '{dispute_id}' requires a valid human approval token "

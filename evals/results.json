@@ -239,7 +239,7 @@
     "cases_evaluated": 100,
     "reason_classifier": {
       "accuracy": 0.06,
-      "macro_f1": 0.0933,
+      "macro_f1": 0.098,
       "per_class": {
         "item_not_received": {
           "precision": 0.0,
@@ -248,9 +248,9 @@
           "support": 15
         },
         "not_as_described": {
-          "precision": 0.6,
+          "precision": 1.0,
           "recall": 0.2,
-          "f1": 0.3,
+          "f1": 0.3333,
           "support": 15
         },
         "unauthorised": {
@@ -314,27 +314,27 @@
         },
         {
           "bin": "[0.2, 0.4)",
-          "count": 3,
-          "mean_predicted_prob": 0.29,
+          "count": 2,
+          "mean_predicted_prob": 0.295,
           "actual_win_rate": 0.0
         },
         {
           "bin": "[0.4, 0.6)",
-          "count": 1,
-          "mean_predicted_prob": 0.58,
+          "count": 0,
+          "mean_predicted_prob": 0.0,
           "actual_win_rate": 0.0
         },
         {
           "bin": "[0.6, 0.8)",
-          "count": 3,
+          "count": 2,
           "mean_predicted_prob": 0.68,
-          "actual_win_rate": 0.6667
+          "actual_win_rate": 1.0
         },
         {
           "bin": "[0.8, 1.0]",
-          "count": 1,
-          "mean_predicted_prob": 0.95,
-          "actual_win_rate": 1.0
+          "count": 0,
+          "mean_predicted_prob": 0.0,
+          "actual_win_rate": 0.0
         }
       ]
     },
@@ -343,18 +343,18 @@
       "fee_per_dispute_inr": 0.0,
       "contest_everything_inr": 154872.0,
       "accept_everything_inr": 0.0,
-      "disputepilot_policy_inr": 26999.0,
-      "uplift_vs_contest_everything_inr": -127873.0,
-      "uplift_vs_accept_everything_inr": 26999.0,
-      "unwinnable_disputes_prevented": 69,
-      "unwinnable_disputes_contested": 1
+      "disputepilot_policy_inr": 22499.0,
+      "uplift_vs_contest_everything_inr": -132373.0,
+      "uplift_vs_accept_everything_inr": 22499.0,
+      "unwinnable_disputes_prevented": 70,
+      "unwinnable_disputes_contested": 0
     }
   },
   "messy_set_rules_llm": {
     "cases_evaluated": 100,
     "reason_classifier": {
-      "accuracy": 0.82,
-      "macro_f1": 0.8654,
+      "accuracy": 0.85,
+      "macro_f1": 0.8994,
       "per_class": {
         "item_not_received": {
           "precision": 0.9,
@@ -363,15 +363,15 @@
           "support": 15
         },
         "not_as_described": {
-          "precision": 0.8462,
+          "precision": 1.0,
           "recall": 0.7333,
-          "f1": 0.7857,
+          "f1": 0.8462,
           "support": 15
         },
         "unauthorised": {
-          "precision": 0.9286,
+          "precision": 1.0,
           "recall": 0.9286,
-          "f1": 0.9286,
+          "f1": 0.963,
           "support": 14
         },
         "duplicate_charge": {
@@ -382,14 +382,14 @@
         },
         "subscription_cancelled": {
           "precision": 1.0,
-          "recall": 0.9286,
-          "f1": 0.963,
+          "recall": 1.0,
+          "f1": 1.0,
           "support": 14
         },
         "refund_not_received": {
           "precision": 1.0,
-          "recall": 0.5714,
-          "f1": 0.7273,
+          "recall": 0.7143,
+          "f1": 0.8333,
           "support": 14
         },
         "other": {
@@ -424,25 +424,25 @@
         {
           "bin": "[0.0, 0.2)",
           "count": 11,
-          "mean_predicted_prob": 0.1173,
+          "mean_predicted_prob": 0.1127,
           "actual_win_rate": 0.0
         },
         {
           "bin": "[0.2, 0.4)",
-          "count": 19,
-          "mean_predicted_prob": 0.2905,
-          "actual_win_rate": 0.0526
+          "count": 18,
+          "mean_predicted_prob": 0.2911,
+          "actual_win_rate": 0.0556
         },
         {
           "bin": "[0.4, 0.6)",
-          "count": 15,
-          "mean_predicted_prob": 0.496,
+          "count": 16,
+          "mean_predicted_prob": 0.4938,
           "actual_win_rate": 0.0
         },
         {
           "bin": "[0.6, 0.8)",
           "count": 23,
-          "mean_predicted_prob": 0.7035,
+          "mean_predicted_prob": 0.7043,
           "actual_win_rate": 0.4783
         },
         {
@@ -468,8 +468,8 @@
   "messy_set": {
     "cases_evaluated": 100,
     "reason_classifier": {
-      "accuracy": 0.82,
-      "macro_f1": 0.8654,
+      "accuracy": 0.85,
+      "macro_f1": 0.8994,
       "per_class": {
         "item_not_received": {
           "precision": 0.9,
@@ -478,15 +478,15 @@
           "support": 15
         },
         "not_as_described": {
-          "precision": 0.8462,
+          "precision": 1.0,
           "recall": 0.7333,
-          "f1": 0.7857,
+          "f1": 0.8462,
           "support": 15
         },
         "unauthorised": {
-          "precision": 0.9286,
+          "precision": 1.0,
           "recall": 0.9286,
-          "f1": 0.9286,
+          "f1": 0.963,
           "support": 14
         },
         "duplicate_charge": {
@@ -497,14 +497,14 @@
         },
         "subscription_cancelled": {
           "precision": 1.0,
-          "recall": 0.9286,
-          "f1": 0.963,
+          "recall": 1.0,
+          "f1": 1.0,
           "support": 14
         },
         "refund_not_received": {
           "precision": 1.0,
-          "recall": 0.5714,
-          "f1": 0.7273,
+          "recall": 0.7143,
+          "f1": 0.8333,
           "support": 14
         },
         "other": {
@@ -539,25 +539,25 @@
         {
           "bin": "[0.0, 0.2)",
           "count": 11,
-          "mean_predicted_prob": 0.1173,
+          "mean_predicted_prob": 0.1127,
           "actual_win_rate": 0.0
         },
         {
           "bin": "[0.2, 0.4)",
-          "count": 19,
-          "mean_predicted_prob": 0.2905,
-          "actual_win_rate": 0.0526
+          "count": 18,
+          "mean_predicted_prob": 0.2911,
+          "actual_win_rate": 0.0556
         },
         {
           "bin": "[0.4, 0.6)",
-          "count": 15,
-          "mean_predicted_prob": 0.496,
+          "count": 16,
+          "mean_predicted_prob": 0.4938,
           "actual_win_rate": 0.0
         },
         {
           "bin": "[0.6, 0.8)",
           "count": 23,
-          "mean_predicted_prob": 0.7035,
+          "mean_predicted_prob": 0.7043,
           "actual_win_rate": 0.4783
         },
         {

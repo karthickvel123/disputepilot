@@ -8,6 +8,8 @@ import datetime
 import hashlib
 import json
 import logging
+import re
+import secrets
 import time
 from pathlib import Path
 from typing import Any
@@ -15,6 +17,14 @@ from typing import Any
 from fastapi import APIRouter, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
+
+# ---------------------------------------------------------------------------
+# Operational Tiers (Separation of Concerns & Approval Boundaries)
+# ---------------------------------------------------------------------------
+OP_READ_ONLY = "read_only"
+OP_LOCAL_PREPARATORY = "local_preparatory"
+OP_EXTERNAL_PREPARATORY = "external_preparatory"
+OP_CONSEQUENTIAL_DISPUTE = "consequential_dispute"
 
 from disputepilot.config import load_settings
 from disputepilot.core.deadlines import calculate_deadline
@@ -256,6 +266,7 @@ def _ensure_letter_uploaded(case: DisputeCase, clean_markdown: str, reviewer: st
         uploaded = _require_gateway().upload_document(pdf, name, purpose="dispute_evidence")
     except (httpx.HTTPError, ValueError) as err:
         raise _upstream_error(err) from err
+    doc_id = str(uploaded.get("id", "")) or None
     _locker.add(
         dispute_id=case.dispute.id,
         category="explanation_letter",
@@ -264,7 +275,21 @@ def _ensure_letter_uploaded(case: DisputeCase, clean_markdown: str, reviewer: st
         size=len(pdf),
         sha256=digest,
         uploaded_by=reviewer,
-        razorpay_doc_id=str(uploaded.get("id", "")) or None,
+        razorpay_doc_id=doc_id,
+    )
+    record_audit_event(
+        case_id=case.case_id,
+        action="preparatory_letter_upload",
+        actor=reviewer,
+        details={
+            "operation_tier": OP_EXTERNAL_PREPARATORY,
+            "purpose": "dispute_evidence",
+            "file_name": name,
+            "size": len(pdf),
+            "sha256": digest,
+            "razorpay_document_id": doc_id,
+            "policy": "External preparatory document upload prior to final human contest approval.",
+        },
     )
 
 
@@ -852,6 +877,12 @@ async def api_submit_contest(request: Request, case_id: str, body: SubmitContest
             detail="Payload hash mismatch. The content submitted does not match the approved payload.",
         )
 
+    appr_svc = _get_approval_service()
+    token_rec = appr_svc.get_token_record(body.approval_token) if appr_svc else None
+    requester = token_rec.metadata.get("requester", token_rec.approver) if (token_rec and token_rec.metadata) else (token_rec.approver if token_rec else session["user"])
+    approver = token_rec.approver if token_rec else session["user"]
+    executor = session["user"]
+
     import httpx
     try:
         if _settings.is_sim:
@@ -876,19 +907,34 @@ async def api_submit_contest(request: Request, case_id: str, body: SubmitContest
         raise _upstream_error(err) from err
 
     if _live_source is not None:
-        _live_source.invalidate()
+        try:
+            _live_source.invalidate()
+        except Exception as inv_err:  # noqa: BLE001
+            logger.debug("Live source cache invalidation notice: %s", inv_err)
 
     token_hash = hashlib.sha256(body.approval_token.encode("utf-8")).hexdigest()
-    record_audit_event(
-        case_id=case_id,
-        action="submit_contest",
-        actor=session["user"],
-        details={
-            "payload_hash": body.payload_hash,
-            "approval_token_hash": token_hash,
-            "razorpay_status": updated.status.value,
-        },
-    )
+    try:
+        record_audit_event(
+            case_id=case_id,
+            action="submit_contest",
+            actor=executor,
+            details={
+                "operation_tier": OP_CONSEQUENTIAL_DISPUTE,
+                "payload_hash": body.payload_hash,
+                "approval_token_hash": token_hash,
+                "requester": requester,
+                "approver": approver,
+                "executor": executor,
+                "razorpay_status": updated.status.value,
+            },
+        )
+    except Exception as audit_err:  # noqa: BLE001
+        logger.critical(
+            "CRITICAL: Contest submitted to Razorpay (status=%s) but audit logging failed for %s: %s",
+            updated.status.value,
+            case_id,
+            audit_err,
+        )
 
     return {
         "case_id": case_id,
@@ -969,13 +1015,19 @@ async def api_accept_dispute(request: Request, case_id: str, body: AcceptDispute
         raise HTTPException(status_code=404, detail=f"Case '{case_id}' not found.")
 
     expected_hash = compute_accept_payload_hash(case.dispute.id, case.dispute.amount)
-    if body.payload_hash and body.payload_hash != expected_hash:
+    if not body.payload_hash or body.payload_hash != expected_hash:
         raise HTTPException(
             status_code=400,
-            detail="Payload hash mismatch. The acceptance request does not match the approved dispute.",
+            detail="Payload hash mismatch or missing. Acceptance strictly requires the verified payload hash.",
         )
 
     _ensure_actionable(case)
+
+    appr_svc = _get_approval_service()
+    token_rec = appr_svc.get_token_record(body.approval_token) if appr_svc else None
+    requester = token_rec.metadata.get("requester", token_rec.approver) if (token_rec and token_rec.metadata) else (token_rec.approver if token_rec else session["user"])
+    approver = token_rec.approver if token_rec else session["user"]
+    executor = session["user"]
 
     import httpx
     try:
@@ -989,20 +1041,36 @@ async def api_accept_dispute(request: Request, case_id: str, body: AcceptDispute
         raise _upstream_error(err) from err
 
     if _live_source is not None:
-        _live_source.invalidate()
+        try:
+            _live_source.invalidate()
+        except Exception as inv_err:  # noqa: BLE001
+            logger.debug("Live source cache invalidation notice: %s", inv_err)
 
     token_hash = hashlib.sha256(body.approval_token.encode("utf-8")).hexdigest()
-    record_audit_event(
-        case_id=case_id,
-        action="accept_dispute",
-        actor=session["user"],
-        details={
-            "dispute_id": case.dispute.id,
-            "amount": case.dispute.amount,
-            "approval_token_hash": token_hash,
-            "razorpay_status": updated.status.value,
-        },
-    )
+    try:
+        record_audit_event(
+            case_id=case_id,
+            action="accept_dispute",
+            actor=executor,
+            details={
+                "operation_tier": OP_CONSEQUENTIAL_DISPUTE,
+                "dispute_id": case.dispute.id,
+                "amount": case.dispute.amount,
+                "payload_hash": body.payload_hash,
+                "approval_token_hash": token_hash,
+                "requester": requester,
+                "approver": approver,
+                "executor": executor,
+                "razorpay_status": updated.status.value,
+            },
+        )
+    except Exception as audit_err:  # noqa: BLE001
+        logger.critical(
+            "CRITICAL: Dispute accepted at Razorpay (status=%s) but audit logging failed for %s: %s",
+            updated.status.value,
+            case_id,
+            audit_err,
+        )
 
     return {
         "case_id": case_id,
@@ -1041,8 +1109,15 @@ async def api_upload_evidence(
             detail="You must confirm the file contains no card number, CVV or card track data.",
         )
 
-    file_name = Path(str(file.filename or "evidence")).name
-    ext = Path(file_name).suffix.lower()
+    raw_name = str(file.filename or "evidence")
+    cleaned_name = re.sub(r"^.*[\\/]", "", raw_name)
+    sanitized_name = re.sub(r"[^\w.\-_]", "_", cleaned_name)
+    ext = Path(sanitized_name).suffix.lower()
+    if not sanitized_name or sanitized_name.startswith(".") or ext not in ALLOWED_MIME:
+        if ext not in ALLOWED_MIME:
+            raise HTTPException(status_code=400, detail="Razorpay accepts only PDF, PNG or JPEG evidence files.")
+        sanitized_name = f"evidence_{secrets.token_hex(4)}{ext}"
+    file_name = sanitized_name
     if ext not in ALLOWED_MIME:
         raise HTTPException(status_code=400, detail="Razorpay accepts only PDF, PNG or JPEG evidence files.")
 
@@ -1119,6 +1194,7 @@ async def api_upload_evidence(
         action="upload_evidence",
         actor=session["user"],
         details={
+            "operation_tier": OP_EXTERNAL_PREPARATORY,
             "category": category,
             "file_name": file_name,
             "size": len(data),
@@ -1135,6 +1211,8 @@ async def api_upload_evidence(
         "size": len(data),
         "sha256": digest,
         "razorpay_doc_id": doc_id,
+        "extraction_status": "manual_excerpt_provided" if clean_excerpt else "ocr_not_configured",
+        "extraction_notice": "Server-side OCR is not enabled in this environment. Provide relevant excerpt manually or upload as supporting document.",
     }
 
 
