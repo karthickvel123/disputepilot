@@ -51,7 +51,16 @@ All configuration is managed cleanly through environment variables, validated by
 | `RAZORPAY_WEBHOOK_SECRET` | `""` | Only in `live` mode | Secret used for HMAC-SHA256 signature verification of webhook events. |
 | `GEMINI_API_KEY` | `""` | No | Google Gemini API Key for LLM classification and structured extraction. |
 | `REVIEWER_USER` | `reviewer` | **YES** (in Prod) | Designated reviewer username for Tier 4 approvals. |
-| `REVIEWER_PASSWORD_HASH` | (demo hash) | **YES** (in Prod) | SHA-256 or bcrypt hash of reviewer password. |
+| `REVIEWER_PASSWORD_HASH` | (demo hash) | **YES** (in Prod) | Salted scrypt hash (`salt.hex():key.hex()`). Generate with `python scripts/hash_password.py`. |
+
+### Secure Credential Generation
+To generate a production reviewer hash and session secret, run:
+```bash
+python scripts/hash_password.py
+# Or in Python:
+python -c "from disputepilot.web.auth import hash_password; print(hash_password('YourStrongPasswordHere'))"
+```
+*DisputePilot uses memory-hard salted `hashlib.scrypt` (N=16384, r=8, p=1) with a 16-byte cryptographically random salt to resist GPU/ASIC rainbow-table attacks. Legacy unsalted SHA-256 is supported only as a backward-compatible fallback for existing dev setups.*
 
 ---
 

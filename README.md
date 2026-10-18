@@ -179,6 +179,7 @@ Before connecting DisputePilot to live Razorpay webhooks:
 
 ## 📖 Key Documentation & Deliverables
 
+- **[Final Independent Verification & Release Audit](FINAL_VERIFICATION_REPORT.md)**
 - **[Comprehensive Security & Architecture Audit Report](AUDIT_REPORT.md)**
 - **[Record of Applied Fixes & Hardening](FIXES_APPLIED.md)**
 - **[Security Regression Test Inventory](SECURITY_TESTS.md)**

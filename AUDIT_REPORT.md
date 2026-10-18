@@ -128,8 +128,15 @@ In `src/disputepilot/web/api.py`:
    - *Current Implementation*: Fast, lightweight text extraction from text-based PDFs and UTF-8 document metadata. Scanned image OCR requires an external service or sandboxed container running Tesseract/AWS Textract.
 3. **Razorpay Documents API Dependencies**:
    - The Razorpay Documents API requires a live network connection and merchant credentials. In simulated mode, DisputePilot provides `SimGateway` which mimics document uploads locally.
+4. **PCI-DSS Compliance Scope**:
+   - *Current Implementation*: Luhn-checksum card scanning and webhook payload sanitization prevent accidental PAN/CVV storage in the database or prompt transmission.
+   - *Regulatory Boundary*: Technical data sanitization assists with compliance but does not constitute certified PCI-DSS Level 1-4 compliance, which requires formal QSA assessment, Attestation of Compliance (AOC), and network segmentation.
+5. **Live Razorpay Gateway Verification**:
+   - The gateway implementation matches Razorpay Disputes and Documents API v1 specifications, verified via `SimGateway` and mocked HTTP transport. Live end-to-end network mutations against `api.razorpay.com` require merchant credentials.
+6. **Reviewer Password Storage**:
+   - Uses memory-hard salted `hashlib.scrypt` (N=16384, r=8, p=1). Legacy unsalted SHA-256 is deprecated and supported only for backward compatibility.
 
 ---
 
 ## 6. Audit Sign-Off
-All 196 tests pass, 0 linter errors remain, and all critical security vectors have been addressed and validated with automated regression suites.
+All 197 tests pass, 0 linter errors remain, and all critical security vectors have been addressed and validated with automated regression suites.
