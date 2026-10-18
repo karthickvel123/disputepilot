@@ -6,6 +6,7 @@
 # Data directory (SQLite databases & generated drafts)
 data/*.db
 data/drafts/
+data/evidence_files/
 *.sqlite
 *.sqlite3
 

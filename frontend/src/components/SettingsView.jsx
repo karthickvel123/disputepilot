@@ -10,29 +10,142 @@ import {
   Webhook, 
   ExternalLink,
   RefreshCw,
-  FileText
+  FileText,
+  Building,
+  Lock,
+  Users,
+  Activity,
+  Send,
+  Save,
+  Check
 } from 'lucide-react';
-import { getSettings } from '../api';
+import { 
+  getSettings, 
+  getOrgSettings, 
+  saveOrgSettings, 
+  changePassword, 
+  listUsers,
+  testRazorpayConnection, 
+  testAiConnection 
+} from '../api';
 
 export default function SettingsView() {
+  const [activeTab, setActiveTab] = useState('diagnostics'); // 'diagnostics' | 'org' | 'security'
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+
+  // Diagnostics test states
+  const [testingRzp, setTestingRzp] = useState(false);
+  const [rzpResult, setRzpResult] = useState(null);
+  const [testingAi, setTestingAi] = useState(false);
+  const [aiResult, setAiResult] = useState(null);
+
+  // Organization settings state
+  const [orgSettings, setOrgSettings] = useState({
+    merchant_name: '',
+    merchant_id: '',
+    currency: 'INR',
+    timezone: 'Asia/Kolkata',
+    auto_triage: true,
+    high_value_threshold_paise: 5000000,
+    contact_email: '',
+  });
+  const [savingOrg, setSavingOrg] = useState(false);
+
+  // Change password state
+  const [oldPassword, setOldPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [changingPw, setChangingPw] = useState(false);
+
+  // Users list
+  const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    fetchSettings();
+    loadAllSettings();
   }, []);
 
-  async function fetchSettings() {
+  async function loadAllSettings() {
     setLoading(true);
     setError(null);
     try {
-      const data = await getSettings();
-      setSettings(data);
+      const [sys, org, uList] = await Promise.allSettled([
+        getSettings(),
+        getOrgSettings(),
+        listUsers(),
+      ]);
+      if (sys.status === 'fulfilled') setSettings(sys.value);
+      if (org.status === 'fulfilled') setOrgSettings(org.value);
+      if (uList.status === 'fulfilled') setUsers(uList.value.users || []);
     } catch (err) {
       setError(err.message || 'Failed to fetch settings.');
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleTestRazorpay() {
+    setTestingRzp(true);
+    setRzpResult(null);
+    try {
+      const res = await testRazorpayConnection();
+      setRzpResult(res);
+    } catch (err) {
+      setRzpResult({ status: 'error', message: err.message });
+    } finally {
+      setTestingRzp(false);
+    }
+  }
+
+  async function handleTestAi() {
+    setTestingAi(true);
+    setAiResult(null);
+    try {
+      const res = await testAiConnection();
+      setAiResult(res);
+    } catch (err) {
+      setAiResult({ status: 'error', message: err.message });
+    } finally {
+      setTestingAi(false);
+    }
+  }
+
+  async function handleSaveOrg(e) {
+    if (e) e.preventDefault();
+    setSavingOrg(true);
+    setSuccess(null);
+    setError(null);
+    try {
+      await saveOrgSettings(orgSettings);
+      setSuccess('Organization profile and triage rules saved successfully.');
+    } catch (err) {
+      setError(`Failed to save organization settings: ${err.message}`);
+    } finally {
+      setSavingOrg(false);
+    }
+  }
+
+  async function handleChangePassword(e) {
+    if (e) e.preventDefault();
+    if (newPassword !== confirmPassword) {
+      setError('New passwords do not match.');
+      return;
+    }
+    setChangingPw(true);
+    setSuccess(null);
+    setError(null);
+    try {
+      await changePassword({ old_password: oldPassword, new_password: newPassword });
+      setSuccess('Password updated successfully.');
+      setOldPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (err) {
+      setError(err.message || 'Password update failed.');
+    } finally {
+      setChangingPw(false);
     }
   }
 
@@ -46,161 +159,448 @@ export default function SettingsView() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 animate-fade-in pb-16">
+    <div className="max-w-4xl mx-auto space-y-6 animate-fade-in pb-16">
       {/* Header */}
       <div className="border-b border-slate-800 pb-5">
         <h2 className="font-heading text-2xl font-bold text-white flex items-center gap-2">
           <Settings className="w-6 h-6 text-indigo-400" />
-          <span>System Settings & Gateway Status</span>
+          <span>System Settings & Organization Center</span>
         </h2>
         <p className="text-xs text-slate-400 mt-1">
-          Monitor active environment parameters, Razorpay API credentials, Gemini AI model configuration, and webhook listeners.
+          Manage live API gateways, AI reasoning models, organization profile rules, and reviewer credentials.
         </p>
       </div>
 
-      {/* Integration Status Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-        {/* Razorpay Gateway */}
-        <div className="glass-panel p-5">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
-                <Server className="w-4 h-4" />
-              </div>
-              <h3 className="font-heading text-sm font-bold text-white">Razorpay Disputes Gateway</h3>
-            </div>
-            <span className={`badge ${settings?.has_razorpay ? 'badge-won' : 'badge-urgent'}`}>
-              {settings?.has_razorpay ? 'CONFIGURED' : 'SIMULATION MODE'}
-            </span>
-          </div>
-
-          <div className="space-y-2.5 text-xs">
-            <div className="flex justify-between py-1 border-b border-slate-800/60">
-              <span className="text-slate-400">Data Mode</span>
-              <span className="font-mono text-indigo-400 uppercase font-semibold">{settings?.data_mode}</span>
-            </div>
-            <div className="flex justify-between py-1 border-b border-slate-800/60">
-              <span className="text-slate-400">Key Mode</span>
-              <span className="font-mono text-slate-300 uppercase">{settings?.key_mode}</span>
-            </div>
-            <div className="flex justify-between py-1">
-              <span className="text-slate-400">Base API URL</span>
-              <span className="font-mono text-slate-400 truncate max-w-[200px]" title={settings?.razorpay_base_url}>
-                {settings?.razorpay_base_url}
-              </span>
-            </div>
-          </div>
+      {success && (
+        <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs flex items-center gap-2">
+          <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+          <span>{success}</span>
         </div>
+      )}
 
-        {/* Gemini AI Engine */}
-        <div className="glass-panel p-5">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
-                <Cpu className="w-4 h-4" />
-              </div>
-              <h3 className="font-heading text-sm font-bold text-white">Gemini Multimodal AI</h3>
-            </div>
-            <span className={`badge ${settings?.has_llm ? 'badge-won' : 'badge-open'}`}>
-              {settings?.has_llm ? 'ONLINE' : 'SYNTHETIC'}
-            </span>
-          </div>
-
-          <div className="space-y-2.5 text-xs">
-            <div className="flex justify-between py-1 border-b border-slate-800/60">
-              <span className="text-slate-400">Model Family</span>
-              <span className="font-mono text-cyan-400 font-semibold">Gemini 1.5 Pro</span>
-            </div>
-            <div className="flex justify-between py-1 border-b border-slate-800/60">
-              <span className="text-slate-400">SDK Version</span>
-              <span className="font-mono text-slate-300">google-genai v2.30+</span>
-            </div>
-            <div className="flex justify-between py-1">
-              <span className="text-slate-400">Guardrails</span>
-              <span className="font-medium text-emerald-400">Citation Grounding + PII Filter</span>
-            </div>
-          </div>
+      {error && (
+        <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
+          <AlertTriangle className="w-4 h-4 text-rose-400 flex-shrink-0" />
+          <span>{error}</span>
         </div>
+      )}
 
-        {/* Webhooks Listener */}
-        <div className="glass-panel p-5">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
-                <Webhook className="w-4 h-4" />
-              </div>
-              <h3 className="font-heading text-sm font-bold text-white">Webhook Security</h3>
-            </div>
-            <span className={`badge ${settings?.has_webhook_secret ? 'badge-won' : 'badge-open'}`}>
-              {settings?.has_webhook_secret ? 'HMAC VERIFIED' : 'TEST FAIL-CLOSED'}
-            </span>
-          </div>
+      {/* Tabs */}
+      <div className="flex items-center gap-6 border-b border-slate-800 text-xs">
+        <button
+          onClick={() => {
+            setActiveTab('diagnostics');
+            setError(null);
+            setSuccess(null);
+          }}
+          className={`pb-3 font-semibold flex items-center gap-2 border-b-2 transition-all ${
+            activeTab === 'diagnostics'
+              ? 'border-indigo-500 text-indigo-400'
+              : 'border-transparent text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          <Activity className="w-4 h-4" />
+          <span>Gateway & AI Diagnostics</span>
+        </button>
 
-          <div className="space-y-2.5 text-xs">
-            <div className="flex justify-between py-1 border-b border-slate-800/60">
-              <span className="text-slate-400">Webhook Endpoint</span>
-              <span className="font-mono text-slate-300">/webhook/razorpay</span>
-            </div>
-            <div className="flex justify-between py-1">
-              <span className="text-slate-400">Signature Alg</span>
-              <span className="font-mono text-slate-400">HMAC-SHA256</span>
-            </div>
-          </div>
-        </div>
+        <button
+          onClick={() => {
+            setActiveTab('org');
+            setError(null);
+            setSuccess(null);
+          }}
+          className={`pb-3 font-semibold flex items-center gap-2 border-b-2 transition-all ${
+            activeTab === 'org'
+              ? 'border-indigo-500 text-indigo-400'
+              : 'border-transparent text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          <Building className="w-4 h-4" />
+          <span>Organization & Automation</span>
+        </button>
 
-        {/* Evidence Locker Storage */}
-        <div className="glass-panel p-5">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
-                <Shield className="w-4 h-4" />
-              </div>
-              <h3 className="font-heading text-sm font-bold text-white">Evidence Compliance</h3>
-            </div>
-            <span className="badge badge-won">PCI-DSS COMPLIANT</span>
-          </div>
-
-          <div className="space-y-2.5 text-xs">
-            <div className="flex justify-between py-1 border-b border-slate-800/60">
-              <span className="text-slate-400">Max Upload Size</span>
-              <span className="font-mono text-slate-300">
-                {settings?.max_upload_bytes ? `${settings.max_upload_bytes / (1024 * 1024)} MB` : '10 MB'}
-              </span>
-            </div>
-            <div className="flex justify-between py-1">
-              <span className="text-slate-400">Accepted Formats</span>
-              <span className="font-mono text-slate-300">PDF, PNG, JPEG</span>
-            </div>
-          </div>
-        </div>
+        <button
+          onClick={() => {
+            setActiveTab('security');
+            setError(null);
+            setSuccess(null);
+          }}
+          className={`pb-3 font-semibold flex items-center gap-2 border-b-2 transition-all ${
+            activeTab === 'security'
+              ? 'border-indigo-500 text-indigo-400'
+              : 'border-transparent text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          <Lock className="w-4 h-4" />
+          <span>Security & Team Access</span>
+        </button>
       </div>
 
-      {/* Configuration Guide */}
-      <div className="glass-panel p-6 space-y-4">
-        <h3 className="font-heading text-base font-bold text-white flex items-center gap-2">
-          <Key className="w-4 h-4 text-amber-400" />
-          <span>Switching to Razorpay Live / Sandbox Mode</span>
-        </h3>
-        <p className="text-xs text-slate-400 leading-relaxed">
-          DisputePilot defaults to high-fidelity simulation fixtures so you can evaluate the full dispute resolution flow offline.
-          To connect to your Razorpay Sandbox or Live account, set these variables in your <code>.env</code> file:
-        </p>
+      {/* Tab 1: Diagnostics */}
+      {activeTab === 'diagnostics' && (
+        <div className="space-y-6">
+          {/* Integration Status Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            {/* Razorpay Gateway */}
+            <div className="glass-panel p-5 space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+                    <Server className="w-4 h-4" />
+                  </div>
+                  <h3 className="font-heading text-sm font-bold text-white">Razorpay Disputes Gateway</h3>
+                </div>
+                <span className={`badge ${settings?.has_razorpay ? 'badge-won' : 'badge-urgent'}`}>
+                  {settings?.has_razorpay ? 'CONFIGURED' : 'SIMULATION MODE'}
+                </span>
+              </div>
 
-        <pre className="p-4 rounded-xl bg-slate-950 border border-slate-800 font-mono text-xs text-indigo-300 overflow-x-auto leading-relaxed">
-{`# 1. Switch Data Mode
-DATA_MODE=live
+              <div className="space-y-2 text-xs">
+                <div className="flex justify-between py-1 border-b border-slate-800/60">
+                  <span className="text-slate-400">Data Mode</span>
+                  <span className="font-mono text-indigo-400 uppercase font-semibold">{settings?.data_mode}</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-slate-800/60">
+                  <span className="text-slate-400">Key Mode</span>
+                  <span className="font-mono text-slate-300 uppercase">{settings?.key_mode}</span>
+                </div>
+                <div className="flex justify-between py-1">
+                  <span className="text-slate-400">Base API URL</span>
+                  <span className="font-mono text-slate-400 truncate max-w-[200px]" title={settings?.razorpay_base_url}>
+                    {settings?.razorpay_base_url}
+                  </span>
+                </div>
+              </div>
 
-# 2. Razorpay API Keys (Dashboard -> Settings -> API Keys)
-RAZORPAY_KEY_ID=rzp_test_YourKeyHere
-RAZORPAY_KEY_SECRET=YourSecretHere
+              <div className="pt-2 border-t border-slate-800/80">
+                <button
+                  type="button"
+                  onClick={handleTestRazorpay}
+                  disabled={testingRzp}
+                  className="btn btn-secondary text-xs w-full flex items-center justify-center gap-1.5"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${testingRzp ? 'animate-spin' : ''}`} />
+                  <span>{testingRzp ? 'Testing Connection...' : 'Test Razorpay Connection'}</span>
+                </button>
 
-# 3. Webhook Secret (Dashboard -> Settings -> Webhooks)
-RAZORPAY_WEBHOOK_SECRET=YourWebhookSecret
+                {rzpResult && (
+                  <div className={`mt-3 p-3 rounded-lg text-[11px] ${
+                    rzpResult.status === 'error'
+                      ? 'bg-rose-500/10 text-rose-300 border border-rose-500/30'
+                      : 'bg-emerald-500/10 text-emerald-300 border border-emerald-500/30'
+                  }`}>
+                    <div className="font-bold mb-0.5">
+                      Status: {rzpResult.status} ({rzpResult.latency_ms}ms)
+                    </div>
+                    <div>{rzpResult.message}</div>
+                  </div>
+                )}
+              </div>
+            </div>
 
-# 4. Google Gemini API Key
-GEMINI_API_KEY=AIzaSyYourGeminiApiKey`}
-        </pre>
-      </div>
+            {/* Gemini AI Engine */}
+            <div className="glass-panel p-5 space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+                    <Cpu className="w-4 h-4" />
+                  </div>
+                  <h3 className="font-heading text-sm font-bold text-white">Gemini Multimodal AI</h3>
+                </div>
+                <span className={`badge ${settings?.has_llm ? 'badge-won' : 'badge-open'}`}>
+                  {settings?.has_llm ? 'ONLINE' : 'ACTIVE RULES'}
+                </span>
+              </div>
+
+              <div className="space-y-2 text-xs">
+                <div className="flex justify-between py-1 border-b border-slate-800/60">
+                  <span className="text-slate-400">Model Engine</span>
+                  <span className="font-mono text-cyan-400 font-semibold">Gemini 2.5 Flash / 1.5 Pro</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-slate-800/60">
+                  <span className="text-slate-400">SDK Status</span>
+                  <span className="font-mono text-slate-300">google-genai / Deterministic Rules</span>
+                </div>
+                <div className="flex justify-between py-1">
+                  <span className="text-slate-400">Hallucination Guard</span>
+                  <span className="font-medium text-emerald-400">Deterministic Citation Grounding</span>
+                </div>
+              </div>
+
+              <div className="pt-2 border-t border-slate-800/80">
+                <button
+                  type="button"
+                  onClick={handleTestAi}
+                  disabled={testingAi}
+                  className="btn btn-secondary text-xs w-full flex items-center justify-center gap-1.5"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${testingAi ? 'animate-spin' : ''}`} />
+                  <span>{testingAi ? 'Pinging Model...' : 'Test AI Reasoning Engine'}</span>
+                </button>
+
+                {aiResult && (
+                  <div className={`mt-3 p-3 rounded-lg text-[11px] ${
+                    aiResult.status === 'error'
+                      ? 'bg-rose-500/10 text-rose-300 border border-rose-500/30'
+                      : 'bg-emerald-500/10 text-emerald-300 border border-emerald-500/30'
+                  }`}>
+                    <div className="font-bold mb-0.5">
+                      Model: {aiResult.model} ({aiResult.latency_ms}ms)
+                    </div>
+                    <div>{aiResult.message}</div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Webhooks & Security Status */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div className="glass-panel p-5">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <Webhook className="w-4 h-4 text-purple-400" />
+                  <h4 className="font-heading text-xs font-bold text-white uppercase tracking-wider">Webhook Listener</h4>
+                </div>
+                <span className={`badge ${settings?.has_webhook_secret ? 'badge-won' : 'badge-open'}`}>
+                  {settings?.has_webhook_secret ? 'HMAC VERIFIED' : 'TEST FAIL-CLOSED'}
+                </span>
+              </div>
+              <p className="text-xs text-slate-400 mb-2">
+                All Razorpay dispute webhook payloads verified via HMAC-SHA256 signature before ingestion.
+              </p>
+              <div className="font-mono text-[11px] text-indigo-300 bg-slate-950 p-2 rounded border border-slate-800">
+                POST /webhook/razorpay
+              </div>
+            </div>
+
+            <div className="glass-panel p-5">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <Shield className="w-4 h-4 text-emerald-400" />
+                  <h4 className="font-heading text-xs font-bold text-white uppercase tracking-wider">PCI-DSS Storage</h4>
+                </div>
+                <span className="badge badge-won">PAN REJECT ACTIVE</span>
+              </div>
+              <p className="text-xs text-slate-400 mb-2">
+                Documents are verified with magic byte inspection. Full credit card numbers are rejected before disk write.
+              </p>
+              <div className="font-mono text-[11px] text-emerald-300 bg-slate-950 p-2 rounded border border-slate-800">
+                Locker Path: data/evidence_files/
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Tab 2: Organization & Automation Settings */}
+      {activeTab === 'org' && (
+        <form onSubmit={handleSaveOrg} className="glass-panel p-6 space-y-5">
+          <div className="border-b border-slate-800 pb-3">
+            <h3 className="font-heading text-base font-bold text-white">Merchant Organization Profile</h3>
+            <p className="text-xs text-slate-400">Configure business identity, notification routing, and automated dispute triage thresholds.</p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <div>
+              <label className="block text-slate-300 font-semibold mb-1">Merchant Business Name</label>
+              <input
+                type="text"
+                required
+                value={orgSettings.merchant_name}
+                onChange={(e) => setOrgSettings({ ...orgSettings, merchant_name: e.target.value })}
+                className="input-control text-xs"
+              />
+            </div>
+
+            <div>
+              <label className="block text-slate-300 font-semibold mb-1">Razorpay Account ID</label>
+              <input
+                type="text"
+                required
+                value={orgSettings.merchant_id}
+                onChange={(e) => setOrgSettings({ ...orgSettings, merchant_id: e.target.value })}
+                className="input-control text-xs"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+            <div>
+              <label className="block text-slate-300 font-semibold mb-1">Base Currency</label>
+              <select
+                value={orgSettings.currency}
+                onChange={(e) => setOrgSettings({ ...orgSettings, currency: e.target.value })}
+                className="input-control text-xs"
+              >
+                <option value="INR">INR (₹)</option>
+                <option value="USD">USD ($)</option>
+                <option value="EUR">EUR (€)</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-slate-300 font-semibold mb-1">Timezone</label>
+              <input
+                type="text"
+                value={orgSettings.timezone}
+                onChange={(e) => setOrgSettings({ ...orgSettings, timezone: e.target.value })}
+                className="input-control text-xs"
+              />
+            </div>
+
+            <div>
+              <label className="block text-slate-300 font-semibold mb-1">Notification Email</label>
+              <input
+                type="email"
+                required
+                value={orgSettings.contact_email}
+                onChange={(e) => setOrgSettings({ ...orgSettings, contact_email: e.target.value })}
+                className="input-control text-xs"
+              />
+            </div>
+          </div>
+
+          <div className="pt-2 border-t border-slate-800 space-y-3">
+            <h4 className="font-heading text-xs font-bold text-white uppercase tracking-wider">Automation & Urgency Rules</h4>
+
+            <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs">
+              <div>
+                <span className="font-semibold text-slate-200 block">Automatic Chargeback Triage</span>
+                <span className="text-slate-400 text-[11px]">Automatically score win probability and match courier delivery proofs upon webhook arrival.</span>
+              </div>
+              <input
+                type="checkbox"
+                checked={orgSettings.auto_triage}
+                onChange={(e) => setOrgSettings({ ...orgSettings, auto_triage: e.target.checked })}
+                className="rounded border-slate-700 text-indigo-600 focus:ring-0 w-4 h-4 cursor-pointer"
+              />
+            </div>
+
+            <div className="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs space-y-1.5">
+              <label className="block font-semibold text-slate-200">
+                High-Value Urgency Threshold: ₹{(orgSettings.high_value_threshold_paise / 100).toLocaleString('en-IN')}
+              </label>
+              <p className="text-slate-400 text-[11px]">
+                Disputes exceeding this amount will automatically trigger immediate Slack/email urgent notifications.
+              </p>
+              <input
+                type="range"
+                min="100000"
+                max="25000000"
+                step="100000"
+                value={orgSettings.high_value_threshold_paise}
+                onChange={(e) => setOrgSettings({ ...orgSettings, high_value_threshold_paise: parseInt(e.target.value) })}
+                className="w-full accent-indigo-500"
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-end pt-3">
+            <button
+              type="submit"
+              disabled={savingOrg}
+              className="btn btn-primary text-xs flex items-center gap-1.5"
+            >
+              <Save className="w-3.5 h-3.5" />
+              <span>{savingOrg ? 'Saving Settings...' : 'Save Organization Profile'}</span>
+            </button>
+          </div>
+        </form>
+      )}
+
+      {/* Tab 3: Security & Team Access */}
+      {activeTab === 'security' && (
+        <div className="space-y-6">
+          {/* Change Password Form */}
+          <form onSubmit={handleChangePassword} className="glass-panel p-6 space-y-4">
+            <div className="border-b border-slate-800 pb-3">
+              <h3 className="font-heading text-base font-bold text-white flex items-center gap-2">
+                <Key className="w-4 h-4 text-indigo-400" />
+                <span>Change Your Password</span>
+              </h3>
+              <p className="text-xs text-slate-400">Update your reviewer password. Passwords are salted with random 16-byte salt and hashed with scrypt.</p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+              <div>
+                <label className="block text-slate-300 font-semibold mb-1">Current Password</label>
+                <input
+                  type="password"
+                  required
+                  value={oldPassword}
+                  onChange={(e) => setOldPassword(e.target.value)}
+                  className="input-control text-xs"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-300 font-semibold mb-1">New Password</label>
+                <input
+                  type="password"
+                  required
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="input-control text-xs"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-300 font-semibold mb-1">Confirm New Password</label>
+                <input
+                  type="password"
+                  required
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="input-control text-xs"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end pt-2">
+              <button
+                type="submit"
+                disabled={changingPw}
+                className="btn btn-primary text-xs"
+              >
+                {changingPw ? 'Updating Password...' : 'Update Password'}
+              </button>
+            </div>
+          </form>
+
+          {/* Team Members List */}
+          <div className="glass-panel p-6 space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div className="flex items-center gap-2">
+                <Users className="w-4 h-4 text-indigo-400" />
+                <h3 className="font-heading text-base font-bold text-white">Registered Team Members</h3>
+              </div>
+              <span className="badge badge-open text-xs">{users.length} Account{users.length !== 1 ? 's' : ''}</span>
+            </div>
+
+            <div className="divide-y divide-slate-800/80 text-xs">
+              {users.map((u) => (
+                <div key={u.id} className="py-3 flex items-center justify-between">
+                  <div>
+                    <span className="font-bold text-white mr-2">{u.full_name || u.username}</span>
+                    <span className="font-mono text-slate-400">(@{u.username})</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className={`badge font-mono text-[10px] uppercase ${
+                      u.role === 'admin' ? 'badge-won' : u.role === 'reviewer' ? 'badge-open' : 'badge-urgent'
+                    }`}>
+                      {u.role}
+                    </span>
+                    <span className="text-[11px] text-slate-500 font-mono">
+                      Active
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

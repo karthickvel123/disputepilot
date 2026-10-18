@@ -20,7 +20,10 @@ import {
   FileCheck,
   Check,
   Eye,
-  Key
+  Key,
+  Download,
+  Trash2,
+  MessageSquare
 } from 'lucide-react';
 import { 
   getDispute, 
@@ -31,7 +34,12 @@ import {
   requestAccept, 
   acceptDispute, 
   uploadEvidence,
-  getCaseAudit 
+  getCaseAudit,
+  getComments,
+  addComment,
+  rejectDraft,
+  deleteEvidence,
+  getEvidenceDownloadUrl
 } from '../api';
 
 export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
@@ -44,11 +52,21 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
   const [successMessage, setSuccessMessage] = useState(null);
 
   // Active tab inside case console
-  const [activeTab, setActiveTab] = useState('rebuttal'); // 'rebuttal' | 'evidence' | 'audit'
+  const [activeTab, setActiveTab] = useState('rebuttal'); // 'rebuttal' | 'evidence' | 'comments' | 'audit'
 
   // Draft editing state
   const [draftContent, setDraftContent] = useState('');
   const [isDraftDirty, setIsDraftDirty] = useState(false);
+
+  // Comments / Reviewer discussion state
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState('');
+  const [postingComment, setPostingComment] = useState(false);
+
+  // Rejection modal state
+  const [rejectModalOpen, setRejectModalOpen] = useState(false);
+  const [rejectReason, setRejectReason] = useState('');
+  const [rejectingDraft, setRejectingDraft] = useState(false);
 
   // Evidence upload form state
   const [uploadFile, setUploadFile] = useState(null);
@@ -94,10 +112,66 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
       } catch (e) {
         console.warn('Could not fetch audit events for case', e);
       }
+
+      // Fetch reviewer collaboration comments
+      try {
+        const commData = await getComments(caseId);
+        setComments(commData.comments || []);
+      } catch (e) {
+        console.warn('Could not fetch comments for case', e);
+      }
     } catch (err) {
       setError(err.message || 'Failed to load case detail.');
     } finally {
       setLoading(false);
+    }
+  }
+
+  // Add Reviewer Comment
+  async function handleAddComment(e) {
+    if (e) e.preventDefault();
+    if (!newComment.trim()) return;
+    setPostingComment(true);
+    try {
+      const added = await addComment(caseId, newComment.trim());
+      setComments((prev) => [...prev, added]);
+      setNewComment('');
+      setSuccessMessage('Reviewer note logged.');
+    } catch (err) {
+      alert(`Failed to add note: ${err.message}`);
+    } finally {
+      setPostingComment(false);
+    }
+  }
+
+  // Reject Draft with feedback reason
+  async function handleConfirmRejectDraft(e) {
+    if (e) e.preventDefault();
+    if (!rejectReason.trim()) return;
+    setRejectingDraft(true);
+    try {
+      await rejectDraft(caseId, rejectReason.trim());
+      await addComment(caseId, `[Draft Rejected]: ${rejectReason.trim()}`);
+      setRejectModalOpen(false);
+      setRejectReason('');
+      setSuccessMessage('Rebuttal draft marked as rejected. Review notes logged.');
+      await loadCaseData();
+    } catch (err) {
+      alert(`Rejection failed: ${err.message}`);
+    } finally {
+      setRejectingDraft(false);
+    }
+  }
+
+  // Delete Evidence Document
+  async function handleDeleteEvidence(docId) {
+    if (!window.confirm('Delete this evidence file? This deletion is permanently recorded in the cryptographic audit ledger.')) return;
+    try {
+      await deleteEvidence(caseId, docId);
+      setSuccessMessage('Evidence removed from locker.');
+      await loadCaseData();
+    } catch (err) {
+      alert(`Failed to delete evidence: ${err.message}`);
     }
   }
 
@@ -487,6 +561,18 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
         </button>
 
         <button
+          onClick={() => setActiveTab('comments')}
+          className={`pb-3 text-xs font-semibold tracking-wide flex items-center gap-2 border-b-2 transition-all ${
+            activeTab === 'comments'
+              ? 'border-indigo-500 text-indigo-400'
+              : 'border-transparent text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          <MessageSquare className="w-4 h-4" />
+          <span>Reviewer Notes ({comments.length})</span>
+        </button>
+
+        <button
           onClick={() => setActiveTab('audit')}
           className={`pb-3 text-xs font-semibold tracking-wide flex items-center gap-2 border-b-2 transition-all ${
             activeTab === 'audit'
@@ -516,6 +602,16 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
               </div>
 
               <div className="flex items-center gap-2">
+                {data.analysis && (
+                  <button
+                    type="button"
+                    onClick={() => setRejectModalOpen(true)}
+                    className="btn btn-ghost text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 border border-rose-500/30 flex items-center gap-1.5"
+                  >
+                    <XCircle className="w-3.5 h-3.5" />
+                    <span>Reject Draft</span>
+                  </button>
+                )}
                 <button
                   id="btn-save-draft"
                   onClick={handleSaveDraft}
@@ -632,10 +728,27 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
                       </div>
                     </div>
 
-                    <div className="text-right">
+                    <div className="flex items-center gap-2">
                       <span className="badge badge-open text-[10px]">
                         {doc.razorpay_doc_id ? `RP: ${doc.razorpay_doc_id}` : 'SIMULATED'}
                       </span>
+                      <a
+                        href={getEvidenceDownloadUrl(caseId, doc.id)}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
+                        title="Download Document"
+                      >
+                        <Download className="w-3.5 h-3.5" />
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteEvidence(doc.id)}
+                        className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 transition-colors"
+                        title="Delete Document"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
                     </div>
                   </div>
                 ))}
@@ -770,6 +883,71 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Tab 4: Reviewer Notes & Discussion */}
+      {activeTab === 'comments' && (
+        <div className="glass-panel p-6 space-y-6">
+          <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+            <div>
+              <h3 className="font-heading text-base font-bold text-white flex items-center gap-2">
+                <MessageSquare className="w-4 h-4 text-indigo-400" />
+                <span>Internal Reviewer Discussion & Compliance Notes</span>
+              </h3>
+              <p className="text-xs text-slate-400">
+                Collaborative notes between merchant reviewers and compliance auditors. Persisted in SQLite store.
+              </p>
+            </div>
+            <span className="badge badge-open text-xs">
+              {comments.length} Note{comments.length !== 1 ? 's' : ''}
+            </span>
+          </div>
+
+          {/* New Comment Input */}
+          <form onSubmit={handleAddComment} className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-3">
+            <label className="block text-xs font-semibold text-slate-300">
+              Add Reviewer Note / Dispatcher Verification:
+            </label>
+            <textarea
+              required
+              rows={3}
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              placeholder="e.g. Spoke with courier hub manager; verified signed delivery pod with OTP..."
+              className="input-control text-xs resize-none"
+            />
+            <div className="flex justify-end">
+              <button
+                type="submit"
+                disabled={postingComment || !newComment.trim()}
+                className="btn btn-primary text-xs flex items-center gap-1.5"
+              >
+                <span>{postingComment ? 'Posting...' : 'Post Reviewer Note'}</span>
+              </button>
+            </div>
+          </form>
+
+          {/* Comments List */}
+          <div className="space-y-3">
+            {comments.length === 0 ? (
+              <div className="py-8 text-center text-slate-500 text-xs">
+                No reviewer notes recorded on this dispute yet.
+              </div>
+            ) : (
+              comments.map((c) => (
+                <div key={c.id} className="p-4 rounded-xl bg-slate-900/40 border border-slate-800 text-xs space-y-1.5">
+                  <div className="flex items-center justify-between text-[11px]">
+                    <span className="font-bold text-indigo-300">{c.author}</span>
+                    <span className="text-slate-500 font-mono">
+                      {new Date(c.created_at * 1000).toLocaleString('en-IN')}
+                    </span>
+                  </div>
+                  <p className="text-slate-300 leading-relaxed whitespace-pre-wrap">{c.comment}</p>
+                </div>
+              ))
+            )}
           </div>
         </div>
       )}
@@ -915,6 +1093,56 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
                 </div>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Reject Draft Modal */}
+      {rejectModalOpen && (
+        <div className="modal-overlay">
+          <div className="modal-content p-6 sm:p-8 max-w-lg">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400">
+                <XCircle className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="font-heading text-lg font-bold text-white">Reject AI Rebuttal Draft</h3>
+                <p className="text-xs text-slate-400">Require revision and log specific instructions to the audit ledger.</p>
+              </div>
+            </div>
+
+            <form onSubmit={handleConfirmRejectDraft} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                  Rejection Reason / Guidance:
+                </label>
+                <textarea
+                  required
+                  rows={4}
+                  value={rejectReason}
+                  onChange={(e) => setRejectReason(e.target.value)}
+                  placeholder="e.g. Courier tracking proof does not show the customer delivery address clearly. Please re-upload verified Delhivery POD before re-evaluating..."
+                  className="input-control text-xs resize-none"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setRejectModalOpen(false)}
+                  className="btn btn-secondary text-xs"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={rejectingDraft || !rejectReason.trim()}
+                  className="btn text-xs bg-rose-600 hover:bg-rose-500 text-white font-semibold"
+                >
+                  {rejectingDraft ? 'Recording...' : 'Confirm Rejection'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

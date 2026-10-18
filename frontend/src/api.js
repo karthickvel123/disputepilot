@@ -223,3 +223,136 @@ export async function getSettings() {
 export async function getHealth() {
   return request('/health');
 }
+
+// ---------------------------------------------------------------------------
+// SaaS Identity & User Management
+// ---------------------------------------------------------------------------
+
+export async function registerUser({ username, password, full_name, role = 'reviewer' }) {
+  const data = await request('/auth/register', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password, full_name, role }),
+  });
+  if (data?.csrf_token) {
+    setCsrfToken(data.csrf_token);
+  }
+  return data;
+}
+
+export async function changePassword({ old_password, new_password }) {
+  return request('/auth/change-password', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ old_password, new_password }),
+  });
+}
+
+export async function listUsers() {
+  return request('/auth/users');
+}
+
+// ---------------------------------------------------------------------------
+// Dispute Operations & Batch Imports
+// ---------------------------------------------------------------------------
+
+export async function createDispute(disputeData) {
+  return request('/disputes/create', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(disputeData),
+  });
+}
+
+export async function importDisputesCsv({ csv_data, dry_run = true }) {
+  return request('/disputes/import-csv', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ csv_data, dry_run }),
+  });
+}
+
+export function getDisputesExportUrl() {
+  return `${API_BASE}/disputes/export`;
+}
+
+// ---------------------------------------------------------------------------
+// Reviewer Collaboration & Rejection
+// ---------------------------------------------------------------------------
+
+export async function getComments(caseId) {
+  return request(`/disputes/${encodeURIComponent(caseId)}/comments`);
+}
+
+export async function addComment(caseId, comment) {
+  return request(`/disputes/${encodeURIComponent(caseId)}/comments`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ comment }),
+  });
+}
+
+export async function rejectDraft(caseId, reason) {
+  return request(`/disputes/${encodeURIComponent(caseId)}/reject`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ reason }),
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Evidence Management & Downloads
+// ---------------------------------------------------------------------------
+
+export function getEvidenceDownloadUrl(caseId, docId) {
+  return `${API_BASE}/disputes/${encodeURIComponent(caseId)}/evidence/${encodeURIComponent(docId)}/download`;
+}
+
+export async function deleteEvidence(caseId, docId) {
+  return request(`/disputes/${encodeURIComponent(caseId)}/evidence/${encodeURIComponent(docId)}`, {
+    method: 'DELETE',
+  });
+}
+
+// ---------------------------------------------------------------------------
+// In-App Notifications
+// ---------------------------------------------------------------------------
+
+export async function getNotifications() {
+  return request('/notifications');
+}
+
+export async function markNotificationRead(notifId) {
+  return request(`/notifications/${encodeURIComponent(notifId)}/read`, {
+    method: 'POST',
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Organization Profile & Integration Diagnostics
+// ---------------------------------------------------------------------------
+
+export async function getOrgSettings() {
+  return request('/settings/org');
+}
+
+export async function saveOrgSettings(settings) {
+  return request('/settings/org', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(settings),
+  });
+}
+
+export async function testRazorpayConnection() {
+  return request('/integrations/razorpay/test', {
+    method: 'POST',
+  });
+}
+
+export async function testAiConnection() {
+  return request('/integrations/ai/test', {
+    method: 'POST',
+  });
+}
+

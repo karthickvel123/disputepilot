@@ -4,6 +4,7 @@ import LandingPage from './components/LandingPage';
 import DashboardView from './components/DashboardView';
 import DisputesView from './components/DisputesView';
 import CaseDetailView from './components/CaseDetailView';
+import ReviewQueueView from './components/ReviewQueueView';
 import AuditLedgerView from './components/AuditLedgerView';
 import SettingsView from './components/SettingsView';
 import LoginModal from './components/LoginModal';
@@ -11,7 +12,8 @@ import { getMe, logout, getDashboardMetrics, getSettings } from './api';
 
 export default function App() {
   const [user, setUser] = useState(null);
-  const [activeView, setActiveView] = useState('landing'); // 'landing' | 'dashboard' | 'disputes' | 'detail' | 'audit' | 'settings'
+  const [userRole, setUserRole] = useState('reviewer');
+  const [activeView, setActiveView] = useState('landing'); // 'landing' | 'dashboard' | 'disputes' | 'review-queue' | 'detail' | 'audit' | 'settings'
   const [selectedCaseId, setSelectedCaseId] = useState(null);
   const [disputeFilter, setDisputeFilter] = useState('all');
   const [loginModalOpen, setLoginModalOpen] = useState(false);
@@ -38,6 +40,7 @@ export default function App() {
       const me = await getMe();
       if (me?.user) {
         setUser(me.user);
+        if (me?.role) setUserRole(me.role);
       }
     } catch {
       // Not logged in; keep user null
@@ -67,8 +70,9 @@ export default function App() {
     setActiveView('landing');
   }
 
-  function handleLoginSuccess(username) {
+  function handleLoginSuccess(username, role = 'reviewer') {
     setUser(username);
+    setUserRole(role);
     setLoginModalOpen(false);
     fetchInitialData();
     if (activeView === 'landing') {
@@ -111,6 +115,7 @@ export default function App() {
           setActiveView(tab);
         }}
         user={user}
+        userRole={userRole}
         onLogout={handleLogout}
         systemSettings={systemSettings}
         onOpenLanding={() => setActiveView('landing')}
@@ -135,6 +140,12 @@ export default function App() {
         {activeView === 'disputes' && (
           <DisputesView
             initialFilter={disputeFilter}
+            onSelectCase={handleSelectCase}
+          />
+        )}
+
+        {activeView === 'review-queue' && (
+          <ReviewQueueView
             onSelectCase={handleSelectCase}
           />
         )}

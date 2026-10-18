@@ -1,0 +1,9 @@
+{
+  "merchant_name": "DisputePilot Demo Enterprise",
+  "merchant_id": "acc_test_demo_001",
+  "currency": "INR",
+  "timezone": "Asia/Kolkata",
+  "auto_triage": true,
+  "high_value_threshold_paise": 10000000,
+  "contact_email": "ops@merchant.in"
+}

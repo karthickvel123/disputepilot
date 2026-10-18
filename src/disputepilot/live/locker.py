@@ -130,6 +130,18 @@ class EvidenceLocker:
             ).fetchone()
         return self._row(row) if row else None
 
+    def get(self, doc_id: int) -> LockerDocument | None:
+        """Fetch a single locker document by its ID."""
+        with self._conn() as c:
+            row = c.execute("SELECT * FROM locker_documents WHERE id = ?", (doc_id,)).fetchone()
+        return self._row(row) if row else None
+
+    def delete(self, doc_id: int) -> bool:
+        """Remove a document from the locker by its ID."""
+        with self._conn() as c:
+            cur = c.execute("DELETE FROM locker_documents WHERE id = ?", (doc_id,))
+            return cur.rowcount > 0
+
     def evidence_ids(self, dispute_id: str) -> dict[str, list[str]]:
         """Category -> Razorpay document ids for every locker file already uploaded."""
         out: dict[str, list[str]] = {}

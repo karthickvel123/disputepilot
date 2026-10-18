@@ -10,9 +10,19 @@ import {
   AlertTriangle,
   FileText,
   RotateCcw,
-  Sparkles
+  Sparkles,
+  Plus,
+  Upload,
+  Download,
+  X,
+  FileSpreadsheet
 } from 'lucide-react';
-import { listDisputes } from '../api';
+import { 
+  listDisputes, 
+  createDispute, 
+  importDisputesCsv, 
+  getDisputesExportUrl 
+} from '../api';
 
 export default function DisputesView({ onSelectCase, initialFilter = 'all' }) {
   const [items, setItems] = useState([]);
@@ -21,11 +31,35 @@ export default function DisputesView({ onSelectCase, initialFilter = 'all' }) {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [bannerMessage, setBannerMessage] = useState(null);
 
   // Filters
   const [statusFilter, setStatusFilter] = useState(initialFilter);
   const [reasonFilter, setReasonFilter] = useState('all');
   const [search, setSearch] = useState('');
+
+  // Create Dispute Modal
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [createForm, setCreateForm] = useState({
+    dispute_id: '',
+    amount_rupees: '',
+    currency: 'INR',
+    reason_code: 'item_not_received',
+    reason_description: '',
+    customer_name: '',
+    customer_email: '',
+    customer_phone: '',
+    shipping_carrier: 'Delhivery',
+    tracking_number: '',
+    days_to_respond: 7,
+  });
+
+  // Import CSV Modal
+  const [importModalOpen, setImportModalOpen] = useState(false);
+  const [csvText, setCsvText] = useState('');
+  const [dryRunResult, setDryRunResult] = useState(null);
+  const [importing, setImporting] = useState(false);
 
   useEffect(() => {
     fetchDisputes();
@@ -50,6 +84,78 @@ export default function DisputesView({ onSelectCase, initialFilter = 'all' }) {
     } finally {
       setLoading(false);
     }
+  }
+
+  async function handleCreateSubmit(e) {
+    if (e) e.preventDefault();
+    setCreating(true);
+    try {
+      const payload = {
+        ...createForm,
+        dispute_id: createForm.dispute_id || `disp_${Date.now().toString().slice(-6)}`,
+        amount_rupees: parseFloat(createForm.amount_rupees),
+      };
+      const res = await createDispute(payload);
+      setBannerMessage(`Dispute '${res.dispute_id}' created successfully and queued for automated triage.`);
+      setCreateModalOpen(false);
+      setCreateForm({
+        dispute_id: '',
+        amount_rupees: '',
+        currency: 'INR',
+        reason_code: 'item_not_received',
+        reason_description: '',
+        customer_name: '',
+        customer_email: '',
+        customer_phone: '',
+        shipping_carrier: 'Delhivery',
+        tracking_number: '',
+        days_to_respond: 7,
+      });
+      await fetchDisputes();
+    } catch (err) {
+      alert(`Failed to create dispute: ${err.message}`);
+    } finally {
+      setCreating(false);
+    }
+  }
+
+  async function handlePreviewCsv() {
+    if (!csvText.trim()) return;
+    setImporting(true);
+    try {
+      const result = await importDisputesCsv({ csv_data: csvText, dry_run: true });
+      setDryRunResult(result);
+    } catch (err) {
+      alert(`CSV validation error: ${err.message}`);
+    } finally {
+      setImporting(false);
+    }
+  }
+
+  async function handleExecuteCsvImport() {
+    if (!csvText.trim()) return;
+    setImporting(true);
+    try {
+      const result = await importDisputesCsv({ csv_data: csvText, dry_run: false });
+      setBannerMessage(`Imported ${result.imported_count} dispute cases successfully!`);
+      setImportModalOpen(false);
+      setCsvText('');
+      setDryRunResult(null);
+      await fetchDisputes();
+    } catch (err) {
+      alert(`Import failed: ${err.message}`);
+    } finally {
+      setImporting(false);
+    }
+  }
+
+  function handleFillCsvTemplate() {
+    const template = `dispute_id,amount,reason_code,reason_description,customer_name,customer_email,tracking_number
+disp_demo_${Math.floor(Math.random() * 9000 + 1000)},2499.00,item_not_received,Customer claims shoes never arrived,Rohan Mehra,rohan@example.com,DEL123456789
+disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Product size differs from invoice,Pooja Verma,pooja@example.com,BD987654321
+`;
+    setCsvText(template);
+    setDryRunResult(null);
   }
 
   function getUrgencyBadge(urgency, hours) {
@@ -104,9 +210,9 @@ export default function DisputesView({ onSelectCase, initialFilter = 'all' }) {
   }
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      {/* Header and Filter Controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="space-y-6 animate-fade-in pb-16">
+      {/* Header and Action Controls */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-800 pb-5">
         <div>
           <h2 className="font-heading text-2xl font-bold text-white flex items-center gap-2">
             <span>Dispute Triage Worklist</span>
@@ -119,25 +225,51 @@ export default function DisputesView({ onSelectCase, initialFilter = 'all' }) {
           </p>
         </div>
 
-        {/* Search Input */}
-        <div className="relative w-full sm:w-72">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-          <input
-            id="input-search-disputes"
-            type="text"
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(1);
-            }}
-            placeholder="Search by case ID, dispute, reason..."
-            className="input-control pl-9 text-xs"
-          />
+        {/* Action Buttons: Create Dispute, Import CSV, Export CSV */}
+        <div className="flex flex-wrap items-center gap-2.5">
+          <a
+            href={getDisputesExportUrl()}
+            download="disputepilot_cases.csv"
+            className="btn btn-secondary text-xs flex items-center gap-1.5"
+            title="Export CSV"
+          >
+            <Download className="w-3.5 h-3.5" />
+            <span>Export CSV</span>
+          </a>
+
+          <button
+            onClick={() => setImportModalOpen(true)}
+            className="btn btn-secondary text-xs flex items-center gap-1.5"
+          >
+            <Upload className="w-3.5 h-3.5" />
+            <span>Import CSV</span>
+          </button>
+
+          <button
+            onClick={() => setCreateModalOpen(true)}
+            className="btn btn-primary text-xs flex items-center gap-1.5"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>New Dispute</span>
+          </button>
         </div>
       </div>
 
-      {/* Filter Tabs */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800/80 pb-3">
+      {bannerMessage && (
+        <div className="p-3.5 rounded-xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+            <span>{bannerMessage}</span>
+          </div>
+          <button onClick={() => setBannerMessage(null)} className="text-indigo-400 hover:text-white">
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
+
+      {/* Filter and Search Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        {/* Filter Tabs */}
         <div className="flex flex-wrap items-center gap-1.5">
           {[
             { id: 'all', label: 'All Cases' },
@@ -162,26 +294,45 @@ export default function DisputesView({ onSelectCase, initialFilter = 'all' }) {
           ))}
         </div>
 
-        {/* Reason Class Filter */}
-        <div className="flex items-center gap-2">
-          <Filter className="w-3.5 h-3.5 text-slate-400" />
-          <select
-            id="select-reason-filter"
-            value={reasonFilter}
-            onChange={(e) => {
-              setReasonFilter(e.target.value);
-              setPage(1);
-            }}
-            className="bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-300 outline-none focus:border-indigo-500"
-          >
-            <option value="all">All Reason Classes</option>
-            <option value="fraudulent">Fraudulent</option>
-            <option value="product_not_received">Product Not Received</option>
-            <option value="subscription_cancelled">Subscription Cancelled</option>
-            <option value="unrecognized">Unrecognized</option>
-            <option value="credit_not_processed">Credit Not Processed</option>
-            <option value="general">General</option>
-          </select>
+        <div className="flex items-center gap-3">
+          {/* Reason Filter */}
+          <div className="flex items-center gap-2">
+            <Filter className="w-3.5 h-3.5 text-slate-400" />
+            <select
+              id="select-reason-filter"
+              value={reasonFilter}
+              onChange={(e) => {
+                setReasonFilter(e.target.value);
+                setPage(1);
+              }}
+              className="bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-300 outline-none focus:border-indigo-500"
+            >
+              <option value="all">All Reason Codes</option>
+              <option value="item_not_received">Item Not Received</option>
+              <option value="not_as_described">Not As Described</option>
+              <option value="unauthorised">Unauthorised Charge</option>
+              <option value="duplicate_charge">Duplicate Charge</option>
+              <option value="subscription_cancelled">Subscription Cancelled</option>
+              <option value="refund_not_received">Refund Not Received</option>
+              <option value="other">Other Inquiry</option>
+            </select>
+          </div>
+
+          {/* Search Input */}
+          <div className="relative w-full sm:w-64">
+            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <input
+              id="input-search-disputes"
+              type="text"
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
+              placeholder="Search case, ID, reason..."
+              className="input-control pl-9 text-xs"
+            />
+          </div>
         </div>
       </div>
 
@@ -325,6 +476,277 @@ export default function DisputesView({ onSelectCase, initialFilter = 'all' }) {
           </div>
         )}
       </div>
+
+      {/* Modal: Create Dispute */}
+      {createModalOpen && (
+        <div className="modal-overlay">
+          <div className="modal-content p-6 sm:p-8 max-w-xl">
+            <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-800">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+                  <Plus className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-heading text-lg font-bold text-white">Create Dispute Case</h3>
+                  <p className="text-xs text-slate-400">Queue a new chargeback for automated AI triage and fact extraction.</p>
+                </div>
+              </div>
+              <button onClick={() => setCreateModalOpen(false)} className="text-slate-400 hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateSubmit} className="space-y-4 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-300 mb-1">Dispute ID (optional)</label>
+                  <input
+                    type="text"
+                    value={createForm.dispute_id}
+                    onChange={(e) => setCreateForm({ ...createForm, dispute_id: e.target.value })}
+                    placeholder="e.g. disp_992144"
+                    className="input-control text-xs"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-300 mb-1">Disputed Amount (INR) *</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    required
+                    value={createForm.amount_rupees}
+                    onChange={(e) => setCreateForm({ ...createForm, amount_rupees: e.target.value })}
+                    placeholder="e.g. 2499.00"
+                    className="input-control text-xs"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-300 mb-1">Reason Code *</label>
+                  <select
+                    value={createForm.reason_code}
+                    onChange={(e) => setCreateForm({ ...createForm, reason_code: e.target.value })}
+                    className="input-control text-xs"
+                  >
+                    <option value="item_not_received">Item Not Received</option>
+                    <option value="not_as_described">Not As Described</option>
+                    <option value="unauthorised">Unauthorised Transaction</option>
+                    <option value="duplicate_charge">Duplicate Charge</option>
+                    <option value="subscription_cancelled">Subscription Cancelled</option>
+                    <option value="refund_not_received">Refund Not Received</option>
+                    <option value="other">Other Reason</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-300 mb-1">Days to Respond</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="30"
+                    value={createForm.days_to_respond}
+                    onChange={(e) => setCreateForm({ ...createForm, days_to_respond: parseInt(e.target.value) || 7 })}
+                    className="input-control text-xs"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-300 mb-1">Reason Description</label>
+                <input
+                  type="text"
+                  value={createForm.reason_description}
+                  onChange={(e) => setCreateForm({ ...createForm, reason_description: e.target.value })}
+                  placeholder="e.g. Buyer claims delivery package was never received at doorstep."
+                  className="input-control text-xs"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-300 mb-1">Customer Full Name *</label>
+                  <input
+                    type="text"
+                    required
+                    value={createForm.customer_name}
+                    onChange={(e) => setCreateForm({ ...createForm, customer_name: e.target.value })}
+                    placeholder="e.g. Rohan Mehra"
+                    className="input-control text-xs"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-300 mb-1">Customer Email</label>
+                  <input
+                    type="email"
+                    value={createForm.customer_email}
+                    onChange={(e) => setCreateForm({ ...createForm, customer_email: e.target.value })}
+                    placeholder="rohan@example.com"
+                    className="input-control text-xs"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-300 mb-1">Shipping Carrier</label>
+                  <input
+                    type="text"
+                    value={createForm.shipping_carrier}
+                    onChange={(e) => setCreateForm({ ...createForm, shipping_carrier: e.target.value })}
+                    placeholder="Delhivery / Blue Dart"
+                    className="input-control text-xs"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-300 mb-1">Courier Tracking Number</label>
+                  <input
+                    type="text"
+                    value={createForm.tracking_number}
+                    onChange={(e) => setCreateForm({ ...createForm, tracking_number: e.target.value })}
+                    placeholder="e.g. DEL99881122"
+                    className="input-control text-xs"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setCreateModalOpen(false)}
+                  className="btn btn-secondary text-xs"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={creating}
+                  className="btn btn-primary text-xs flex items-center gap-2"
+                >
+                  {creating ? 'Creating Case...' : 'Create & Triage Dispute'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Import CSV */}
+      {importModalOpen && (
+        <div className="modal-overlay">
+          <div className="modal-content p-6 sm:p-8 max-w-2xl">
+            <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-800">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+                  <FileSpreadsheet className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-heading text-lg font-bold text-white">Import Disputes from CSV</h3>
+                  <p className="text-xs text-slate-400">Batch ingest chargebacks with row-level preview and schema validation.</p>
+                </div>
+              </div>
+              <button onClick={() => setImportModalOpen(false)} className="text-slate-400 hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4 text-xs">
+              <div className="flex items-center justify-between">
+                <label className="text-[11px] font-semibold text-slate-300">
+                  CSV Data (comma-separated):
+                </label>
+                <button
+                  type="button"
+                  onClick={handleFillCsvTemplate}
+                  className="text-xs text-cyan-400 hover:text-cyan-300 underline font-medium"
+                >
+                  Fill Sample Template
+                </button>
+              </div>
+
+              <textarea
+                rows={6}
+                value={csvText}
+                onChange={(e) => {
+                  setCsvText(e.target.value);
+                  setDryRunResult(null);
+                }}
+                placeholder="dispute_id,amount,reason_code,reason_description,customer_name,customer_email,tracking_number..."
+                className="input-control font-mono text-xs resize-none"
+              />
+
+              {/* Dry run preview box */}
+              {dryRunResult && (
+                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold text-slate-200">Pre-Import Validation Summary</span>
+                    <div className="flex items-center gap-3">
+                      <span className="text-emerald-400 font-bold">{dryRunResult.valid_count} Valid</span>
+                      <span className="text-rose-400 font-bold">{dryRunResult.error_count} Errors</span>
+                    </div>
+                  </div>
+
+                  {dryRunResult.errors?.length > 0 && (
+                    <div className="space-y-1 text-[11px] text-rose-300">
+                      {dryRunResult.errors.map((err, i) => (
+                        <div key={i} className="flex items-center gap-1.5">
+                          <AlertTriangle className="w-3.5 h-3.5 text-rose-400 flex-shrink-0" />
+                          <span>Row {err.row}: {err.error}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {dryRunResult.preview?.length > 0 && (
+                    <div>
+                      <span className="text-[10px] uppercase font-semibold text-slate-500 block mb-1">
+                        Row Preview (first {dryRunResult.preview.length} rows):
+                      </span>
+                      <div className="space-y-1">
+                        {dryRunResult.preview.map((p, idx) => (
+                          <div key={idx} className="p-2 rounded bg-slate-900 border border-slate-800/80 font-mono text-[11px] text-slate-300 flex justify-between">
+                            <span>{p.dispute_id} ({p.customer_name})</span>
+                            <span className="text-indigo-400 font-semibold">{p.amount_display}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <div className="flex items-center justify-between pt-3 border-t border-slate-800">
+                <button
+                  type="button"
+                  onClick={handlePreviewCsv}
+                  disabled={importing || !csvText.trim()}
+                  className="btn btn-secondary text-xs"
+                >
+                  {importing ? 'Validating...' : 'Validate CSV (Dry Run)'}
+                </button>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setImportModalOpen(false)}
+                    className="btn btn-secondary text-xs"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleExecuteCsvImport}
+                    disabled={importing || !csvText.trim() || (dryRunResult && dryRunResult.valid_count === 0)}
+                    className="btn btn-primary text-xs"
+                  >
+                    {importing ? 'Importing...' : 'Commit Batch Import'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
