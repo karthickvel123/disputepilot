@@ -272,3 +272,21 @@ def test_event_retention_pruning(tmp_path: Path) -> None:
         rows = cursor.fetchall()
         assert len(rows) == 1
         assert rows[0][0] == "evt_new_01"
+
+
+def test_webhook_missing_secret_returns_500_fail_closed(tmp_path: Path, monkeypatch) -> None:
+    """When RAZORPAY_WEBHOOK_SECRET is empty/unset, reject request with HTTP 500 (fail-closed server error)."""
+    monkeypatch.delenv("RAZORPAY_WEBHOOK_SECRET", raising=False)
+    db_file = tmp_path / "webhook_events.db"
+    router = create_webhook_router(webhook_secret="", db_path=db_file)
+    client = make_test_client(router)
+
+    raw_body = b'{"event": "dispute.created", "id": "evt_secret_unset"}'
+    response = client.post(
+        "/webhook",
+        content=raw_body,
+        headers={"Content-Type": "application/json", "X-Razorpay-Signature": "dummy_sig"},
+    )
+    assert response.status_code == 500
+    assert "fail-closed" in response.json()["detail"].lower()
+

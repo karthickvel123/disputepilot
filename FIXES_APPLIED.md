@@ -51,7 +51,7 @@ The product documentation claimed that *all* external write operations required 
 - **Payload Sanitization**: Implemented `sanitize_webhook_payload(event_json)` which recursively redacts credit card numbers, CVVs, customer email/phone numbers, and drops non-dispute entities prior to database insertion.
 - **Event Retention Pruning**: Added `prune_dispute_events(db_path, max_age_days=90)` to enforce PCI-DSS and GDPR compliant data retention.
 - **Database Optimization**: Added SQLite indices on `dispute_events(received_at)` and `dispute_events(dispute_id)`.
-- **Fail-Closed Default**: If `RAZORPAY_WEBHOOK_SECRET` is missing or empty, all incoming webhook requests are rejected immediately with HTTP 400.
+- **Fail-Closed Default**: If `RAZORPAY_WEBHOOK_SECRET` is missing or empty, all incoming webhook requests are rejected with HTTP 500 Internal Server Error (fail-closed server configuration guard), while invalid client signatures or malformed JSON payloads return HTTP 400 Bad Request.
 
 ---
 

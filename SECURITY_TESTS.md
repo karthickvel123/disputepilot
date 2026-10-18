@@ -6,9 +6,9 @@ This document inventories all security, authentication, concurrency, and adversa
 
 ## 1. Security Test Execution Summary
 
-- **Total Tests Run**: 197 tests
-- **Security & Concurrency Tests**: 35 specialized security/safety tests
-- **Passed**: 35 / 35 (100%)
+- **Total Tests Run**: 198 tests
+- **Security & Concurrency Tests**: 36 specialized security/safety tests
+- **Passed**: 36 / 36 (100%)
 - **Failed**: 0
 - **Execution Engine**: `pytest` under Python 3.12 (`uv run pytest`)
 
@@ -36,7 +36,7 @@ This document inventories all security, authentication, concurrency, and adversa
 | :--- | :--- | :--- | :--- | :--- |
 | `test_webhook_valid_signature_accepted` | Legitimate incoming webhook signed with merchant's `RAZORPAY_WEBHOOK_SECRET`. | HMAC-SHA256 signature verified in constant time; returns 200 OK. | Verified and processed. | **PASS** |
 | `test_webhook_invalid_signature_rejected` | Forged webhook with tampered body or invalid signature header. | Verification raises `WebhookSignatureError`; event is rejected before database persistence. | Rejected with 400 Bad Request; 0 rows inserted. | **PASS** |
-| `test_webhook_missing_secret_fails_closed` | Server runs with empty or unconfigured webhook secret. | Webhook handler fails closed; rejects all incoming requests immediately. | Fails closed; HTTP 400 returned. | **PASS** |
+| `test_webhook_missing_secret_returns_500_fail_closed` | Server runs with empty or unconfigured webhook secret. | Webhook handler fails closed; rejects incoming requests with server configuration error. | Fails closed; HTTP 500 Internal Server Error returned. | **PASS** |
 | `test_webhook_replay_deduplication` | Razorpay sends repeated deliveries of the same event ID (`event_id`). | Subsequent events detect existing `event_id` in SQLite and drop without re-triggering side effects. | Duplicate dropped idempotently. | **PASS** |
 | `test_webhook_payload_pruning` | Webhook containing credit card PAN, CVV, and customer email is ingested. | `sanitize_webhook_payload` strips PAN, CVV, and customer PII before saving to SQLite. | Sensitive card data redacted. | **PASS** |
 | `test_webhook_retention_pruning` | Database contains historical dispute events older than 90 days. | `prune_dispute_events(max_age_days=90)` deletes expired records while preserving recent events. | Stale events deleted; recent events preserved. | **PASS** |
