@@ -8,13 +8,15 @@ from typing import Any
 from disputepilot.web.auth import (
     DEFAULT_HASH,
     DEFAULT_REVIEWER_USER,
+    DEFAULT_SALT,
+    _is_production_mode,
     hash_password,
     verify_password,
 )
 
 
 class UserStore:
-    """Thread-safe SQLite user repository with password hashing and roles."""
+    """Thread-safe SQLite user repository with salted scrypt password hashing and roles."""
 
     def __init__(self, db_path: Path | str) -> None:
         self.db_path = Path(db_path)
@@ -39,20 +41,33 @@ class UserStore:
                 )
                 """
             )
-            # Seed default demo reviewer and admin if table is empty
+            # In production, never seed demo accounts or demo passwords
+            if _is_production_mode():
+                return
+
+            # Seed default demo reviewer and admin in non-production / simulation environments
             cur = conn.execute("SELECT COUNT(*) FROM users")
             count = cur.fetchone()[0]
             if count == 0:
                 now = int(time.time())
+                admin_hash = hash_password("admin_secret_2026", salt=DEFAULT_SALT)
                 conn.execute(
                     "INSERT INTO users (username, password_hash, full_name, role, created_at) VALUES (?, ?, ?, ?, ?)",
                     (DEFAULT_REVIEWER_USER, DEFAULT_HASH, "Authorized Merchant Reviewer", "reviewer", now),
                 )
                 conn.execute(
                     "INSERT INTO users (username, password_hash, full_name, role, created_at) VALUES (?, ?, ?, ?, ?)",
-                    ("admin", DEFAULT_HASH, "Dispute Operations Admin", "admin", now),
+                    ("admin", admin_hash, "Dispute Operations Admin", "admin", now),
                 )
                 conn.commit()
+            else:
+                # If admin exists with legacy DEFAULT_HASH (password123 hash), calibrate to admin_secret_2026
+                cur = conn.execute("SELECT password_hash FROM users WHERE username = 'admin'")
+                row = cur.fetchone()
+                if row and row["password_hash"] == DEFAULT_HASH:
+                    admin_hash = hash_password("admin_secret_2026", salt=DEFAULT_SALT)
+                    conn.execute("UPDATE users SET password_hash = ? WHERE username = 'admin'", (admin_hash,))
+                    conn.commit()
 
     def get_user(self, username: str) -> dict[str, Any] | None:
         """Fetch user by username."""
@@ -74,13 +89,14 @@ class UserStore:
             }
 
     def authenticate(self, username: str, password: str) -> dict[str, Any] | None:
-        """Verify username and password against stored hash."""
+        """Verify username and password strictly against stored password hash.
+        
+        Zero hardcoded bypasses: all authentication relies on the cryptographic hash.
+        """
         user = self.get_user(username)
         if not user:
             return None
         if verify_password(password, user["password_hash"]):
-            return user
-        if user["username"].lower() == "admin" and password in ("admin_secret_2026", "password123"):
             return user
         return None
 
@@ -114,6 +130,19 @@ class UserStore:
             "role": role,
             "created_at": now,
         }
+
+    def update_role(self, username: str, new_role: str) -> bool:
+        """Update role for an existing user (admin-only operation)."""
+        clean_role = new_role.strip().lower()
+        if clean_role not in {"admin", "reviewer", "auditor"}:
+            raise ValueError(f"Invalid role '{new_role}'. Must be admin, reviewer, or auditor.")
+        with self._get_conn() as conn:
+            cur = conn.execute(
+                "UPDATE users SET role = ? WHERE lower(username) = ?",
+                (clean_role, username.strip().lower()),
+            )
+            conn.commit()
+            return cur.rowcount > 0
 
     def update_password(self, username: str, old_password: str, new_password: str) -> bool:
         """Update password for an existing user after verifying current password."""
@@ -152,9 +181,8 @@ _default_user_store: UserStore | None = None
 def get_user_store(data_dir: Path | str | None = None) -> UserStore:
     """Get or create singleton UserStore instance."""
     global _default_user_store
-    if _default_user_store is None:
-        if data_dir is None:
-            data_dir = Path("data")
-        db_path = Path(data_dir) / "users.db"
-        _default_user_store = UserStore(db_path)
+    target_data_dir = Path(data_dir) if data_dir is not None else Path("data")
+    target_db_path = target_data_dir / "users.db"
+    if _default_user_store is None or _default_user_store.db_path != target_db_path:
+        _default_user_store = UserStore(target_db_path)
     return _default_user_store

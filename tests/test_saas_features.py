@@ -24,6 +24,21 @@ def auth_client() -> tuple[TestClient, str]:
     return client, csrf_token
 
 
+@pytest.fixture
+def admin_client() -> tuple[TestClient, str]:
+    """TestClient logged in as admin with valid CSRF token."""
+    client = TestClient(app)
+    res = client.post(
+        "/api/v1/auth/login",
+        json={"username": "admin", "password": "admin_secret_2026"},
+    )
+    assert res.status_code == 200, res.text
+    data = res.json()
+    assert data["role"] == "admin"
+    csrf_token = data["csrf_token"]
+    return client, csrf_token
+
+
 def test_user_registration_and_login() -> None:
     """A new reviewer can register, receive a session cookie, and log in."""
     client = TestClient(app)
@@ -223,15 +238,35 @@ def test_notifications_endpoint(auth_client: tuple[TestClient, str]) -> None:
     assert data["unread_count"] >= 1
 
 
-def test_org_settings_endpoint(auth_client: tuple[TestClient, str]) -> None:
-    """Retrieve and update organization settings."""
+def test_org_settings_endpoint(
+    auth_client: tuple[TestClient, str], admin_client: tuple[TestClient, str]
+) -> None:
+    """Retrieve settings as reviewer; verify updates require admin privileges."""
     client, csrf = auth_client
-    # Get settings
+    # Reviewer can read settings
     get_res = client.get("/api/v1/settings/org")
     assert get_res.status_code == 200
 
-    # Update settings
-    save_res = client.post(
+    # Reviewer update attempt must be rejected with 403 Forbidden
+    save_attempt_rev = client.post(
+        "/api/v1/settings/org",
+        json={
+            "merchant_name": "Unauthorized Reviewer Mutation",
+            "merchant_id": "acc_test_demo_001",
+            "currency": "INR",
+            "timezone": "Asia/Kolkata",
+            "auto_triage": True,
+            "high_value_threshold_paise": 10000000,
+            "contact_email": "ops@merchant.in",
+        },
+        headers={"x-csrf-token": csrf},
+    )
+    assert save_attempt_rev.status_code == 403
+    assert "Administrator privileges required" in save_attempt_rev.json()["detail"]
+
+    # Admin update succeeds
+    adm_client, adm_csrf = admin_client
+    save_res = adm_client.post(
         "/api/v1/settings/org",
         json={
             "merchant_name": "DisputePilot Demo Enterprise",
@@ -242,7 +277,7 @@ def test_org_settings_endpoint(auth_client: tuple[TestClient, str]) -> None:
             "high_value_threshold_paise": 10000000,
             "contact_email": "ops@merchant.in",
         },
-        headers={"x-csrf-token": csrf},
+        headers={"x-csrf-token": adm_csrf},
     )
     assert save_res.status_code == 200
     assert save_res.json()["ok"] is True

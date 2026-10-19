@@ -25,6 +25,7 @@ import {
   saveOrgSettings, 
   changePassword, 
   listUsers,
+  updateUserRole,
   testRazorpayConnection, 
   testAiConnection 
 } from '../api';
@@ -146,6 +147,18 @@ export default function SettingsView() {
       setError(err.message || 'Password update failed.');
     } finally {
       setChangingPw(false);
+    }
+  }
+
+  async function handleRoleChange(username, newRole) {
+    setError(null);
+    setSuccess(null);
+    try {
+      await updateUserRole(username, newRole);
+      setUsers(users.map(u => u.username === username ? { ...u, role: newRole } : u));
+      setSuccess(`Role for '${username}' updated to '${newRole}'.`);
+    } catch (err) {
+      setError(err.message || 'Failed to update user role.');
     }
   }
 
@@ -586,12 +599,16 @@ export default function SettingsView() {
                     <span className="font-mono text-slate-400">(@{u.username})</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className={`badge font-mono text-[10px] uppercase ${
-                      u.role === 'admin' ? 'badge-won' : u.role === 'reviewer' ? 'badge-open' : 'badge-urgent'
-                    }`}>
-                      {u.role}
-                    </span>
-                    <span className="text-[11px] text-slate-500 font-mono">
+                    <select
+                      value={u.role}
+                      onChange={(e) => handleRoleChange(u.username, e.target.value)}
+                      className="bg-slate-900 border border-slate-700/80 rounded px-2 py-1 text-xs text-slate-200 focus:outline-none focus:border-indigo-500 font-mono"
+                    >
+                      <option value="reviewer">Reviewer</option>
+                      <option value="auditor">Compliance Auditor</option>
+                      <option value="admin">Admin</option>
+                    </select>
+                    <span className="text-[11px] text-slate-500 font-mono hidden sm:inline">
                       Active
                     </span>
                   </div>

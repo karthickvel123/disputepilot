@@ -170,17 +170,14 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
           </div>
 
           {mode === 'register' && (
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">Role Permission</label>
-              <select
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-                className="input-control text-xs"
-              >
-                <option value="reviewer">Reviewer (Can draft and approve disputes)</option>
-                <option value="auditor">Compliance Auditor (Read-only audit ledger)</option>
-                <option value="admin">Admin (Full administrative privileges)</option>
-              </select>
+            <div className="p-3 rounded-lg bg-slate-900/80 border border-slate-800 text-xs">
+              <div className="flex items-center justify-between mb-1">
+                <span className="font-semibold text-slate-300">Initial Account Role</span>
+                <span className="badge badge-open text-[10px] uppercase font-mono">Reviewer</span>
+              </div>
+              <p className="text-[11px] text-slate-400">
+                Self-registration automatically grants Merchant Reviewer access. Elevated privileges (Administrator, Compliance Auditor) must be granted by an authenticated Admin.
+              </p>
             </div>
           )}
 

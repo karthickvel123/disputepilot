@@ -252,6 +252,14 @@ export async function listUsers() {
   return request('/auth/users');
 }
 
+export async function updateUserRole(username, role) {
+  return request(`/auth/users/${encodeURIComponent(username)}/role`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ role }),
+  });
+}
+
 // ---------------------------------------------------------------------------
 // Dispute Operations & Batch Imports
 // ---------------------------------------------------------------------------

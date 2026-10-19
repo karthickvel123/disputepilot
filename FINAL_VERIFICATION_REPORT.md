@@ -37,6 +37,10 @@ Every claim below has been independently inspected against the source code, data
    - *Session Management*: Signed session cookies with `HttpOnly`, `SameSite=Lax`, and `Secure` (when `COOKIE_SECURE=true`).
    - *CSRF Protection*: Mandatory CSRF tokens enforced on all state-changing POST and PATCH routes.
    - *Reviewer Password Hashing*: System uses memory-hard salted `hashlib.scrypt` (N=16384, r=8, p=1) with a 16-byte random salt, generated via `python scripts/hash_password.py`.
+   - *RBAC & Anti-Privilege Escalation*: Public self-registration strictly assigns `role='reviewer'`. Elevated roles (`admin`, `auditor`) cannot be self-assigned and must only be granted by an authenticated administrator through protected admin-only endpoints (`POST /api/v1/auth/users/{username}/role`) with active session and CSRF token validation.
+   - *Zero Hardcoded Password Bypasses*: `UserStore.authenticate()` strictly checks cryptographic hashes with zero string-based fallback bypasses. Password updates immediately invalidate previous passwords across both simulation and live environments.
+   - *Production Demo Safeguard*: Demo accounts are never seeded in production environments (`APP_ENV=production`), failing closed if unconfigured.
+   - *Admin-Only Sensitive Endpoints*: User listing (`GET /api/v1/auth/users`), role management (`POST /api/v1/auth/users/{username}/role`), and organization configuration (`POST /api/v1/settings/org`) enforce admin session verification, returning HTTP 401 for unauthenticated requests and HTTP 403 for non-admin accounts.
 
 6. **Deterministic Token Grounding**:
    - The verifier parses every number, date, tracking ID, and currency amount in the drafted rebuttal and cross-references them against the extracted FactSet, excising ungrounded claims before reviewer inspection. Exactly **0 ungrounded factual tokens** were produced across the evaluation dataset.
@@ -65,10 +69,10 @@ Every claim below has been independently inspected against the source code, data
 ### Test Suite (`uv run pytest -q`)
 - **Command**: `uv run pytest -q`
 - **Exit Code**: `0`
-- **Collected**: 198 items
-- **Passed**: 198
+- **Collected**: 214 items
+- **Passed**: 214
 - **Failed**: 0
-- **Duration**: 12.43 seconds
+- **Duration**: 13.32 seconds
 - **Warnings**: 1 (`StarletteDeprecationWarning` regarding `fastapi.testclient`)
 
 ### Linter (`uv run ruff check src tests`)
@@ -78,14 +82,14 @@ Every claim below has been independently inspected against the source code, data
 
 ### Frontend Production Bundle (`npm run build`)
 - **Directory**: `frontend`
-- **Command**: `npm run build` (Vite v6.2.0)
+- **Command**: `npm run build` (Vite v6.4.4)
 - **Exit Code**: `0`
-- **Modules Transformed**: 1,943 modules
+- **Modules Transformed**: 1,944 modules
 - **Output Assets**:
   - `dist/index.html`: 1.28 kB (gzip: 0.72 kB)
   - `dist/assets/index-fSOuCurU.css`: 6.42 kB (gzip: 2.12 kB)
-  - `dist/assets/index-gXqsjgXV.js`: 328.38 kB (gzip: 91.67 kB)
-- **Duration**: 3.34 seconds
+  - `dist/assets/index-BrjOt2b6.js`: 393.11 kB (gzip: 104.01 kB)
+- **Duration**: 2.83 seconds
 
 ### Empirical Evaluation Harness (`uv run python -m disputepilot.evals.runner`)
 - **Command**: `uv run python -m disputepilot.evals.runner`

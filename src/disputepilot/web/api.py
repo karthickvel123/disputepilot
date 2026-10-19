@@ -143,6 +143,30 @@ def _require_csrf(request: Request, session: dict[str, Any], token: str | None =
         raise HTTPException(status_code=403, detail="CSRF validation failed.")
 
 
+def _get_user_role(session: dict[str, Any]) -> str:
+    """Get the current role of the authenticated session user."""
+    username = session.get("user", "")
+    if not username:
+        return "reviewer"
+    user_store = get_user_store(_settings.data_dir if _settings else None)
+    db_user = user_store.get_user(username)
+    if db_user:
+        return db_user.get("role", "reviewer")
+    return session.get("role", "reviewer")
+
+
+def _require_admin_session(request: Request) -> dict[str, Any]:
+    """Require an authenticated session with admin role.
+    
+    Raises 401 if unauthenticated, or 403 if authenticated without admin privileges.
+    """
+    session = _require_session(request)
+    role = _get_user_role(session)
+    if role != "admin":
+        raise HTTPException(status_code=403, detail="Administrator privileges required.")
+    return session
+
+
 def _get_gateway() -> DisputesGateway | None:
     if _gateway is not None:
         return _gateway
@@ -367,7 +391,7 @@ async def api_login(request: Request, body: LoginRequest) -> JSONResponse:
     role = authenticated_user.get("role", "reviewer")
     full_name = authenticated_user.get("full_name", username)
 
-    cookie_val, csrf_token = create_session_cookie_value(user=username)
+    cookie_val, csrf_token = create_session_cookie_value(user=username, role=role)
     response = JSONResponse(
         content={
             "user": username,
@@ -390,23 +414,29 @@ async def api_login(request: Request, body: LoginRequest) -> JSONResponse:
 
 @router.post("/auth/register")
 async def api_register(request: Request, body: RegisterRequest) -> JSONResponse:
-    """Register a new reviewer/auditor account."""
+    """Register a new reviewer account.
+
+    Public self-registration strictly assigns role='reviewer'.
+    Privileged or elevated roles (e.g. admin, auditor) can never be self-assigned
+    and must only be granted through protected admin role-management endpoints.
+    """
     user_store = get_user_store(_settings.data_dir if _settings else None)
+    assigned_role = "reviewer"
     try:
         new_user = user_store.create_user(
             username=body.username,
             password=body.password,
             full_name=body.full_name,
-            role=body.role,
+            role=assigned_role,
         )
     except ValueError as err:
         raise HTTPException(status_code=400, detail=str(err)) from err
 
-    cookie_val, csrf_token = create_session_cookie_value(user=new_user["username"])
+    cookie_val, csrf_token = create_session_cookie_value(user=new_user["username"], role="reviewer")
     response = JSONResponse(
         content={
             "user": new_user["username"],
-            "role": new_user["role"],
+            "role": "reviewer",
             "full_name": new_user["full_name"],
             "csrf_token": csrf_token,
         },
@@ -421,6 +451,41 @@ async def api_register(request: Request, body: RegisterRequest) -> JSONResponse:
         secure=_settings.cookie_secure if _settings else False,
     )
     return response
+
+
+class UpdateUserRoleRequest(BaseModel):
+    role: str
+
+
+@router.post("/auth/users/{username}/role")
+@router.put("/auth/users/{username}/role")
+async def api_update_user_role(request: Request, username: str, body: UpdateUserRoleRequest) -> dict[str, Any]:
+    """Admin-only endpoint to elevate or modify user roles.
+
+    Requires an authenticated session with role='admin' and a valid CSRF token.
+    """
+    session = _require_admin_session(request)
+    _require_csrf(request, session)
+
+    clean_role = body.role.strip().lower()
+    if clean_role not in {"admin", "reviewer", "auditor"}:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid role '{body.role}'. Allowed roles are 'admin', 'reviewer', 'auditor'.",
+        )
+
+    user_store = get_user_store(_settings.data_dir if _settings else None)
+    target_user = user_store.get_user(username)
+    if not target_user:
+        raise HTTPException(status_code=404, detail=f"User '{username}' not found.")
+
+    user_store.update_role(username, clean_role)
+    return {
+        "ok": True,
+        "username": target_user["username"],
+        "role": clean_role,
+        "message": f"User '{target_user['username']}' role updated to '{clean_role}' successfully.",
+    }
 
 
 @router.post("/auth/change-password")
@@ -441,8 +506,8 @@ async def api_change_password(request: Request, body: ChangePasswordRequest) -> 
 
 @router.get("/auth/users")
 async def api_list_users(request: Request) -> dict[str, Any]:
-    """List registered users."""
-    _require_session(request)
+    """List registered users (admin-only)."""
+    _require_admin_session(request)
     user_store = get_user_store(_settings.data_dir if _settings else None)
     return {"users": user_store.list_users()}
 
@@ -1975,8 +2040,8 @@ async def api_get_org_settings(request: Request) -> dict[str, Any]:
 
 @router.post("/settings/org")
 async def api_save_org_settings(request: Request, body: OrgSettingsRequest) -> dict[str, Any]:
-    """Save organization profile and automation rules."""
-    session = _require_session(request)
+    """Save organization profile and automation rules (admin-only)."""
+    session = _require_admin_session(request)
     _require_csrf(request, session)
     ORG_SETTINGS_FILE.parent.mkdir(parents=True, exist_ok=True)
     payload = body.model_dump()

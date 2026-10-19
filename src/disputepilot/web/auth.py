@@ -94,8 +94,8 @@ def get_session_secret() -> str:
     return _EPHEMERAL_SECRET
 
 
-def create_session_cookie_value(user: str) -> tuple[str, str]:
-    """Create a signed session cookie containing user identity and a unique CSRF token.
+def create_session_cookie_value(user: str, role: str = "reviewer") -> tuple[str, str]:
+    """Create a signed session cookie containing user identity, role, and a unique CSRF token.
 
     Returns:
         Tuple of (cookie_value, csrf_token).
@@ -103,6 +103,7 @@ def create_session_cookie_value(user: str) -> tuple[str, str]:
     csrf_token = secrets.token_hex(32)
     payload = {
         "user": user,
+        "role": role,
         "csrf_token": csrf_token,
         "created_at": int(time.time()),
     }
