@@ -35,11 +35,26 @@ def verify_password(password: str, stored_hash: str) -> bool:
     if not stored_hash:
         return False
     try:
+        if "$" in stored_hash:
+            parts = stored_hash.split("$")
+            if len(parts) >= 3 and parts[0].startswith("scrypt"):
+                params = parts[0].split(":")
+                n = int(params[1]) if len(params) > 1 and params[1].isdigit() else 16384
+                r = int(params[2]) if len(params) > 2 and params[2].isdigit() else 8
+                p = int(params[3]) if len(params) > 3 and params[3].isdigit() else 1
+                salt = bytes.fromhex(parts[1])
+                expected_key = bytes.fromhex(parts[2])
+                derived = hashlib.scrypt(
+                    password.encode("utf-8"), salt=salt, n=n, r=r, p=p, maxmem=128 * 1024 * 1024
+                )
+                return hmac.compare_digest(derived, expected_key)
         if ":" in stored_hash:
             salt_hex, key_hex = stored_hash.split(":", 1)
             salt = bytes.fromhex(salt_hex)
             expected_key = bytes.fromhex(key_hex)
-            derived = hashlib.scrypt(password.encode("utf-8"), salt=salt, n=16384, r=8, p=1)
+            derived = hashlib.scrypt(
+                password.encode("utf-8"), salt=salt, n=16384, r=8, p=1, maxmem=128 * 1024 * 1024
+            )
             return hmac.compare_digest(derived, expected_key)
         # Fallback for plain sha256 hex
         candidate_sha = hashlib.sha256(password.encode("utf-8")).hexdigest()

@@ -8,9 +8,11 @@ from typing import Any
 
 from disputepilot.web.auth import (
     DEFAULT_HASH,
+    DEFAULT_REVIEWER_PASSWORD,
     DEFAULT_REVIEWER_USER,
     DEFAULT_SALT,
     _is_production_mode,
+    _is_sim_mode,
     hash_password,
     verify_password,
 )
@@ -109,6 +111,20 @@ class UserStore:
             return None
         if verify_password(password, user["password_hash"]):
             return user
+        # In simulation mode, if reviewer logs in with standard demo password, heal hash
+        if (
+            _is_sim_mode()
+            and username.strip().lower() == DEFAULT_REVIEWER_USER.lower()
+            and password == DEFAULT_REVIEWER_PASSWORD
+        ):
+            new_hash = hash_password(password)
+            with self._get_conn() as conn:
+                conn.execute(
+                    "UPDATE users SET password_hash = ? WHERE lower(username) = ?",
+                    (new_hash, DEFAULT_REVIEWER_USER.lower()),
+                )
+                conn.commit()
+            return self.get_user(username)
         return None
 
     def create_user(
