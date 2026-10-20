@@ -79,6 +79,7 @@ from disputepilot.web.auth import (
     SESSION_COOKIE_NAME,
     create_session_cookie_value,
     get_configured_credentials,
+    get_cookie_samesite_and_secure,
     get_session,
     validate_csrf,
     verify_password,
@@ -401,13 +402,14 @@ async def api_login(request: Request, body: LoginRequest) -> JSONResponse:
         },
         status_code=200,
     )
+    samesite, secure = get_cookie_samesite_and_secure(_settings.cookie_secure if _settings else False)
     response.set_cookie(
         key=SESSION_COOKIE_NAME,
         value=cookie_val,
         httponly=True,
-        samesite="lax",
+        samesite=samesite,
         max_age=86400,
-        secure=_settings.cookie_secure if _settings else False,
+        secure=secure,
     )
     return response
 
@@ -442,13 +444,14 @@ async def api_register(request: Request, body: RegisterRequest) -> JSONResponse:
         },
         status_code=200,
     )
+    samesite, secure = get_cookie_samesite_and_secure(_settings.cookie_secure if _settings else False)
     response.set_cookie(
         key=SESSION_COOKIE_NAME,
         value=cookie_val,
         httponly=True,
-        samesite="lax",
+        samesite=samesite,
         max_age=86400,
-        secure=_settings.cookie_secure if _settings else False,
+        secure=secure,
     )
     return response
 
@@ -517,11 +520,12 @@ async def api_logout(request: Request) -> JSONResponse:
     session = _require_session(request)
     _require_csrf(request, session)
     response = JSONResponse(content={"ok": True})
+    samesite, secure = get_cookie_samesite_and_secure(_settings.cookie_secure if _settings else False)
     response.delete_cookie(
         SESSION_COOKIE_NAME,
         httponly=True,
-        secure=_settings.cookie_secure if _settings else False,
-        samesite="lax",
+        secure=secure,
+        samesite=samesite,
     )
     return response
 

@@ -62,6 +62,7 @@ from disputepilot.web.auth import (
     SESSION_COOKIE_NAME,
     create_session_cookie_value,
     get_configured_credentials,
+    get_cookie_samesite_and_secure,
     get_session,
     safe_next_path,
     validate_csrf,
@@ -457,13 +458,14 @@ async def login_action(request: Request) -> Any:
 
     cookie_val, _ = create_session_cookie_value(user=username)
     response = RedirectResponse(url=next_url, status_code=status.HTTP_303_SEE_OTHER)
+    samesite, secure = get_cookie_samesite_and_secure(settings.cookie_secure)
     response.set_cookie(
         key=SESSION_COOKIE_NAME,
         value=cookie_val,
         httponly=True,
-        samesite="lax",
+        samesite=samesite,
         max_age=86400,
-        secure=settings.cookie_secure,
+        secure=secure,
     )
     return response
 

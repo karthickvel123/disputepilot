@@ -1,5 +1,6 @@
 """Persistent SQLite user store for DisputePilot authentication and RBAC."""
 
+import os
 import sqlite3
 import time
 from pathlib import Path
@@ -41,13 +42,23 @@ class UserStore:
                 )
                 """
             )
-            # In production, never seed demo accounts or demo passwords
-            if _is_production_mode():
-                return
-
-            # Seed default demo reviewer and admin in non-production / simulation environments
             cur = conn.execute("SELECT COUNT(*) FROM users")
             count = cur.fetchone()[0]
+            configured_user = os.environ.get("REVIEWER_USER") or os.environ.get("INITIAL_REVIEWER_USERNAME")
+            configured_hash = os.environ.get("REVIEWER_PASSWORD_HASH") or os.environ.get("INITIAL_REVIEWER_PASSWORD_HASH")
+
+            # In production, never seed demo accounts or demo passwords
+            if _is_production_mode():
+                if count == 0 and configured_user and configured_hash:
+                    now = int(time.time())
+                    conn.execute(
+                        "INSERT INTO users (username, password_hash, full_name, role, created_at) VALUES (?, ?, ?, ?, ?)",
+                        (configured_user, configured_hash, "Authorized Merchant Reviewer", "reviewer", now),
+                    )
+                    conn.commit()
+                return
+
+            # Seed default demo reviewer and admin in non-production, simulation, or dev-allowed environments
             if count == 0:
                 now = int(time.time())
                 admin_hash = hash_password("admin_secret_2026", salt=DEFAULT_SALT)

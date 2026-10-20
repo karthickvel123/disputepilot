@@ -94,8 +94,13 @@ export default function App() {
       const data = await login('reviewer', 'password123');
       handleLoginSuccess(data.user, data.role);
     } catch (e) {
-      console.warn('Quick login error, opening modal:', e);
-      setLoginModalOpen(true);
+      try {
+        const reg = await register('reviewer', 'password123', 'Authorized Reviewer');
+        handleLoginSuccess(reg.user, reg.role);
+      } catch (err) {
+        console.warn('Quick login error, opening modal:', err);
+        setLoginModalOpen(true);
+      }
     }
   }
 
