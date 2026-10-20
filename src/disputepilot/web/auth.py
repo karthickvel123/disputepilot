@@ -177,3 +177,26 @@ def validate_csrf(session: dict[str, Any], submitted_token: str | None) -> bool:
     if not expected:
         return False
     return hmac.compare_digest(submitted_token.strip(), expected.strip())
+
+
+def get_cookie_samesite_and_secure(cookie_secure: bool = False) -> tuple[str, bool]:
+    """Determine the SameSite and Secure attributes for session cookies.
+
+    If COOKIE_SAMESITE is explicitly configured ('none', 'lax', 'strict'), that is used.
+    Otherwise, if cookie_secure is True (HTTPS in production), default to 'none' to allow
+    cross-origin session transmission (e.g., Vercel frontend calling Render backend).
+    Note: Modern browsers reject SameSite=None unless Secure=True.
+    """
+    env_samesite = os.environ.get("COOKIE_SAMESITE", "").strip().lower()
+    if env_samesite in ("none", "lax", "strict"):
+        samesite = env_samesite
+    elif cookie_secure:
+        samesite = "none"
+    else:
+        samesite = "lax"
+
+    if samesite == "none":
+        cookie_secure = True
+
+    return samesite, cookie_secure
+

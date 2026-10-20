@@ -25,7 +25,11 @@ cross_check_penalties:
 delivery_proof_boost: 0.15
 
 effort_cost_paise: 0  # Configurable handling & filing effort cost (default 0 unless supplied)
-fee_per_dispute_paise: 0  # Configurable dispute fee (default 0 unless supplied)
+fee_per_dispute_paise: 0  # Dispute fee per case (default 0 unless supplied; verify with Razorpay)
+fee_trigger: loss  # "loss": fee only on lost contests; "contest": on every contest (verify)
+accept_effort_paise: 0  # Handling cost of accepting
+review_cost_paise: 0  # Human review cost per escalated case
+high_value_review_threshold_paise: 0  # >0: disputes at/above this always need human review
 
 thresholds:
   uncertain_band_min: 0.35

@@ -18,6 +18,7 @@ from pydantic import BaseModel, Field
 if TYPE_CHECKING:
     from disputepilot.agent.models import EvidenceReport
 
+from disputepilot.core.economics import CostModel, expected_net_advantage_of_contest
 from disputepilot.core.evidence import CategoryStatus, EvidenceRole, audit_evidence
 from disputepilot.core.models import DisputeCase
 from disputepilot.core.reasons import ReasonClass, classify_reason
@@ -48,6 +49,10 @@ class Recommendation(BaseModel):
     preselect_action: str | None
     reasons: list[str] = Field(default_factory=list)
     disclaimer: str = HEURISTIC_DISCLAIMER
+    # Provenance: p_win comes from hand-set weights, NOT from labelled merchant outcomes.
+    p_win_status: str = "experimental_uncalibrated"
+    value_status: str = "simulated_assumptions"
+    requires_human_review: bool = True
 
 
 @lru_cache(maxsize=1)
@@ -155,6 +160,7 @@ def recommend_action(
     evidence_report: EvidenceReport | None = None,
     config_path: str | Path | None = None,
     effort_cost_paise: int | None = None,
+    cost_model: CostModel | None = None,
 ) -> Recommendation:
     """Evaluate dispute case and output transparent Contest / Accept / NeedsEvidence recommendation.
 
@@ -163,6 +169,7 @@ def recommend_action(
         evidence_report: Optional precomputed EvidenceReport from evidence agent.
         config_path: Optional custom path to recommend.yaml.
         effort_cost_paise: Optional custom effort cost in paise.
+        cost_model: Optional CostModel (INR) overriding fee/effort config; used by evals.
 
     Returns:
         Recommendation object with decision, p_win range, expected value, and reasons.
@@ -196,6 +203,24 @@ def recommend_action(
             preselect_action=None,
             reasons=["reason could not be classified"],
             disclaimer=HEURISTIC_DISCLAIMER,
+            requires_human_review=True,
+        )
+
+    # Missing/invalid amount: no financial estimate can be supported.
+    amount = getattr(case.dispute, "amount", None)
+    if not isinstance(amount, (int, float)) or isinstance(amount, bool) or amount <= 0:
+        return Recommendation(
+            case_id=case.case_id,
+            decision=ContestDecision.UNCERTAIN,
+            p_win="n/a",
+            p_win_low="n/a",
+            p_win_high="n/a",
+            expected_value_paise="n/a",
+            is_uncertain=True,
+            preselect_action=None,
+            reasons=["disputed amount missing or invalid; no financial estimate possible"],
+            disclaimer=HEURISTIC_DISCLAIMER,
+            requires_human_review=True,
         )
 
     # 2. Determine Category Statuses & Roles
@@ -244,12 +269,18 @@ def recommend_action(
         has_strong_delivery_proof=has_strong_delivery,
     )
 
-    # 4. Expected Value: EV = p_win * amount - effort_cost
-    if effort_cost_paise is None:
-        effort_cost_paise = config.get("effort_cost_paise", 0)
-
+    # 4. Expected value of contesting relative to accepting (see core/economics.py).
+    #    Fee and review cost were previously configured but never applied (bug fixed).
+    if cost_model is None:
+        cost_model = CostModel.from_config(config)
+        if effort_cost_paise is not None:
+            cost_model = CostModel(
+                **{**cost_model.to_dict(), "contest_effort_inr": effort_cost_paise / 100.0}
+            )
     disputed_amount = case.dispute.amount
-    expected_value_paise = round(p_win * disputed_amount - effort_cost_paise)
+    expected_value_paise = round(
+        expected_net_advantage_of_contest(p_win, disputed_amount, cost_model.scaled(100.0))
+    )
 
     # 5. Check missing required evidence
     missing_required = [
@@ -265,6 +296,12 @@ def recommend_action(
 
     range_width = round(p_win_high - p_win_low, 2)
     is_uncertain = (band_min <= p_win <= band_max) or (range_width >= max_range)
+    # High-impact cases need a human even when the heuristic is confident (0 = disabled).
+    high_value = config.get("high_value_review_threshold_paise", 0) or 0
+    high_impact = bool(high_value) and disputed_amount >= high_value
+    if high_impact:
+        is_uncertain = True
+        reasons.append("High-value dispute: human review required regardless of score.")
 
     # 6. Decision logic
     if missing_required:
@@ -308,4 +345,5 @@ def recommend_action(
         preselect_action=preselect_action,
         reasons=reasons,
         disclaimer=HEURISTIC_DISCLAIMER,
+        requires_human_review=bool(preselect_action is None or is_uncertain or high_impact),
     )

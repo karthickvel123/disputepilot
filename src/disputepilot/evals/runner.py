@@ -13,8 +13,18 @@ from typing import Any
 
 from pydantic import ValidationError
 
+from disputepilot.core.economics import (
+    CaseRecord,
+    CostModel,
+    base_rate_brier,
+    break_even_contest_effort,
+    brier_score,
+    compare_policies,
+    log_loss,
+)
 from disputepilot.core.models import DisputeCase, ReasonClass
 from disputepilot.core.reasons import classify_reason
+from disputepilot.core.recommend import recommend_action
 from disputepilot.extraction.extractor import extract_document
 from disputepilot.extraction.llm import (
     FakeLLMClient,
@@ -51,19 +61,27 @@ def evaluate_reason_classifier(
     class_support: dict[str, int] = defaultdict(int)
 
     correct_count = 0
+    abstained = 0
+    confusion: dict[str, Counter] = defaultdict(Counter)
     total = len(cases)
 
     for case in cases:
         gt_class_str = case.ground_truth.reason_class
         try:
             gt_class = ReasonClass(gt_class_str.lower() if isinstance(gt_class_str, str) else gt_class_str.value)
-        except ValueError:
-            gt_class = ReasonClass.OTHER
+        except ValueError as exc:
+            # Previously mapped silently to OTHER, which could award accidental credit.
+            raise ValueError(
+                f"Case {case.case_id}: ground-truth label {gt_class_str!r} is not a supported ReasonClass"
+            ) from exc
 
         match = classify_reason(case.dispute.reason_code, llm_client=llm_client)
         pred_class = match.reason_class
 
         class_support[gt_class.value] += 1
+        confusion[gt_class.value][pred_class.value] += 1
+        if pred_class == ReasonClass.UNCLASSIFIED:
+            abstained += 1
         if pred_class == gt_class:
             correct_count += 1
             class_tp[gt_class.value] += 1
@@ -101,7 +119,61 @@ def evaluate_reason_classifier(
         "accuracy": round(overall_acc, 4),
         "macro_f1": round(macro_f1, 4),
         "per_class": per_class,
+        "abstained_unclassified": abstained,
+        "coverage": round((total - abstained) / total, 4) if total else 0.0,
+        "accuracy_on_answered": (
+            round(correct_count / (total - abstained), 4) if total - abstained > 0 else None
+        ),
+        "confusion_matrix": {k: dict(v) for k, v in confusion.items()},
     }
+
+
+# Illustrative cost scenarios. These are ASSUMPTIONS, not Razorpay fee schedules or
+# measured merchant labour costs; replace them with real figures before drawing conclusions.
+COST_SCENARIOS: tuple[CostModel, ...] = (
+    CostModel(name="zero_cost_legacy"),
+    CostModel(name="illustrative_effort_200_review_100", contest_effort_inr=200.0, review_cost_inr=100.0),
+    CostModel(
+        name="illustrative_fee_500_on_loss_effort_200_review_100",
+        fee_inr=500.0, contest_effort_inr=200.0, review_cost_inr=100.0,
+    ),
+)
+
+
+def _bucket(rec: Any) -> str:
+    """Only an explicit preselected action is treated as a decision; anything else goes to a human."""
+    if rec.preselect_action == "contest":
+        return "contest"
+    if rec.preselect_action == "accept":
+        return "accept"
+    return "escalate"
+
+
+def _policy_economics(
+    cases: list[DisputeCase], records: list[CaseRecord], reports: list[Any]
+) -> dict[str, Any]:
+    """Compare policies on identical cases under each cost scenario (simulated outcomes)."""
+    out: dict[str, Any] = {}
+    for cm in COST_SCENARIOS:
+        buckets_safe: dict[str, str] = {}
+        buckets_legacy: dict[str, str] = {}
+        for case, rep in zip(cases, reports):
+            rec = recommend_action(case, rep, cost_model=cm)
+            buckets_safe[case.case_id] = _bucket(rec)
+            buckets_legacy[case.case_id] = "contest" if rec.decision.value == "contest" else "accept"
+        policies = {
+            "heuristic_decision_as_is": buckets_legacy,
+            "heuristic_with_escalation": buckets_safe,
+        }
+        entry = {
+            res: compare_policies(records, policies, cm, resolution=res)
+            for res in ("accept", "contest")
+        }
+        entry["break_even_contest_effort_inr_vs_contest_all"] = {
+            name: break_even_contest_effort(records, b, cm) for name, b in policies.items()
+        }
+        out[cm.name] = entry
+    return out
 
 
 def compute_calibration_bins(
@@ -199,6 +271,8 @@ def evaluate_slice(
 
     unwinnable_contested_count = 0
     unwinnable_prevented_count = 0
+    econ_records: list[CaseRecord] = []
+    econ_reports: list[Any] = []
 
     for case in cases:
         res = process_case(
@@ -268,6 +342,9 @@ def evaluate_slice(
         if (rec_decision == "contest" and is_winnable) or (rec_decision != "contest" and not is_winnable):
             rec_correct += 1
 
+        econ_records.append(CaseRecord(case.case_id, case.dispute.amount / 100.0, bool(is_winnable)))
+        econ_reports.append(res.evidence_report)
+
         # Value Recovery Simulation (INR) under stated assumptions
         amount_inr = case.dispute.amount / 100.0
 
@@ -311,9 +388,12 @@ def evaluate_slice(
     )
     rec_acc = round(rec_correct / n_cases, 4) if n_cases > 0 else 0.0
     calibration_bins = compute_calibration_bins(rec_predictions)
+    numeric_preds = [(p, w) for p, w in rec_predictions if isinstance(p, (int, float))]
+    policy_economics = _policy_economics(cases, econ_records, econ_reports)
 
     return {
         "cases_evaluated": n_cases,
+        "policy_economics": policy_economics,
         "reason_classifier": classifier_metrics,
         "extraction_accuracy": extraction_acc,
         "evidence_agent": {
@@ -336,6 +416,12 @@ def evaluate_slice(
         "recommendation_quality": {
             "accuracy_vs_winnable": rec_acc,
             "calibration_bins": calibration_bins,
+            "p_win_status": "experimental_uncalibrated",
+            "n_with_numeric_p_win": len(numeric_preds),
+            "brier_score": brier_score(numeric_preds),
+            "log_loss": log_loss(numeric_preds),
+            "base_rate_brier_baseline": base_rate_brier(numeric_preds),
+            "label_source": "simulator rule (evaluate_winnability), not observed merchant outcomes",
         },
         "financial_value_recovery_inr": {
             "effort_cost_per_case_inr": effort_cost_inr,

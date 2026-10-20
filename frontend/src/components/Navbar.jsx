@@ -19,8 +19,19 @@ import {
 } from 'lucide-react';
 import { getNotifications, markNotificationRead } from '../api';
 
-export default function Navbar({ activeTab, setActiveTab, user, userRole = 'reviewer', onLogout, systemSettings, onOpenLanding }) {
+export default function Navbar({ 
+  activeTab, 
+  setActiveTab, 
+  user, 
+  userRole = 'reviewer', 
+  onLogout, 
+  systemSettings, 
+  onOpenLanding,
+  onQuickDemoLogin,
+  onSimulateDispute
+}) {
   const isSim = systemSettings?.data_mode === 'sim';
+
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [notifOpen, setNotifOpen] = useState(false);
@@ -178,6 +189,19 @@ export default function Navbar({ activeTab, setActiveTab, user, userRole = 'revi
 
           {user ? (
             <div className="flex items-center gap-3 pl-2 border-l border-slate-800 relative">
+              {/* Quick Simulate Dispute Button */}
+              {onSimulateDispute && (
+                <button
+                  type="button"
+                  onClick={onSimulateDispute}
+                  className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-indigo-600/20 hover:bg-indigo-600/35 border border-indigo-500/40 text-indigo-300 text-xs font-semibold shadow-sm transition-all"
+                  title="Generate a new realistic dispute to test automated AI triage in real time"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+                  <span>+ Simulate Dispute</span>
+                </button>
+              )}
+
               {/* Notifications Bell */}
               <div className="relative" ref={notifRef}>
                 <button
@@ -257,17 +281,29 @@ export default function Navbar({ activeTab, setActiveTab, user, userRole = 'revi
               </button>
             </div>
           ) : (
-            <button
-              id="btn-launch-login"
-              onClick={() => setActiveTab('dashboard')}
-              className="btn btn-primary text-xs"
-            >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Reviewer Console</span>
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                id="btn-nav-quick-demo"
+                onClick={onQuickDemoLogin || (() => setActiveTab('dashboard'))}
+                className="btn bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white font-semibold text-xs shadow-md shadow-indigo-500/25 flex items-center gap-1.5"
+                title="Instant one-click access as Merchant Reviewer"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-cyan-200" />
+                <span>1-Click Demo</span>
+              </button>
+              <button
+                id="btn-launch-login"
+                onClick={() => setActiveTab('dashboard')}
+                className="btn btn-secondary text-xs text-slate-300"
+              >
+                <span>Sign In</span>
+              </button>
+            </div>
           )}
         </div>
       </div>
     </header>
   );
 }
+
+

@@ -7,6 +7,884 @@
   "cases_evaluated": 150,
   "clean_train_70pct": {
     "cases_evaluated": 105,
+    "policy_economics": {
+      "zero_cost_legacy": {
+        "accept": {
+          "cost_model": {
+            "name": "zero_cost_legacy",
+            "fee_inr": 0.0,
+            "fee_trigger": "loss",
+            "contest_effort_inr": 0.0,
+            "accept_effort_inr": 0.0,
+            "review_cost_inr": 0.0
+          },
+          "escalation_resolution": "accept",
+          "policies": {
+            "contest_all": {
+              "n_evaluated": 105,
+              "n_contested": 105,
+              "n_accepted": 0,
+              "n_escalated": 0,
+              "gross_inr_contested": 764576.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 417542.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 3976.59,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 58,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 417542.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                2590.02,
+                5563.08
+              ]
+            },
+            "accept_all": {
+              "n_evaluated": 105,
+              "n_contested": 0,
+              "n_accepted": 105,
+              "n_escalated": 0,
+              "gross_inr_contested": 0.0,
+              "gross_inr_accepted": 764576.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 0.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 0.0,
+              "missed_opportunities": 47,
+              "missed_opportunity_amount_inr": 417542.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": -417542.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -5563.08,
+                -2590.02
+              ],
+              "uplift_vs_accept_all_inr": 0.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ]
+            },
+            "heuristic_decision_as_is": {
+              "n_evaluated": 105,
+              "n_contested": 51,
+              "n_accepted": 54,
+              "n_escalated": 0,
+              "gross_inr_contested": 432639.0,
+              "gross_inr_accepted": 331937.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 367850.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 3503.33,
+              "missed_opportunities": 6,
+              "missed_opportunity_amount_inr": 49692.0,
+              "incorrect_contests": 10,
+              "uplift_vs_contest_all_inr": -49692.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -1226.51,
+                -46.65
+              ],
+              "uplift_vs_accept_all_inr": 367850.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                2221.54,
+                4935.62
+              ]
+            },
+            "heuristic_with_escalation": {
+              "n_evaluated": 105,
+              "n_contested": 29,
+              "n_accepted": 0,
+              "n_escalated": 76,
+              "gross_inr_contested": 246970.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 517606.0,
+              "net_value_inr_simulated": 207173.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 1973.08,
+              "missed_opportunities": 22,
+              "missed_opportunity_amount_inr": 210369.0,
+              "incorrect_contests": 4,
+              "uplift_vs_contest_all_inr": -210369.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -3392.96,
+                -887.37
+              ],
+              "uplift_vs_accept_all_inr": 207173.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                1136.98,
+                2943.38
+              ]
+            },
+            "oracle_upper_bound": {
+              "n_evaluated": 105,
+              "n_contested": 47,
+              "n_accepted": 58,
+              "n_escalated": 0,
+              "gross_inr_contested": 417542.0,
+              "gross_inr_accepted": 347034.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 417542.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 3976.59,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 417542.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                2590.02,
+                5563.08
+              ]
+            }
+          }
+        },
+        "contest": {
+          "cost_model": {
+            "name": "zero_cost_legacy",
+            "fee_inr": 0.0,
+            "fee_trigger": "loss",
+            "contest_effort_inr": 0.0,
+            "accept_effort_inr": 0.0,
+            "review_cost_inr": 0.0
+          },
+          "escalation_resolution": "contest",
+          "policies": {
+            "contest_all": {
+              "n_evaluated": 105,
+              "n_contested": 105,
+              "n_accepted": 0,
+              "n_escalated": 0,
+              "gross_inr_contested": 764576.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 417542.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 3976.59,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 58,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 417542.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                2590.02,
+                5563.08
+              ]
+            },
+            "accept_all": {
+              "n_evaluated": 105,
+              "n_contested": 0,
+              "n_accepted": 105,
+              "n_escalated": 0,
+              "gross_inr_contested": 0.0,
+              "gross_inr_accepted": 764576.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 0.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 0.0,
+              "missed_opportunities": 47,
+              "missed_opportunity_amount_inr": 417542.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": -417542.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -5563.08,
+                -2590.02
+              ],
+              "uplift_vs_accept_all_inr": 0.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ]
+            },
+            "heuristic_decision_as_is": {
+              "n_evaluated": 105,
+              "n_contested": 51,
+              "n_accepted": 54,
+              "n_escalated": 0,
+              "gross_inr_contested": 432639.0,
+              "gross_inr_accepted": 331937.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 367850.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 3503.33,
+              "missed_opportunities": 6,
+              "missed_opportunity_amount_inr": 49692.0,
+              "incorrect_contests": 10,
+              "uplift_vs_contest_all_inr": -49692.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -1226.51,
+                -46.65
+              ],
+              "uplift_vs_accept_all_inr": 367850.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                2221.54,
+                4935.62
+              ]
+            },
+            "heuristic_with_escalation": {
+              "n_evaluated": 105,
+              "n_contested": 29,
+              "n_accepted": 0,
+              "n_escalated": 76,
+              "gross_inr_contested": 246970.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 517606.0,
+              "net_value_inr_simulated": 417542.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 3976.59,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 58,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 417542.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                2590.02,
+                5563.08
+              ]
+            },
+            "oracle_upper_bound": {
+              "n_evaluated": 105,
+              "n_contested": 47,
+              "n_accepted": 58,
+              "n_escalated": 0,
+              "gross_inr_contested": 417542.0,
+              "gross_inr_accepted": 347034.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 417542.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 3976.59,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 417542.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                2590.02,
+                5563.08
+              ]
+            }
+          }
+        },
+        "break_even_contest_effort_inr_vs_contest_all": {
+          "heuristic_decision_as_is": 920.22,
+          "heuristic_with_escalation": 2768.01
+        }
+      },
+      "illustrative_effort_200_review_100": {
+        "accept": {
+          "cost_model": {
+            "name": "illustrative_effort_200_review_100",
+            "fee_inr": 0.0,
+            "fee_trigger": "loss",
+            "contest_effort_inr": 200.0,
+            "accept_effort_inr": 0.0,
+            "review_cost_inr": 100.0
+          },
+          "escalation_resolution": "accept",
+          "policies": {
+            "contest_all": {
+              "n_evaluated": 105,
+              "n_contested": 105,
+              "n_accepted": 0,
+              "n_escalated": 0,
+              "gross_inr_contested": 764576.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 396542.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 21000.0,
+              "avg_value_per_dispute_inr": 3776.59,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 58,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 396542.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                2390.02,
+                5363.08
+              ]
+            },
+            "accept_all": {
+              "n_evaluated": 105,
+              "n_contested": 0,
+              "n_accepted": 105,
+              "n_escalated": 0,
+              "gross_inr_contested": 0.0,
+              "gross_inr_accepted": 764576.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 0.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 0.0,
+              "missed_opportunities": 47,
+              "missed_opportunity_amount_inr": 417542.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": -396542.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -5363.08,
+                -2390.02
+              ],
+              "uplift_vs_accept_all_inr": 0.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ]
+            },
+            "heuristic_decision_as_is": {
+              "n_evaluated": 105,
+              "n_contested": 51,
+              "n_accepted": 54,
+              "n_escalated": 0,
+              "gross_inr_contested": 432639.0,
+              "gross_inr_accepted": 331937.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 357650.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 10200.0,
+              "avg_value_per_dispute_inr": 3406.19,
+              "missed_opportunities": 6,
+              "missed_opportunity_amount_inr": 49692.0,
+              "incorrect_contests": 10,
+              "uplift_vs_contest_all_inr": -38892.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -1126.51,
+                54.31
+              ],
+              "uplift_vs_accept_all_inr": 357650.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                2143.36,
+                4828.82
+              ]
+            },
+            "heuristic_with_escalation": {
+              "n_evaluated": 105,
+              "n_contested": 29,
+              "n_accepted": 0,
+              "n_escalated": 76,
+              "gross_inr_contested": 246970.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 517606.0,
+              "net_value_inr_simulated": 193773.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 13400.0,
+              "avg_value_per_dispute_inr": 1845.46,
+              "missed_opportunities": 22,
+              "missed_opportunity_amount_inr": 210369.0,
+              "incorrect_contests": 4,
+              "uplift_vs_contest_all_inr": -202769.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -3319.63,
+                -814.99
+              ],
+              "uplift_vs_accept_all_inr": 193773.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                1016.0,
+                2805.36
+              ]
+            },
+            "oracle_upper_bound": {
+              "n_evaluated": 105,
+              "n_contested": 47,
+              "n_accepted": 58,
+              "n_escalated": 0,
+              "gross_inr_contested": 417542.0,
+              "gross_inr_accepted": 347034.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 408142.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 9400.0,
+              "avg_value_per_dispute_inr": 3887.07,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": 11600.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                91.43,
+                129.52
+              ],
+              "uplift_vs_accept_all_inr": 408142.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                2523.35,
+                5468.03
+              ]
+            }
+          }
+        },
+        "contest": {
+          "cost_model": {
+            "name": "illustrative_effort_200_review_100",
+            "fee_inr": 0.0,
+            "fee_trigger": "loss",
+            "contest_effort_inr": 200.0,
+            "accept_effort_inr": 0.0,
+            "review_cost_inr": 100.0
+          },
+          "escalation_resolution": "contest",
+          "policies": {
+            "contest_all": {
+              "n_evaluated": 105,
+              "n_contested": 105,
+              "n_accepted": 0,
+              "n_escalated": 0,
+              "gross_inr_contested": 764576.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 396542.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 21000.0,
+              "avg_value_per_dispute_inr": 3776.59,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 58,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 396542.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                2390.02,
+                5363.08
+              ]
+            },
+            "accept_all": {
+              "n_evaluated": 105,
+              "n_contested": 0,
+              "n_accepted": 105,
+              "n_escalated": 0,
+              "gross_inr_contested": 0.0,
+              "gross_inr_accepted": 764576.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 0.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 0.0,
+              "missed_opportunities": 47,
+              "missed_opportunity_amount_inr": 417542.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": -396542.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -5363.08,
+                -2390.02
+              ],
+              "uplift_vs_accept_all_inr": 0.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ]
+            },
+            "heuristic_decision_as_is": {
+              "n_evaluated": 105,
+              "n_contested": 51,
+              "n_accepted": 54,
+              "n_escalated": 0,
+              "gross_inr_contested": 432639.0,
+              "gross_inr_accepted": 331937.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 357650.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 10200.0,
+              "avg_value_per_dispute_inr": 3406.19,
+              "missed_opportunities": 6,
+              "missed_opportunity_amount_inr": 49692.0,
+              "incorrect_contests": 10,
+              "uplift_vs_contest_all_inr": -38892.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -1126.51,
+                54.31
+              ],
+              "uplift_vs_accept_all_inr": 357650.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                2143.36,
+                4828.82
+              ]
+            },
+            "heuristic_with_escalation": {
+              "n_evaluated": 105,
+              "n_contested": 29,
+              "n_accepted": 0,
+              "n_escalated": 76,
+              "gross_inr_contested": 246970.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 517606.0,
+              "net_value_inr_simulated": 388942.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 28600.0,
+              "avg_value_per_dispute_inr": 3704.21,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 58,
+              "uplift_vs_contest_all_inr": -7600.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -80.95,
+                -63.81
+              ],
+              "uplift_vs_accept_all_inr": 388942.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                2310.97,
+                5288.03
+              ]
+            },
+            "oracle_upper_bound": {
+              "n_evaluated": 105,
+              "n_contested": 47,
+              "n_accepted": 58,
+              "n_escalated": 0,
+              "gross_inr_contested": 417542.0,
+              "gross_inr_accepted": 347034.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 408142.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 9400.0,
+              "avg_value_per_dispute_inr": 3887.07,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": 11600.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                91.43,
+                129.52
+              ],
+              "uplift_vs_accept_all_inr": 408142.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                2523.35,
+                5468.03
+              ]
+            }
+          }
+        },
+        "break_even_contest_effort_inr_vs_contest_all": {
+          "heuristic_decision_as_is": 920.22,
+          "heuristic_with_escalation": 2868.01
+        }
+      },
+      "illustrative_fee_500_on_loss_effort_200_review_100": {
+        "accept": {
+          "cost_model": {
+            "name": "illustrative_fee_500_on_loss_effort_200_review_100",
+            "fee_inr": 500.0,
+            "fee_trigger": "loss",
+            "contest_effort_inr": 200.0,
+            "accept_effort_inr": 0.0,
+            "review_cost_inr": 100.0
+          },
+          "escalation_resolution": "accept",
+          "policies": {
+            "contest_all": {
+              "n_evaluated": 105,
+              "n_contested": 105,
+              "n_accepted": 0,
+              "n_escalated": 0,
+              "gross_inr_contested": 764576.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 367542.0,
+              "fees_inr": 29000.0,
+              "operational_costs_inr": 21000.0,
+              "avg_value_per_dispute_inr": 3500.4,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 58,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 367542.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                2098.6,
+                5132.83
+              ]
+            },
+            "accept_all": {
+              "n_evaluated": 105,
+              "n_contested": 0,
+              "n_accepted": 105,
+              "n_escalated": 0,
+              "gross_inr_contested": 0.0,
+              "gross_inr_accepted": 764576.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 0.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 0.0,
+              "missed_opportunities": 47,
+              "missed_opportunity_amount_inr": 417542.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": -367542.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -5132.83,
+                -2098.6
+              ],
+              "uplift_vs_accept_all_inr": 0.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ]
+            },
+            "heuristic_decision_as_is": {
+              "n_evaluated": 105,
+              "n_contested": 51,
+              "n_accepted": 54,
+              "n_escalated": 0,
+              "gross_inr_contested": 432639.0,
+              "gross_inr_accepted": 331937.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 352650.0,
+              "fees_inr": 5000.0,
+              "operational_costs_inr": 10200.0,
+              "avg_value_per_dispute_inr": 3358.57,
+              "missed_opportunities": 6,
+              "missed_opportunity_amount_inr": 49692.0,
+              "incorrect_contests": 10,
+              "uplift_vs_contest_all_inr": -14892.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -902.7,
+                301.93
+              ],
+              "uplift_vs_accept_all_inr": 352650.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                2090.96,
+                4789.01
+              ]
+            },
+            "heuristic_with_escalation": {
+              "n_evaluated": 105,
+              "n_contested": 29,
+              "n_accepted": 0,
+              "n_escalated": 76,
+              "gross_inr_contested": 246970.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 517606.0,
+              "net_value_inr_simulated": 191773.0,
+              "fees_inr": 2000.0,
+              "operational_costs_inr": 13400.0,
+              "avg_value_per_dispute_inr": 1826.41,
+              "missed_opportunities": 22,
+              "missed_opportunity_amount_inr": 210369.0,
+              "incorrect_contests": 4,
+              "uplift_vs_contest_all_inr": -175769.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -3076.77,
+                -555.0
+              ],
+              "uplift_vs_accept_all_inr": 191773.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                993.11,
+                2792.1
+              ]
+            },
+            "oracle_upper_bound": {
+              "n_evaluated": 105,
+              "n_contested": 47,
+              "n_accepted": 58,
+              "n_escalated": 0,
+              "gross_inr_contested": 417542.0,
+              "gross_inr_accepted": 347034.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 408142.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 9400.0,
+              "avg_value_per_dispute_inr": 3887.07,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": 40600.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                320.0,
+                453.33
+              ],
+              "uplift_vs_accept_all_inr": 408142.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                2523.35,
+                5468.03
+              ]
+            }
+          }
+        },
+        "contest": {
+          "cost_model": {
+            "name": "illustrative_fee_500_on_loss_effort_200_review_100",
+            "fee_inr": 500.0,
+            "fee_trigger": "loss",
+            "contest_effort_inr": 200.0,
+            "accept_effort_inr": 0.0,
+            "review_cost_inr": 100.0
+          },
+          "escalation_resolution": "contest",
+          "policies": {
+            "contest_all": {
+              "n_evaluated": 105,
+              "n_contested": 105,
+              "n_accepted": 0,
+              "n_escalated": 0,
+              "gross_inr_contested": 764576.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 367542.0,
+              "fees_inr": 29000.0,
+              "operational_costs_inr": 21000.0,
+              "avg_value_per_dispute_inr": 3500.4,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 58,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 367542.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                2098.6,
+                5132.83
+              ]
+            },
+            "accept_all": {
+              "n_evaluated": 105,
+              "n_contested": 0,
+              "n_accepted": 105,
+              "n_escalated": 0,
+              "gross_inr_contested": 0.0,
+              "gross_inr_accepted": 764576.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 0.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 0.0,
+              "missed_opportunities": 47,
+              "missed_opportunity_amount_inr": 417542.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": -367542.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -5132.83,
+                -2098.6
+              ],
+              "uplift_vs_accept_all_inr": 0.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ]
+            },
+            "heuristic_decision_as_is": {
+              "n_evaluated": 105,
+              "n_contested": 51,
+              "n_accepted": 54,
+              "n_escalated": 0,
+              "gross_inr_contested": 432639.0,
+              "gross_inr_accepted": 331937.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 352650.0,
+              "fees_inr": 5000.0,
+              "operational_costs_inr": 10200.0,
+              "avg_value_per_dispute_inr": 3358.57,
+              "missed_opportunities": 6,
+              "missed_opportunity_amount_inr": 49692.0,
+              "incorrect_contests": 10,
+              "uplift_vs_contest_all_inr": -14892.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -902.7,
+                301.93
+              ],
+              "uplift_vs_accept_all_inr": 352650.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                2090.96,
+                4789.01
+              ]
+            },
+            "heuristic_with_escalation": {
+              "n_evaluated": 105,
+              "n_contested": 29,
+              "n_accepted": 0,
+              "n_escalated": 76,
+              "gross_inr_contested": 246970.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 517606.0,
+              "net_value_inr_simulated": 359942.0,
+              "fees_inr": 29000.0,
+              "operational_costs_inr": 28600.0,
+              "avg_value_per_dispute_inr": 3428.02,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 58,
+              "uplift_vs_contest_all_inr": -7600.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -80.95,
+                -63.81
+              ],
+              "uplift_vs_accept_all_inr": 359942.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                2019.55,
+                5064.04
+              ]
+            },
+            "oracle_upper_bound": {
+              "n_evaluated": 105,
+              "n_contested": 47,
+              "n_accepted": 58,
+              "n_escalated": 0,
+              "gross_inr_contested": 417542.0,
+              "gross_inr_accepted": 347034.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 408142.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 9400.0,
+              "avg_value_per_dispute_inr": 3887.07,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": 40600.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                320.0,
+                453.33
+              ],
+              "uplift_vs_accept_all_inr": 408142.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                2523.35,
+                5468.03
+              ]
+            }
+          }
+        },
+        "break_even_contest_effort_inr_vs_contest_all": {
+          "heuristic_decision_as_is": 475.78,
+          "heuristic_with_escalation": 2512.75
+        }
+      }
+    },
     "reason_classifier": {
       "accuracy": 1.0,
       "macro_f1": 1.0,
@@ -52,6 +930,32 @@
           "recall": 1.0,
           "f1": 1.0,
           "support": 11
+        }
+      },
+      "abstained_unclassified": 0,
+      "coverage": 1.0,
+      "accuracy_on_answered": 1.0,
+      "confusion_matrix": {
+        "item_not_received": {
+          "item_not_received": 14
+        },
+        "unauthorised": {
+          "unauthorised": 17
+        },
+        "duplicate_charge": {
+          "duplicate_charge": 17
+        },
+        "subscription_cancelled": {
+          "subscription_cancelled": 19
+        },
+        "not_as_described": {
+          "not_as_described": 14
+        },
+        "other": {
+          "other": 11
+        },
+        "refund_not_received": {
+          "refund_not_received": 13
         }
       }
     },
@@ -106,7 +1010,13 @@
           "mean_predicted_prob": 0.9119,
           "actual_win_rate": 0.871
         }
-      ]
+      ],
+      "p_win_status": "experimental_uncalibrated",
+      "n_with_numeric_p_win": 105,
+      "brier_score": 0.1333,
+      "log_loss": 0.4168,
+      "base_rate_brier_baseline": 0.2473,
+      "label_source": "simulator rule (evaluate_winnability), not observed merchant outcomes"
     },
     "financial_value_recovery_inr": {
       "effort_cost_per_case_inr": 0.0,
@@ -122,6 +1032,884 @@
   },
   "clean_holdout_30pct": {
     "cases_evaluated": 45,
+    "policy_economics": {
+      "zero_cost_legacy": {
+        "accept": {
+          "cost_model": {
+            "name": "zero_cost_legacy",
+            "fee_inr": 0.0,
+            "fee_trigger": "loss",
+            "contest_effort_inr": 0.0,
+            "accept_effort_inr": 0.0,
+            "review_cost_inr": 0.0
+          },
+          "escalation_resolution": "accept",
+          "policies": {
+            "contest_all": {
+              "n_evaluated": 45,
+              "n_contested": 45,
+              "n_accepted": 0,
+              "n_escalated": 0,
+              "gross_inr_contested": 342747.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 188778.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 4195.07,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 27,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 188778.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                2048.56,
+                6666.0
+              ]
+            },
+            "accept_all": {
+              "n_evaluated": 45,
+              "n_contested": 0,
+              "n_accepted": 45,
+              "n_escalated": 0,
+              "gross_inr_contested": 0.0,
+              "gross_inr_accepted": 342747.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 0.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 0.0,
+              "missed_opportunities": 18,
+              "missed_opportunity_amount_inr": 188778.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": -188778.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -6666.0,
+                -2048.56
+              ],
+              "uplift_vs_accept_all_inr": 0.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ]
+            },
+            "heuristic_decision_as_is": {
+              "n_evaluated": 45,
+              "n_contested": 17,
+              "n_accepted": 28,
+              "n_escalated": 0,
+              "gross_inr_contested": 121680.0,
+              "gross_inr_accepted": 221067.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 116783.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 2595.18,
+              "missed_opportunities": 3,
+              "missed_opportunity_amount_inr": 71995.0,
+              "incorrect_contests": 2,
+              "uplift_vs_contest_all_inr": -71995.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -3999.71,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 116783.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                1248.6,
+                4228.44
+              ]
+            },
+            "heuristic_with_escalation": {
+              "n_evaluated": 45,
+              "n_contested": 9,
+              "n_accepted": 1,
+              "n_escalated": 35,
+              "gross_inr_contested": 78388.0,
+              "gross_inr_accepted": 3499.0,
+              "gross_inr_escalated": 260860.0,
+              "net_value_inr_simulated": 78388.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 1741.96,
+              "missed_opportunities": 9,
+              "missed_opportunity_amount_inr": 110390.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": -110390.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -4786.33,
+                -751.0
+              ],
+              "uplift_vs_accept_all_inr": 78388.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                586.49,
+                3206.2
+              ]
+            },
+            "oracle_upper_bound": {
+              "n_evaluated": 45,
+              "n_contested": 18,
+              "n_accepted": 27,
+              "n_escalated": 0,
+              "gross_inr_contested": 188778.0,
+              "gross_inr_accepted": 153969.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 188778.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 4195.07,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 188778.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                2048.56,
+                6666.0
+              ]
+            }
+          }
+        },
+        "contest": {
+          "cost_model": {
+            "name": "zero_cost_legacy",
+            "fee_inr": 0.0,
+            "fee_trigger": "loss",
+            "contest_effort_inr": 0.0,
+            "accept_effort_inr": 0.0,
+            "review_cost_inr": 0.0
+          },
+          "escalation_resolution": "contest",
+          "policies": {
+            "contest_all": {
+              "n_evaluated": 45,
+              "n_contested": 45,
+              "n_accepted": 0,
+              "n_escalated": 0,
+              "gross_inr_contested": 342747.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 188778.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 4195.07,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 27,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 188778.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                2048.56,
+                6666.0
+              ]
+            },
+            "accept_all": {
+              "n_evaluated": 45,
+              "n_contested": 0,
+              "n_accepted": 45,
+              "n_escalated": 0,
+              "gross_inr_contested": 0.0,
+              "gross_inr_accepted": 342747.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 0.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 0.0,
+              "missed_opportunities": 18,
+              "missed_opportunity_amount_inr": 188778.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": -188778.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -6666.0,
+                -2048.56
+              ],
+              "uplift_vs_accept_all_inr": 0.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ]
+            },
+            "heuristic_decision_as_is": {
+              "n_evaluated": 45,
+              "n_contested": 17,
+              "n_accepted": 28,
+              "n_escalated": 0,
+              "gross_inr_contested": 121680.0,
+              "gross_inr_accepted": 221067.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 116783.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 2595.18,
+              "missed_opportunities": 3,
+              "missed_opportunity_amount_inr": 71995.0,
+              "incorrect_contests": 2,
+              "uplift_vs_contest_all_inr": -71995.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -3999.71,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 116783.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                1248.6,
+                4228.44
+              ]
+            },
+            "heuristic_with_escalation": {
+              "n_evaluated": 45,
+              "n_contested": 9,
+              "n_accepted": 1,
+              "n_escalated": 35,
+              "gross_inr_contested": 78388.0,
+              "gross_inr_accepted": 3499.0,
+              "gross_inr_escalated": 260860.0,
+              "net_value_inr_simulated": 188778.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 4195.07,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 26,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 188778.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                2048.56,
+                6666.0
+              ]
+            },
+            "oracle_upper_bound": {
+              "n_evaluated": 45,
+              "n_contested": 18,
+              "n_accepted": 27,
+              "n_escalated": 0,
+              "gross_inr_contested": 188778.0,
+              "gross_inr_accepted": 153969.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 188778.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 4195.07,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 188778.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                2048.56,
+                6666.0
+              ]
+            }
+          }
+        },
+        "break_even_contest_effort_inr_vs_contest_all": {
+          "heuristic_decision_as_is": 2571.25,
+          "heuristic_with_escalation": 3066.39
+        }
+      },
+      "illustrative_effort_200_review_100": {
+        "accept": {
+          "cost_model": {
+            "name": "illustrative_effort_200_review_100",
+            "fee_inr": 0.0,
+            "fee_trigger": "loss",
+            "contest_effort_inr": 200.0,
+            "accept_effort_inr": 0.0,
+            "review_cost_inr": 100.0
+          },
+          "escalation_resolution": "accept",
+          "policies": {
+            "contest_all": {
+              "n_evaluated": 45,
+              "n_contested": 45,
+              "n_accepted": 0,
+              "n_escalated": 0,
+              "gross_inr_contested": 342747.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 179778.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 9000.0,
+              "avg_value_per_dispute_inr": 3995.07,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 27,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 179778.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                1848.56,
+                6466.0
+              ]
+            },
+            "accept_all": {
+              "n_evaluated": 45,
+              "n_contested": 0,
+              "n_accepted": 45,
+              "n_escalated": 0,
+              "gross_inr_contested": 0.0,
+              "gross_inr_accepted": 342747.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 0.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 0.0,
+              "missed_opportunities": 18,
+              "missed_opportunity_amount_inr": 188778.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": -179778.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -6466.0,
+                -1848.56
+              ],
+              "uplift_vs_accept_all_inr": 0.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ]
+            },
+            "heuristic_decision_as_is": {
+              "n_evaluated": 45,
+              "n_contested": 17,
+              "n_accepted": 28,
+              "n_escalated": 0,
+              "gross_inr_contested": 121680.0,
+              "gross_inr_accepted": 221067.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 113383.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 3400.0,
+              "avg_value_per_dispute_inr": 2519.62,
+              "missed_opportunities": 3,
+              "missed_opportunity_amount_inr": 71995.0,
+              "incorrect_contests": 2,
+              "uplift_vs_contest_all_inr": -66395.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -3848.6,
+                120.0
+              ],
+              "uplift_vs_accept_all_inr": 113383.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                1188.64,
+                4139.53
+              ]
+            },
+            "heuristic_with_escalation": {
+              "n_evaluated": 45,
+              "n_contested": 9,
+              "n_accepted": 1,
+              "n_escalated": 35,
+              "gross_inr_contested": 78388.0,
+              "gross_inr_accepted": 3499.0,
+              "gross_inr_escalated": 260860.0,
+              "net_value_inr_simulated": 73088.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 5300.0,
+              "avg_value_per_dispute_inr": 1624.18,
+              "missed_opportunities": 9,
+              "missed_opportunity_amount_inr": 110390.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": -106690.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -4701.89,
+                -671.0
+              ],
+              "uplift_vs_accept_all_inr": 73088.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                479.89,
+                3077.31
+              ]
+            },
+            "oracle_upper_bound": {
+              "n_evaluated": 45,
+              "n_contested": 18,
+              "n_accepted": 27,
+              "n_escalated": 0,
+              "gross_inr_contested": 188778.0,
+              "gross_inr_accepted": 153969.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 185178.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 3600.0,
+              "avg_value_per_dispute_inr": 4115.07,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": 5400.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                93.33,
+                146.67
+              ],
+              "uplift_vs_accept_all_inr": 185178.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                1981.89,
+                6572.67
+              ]
+            }
+          }
+        },
+        "contest": {
+          "cost_model": {
+            "name": "illustrative_effort_200_review_100",
+            "fee_inr": 0.0,
+            "fee_trigger": "loss",
+            "contest_effort_inr": 200.0,
+            "accept_effort_inr": 0.0,
+            "review_cost_inr": 100.0
+          },
+          "escalation_resolution": "contest",
+          "policies": {
+            "contest_all": {
+              "n_evaluated": 45,
+              "n_contested": 45,
+              "n_accepted": 0,
+              "n_escalated": 0,
+              "gross_inr_contested": 342747.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 179778.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 9000.0,
+              "avg_value_per_dispute_inr": 3995.07,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 27,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 179778.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                1848.56,
+                6466.0
+              ]
+            },
+            "accept_all": {
+              "n_evaluated": 45,
+              "n_contested": 0,
+              "n_accepted": 45,
+              "n_escalated": 0,
+              "gross_inr_contested": 0.0,
+              "gross_inr_accepted": 342747.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 0.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 0.0,
+              "missed_opportunities": 18,
+              "missed_opportunity_amount_inr": 188778.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": -179778.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -6466.0,
+                -1848.56
+              ],
+              "uplift_vs_accept_all_inr": 0.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ]
+            },
+            "heuristic_decision_as_is": {
+              "n_evaluated": 45,
+              "n_contested": 17,
+              "n_accepted": 28,
+              "n_escalated": 0,
+              "gross_inr_contested": 121680.0,
+              "gross_inr_accepted": 221067.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 113383.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 3400.0,
+              "avg_value_per_dispute_inr": 2519.62,
+              "missed_opportunities": 3,
+              "missed_opportunity_amount_inr": 71995.0,
+              "incorrect_contests": 2,
+              "uplift_vs_contest_all_inr": -66395.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -3848.6,
+                120.0
+              ],
+              "uplift_vs_accept_all_inr": 113383.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                1188.64,
+                4139.53
+              ]
+            },
+            "heuristic_with_escalation": {
+              "n_evaluated": 45,
+              "n_contested": 9,
+              "n_accepted": 1,
+              "n_escalated": 35,
+              "gross_inr_contested": 78388.0,
+              "gross_inr_accepted": 3499.0,
+              "gross_inr_escalated": 260860.0,
+              "net_value_inr_simulated": 176478.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 12300.0,
+              "avg_value_per_dispute_inr": 3921.73,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 26,
+              "uplift_vs_contest_all_inr": -3300.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -88.89,
+                -53.33
+              ],
+              "uplift_vs_accept_all_inr": 176478.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                1773.0,
+                6399.38
+              ]
+            },
+            "oracle_upper_bound": {
+              "n_evaluated": 45,
+              "n_contested": 18,
+              "n_accepted": 27,
+              "n_escalated": 0,
+              "gross_inr_contested": 188778.0,
+              "gross_inr_accepted": 153969.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 185178.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 3600.0,
+              "avg_value_per_dispute_inr": 4115.07,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": 5400.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                93.33,
+                146.67
+              ],
+              "uplift_vs_accept_all_inr": 185178.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                1981.89,
+                6572.67
+              ]
+            }
+          }
+        },
+        "break_even_contest_effort_inr_vs_contest_all": {
+          "heuristic_decision_as_is": 2571.25,
+          "heuristic_with_escalation": 3163.61
+        }
+      },
+      "illustrative_fee_500_on_loss_effort_200_review_100": {
+        "accept": {
+          "cost_model": {
+            "name": "illustrative_fee_500_on_loss_effort_200_review_100",
+            "fee_inr": 500.0,
+            "fee_trigger": "loss",
+            "contest_effort_inr": 200.0,
+            "accept_effort_inr": 0.0,
+            "review_cost_inr": 100.0
+          },
+          "escalation_resolution": "accept",
+          "policies": {
+            "contest_all": {
+              "n_evaluated": 45,
+              "n_contested": 45,
+              "n_accepted": 0,
+              "n_escalated": 0,
+              "gross_inr_contested": 342747.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 166278.0,
+              "fees_inr": 13500.0,
+              "operational_costs_inr": 9000.0,
+              "avg_value_per_dispute_inr": 3695.07,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 27,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 166278.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                1515.22,
+                6201.6
+              ]
+            },
+            "accept_all": {
+              "n_evaluated": 45,
+              "n_contested": 0,
+              "n_accepted": 45,
+              "n_escalated": 0,
+              "gross_inr_contested": 0.0,
+              "gross_inr_accepted": 342747.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 0.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 0.0,
+              "missed_opportunities": 18,
+              "missed_opportunity_amount_inr": 188778.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": -166278.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -6201.6,
+                -1515.22
+              ],
+              "uplift_vs_accept_all_inr": 0.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ]
+            },
+            "heuristic_decision_as_is": {
+              "n_evaluated": 45,
+              "n_contested": 17,
+              "n_accepted": 28,
+              "n_escalated": 0,
+              "gross_inr_contested": 121680.0,
+              "gross_inr_accepted": 221067.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 112383.0,
+              "fees_inr": 1000.0,
+              "operational_costs_inr": 3400.0,
+              "avg_value_per_dispute_inr": 2497.4,
+              "missed_opportunities": 3,
+              "missed_opportunity_amount_inr": 71995.0,
+              "incorrect_contests": 2,
+              "uplift_vs_contest_all_inr": -53895.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -3537.51,
+                420.0
+              ],
+              "uplift_vs_accept_all_inr": 112383.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                1170.87,
+                4110.73
+              ]
+            },
+            "heuristic_with_escalation": {
+              "n_evaluated": 45,
+              "n_contested": 9,
+              "n_accepted": 1,
+              "n_escalated": 35,
+              "gross_inr_contested": 78388.0,
+              "gross_inr_accepted": 3499.0,
+              "gross_inr_escalated": 260860.0,
+              "net_value_inr_simulated": 73088.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 5300.0,
+              "avg_value_per_dispute_inr": 1624.18,
+              "missed_opportunities": 9,
+              "missed_opportunity_amount_inr": 110390.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": -93190.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -4424.11,
+                -333.24
+              ],
+              "uplift_vs_accept_all_inr": 73088.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                479.89,
+                3077.31
+              ]
+            },
+            "oracle_upper_bound": {
+              "n_evaluated": 45,
+              "n_contested": 18,
+              "n_accepted": 27,
+              "n_escalated": 0,
+              "gross_inr_contested": 188778.0,
+              "gross_inr_accepted": 153969.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 185178.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 3600.0,
+              "avg_value_per_dispute_inr": 4115.07,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": 18900.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                326.67,
+                513.33
+              ],
+              "uplift_vs_accept_all_inr": 185178.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                1981.89,
+                6572.67
+              ]
+            }
+          }
+        },
+        "contest": {
+          "cost_model": {
+            "name": "illustrative_fee_500_on_loss_effort_200_review_100",
+            "fee_inr": 500.0,
+            "fee_trigger": "loss",
+            "contest_effort_inr": 200.0,
+            "accept_effort_inr": 0.0,
+            "review_cost_inr": 100.0
+          },
+          "escalation_resolution": "contest",
+          "policies": {
+            "contest_all": {
+              "n_evaluated": 45,
+              "n_contested": 45,
+              "n_accepted": 0,
+              "n_escalated": 0,
+              "gross_inr_contested": 342747.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 166278.0,
+              "fees_inr": 13500.0,
+              "operational_costs_inr": 9000.0,
+              "avg_value_per_dispute_inr": 3695.07,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 27,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 166278.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                1515.22,
+                6201.6
+              ]
+            },
+            "accept_all": {
+              "n_evaluated": 45,
+              "n_contested": 0,
+              "n_accepted": 45,
+              "n_escalated": 0,
+              "gross_inr_contested": 0.0,
+              "gross_inr_accepted": 342747.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 0.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 0.0,
+              "missed_opportunities": 18,
+              "missed_opportunity_amount_inr": 188778.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": -166278.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -6201.6,
+                -1515.22
+              ],
+              "uplift_vs_accept_all_inr": 0.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ]
+            },
+            "heuristic_decision_as_is": {
+              "n_evaluated": 45,
+              "n_contested": 17,
+              "n_accepted": 28,
+              "n_escalated": 0,
+              "gross_inr_contested": 121680.0,
+              "gross_inr_accepted": 221067.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 112383.0,
+              "fees_inr": 1000.0,
+              "operational_costs_inr": 3400.0,
+              "avg_value_per_dispute_inr": 2497.4,
+              "missed_opportunities": 3,
+              "missed_opportunity_amount_inr": 71995.0,
+              "incorrect_contests": 2,
+              "uplift_vs_contest_all_inr": -53895.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -3537.51,
+                420.0
+              ],
+              "uplift_vs_accept_all_inr": 112383.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                1170.87,
+                4110.73
+              ]
+            },
+            "heuristic_with_escalation": {
+              "n_evaluated": 45,
+              "n_contested": 9,
+              "n_accepted": 1,
+              "n_escalated": 35,
+              "gross_inr_contested": 78388.0,
+              "gross_inr_accepted": 3499.0,
+              "gross_inr_escalated": 260860.0,
+              "net_value_inr_simulated": 163478.0,
+              "fees_inr": 13000.0,
+              "operational_costs_inr": 12300.0,
+              "avg_value_per_dispute_inr": 3632.84,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 26,
+              "uplift_vs_contest_all_inr": -2800.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -88.89,
+                -20.0
+              ],
+              "uplift_vs_accept_all_inr": 163478.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                1444.18,
+                6163.84
+              ]
+            },
+            "oracle_upper_bound": {
+              "n_evaluated": 45,
+              "n_contested": 18,
+              "n_accepted": 27,
+              "n_escalated": 0,
+              "gross_inr_contested": 188778.0,
+              "gross_inr_accepted": 153969.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 185178.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 3600.0,
+              "avg_value_per_dispute_inr": 4115.07,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": 18900.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                326.67,
+                513.33
+              ],
+              "uplift_vs_accept_all_inr": 185178.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                1981.89,
+                6572.67
+              ]
+            }
+          }
+        },
+        "break_even_contest_effort_inr_vs_contest_all": {
+          "heuristic_decision_as_is": 2124.82,
+          "heuristic_with_escalation": 2788.61
+        }
+      }
+    },
     "reason_classifier": {
       "accuracy": 1.0,
       "macro_f1": 1.0,
@@ -167,6 +1955,32 @@
           "recall": 1.0,
           "f1": 1.0,
           "support": 10
+        }
+      },
+      "abstained_unclassified": 0,
+      "coverage": 1.0,
+      "accuracy_on_answered": 1.0,
+      "confusion_matrix": {
+        "not_as_described": {
+          "not_as_described": 8
+        },
+        "refund_not_received": {
+          "refund_not_received": 8
+        },
+        "other": {
+          "other": 10
+        },
+        "item_not_received": {
+          "item_not_received": 8
+        },
+        "subscription_cancelled": {
+          "subscription_cancelled": 2
+        },
+        "unauthorised": {
+          "unauthorised": 5
+        },
+        "duplicate_charge": {
+          "duplicate_charge": 4
         }
       }
     },
@@ -221,7 +2035,13 @@
           "mean_predicted_prob": 0.93,
           "actual_win_rate": 1.0
         }
-      ]
+      ],
+      "p_win_status": "experimental_uncalibrated",
+      "n_with_numeric_p_win": 45,
+      "brier_score": 0.0948,
+      "log_loss": 0.3186,
+      "base_rate_brier_baseline": 0.24,
+      "label_source": "simulator rule (evaluate_winnability), not observed merchant outcomes"
     },
     "financial_value_recovery_inr": {
       "effort_cost_per_case_inr": 0.0,
@@ -237,6 +2057,884 @@
   },
   "messy_set_rules_only": {
     "cases_evaluated": 100,
+    "policy_economics": {
+      "zero_cost_legacy": {
+        "accept": {
+          "cost_model": {
+            "name": "zero_cost_legacy",
+            "fee_inr": 0.0,
+            "fee_trigger": "loss",
+            "contest_effort_inr": 0.0,
+            "accept_effort_inr": 0.0,
+            "review_cost_inr": 0.0
+          },
+          "escalation_resolution": "accept",
+          "policies": {
+            "contest_all": {
+              "n_evaluated": 100,
+              "n_contested": 100,
+              "n_accepted": 0,
+              "n_escalated": 0,
+              "gross_inr_contested": 765994.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 154872.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 1548.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 70,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 154872.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                915.78,
+                2283.64
+              ]
+            },
+            "accept_all": {
+              "n_evaluated": 100,
+              "n_contested": 0,
+              "n_accepted": 100,
+              "n_escalated": 0,
+              "gross_inr_contested": 0.0,
+              "gross_inr_accepted": 765994.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 0.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 0.0,
+              "missed_opportunities": 30,
+              "missed_opportunity_amount_inr": 154872.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": -154872.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -2283.64,
+                -915.78
+              ],
+              "uplift_vs_accept_all_inr": 0.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ]
+            },
+            "heuristic_decision_as_is": {
+              "n_evaluated": 100,
+              "n_contested": 2,
+              "n_accepted": 98,
+              "n_escalated": 0,
+              "gross_inr_contested": 22499.0,
+              "gross_inr_accepted": 743495.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 22499.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 224.99,
+              "missed_opportunities": 28,
+              "missed_opportunity_amount_inr": 132373.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": -132373.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -1966.61,
+                -770.84
+              ],
+              "uplift_vs_accept_all_inr": 22499.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                0.0,
+                629.97
+              ]
+            },
+            "heuristic_with_escalation": {
+              "n_evaluated": 100,
+              "n_contested": 0,
+              "n_accepted": 0,
+              "n_escalated": 100,
+              "gross_inr_contested": 0.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 765994.0,
+              "net_value_inr_simulated": 0.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 0.0,
+              "missed_opportunities": 30,
+              "missed_opportunity_amount_inr": 154872.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": -154872.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -2283.64,
+                -915.78
+              ],
+              "uplift_vs_accept_all_inr": 0.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ]
+            },
+            "oracle_upper_bound": {
+              "n_evaluated": 100,
+              "n_contested": 30,
+              "n_accepted": 70,
+              "n_escalated": 0,
+              "gross_inr_contested": 154872.0,
+              "gross_inr_accepted": 611122.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 154872.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 1548.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 154872.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                915.78,
+                2283.64
+              ]
+            }
+          }
+        },
+        "contest": {
+          "cost_model": {
+            "name": "zero_cost_legacy",
+            "fee_inr": 0.0,
+            "fee_trigger": "loss",
+            "contest_effort_inr": 0.0,
+            "accept_effort_inr": 0.0,
+            "review_cost_inr": 0.0
+          },
+          "escalation_resolution": "contest",
+          "policies": {
+            "contest_all": {
+              "n_evaluated": 100,
+              "n_contested": 100,
+              "n_accepted": 0,
+              "n_escalated": 0,
+              "gross_inr_contested": 765994.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 154872.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 1548.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 70,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 154872.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                915.78,
+                2283.64
+              ]
+            },
+            "accept_all": {
+              "n_evaluated": 100,
+              "n_contested": 0,
+              "n_accepted": 100,
+              "n_escalated": 0,
+              "gross_inr_contested": 0.0,
+              "gross_inr_accepted": 765994.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 0.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 0.0,
+              "missed_opportunities": 30,
+              "missed_opportunity_amount_inr": 154872.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": -154872.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -2283.64,
+                -915.78
+              ],
+              "uplift_vs_accept_all_inr": 0.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ]
+            },
+            "heuristic_decision_as_is": {
+              "n_evaluated": 100,
+              "n_contested": 2,
+              "n_accepted": 98,
+              "n_escalated": 0,
+              "gross_inr_contested": 22499.0,
+              "gross_inr_accepted": 743495.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 22499.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 224.99,
+              "missed_opportunities": 28,
+              "missed_opportunity_amount_inr": 132373.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": -132373.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -1966.61,
+                -770.84
+              ],
+              "uplift_vs_accept_all_inr": 22499.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                0.0,
+                629.97
+              ]
+            },
+            "heuristic_with_escalation": {
+              "n_evaluated": 100,
+              "n_contested": 0,
+              "n_accepted": 0,
+              "n_escalated": 100,
+              "gross_inr_contested": 0.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 765994.0,
+              "net_value_inr_simulated": 154872.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 1548.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 70,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 154872.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                915.78,
+                2283.64
+              ]
+            },
+            "oracle_upper_bound": {
+              "n_evaluated": 100,
+              "n_contested": 30,
+              "n_accepted": 70,
+              "n_escalated": 0,
+              "gross_inr_contested": 154872.0,
+              "gross_inr_accepted": 611122.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 154872.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 1548.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 154872.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                915.78,
+                2283.64
+              ]
+            }
+          }
+        },
+        "break_even_contest_effort_inr_vs_contest_all": {
+          "heuristic_decision_as_is": 1350.74,
+          "heuristic_with_escalation": 1548.72
+        }
+      },
+      "illustrative_effort_200_review_100": {
+        "accept": {
+          "cost_model": {
+            "name": "illustrative_effort_200_review_100",
+            "fee_inr": 0.0,
+            "fee_trigger": "loss",
+            "contest_effort_inr": 200.0,
+            "accept_effort_inr": 0.0,
+            "review_cost_inr": 100.0
+          },
+          "escalation_resolution": "accept",
+          "policies": {
+            "contest_all": {
+              "n_evaluated": 100,
+              "n_contested": 100,
+              "n_accepted": 0,
+              "n_escalated": 0,
+              "gross_inr_contested": 765994.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 134872.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 20000.0,
+              "avg_value_per_dispute_inr": 1348.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 70,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 134872.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                715.78,
+                2083.64
+              ]
+            },
+            "accept_all": {
+              "n_evaluated": 100,
+              "n_contested": 0,
+              "n_accepted": 100,
+              "n_escalated": 0,
+              "gross_inr_contested": 0.0,
+              "gross_inr_accepted": 765994.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 0.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 0.0,
+              "missed_opportunities": 30,
+              "missed_opportunity_amount_inr": 154872.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": -134872.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -2083.64,
+                -715.78
+              ],
+              "uplift_vs_accept_all_inr": 0.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ]
+            },
+            "heuristic_decision_as_is": {
+              "n_evaluated": 100,
+              "n_contested": 2,
+              "n_accepted": 98,
+              "n_escalated": 0,
+              "gross_inr_contested": 22499.0,
+              "gross_inr_accepted": 743495.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 22099.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 400.0,
+              "avg_value_per_dispute_inr": 220.99,
+              "missed_opportunities": 28,
+              "missed_opportunity_amount_inr": 132373.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": -112773.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -1770.61,
+                -573.82
+              ],
+              "uplift_vs_accept_all_inr": 22099.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                0.0,
+                619.97
+              ]
+            },
+            "heuristic_with_escalation": {
+              "n_evaluated": 100,
+              "n_contested": 0,
+              "n_accepted": 0,
+              "n_escalated": 100,
+              "gross_inr_contested": 0.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 765994.0,
+              "net_value_inr_simulated": -10000.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 10000.0,
+              "avg_value_per_dispute_inr": -100.0,
+              "missed_opportunities": 30,
+              "missed_opportunity_amount_inr": 154872.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": -144872.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -2183.64,
+                -815.78
+              ],
+              "uplift_vs_accept_all_inr": -10000.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                -100.0,
+                -100.0
+              ]
+            },
+            "oracle_upper_bound": {
+              "n_evaluated": 100,
+              "n_contested": 30,
+              "n_accepted": 70,
+              "n_escalated": 0,
+              "gross_inr_contested": 154872.0,
+              "gross_inr_accepted": 611122.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 148872.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 6000.0,
+              "avg_value_per_dispute_inr": 1488.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": 14000.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                124.0,
+                158.0
+              ],
+              "uplift_vs_accept_all_inr": 148872.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                871.78,
+                2212.61
+              ]
+            }
+          }
+        },
+        "contest": {
+          "cost_model": {
+            "name": "illustrative_effort_200_review_100",
+            "fee_inr": 0.0,
+            "fee_trigger": "loss",
+            "contest_effort_inr": 200.0,
+            "accept_effort_inr": 0.0,
+            "review_cost_inr": 100.0
+          },
+          "escalation_resolution": "contest",
+          "policies": {
+            "contest_all": {
+              "n_evaluated": 100,
+              "n_contested": 100,
+              "n_accepted": 0,
+              "n_escalated": 0,
+              "gross_inr_contested": 765994.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 134872.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 20000.0,
+              "avg_value_per_dispute_inr": 1348.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 70,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 134872.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                715.78,
+                2083.64
+              ]
+            },
+            "accept_all": {
+              "n_evaluated": 100,
+              "n_contested": 0,
+              "n_accepted": 100,
+              "n_escalated": 0,
+              "gross_inr_contested": 0.0,
+              "gross_inr_accepted": 765994.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 0.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 0.0,
+              "missed_opportunities": 30,
+              "missed_opportunity_amount_inr": 154872.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": -134872.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -2083.64,
+                -715.78
+              ],
+              "uplift_vs_accept_all_inr": 0.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ]
+            },
+            "heuristic_decision_as_is": {
+              "n_evaluated": 100,
+              "n_contested": 2,
+              "n_accepted": 98,
+              "n_escalated": 0,
+              "gross_inr_contested": 22499.0,
+              "gross_inr_accepted": 743495.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 22099.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 400.0,
+              "avg_value_per_dispute_inr": 220.99,
+              "missed_opportunities": 28,
+              "missed_opportunity_amount_inr": 132373.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": -112773.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -1770.61,
+                -573.82
+              ],
+              "uplift_vs_accept_all_inr": 22099.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                0.0,
+                619.97
+              ]
+            },
+            "heuristic_with_escalation": {
+              "n_evaluated": 100,
+              "n_contested": 0,
+              "n_accepted": 0,
+              "n_escalated": 100,
+              "gross_inr_contested": 0.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 765994.0,
+              "net_value_inr_simulated": 124872.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 30000.0,
+              "avg_value_per_dispute_inr": 1248.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 70,
+              "uplift_vs_contest_all_inr": -10000.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -100.0,
+                -100.0
+              ],
+              "uplift_vs_accept_all_inr": 124872.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                615.78,
+                1983.64
+              ]
+            },
+            "oracle_upper_bound": {
+              "n_evaluated": 100,
+              "n_contested": 30,
+              "n_accepted": 70,
+              "n_escalated": 0,
+              "gross_inr_contested": 154872.0,
+              "gross_inr_accepted": 611122.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 148872.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 6000.0,
+              "avg_value_per_dispute_inr": 1488.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": 14000.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                124.0,
+                158.0
+              ],
+              "uplift_vs_accept_all_inr": 148872.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                871.78,
+                2212.61
+              ]
+            }
+          }
+        },
+        "break_even_contest_effort_inr_vs_contest_all": {
+          "heuristic_decision_as_is": 1350.74,
+          "heuristic_with_escalation": 1648.72
+        }
+      },
+      "illustrative_fee_500_on_loss_effort_200_review_100": {
+        "accept": {
+          "cost_model": {
+            "name": "illustrative_fee_500_on_loss_effort_200_review_100",
+            "fee_inr": 500.0,
+            "fee_trigger": "loss",
+            "contest_effort_inr": 200.0,
+            "accept_effort_inr": 0.0,
+            "review_cost_inr": 100.0
+          },
+          "escalation_resolution": "accept",
+          "policies": {
+            "contest_all": {
+              "n_evaluated": 100,
+              "n_contested": 100,
+              "n_accepted": 0,
+              "n_escalated": 0,
+              "gross_inr_contested": 765994.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 99872.0,
+              "fees_inr": 35000.0,
+              "operational_costs_inr": 20000.0,
+              "avg_value_per_dispute_inr": 998.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 70,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 99872.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                325.78,
+                1771.61
+              ]
+            },
+            "accept_all": {
+              "n_evaluated": 100,
+              "n_contested": 0,
+              "n_accepted": 100,
+              "n_escalated": 0,
+              "gross_inr_contested": 0.0,
+              "gross_inr_accepted": 765994.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 0.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 0.0,
+              "missed_opportunities": 30,
+              "missed_opportunity_amount_inr": 154872.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": -99872.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -1771.61,
+                -325.78
+              ],
+              "uplift_vs_accept_all_inr": 0.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ]
+            },
+            "heuristic_decision_as_is": {
+              "n_evaluated": 100,
+              "n_contested": 2,
+              "n_accepted": 98,
+              "n_escalated": 0,
+              "gross_inr_contested": 22499.0,
+              "gross_inr_accepted": 743495.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 22099.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 400.0,
+              "avg_value_per_dispute_inr": 220.99,
+              "missed_opportunities": 28,
+              "missed_opportunity_amount_inr": 132373.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": -77773.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -1447.7,
+                -205.78
+              ],
+              "uplift_vs_accept_all_inr": 22099.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                0.0,
+                619.97
+              ]
+            },
+            "heuristic_with_escalation": {
+              "n_evaluated": 100,
+              "n_contested": 0,
+              "n_accepted": 0,
+              "n_escalated": 100,
+              "gross_inr_contested": 0.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 765994.0,
+              "net_value_inr_simulated": -10000.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 10000.0,
+              "avg_value_per_dispute_inr": -100.0,
+              "missed_opportunities": 30,
+              "missed_opportunity_amount_inr": 154872.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": -109872.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -1871.61,
+                -425.78
+              ],
+              "uplift_vs_accept_all_inr": -10000.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                -100.0,
+                -100.0
+              ]
+            },
+            "oracle_upper_bound": {
+              "n_evaluated": 100,
+              "n_contested": 30,
+              "n_accepted": 70,
+              "n_escalated": 0,
+              "gross_inr_contested": 154872.0,
+              "gross_inr_accepted": 611122.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 148872.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 6000.0,
+              "avg_value_per_dispute_inr": 1488.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": 49000.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                434.0,
+                553.0
+              ],
+              "uplift_vs_accept_all_inr": 148872.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                871.78,
+                2212.61
+              ]
+            }
+          }
+        },
+        "contest": {
+          "cost_model": {
+            "name": "illustrative_fee_500_on_loss_effort_200_review_100",
+            "fee_inr": 500.0,
+            "fee_trigger": "loss",
+            "contest_effort_inr": 200.0,
+            "accept_effort_inr": 0.0,
+            "review_cost_inr": 100.0
+          },
+          "escalation_resolution": "contest",
+          "policies": {
+            "contest_all": {
+              "n_evaluated": 100,
+              "n_contested": 100,
+              "n_accepted": 0,
+              "n_escalated": 0,
+              "gross_inr_contested": 765994.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 99872.0,
+              "fees_inr": 35000.0,
+              "operational_costs_inr": 20000.0,
+              "avg_value_per_dispute_inr": 998.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 70,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 99872.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                325.78,
+                1771.61
+              ]
+            },
+            "accept_all": {
+              "n_evaluated": 100,
+              "n_contested": 0,
+              "n_accepted": 100,
+              "n_escalated": 0,
+              "gross_inr_contested": 0.0,
+              "gross_inr_accepted": 765994.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 0.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 0.0,
+              "missed_opportunities": 30,
+              "missed_opportunity_amount_inr": 154872.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": -99872.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -1771.61,
+                -325.78
+              ],
+              "uplift_vs_accept_all_inr": 0.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ]
+            },
+            "heuristic_decision_as_is": {
+              "n_evaluated": 100,
+              "n_contested": 2,
+              "n_accepted": 98,
+              "n_escalated": 0,
+              "gross_inr_contested": 22499.0,
+              "gross_inr_accepted": 743495.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 22099.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 400.0,
+              "avg_value_per_dispute_inr": 220.99,
+              "missed_opportunities": 28,
+              "missed_opportunity_amount_inr": 132373.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": -77773.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -1447.7,
+                -205.78
+              ],
+              "uplift_vs_accept_all_inr": 22099.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                0.0,
+                619.97
+              ]
+            },
+            "heuristic_with_escalation": {
+              "n_evaluated": 100,
+              "n_contested": 0,
+              "n_accepted": 0,
+              "n_escalated": 100,
+              "gross_inr_contested": 0.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 765994.0,
+              "net_value_inr_simulated": 89872.0,
+              "fees_inr": 35000.0,
+              "operational_costs_inr": 30000.0,
+              "avg_value_per_dispute_inr": 898.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 70,
+              "uplift_vs_contest_all_inr": -10000.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -100.0,
+                -100.0
+              ],
+              "uplift_vs_accept_all_inr": 89872.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                225.78,
+                1671.61
+              ]
+            },
+            "oracle_upper_bound": {
+              "n_evaluated": 100,
+              "n_contested": 30,
+              "n_accepted": 70,
+              "n_escalated": 0,
+              "gross_inr_contested": 154872.0,
+              "gross_inr_accepted": 611122.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 148872.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 6000.0,
+              "avg_value_per_dispute_inr": 1488.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": 49000.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                434.0,
+                553.0
+              ],
+              "uplift_vs_accept_all_inr": 148872.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                871.78,
+                2212.61
+              ]
+            }
+          }
+        },
+        "break_even_contest_effort_inr_vs_contest_all": {
+          "heuristic_decision_as_is": 993.6,
+          "heuristic_with_escalation": 1298.72
+        }
+      }
+    },
     "reason_classifier": {
       "accuracy": 0.06,
       "macro_f1": 0.098,
@@ -282,6 +2980,34 @@
           "recall": 0.2143,
           "f1": 0.3529,
           "support": 14
+        }
+      },
+      "abstained_unclassified": 94,
+      "coverage": 0.06,
+      "accuracy_on_answered": 1.0,
+      "confusion_matrix": {
+        "item_not_received": {
+          "unclassified": 15
+        },
+        "not_as_described": {
+          "unclassified": 12,
+          "not_as_described": 3
+        },
+        "unauthorised": {
+          "unclassified": 14
+        },
+        "duplicate_charge": {
+          "unclassified": 14
+        },
+        "subscription_cancelled": {
+          "unclassified": 14
+        },
+        "refund_not_received": {
+          "unclassified": 14
+        },
+        "other": {
+          "unclassified": 11,
+          "other": 3
         }
       }
     },
@@ -336,7 +3062,13 @@
           "mean_predicted_prob": 0.0,
           "actual_win_rate": 0.0
         }
-      ]
+      ],
+      "p_win_status": "experimental_uncalibrated",
+      "n_with_numeric_p_win": 6,
+      "brier_score": 0.0653,
+      "log_loss": 0.2729,
+      "base_rate_brier_baseline": 0.2222,
+      "label_source": "simulator rule (evaluate_winnability), not observed merchant outcomes"
     },
     "financial_value_recovery_inr": {
       "effort_cost_per_case_inr": 0.0,
@@ -352,6 +3084,884 @@
   },
   "messy_set_rules_llm": {
     "cases_evaluated": 100,
+    "policy_economics": {
+      "zero_cost_legacy": {
+        "accept": {
+          "cost_model": {
+            "name": "zero_cost_legacy",
+            "fee_inr": 0.0,
+            "fee_trigger": "loss",
+            "contest_effort_inr": 0.0,
+            "accept_effort_inr": 0.0,
+            "review_cost_inr": 0.0
+          },
+          "escalation_resolution": "accept",
+          "policies": {
+            "contest_all": {
+              "n_evaluated": 100,
+              "n_contested": 100,
+              "n_accepted": 0,
+              "n_escalated": 0,
+              "gross_inr_contested": 765994.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 154872.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 1548.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 70,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 154872.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                915.78,
+                2283.64
+              ]
+            },
+            "accept_all": {
+              "n_evaluated": 100,
+              "n_contested": 0,
+              "n_accepted": 100,
+              "n_escalated": 0,
+              "gross_inr_contested": 0.0,
+              "gross_inr_accepted": 765994.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 0.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 0.0,
+              "missed_opportunities": 30,
+              "missed_opportunity_amount_inr": 154872.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": -154872.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -2283.64,
+                -915.78
+              ],
+              "uplift_vs_accept_all_inr": 0.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ]
+            },
+            "heuristic_decision_as_is": {
+              "n_evaluated": 100,
+              "n_contested": 42,
+              "n_accepted": 58,
+              "n_escalated": 0,
+              "gross_inr_contested": 323759.0,
+              "gross_inr_accepted": 442235.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 135678.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 1356.78,
+              "missed_opportunities": 6,
+              "missed_opportunity_amount_inr": 19194.0,
+              "incorrect_contests": 18,
+              "uplift_vs_contest_all_inr": -19194.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -371.94,
+                -48.97
+              ],
+              "uplift_vs_accept_all_inr": 135678.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                727.78,
+                2072.75
+              ]
+            },
+            "heuristic_with_escalation": {
+              "n_evaluated": 100,
+              "n_contested": 18,
+              "n_accepted": 0,
+              "n_escalated": 82,
+              "gross_inr_contested": 125181.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 640813.0,
+              "net_value_inr_simulated": 62789.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 627.89,
+              "missed_opportunities": 19,
+              "missed_opportunity_amount_inr": 92083.0,
+              "incorrect_contests": 7,
+              "uplift_vs_contest_all_inr": -92083.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -1429.77,
+                -477.94
+              ],
+              "uplift_vs_accept_all_inr": 62789.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                187.96,
+                1234.88
+              ]
+            },
+            "oracle_upper_bound": {
+              "n_evaluated": 100,
+              "n_contested": 30,
+              "n_accepted": 70,
+              "n_escalated": 0,
+              "gross_inr_contested": 154872.0,
+              "gross_inr_accepted": 611122.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 154872.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 1548.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 154872.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                915.78,
+                2283.64
+              ]
+            }
+          }
+        },
+        "contest": {
+          "cost_model": {
+            "name": "zero_cost_legacy",
+            "fee_inr": 0.0,
+            "fee_trigger": "loss",
+            "contest_effort_inr": 0.0,
+            "accept_effort_inr": 0.0,
+            "review_cost_inr": 0.0
+          },
+          "escalation_resolution": "contest",
+          "policies": {
+            "contest_all": {
+              "n_evaluated": 100,
+              "n_contested": 100,
+              "n_accepted": 0,
+              "n_escalated": 0,
+              "gross_inr_contested": 765994.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 154872.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 1548.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 70,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 154872.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                915.78,
+                2283.64
+              ]
+            },
+            "accept_all": {
+              "n_evaluated": 100,
+              "n_contested": 0,
+              "n_accepted": 100,
+              "n_escalated": 0,
+              "gross_inr_contested": 0.0,
+              "gross_inr_accepted": 765994.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 0.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 0.0,
+              "missed_opportunities": 30,
+              "missed_opportunity_amount_inr": 154872.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": -154872.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -2283.64,
+                -915.78
+              ],
+              "uplift_vs_accept_all_inr": 0.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ]
+            },
+            "heuristic_decision_as_is": {
+              "n_evaluated": 100,
+              "n_contested": 42,
+              "n_accepted": 58,
+              "n_escalated": 0,
+              "gross_inr_contested": 323759.0,
+              "gross_inr_accepted": 442235.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 135678.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 1356.78,
+              "missed_opportunities": 6,
+              "missed_opportunity_amount_inr": 19194.0,
+              "incorrect_contests": 18,
+              "uplift_vs_contest_all_inr": -19194.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -371.94,
+                -48.97
+              ],
+              "uplift_vs_accept_all_inr": 135678.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                727.78,
+                2072.75
+              ]
+            },
+            "heuristic_with_escalation": {
+              "n_evaluated": 100,
+              "n_contested": 18,
+              "n_accepted": 0,
+              "n_escalated": 82,
+              "gross_inr_contested": 125181.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 640813.0,
+              "net_value_inr_simulated": 154872.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 1548.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 70,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 154872.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                915.78,
+                2283.64
+              ]
+            },
+            "oracle_upper_bound": {
+              "n_evaluated": 100,
+              "n_contested": 30,
+              "n_accepted": 70,
+              "n_escalated": 0,
+              "gross_inr_contested": 154872.0,
+              "gross_inr_accepted": 611122.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 154872.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 1548.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 154872.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                915.78,
+                2283.64
+              ]
+            }
+          }
+        },
+        "break_even_contest_effort_inr_vs_contest_all": {
+          "heuristic_decision_as_is": 330.93,
+          "heuristic_with_escalation": 1122.96
+        }
+      },
+      "illustrative_effort_200_review_100": {
+        "accept": {
+          "cost_model": {
+            "name": "illustrative_effort_200_review_100",
+            "fee_inr": 0.0,
+            "fee_trigger": "loss",
+            "contest_effort_inr": 200.0,
+            "accept_effort_inr": 0.0,
+            "review_cost_inr": 100.0
+          },
+          "escalation_resolution": "accept",
+          "policies": {
+            "contest_all": {
+              "n_evaluated": 100,
+              "n_contested": 100,
+              "n_accepted": 0,
+              "n_escalated": 0,
+              "gross_inr_contested": 765994.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 134872.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 20000.0,
+              "avg_value_per_dispute_inr": 1348.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 70,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 134872.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                715.78,
+                2083.64
+              ]
+            },
+            "accept_all": {
+              "n_evaluated": 100,
+              "n_contested": 0,
+              "n_accepted": 100,
+              "n_escalated": 0,
+              "gross_inr_contested": 0.0,
+              "gross_inr_accepted": 765994.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 0.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 0.0,
+              "missed_opportunities": 30,
+              "missed_opportunity_amount_inr": 154872.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": -134872.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -2083.64,
+                -715.78
+              ],
+              "uplift_vs_accept_all_inr": 0.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ]
+            },
+            "heuristic_decision_as_is": {
+              "n_evaluated": 100,
+              "n_contested": 42,
+              "n_accepted": 58,
+              "n_escalated": 0,
+              "gross_inr_contested": 323759.0,
+              "gross_inr_accepted": 442235.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 127278.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 8400.0,
+              "avg_value_per_dispute_inr": 1272.78,
+              "missed_opportunities": 6,
+              "missed_opportunity_amount_inr": 19194.0,
+              "incorrect_contests": 18,
+              "uplift_vs_contest_all_inr": -7594.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -247.87,
+                63.03
+              ],
+              "uplift_vs_accept_all_inr": 127278.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                647.89,
+                1982.74
+              ]
+            },
+            "heuristic_with_escalation": {
+              "n_evaluated": 100,
+              "n_contested": 18,
+              "n_accepted": 0,
+              "n_escalated": 82,
+              "gross_inr_contested": 125181.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 640813.0,
+              "net_value_inr_simulated": 50989.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 11800.0,
+              "avg_value_per_dispute_inr": 509.89,
+              "missed_opportunities": 19,
+              "missed_opportunity_amount_inr": 92083.0,
+              "incorrect_contests": 7,
+              "uplift_vs_contest_all_inr": -83883.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -1348.72,
+                -397.91
+              ],
+              "uplift_vs_accept_all_inr": 50989.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                73.93,
+                1113.81
+              ]
+            },
+            "oracle_upper_bound": {
+              "n_evaluated": 100,
+              "n_contested": 30,
+              "n_accepted": 70,
+              "n_escalated": 0,
+              "gross_inr_contested": 154872.0,
+              "gross_inr_accepted": 611122.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 148872.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 6000.0,
+              "avg_value_per_dispute_inr": 1488.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": 14000.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                124.0,
+                158.0
+              ],
+              "uplift_vs_accept_all_inr": 148872.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                871.78,
+                2212.61
+              ]
+            }
+          }
+        },
+        "contest": {
+          "cost_model": {
+            "name": "illustrative_effort_200_review_100",
+            "fee_inr": 0.0,
+            "fee_trigger": "loss",
+            "contest_effort_inr": 200.0,
+            "accept_effort_inr": 0.0,
+            "review_cost_inr": 100.0
+          },
+          "escalation_resolution": "contest",
+          "policies": {
+            "contest_all": {
+              "n_evaluated": 100,
+              "n_contested": 100,
+              "n_accepted": 0,
+              "n_escalated": 0,
+              "gross_inr_contested": 765994.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 134872.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 20000.0,
+              "avg_value_per_dispute_inr": 1348.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 70,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 134872.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                715.78,
+                2083.64
+              ]
+            },
+            "accept_all": {
+              "n_evaluated": 100,
+              "n_contested": 0,
+              "n_accepted": 100,
+              "n_escalated": 0,
+              "gross_inr_contested": 0.0,
+              "gross_inr_accepted": 765994.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 0.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 0.0,
+              "missed_opportunities": 30,
+              "missed_opportunity_amount_inr": 154872.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": -134872.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -2083.64,
+                -715.78
+              ],
+              "uplift_vs_accept_all_inr": 0.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ]
+            },
+            "heuristic_decision_as_is": {
+              "n_evaluated": 100,
+              "n_contested": 42,
+              "n_accepted": 58,
+              "n_escalated": 0,
+              "gross_inr_contested": 323759.0,
+              "gross_inr_accepted": 442235.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 127278.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 8400.0,
+              "avg_value_per_dispute_inr": 1272.78,
+              "missed_opportunities": 6,
+              "missed_opportunity_amount_inr": 19194.0,
+              "incorrect_contests": 18,
+              "uplift_vs_contest_all_inr": -7594.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -247.87,
+                63.03
+              ],
+              "uplift_vs_accept_all_inr": 127278.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                647.89,
+                1982.74
+              ]
+            },
+            "heuristic_with_escalation": {
+              "n_evaluated": 100,
+              "n_contested": 18,
+              "n_accepted": 0,
+              "n_escalated": 82,
+              "gross_inr_contested": 125181.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 640813.0,
+              "net_value_inr_simulated": 126672.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 28200.0,
+              "avg_value_per_dispute_inr": 1266.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 70,
+              "uplift_vs_contest_all_inr": -8200.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -89.0,
+                -74.0
+              ],
+              "uplift_vs_accept_all_inr": 126672.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                632.82,
+                2005.55
+              ]
+            },
+            "oracle_upper_bound": {
+              "n_evaluated": 100,
+              "n_contested": 30,
+              "n_accepted": 70,
+              "n_escalated": 0,
+              "gross_inr_contested": 154872.0,
+              "gross_inr_accepted": 611122.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 148872.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 6000.0,
+              "avg_value_per_dispute_inr": 1488.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": 14000.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                124.0,
+                158.0
+              ],
+              "uplift_vs_accept_all_inr": 148872.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                871.78,
+                2212.61
+              ]
+            }
+          }
+        },
+        "break_even_contest_effort_inr_vs_contest_all": {
+          "heuristic_decision_as_is": 330.93,
+          "heuristic_with_escalation": 1222.96
+        }
+      },
+      "illustrative_fee_500_on_loss_effort_200_review_100": {
+        "accept": {
+          "cost_model": {
+            "name": "illustrative_fee_500_on_loss_effort_200_review_100",
+            "fee_inr": 500.0,
+            "fee_trigger": "loss",
+            "contest_effort_inr": 200.0,
+            "accept_effort_inr": 0.0,
+            "review_cost_inr": 100.0
+          },
+          "escalation_resolution": "accept",
+          "policies": {
+            "contest_all": {
+              "n_evaluated": 100,
+              "n_contested": 100,
+              "n_accepted": 0,
+              "n_escalated": 0,
+              "gross_inr_contested": 765994.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 99872.0,
+              "fees_inr": 35000.0,
+              "operational_costs_inr": 20000.0,
+              "avg_value_per_dispute_inr": 998.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 70,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 99872.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                325.78,
+                1771.61
+              ]
+            },
+            "accept_all": {
+              "n_evaluated": 100,
+              "n_contested": 0,
+              "n_accepted": 100,
+              "n_escalated": 0,
+              "gross_inr_contested": 0.0,
+              "gross_inr_accepted": 765994.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 0.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 0.0,
+              "missed_opportunities": 30,
+              "missed_opportunity_amount_inr": 154872.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": -99872.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -1771.61,
+                -325.78
+              ],
+              "uplift_vs_accept_all_inr": 0.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ]
+            },
+            "heuristic_decision_as_is": {
+              "n_evaluated": 100,
+              "n_contested": 42,
+              "n_accepted": 58,
+              "n_escalated": 0,
+              "gross_inr_contested": 323759.0,
+              "gross_inr_accepted": 442235.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 118278.0,
+              "fees_inr": 9000.0,
+              "operational_costs_inr": 8400.0,
+              "avg_value_per_dispute_inr": 1182.78,
+              "missed_opportunities": 6,
+              "missed_opportunity_amount_inr": 19194.0,
+              "incorrect_contests": 18,
+              "uplift_vs_contest_all_inr": 18406.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -4.86,
+                349.0
+              ],
+              "uplift_vs_accept_all_inr": 118278.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                546.89,
+                1899.73
+              ]
+            },
+            "heuristic_with_escalation": {
+              "n_evaluated": 100,
+              "n_contested": 18,
+              "n_accepted": 0,
+              "n_escalated": 82,
+              "gross_inr_contested": 125181.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 640813.0,
+              "net_value_inr_simulated": 47489.0,
+              "fees_inr": 3500.0,
+              "operational_costs_inr": 11800.0,
+              "avg_value_per_dispute_inr": 474.89,
+              "missed_opportunities": 19,
+              "missed_opportunity_amount_inr": 92083.0,
+              "incorrect_contests": 7,
+              "uplift_vs_contest_all_inr": -52383.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -1056.74,
+                -53.94
+              ],
+              "uplift_vs_accept_all_inr": 47489.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                40.94,
+                1073.83
+              ]
+            },
+            "oracle_upper_bound": {
+              "n_evaluated": 100,
+              "n_contested": 30,
+              "n_accepted": 70,
+              "n_escalated": 0,
+              "gross_inr_contested": 154872.0,
+              "gross_inr_accepted": 611122.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 148872.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 6000.0,
+              "avg_value_per_dispute_inr": 1488.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": 49000.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                434.0,
+                553.0
+              ],
+              "uplift_vs_accept_all_inr": 148872.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                871.78,
+                2212.61
+              ]
+            }
+          }
+        },
+        "contest": {
+          "cost_model": {
+            "name": "illustrative_fee_500_on_loss_effort_200_review_100",
+            "fee_inr": 500.0,
+            "fee_trigger": "loss",
+            "contest_effort_inr": 200.0,
+            "accept_effort_inr": 0.0,
+            "review_cost_inr": 100.0
+          },
+          "escalation_resolution": "contest",
+          "policies": {
+            "contest_all": {
+              "n_evaluated": 100,
+              "n_contested": 100,
+              "n_accepted": 0,
+              "n_escalated": 0,
+              "gross_inr_contested": 765994.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 99872.0,
+              "fees_inr": 35000.0,
+              "operational_costs_inr": 20000.0,
+              "avg_value_per_dispute_inr": 998.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 70,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 99872.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                325.78,
+                1771.61
+              ]
+            },
+            "accept_all": {
+              "n_evaluated": 100,
+              "n_contested": 0,
+              "n_accepted": 100,
+              "n_escalated": 0,
+              "gross_inr_contested": 0.0,
+              "gross_inr_accepted": 765994.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 0.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 0.0,
+              "missed_opportunities": 30,
+              "missed_opportunity_amount_inr": 154872.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": -99872.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -1771.61,
+                -325.78
+              ],
+              "uplift_vs_accept_all_inr": 0.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ]
+            },
+            "heuristic_decision_as_is": {
+              "n_evaluated": 100,
+              "n_contested": 42,
+              "n_accepted": 58,
+              "n_escalated": 0,
+              "gross_inr_contested": 323759.0,
+              "gross_inr_accepted": 442235.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 118278.0,
+              "fees_inr": 9000.0,
+              "operational_costs_inr": 8400.0,
+              "avg_value_per_dispute_inr": 1182.78,
+              "missed_opportunities": 6,
+              "missed_opportunity_amount_inr": 19194.0,
+              "incorrect_contests": 18,
+              "uplift_vs_contest_all_inr": 18406.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -4.86,
+                349.0
+              ],
+              "uplift_vs_accept_all_inr": 118278.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                546.89,
+                1899.73
+              ]
+            },
+            "heuristic_with_escalation": {
+              "n_evaluated": 100,
+              "n_contested": 18,
+              "n_accepted": 0,
+              "n_escalated": 82,
+              "gross_inr_contested": 125181.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 640813.0,
+              "net_value_inr_simulated": 91672.0,
+              "fees_inr": 35000.0,
+              "operational_costs_inr": 28200.0,
+              "avg_value_per_dispute_inr": 916.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 70,
+              "uplift_vs_contest_all_inr": -8200.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -89.0,
+                -74.0
+              ],
+              "uplift_vs_accept_all_inr": 91672.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                241.82,
+                1688.68
+              ]
+            },
+            "oracle_upper_bound": {
+              "n_evaluated": 100,
+              "n_contested": 30,
+              "n_accepted": 70,
+              "n_escalated": 0,
+              "gross_inr_contested": 154872.0,
+              "gross_inr_accepted": 611122.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 148872.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 6000.0,
+              "avg_value_per_dispute_inr": 1488.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": 49000.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                434.0,
+                553.0
+              ],
+              "uplift_vs_accept_all_inr": 148872.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                871.78,
+                2212.61
+              ]
+            }
+          }
+        },
+        "break_even_contest_effort_inr_vs_contest_all": {
+          "heuristic_decision_as_is": 0.0,
+          "heuristic_with_escalation": 838.82
+        }
+      }
+    },
     "reason_classifier": {
       "accuracy": 0.85,
       "macro_f1": 0.8994,
@@ -397,6 +4007,37 @@
           "recall": 1.0,
           "f1": 1.0,
           "support": 14
+        }
+      },
+      "abstained_unclassified": 12,
+      "coverage": 0.88,
+      "accuracy_on_answered": 0.9659,
+      "confusion_matrix": {
+        "item_not_received": {
+          "item_not_received": 9,
+          "unclassified": 6
+        },
+        "not_as_described": {
+          "duplicate_charge": 2,
+          "not_as_described": 11,
+          "unclassified": 2
+        },
+        "unauthorised": {
+          "unauthorised": 13,
+          "item_not_received": 1
+        },
+        "duplicate_charge": {
+          "duplicate_charge": 14
+        },
+        "subscription_cancelled": {
+          "subscription_cancelled": 14
+        },
+        "refund_not_received": {
+          "refund_not_received": 10,
+          "unclassified": 4
+        },
+        "other": {
+          "other": 14
         }
       }
     },
@@ -451,7 +4092,13 @@
           "mean_predicted_prob": 0.919,
           "actual_win_rate": 0.65
         }
-      ]
+      ],
+      "p_win_status": "experimental_uncalibrated",
+      "n_with_numeric_p_win": 88,
+      "brier_score": 0.2269,
+      "log_loss": 0.6985,
+      "base_rate_brier_baseline": 0.2034,
+      "label_source": "simulator rule (evaluate_winnability), not observed merchant outcomes"
     },
     "financial_value_recovery_inr": {
       "effort_cost_per_case_inr": 0.0,
@@ -467,6 +4114,884 @@
   },
   "messy_set": {
     "cases_evaluated": 100,
+    "policy_economics": {
+      "zero_cost_legacy": {
+        "accept": {
+          "cost_model": {
+            "name": "zero_cost_legacy",
+            "fee_inr": 0.0,
+            "fee_trigger": "loss",
+            "contest_effort_inr": 0.0,
+            "accept_effort_inr": 0.0,
+            "review_cost_inr": 0.0
+          },
+          "escalation_resolution": "accept",
+          "policies": {
+            "contest_all": {
+              "n_evaluated": 100,
+              "n_contested": 100,
+              "n_accepted": 0,
+              "n_escalated": 0,
+              "gross_inr_contested": 765994.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 154872.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 1548.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 70,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 154872.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                915.78,
+                2283.64
+              ]
+            },
+            "accept_all": {
+              "n_evaluated": 100,
+              "n_contested": 0,
+              "n_accepted": 100,
+              "n_escalated": 0,
+              "gross_inr_contested": 0.0,
+              "gross_inr_accepted": 765994.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 0.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 0.0,
+              "missed_opportunities": 30,
+              "missed_opportunity_amount_inr": 154872.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": -154872.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -2283.64,
+                -915.78
+              ],
+              "uplift_vs_accept_all_inr": 0.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ]
+            },
+            "heuristic_decision_as_is": {
+              "n_evaluated": 100,
+              "n_contested": 42,
+              "n_accepted": 58,
+              "n_escalated": 0,
+              "gross_inr_contested": 323759.0,
+              "gross_inr_accepted": 442235.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 135678.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 1356.78,
+              "missed_opportunities": 6,
+              "missed_opportunity_amount_inr": 19194.0,
+              "incorrect_contests": 18,
+              "uplift_vs_contest_all_inr": -19194.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -371.94,
+                -48.97
+              ],
+              "uplift_vs_accept_all_inr": 135678.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                727.78,
+                2072.75
+              ]
+            },
+            "heuristic_with_escalation": {
+              "n_evaluated": 100,
+              "n_contested": 18,
+              "n_accepted": 0,
+              "n_escalated": 82,
+              "gross_inr_contested": 125181.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 640813.0,
+              "net_value_inr_simulated": 62789.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 627.89,
+              "missed_opportunities": 19,
+              "missed_opportunity_amount_inr": 92083.0,
+              "incorrect_contests": 7,
+              "uplift_vs_contest_all_inr": -92083.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -1429.77,
+                -477.94
+              ],
+              "uplift_vs_accept_all_inr": 62789.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                187.96,
+                1234.88
+              ]
+            },
+            "oracle_upper_bound": {
+              "n_evaluated": 100,
+              "n_contested": 30,
+              "n_accepted": 70,
+              "n_escalated": 0,
+              "gross_inr_contested": 154872.0,
+              "gross_inr_accepted": 611122.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 154872.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 1548.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 154872.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                915.78,
+                2283.64
+              ]
+            }
+          }
+        },
+        "contest": {
+          "cost_model": {
+            "name": "zero_cost_legacy",
+            "fee_inr": 0.0,
+            "fee_trigger": "loss",
+            "contest_effort_inr": 0.0,
+            "accept_effort_inr": 0.0,
+            "review_cost_inr": 0.0
+          },
+          "escalation_resolution": "contest",
+          "policies": {
+            "contest_all": {
+              "n_evaluated": 100,
+              "n_contested": 100,
+              "n_accepted": 0,
+              "n_escalated": 0,
+              "gross_inr_contested": 765994.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 154872.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 1548.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 70,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 154872.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                915.78,
+                2283.64
+              ]
+            },
+            "accept_all": {
+              "n_evaluated": 100,
+              "n_contested": 0,
+              "n_accepted": 100,
+              "n_escalated": 0,
+              "gross_inr_contested": 0.0,
+              "gross_inr_accepted": 765994.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 0.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 0.0,
+              "missed_opportunities": 30,
+              "missed_opportunity_amount_inr": 154872.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": -154872.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -2283.64,
+                -915.78
+              ],
+              "uplift_vs_accept_all_inr": 0.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ]
+            },
+            "heuristic_decision_as_is": {
+              "n_evaluated": 100,
+              "n_contested": 42,
+              "n_accepted": 58,
+              "n_escalated": 0,
+              "gross_inr_contested": 323759.0,
+              "gross_inr_accepted": 442235.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 135678.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 1356.78,
+              "missed_opportunities": 6,
+              "missed_opportunity_amount_inr": 19194.0,
+              "incorrect_contests": 18,
+              "uplift_vs_contest_all_inr": -19194.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -371.94,
+                -48.97
+              ],
+              "uplift_vs_accept_all_inr": 135678.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                727.78,
+                2072.75
+              ]
+            },
+            "heuristic_with_escalation": {
+              "n_evaluated": 100,
+              "n_contested": 18,
+              "n_accepted": 0,
+              "n_escalated": 82,
+              "gross_inr_contested": 125181.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 640813.0,
+              "net_value_inr_simulated": 154872.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 1548.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 70,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 154872.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                915.78,
+                2283.64
+              ]
+            },
+            "oracle_upper_bound": {
+              "n_evaluated": 100,
+              "n_contested": 30,
+              "n_accepted": 70,
+              "n_escalated": 0,
+              "gross_inr_contested": 154872.0,
+              "gross_inr_accepted": 611122.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 154872.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 1548.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 154872.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                915.78,
+                2283.64
+              ]
+            }
+          }
+        },
+        "break_even_contest_effort_inr_vs_contest_all": {
+          "heuristic_decision_as_is": 330.93,
+          "heuristic_with_escalation": 1122.96
+        }
+      },
+      "illustrative_effort_200_review_100": {
+        "accept": {
+          "cost_model": {
+            "name": "illustrative_effort_200_review_100",
+            "fee_inr": 0.0,
+            "fee_trigger": "loss",
+            "contest_effort_inr": 200.0,
+            "accept_effort_inr": 0.0,
+            "review_cost_inr": 100.0
+          },
+          "escalation_resolution": "accept",
+          "policies": {
+            "contest_all": {
+              "n_evaluated": 100,
+              "n_contested": 100,
+              "n_accepted": 0,
+              "n_escalated": 0,
+              "gross_inr_contested": 765994.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 134872.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 20000.0,
+              "avg_value_per_dispute_inr": 1348.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 70,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 134872.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                715.78,
+                2083.64
+              ]
+            },
+            "accept_all": {
+              "n_evaluated": 100,
+              "n_contested": 0,
+              "n_accepted": 100,
+              "n_escalated": 0,
+              "gross_inr_contested": 0.0,
+              "gross_inr_accepted": 765994.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 0.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 0.0,
+              "missed_opportunities": 30,
+              "missed_opportunity_amount_inr": 154872.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": -134872.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -2083.64,
+                -715.78
+              ],
+              "uplift_vs_accept_all_inr": 0.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ]
+            },
+            "heuristic_decision_as_is": {
+              "n_evaluated": 100,
+              "n_contested": 42,
+              "n_accepted": 58,
+              "n_escalated": 0,
+              "gross_inr_contested": 323759.0,
+              "gross_inr_accepted": 442235.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 127278.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 8400.0,
+              "avg_value_per_dispute_inr": 1272.78,
+              "missed_opportunities": 6,
+              "missed_opportunity_amount_inr": 19194.0,
+              "incorrect_contests": 18,
+              "uplift_vs_contest_all_inr": -7594.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -247.87,
+                63.03
+              ],
+              "uplift_vs_accept_all_inr": 127278.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                647.89,
+                1982.74
+              ]
+            },
+            "heuristic_with_escalation": {
+              "n_evaluated": 100,
+              "n_contested": 18,
+              "n_accepted": 0,
+              "n_escalated": 82,
+              "gross_inr_contested": 125181.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 640813.0,
+              "net_value_inr_simulated": 50989.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 11800.0,
+              "avg_value_per_dispute_inr": 509.89,
+              "missed_opportunities": 19,
+              "missed_opportunity_amount_inr": 92083.0,
+              "incorrect_contests": 7,
+              "uplift_vs_contest_all_inr": -83883.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -1348.72,
+                -397.91
+              ],
+              "uplift_vs_accept_all_inr": 50989.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                73.93,
+                1113.81
+              ]
+            },
+            "oracle_upper_bound": {
+              "n_evaluated": 100,
+              "n_contested": 30,
+              "n_accepted": 70,
+              "n_escalated": 0,
+              "gross_inr_contested": 154872.0,
+              "gross_inr_accepted": 611122.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 148872.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 6000.0,
+              "avg_value_per_dispute_inr": 1488.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": 14000.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                124.0,
+                158.0
+              ],
+              "uplift_vs_accept_all_inr": 148872.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                871.78,
+                2212.61
+              ]
+            }
+          }
+        },
+        "contest": {
+          "cost_model": {
+            "name": "illustrative_effort_200_review_100",
+            "fee_inr": 0.0,
+            "fee_trigger": "loss",
+            "contest_effort_inr": 200.0,
+            "accept_effort_inr": 0.0,
+            "review_cost_inr": 100.0
+          },
+          "escalation_resolution": "contest",
+          "policies": {
+            "contest_all": {
+              "n_evaluated": 100,
+              "n_contested": 100,
+              "n_accepted": 0,
+              "n_escalated": 0,
+              "gross_inr_contested": 765994.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 134872.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 20000.0,
+              "avg_value_per_dispute_inr": 1348.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 70,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 134872.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                715.78,
+                2083.64
+              ]
+            },
+            "accept_all": {
+              "n_evaluated": 100,
+              "n_contested": 0,
+              "n_accepted": 100,
+              "n_escalated": 0,
+              "gross_inr_contested": 0.0,
+              "gross_inr_accepted": 765994.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 0.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 0.0,
+              "missed_opportunities": 30,
+              "missed_opportunity_amount_inr": 154872.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": -134872.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -2083.64,
+                -715.78
+              ],
+              "uplift_vs_accept_all_inr": 0.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ]
+            },
+            "heuristic_decision_as_is": {
+              "n_evaluated": 100,
+              "n_contested": 42,
+              "n_accepted": 58,
+              "n_escalated": 0,
+              "gross_inr_contested": 323759.0,
+              "gross_inr_accepted": 442235.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 127278.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 8400.0,
+              "avg_value_per_dispute_inr": 1272.78,
+              "missed_opportunities": 6,
+              "missed_opportunity_amount_inr": 19194.0,
+              "incorrect_contests": 18,
+              "uplift_vs_contest_all_inr": -7594.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -247.87,
+                63.03
+              ],
+              "uplift_vs_accept_all_inr": 127278.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                647.89,
+                1982.74
+              ]
+            },
+            "heuristic_with_escalation": {
+              "n_evaluated": 100,
+              "n_contested": 18,
+              "n_accepted": 0,
+              "n_escalated": 82,
+              "gross_inr_contested": 125181.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 640813.0,
+              "net_value_inr_simulated": 126672.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 28200.0,
+              "avg_value_per_dispute_inr": 1266.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 70,
+              "uplift_vs_contest_all_inr": -8200.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -89.0,
+                -74.0
+              ],
+              "uplift_vs_accept_all_inr": 126672.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                632.82,
+                2005.55
+              ]
+            },
+            "oracle_upper_bound": {
+              "n_evaluated": 100,
+              "n_contested": 30,
+              "n_accepted": 70,
+              "n_escalated": 0,
+              "gross_inr_contested": 154872.0,
+              "gross_inr_accepted": 611122.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 148872.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 6000.0,
+              "avg_value_per_dispute_inr": 1488.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": 14000.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                124.0,
+                158.0
+              ],
+              "uplift_vs_accept_all_inr": 148872.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                871.78,
+                2212.61
+              ]
+            }
+          }
+        },
+        "break_even_contest_effort_inr_vs_contest_all": {
+          "heuristic_decision_as_is": 330.93,
+          "heuristic_with_escalation": 1222.96
+        }
+      },
+      "illustrative_fee_500_on_loss_effort_200_review_100": {
+        "accept": {
+          "cost_model": {
+            "name": "illustrative_fee_500_on_loss_effort_200_review_100",
+            "fee_inr": 500.0,
+            "fee_trigger": "loss",
+            "contest_effort_inr": 200.0,
+            "accept_effort_inr": 0.0,
+            "review_cost_inr": 100.0
+          },
+          "escalation_resolution": "accept",
+          "policies": {
+            "contest_all": {
+              "n_evaluated": 100,
+              "n_contested": 100,
+              "n_accepted": 0,
+              "n_escalated": 0,
+              "gross_inr_contested": 765994.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 99872.0,
+              "fees_inr": 35000.0,
+              "operational_costs_inr": 20000.0,
+              "avg_value_per_dispute_inr": 998.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 70,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 99872.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                325.78,
+                1771.61
+              ]
+            },
+            "accept_all": {
+              "n_evaluated": 100,
+              "n_contested": 0,
+              "n_accepted": 100,
+              "n_escalated": 0,
+              "gross_inr_contested": 0.0,
+              "gross_inr_accepted": 765994.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 0.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 0.0,
+              "missed_opportunities": 30,
+              "missed_opportunity_amount_inr": 154872.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": -99872.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -1771.61,
+                -325.78
+              ],
+              "uplift_vs_accept_all_inr": 0.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ]
+            },
+            "heuristic_decision_as_is": {
+              "n_evaluated": 100,
+              "n_contested": 42,
+              "n_accepted": 58,
+              "n_escalated": 0,
+              "gross_inr_contested": 323759.0,
+              "gross_inr_accepted": 442235.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 118278.0,
+              "fees_inr": 9000.0,
+              "operational_costs_inr": 8400.0,
+              "avg_value_per_dispute_inr": 1182.78,
+              "missed_opportunities": 6,
+              "missed_opportunity_amount_inr": 19194.0,
+              "incorrect_contests": 18,
+              "uplift_vs_contest_all_inr": 18406.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -4.86,
+                349.0
+              ],
+              "uplift_vs_accept_all_inr": 118278.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                546.89,
+                1899.73
+              ]
+            },
+            "heuristic_with_escalation": {
+              "n_evaluated": 100,
+              "n_contested": 18,
+              "n_accepted": 0,
+              "n_escalated": 82,
+              "gross_inr_contested": 125181.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 640813.0,
+              "net_value_inr_simulated": 47489.0,
+              "fees_inr": 3500.0,
+              "operational_costs_inr": 11800.0,
+              "avg_value_per_dispute_inr": 474.89,
+              "missed_opportunities": 19,
+              "missed_opportunity_amount_inr": 92083.0,
+              "incorrect_contests": 7,
+              "uplift_vs_contest_all_inr": -52383.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -1056.74,
+                -53.94
+              ],
+              "uplift_vs_accept_all_inr": 47489.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                40.94,
+                1073.83
+              ]
+            },
+            "oracle_upper_bound": {
+              "n_evaluated": 100,
+              "n_contested": 30,
+              "n_accepted": 70,
+              "n_escalated": 0,
+              "gross_inr_contested": 154872.0,
+              "gross_inr_accepted": 611122.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 148872.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 6000.0,
+              "avg_value_per_dispute_inr": 1488.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": 49000.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                434.0,
+                553.0
+              ],
+              "uplift_vs_accept_all_inr": 148872.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                871.78,
+                2212.61
+              ]
+            }
+          }
+        },
+        "contest": {
+          "cost_model": {
+            "name": "illustrative_fee_500_on_loss_effort_200_review_100",
+            "fee_inr": 500.0,
+            "fee_trigger": "loss",
+            "contest_effort_inr": 200.0,
+            "accept_effort_inr": 0.0,
+            "review_cost_inr": 100.0
+          },
+          "escalation_resolution": "contest",
+          "policies": {
+            "contest_all": {
+              "n_evaluated": 100,
+              "n_contested": 100,
+              "n_accepted": 0,
+              "n_escalated": 0,
+              "gross_inr_contested": 765994.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 99872.0,
+              "fees_inr": 35000.0,
+              "operational_costs_inr": 20000.0,
+              "avg_value_per_dispute_inr": 998.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 70,
+              "uplift_vs_contest_all_inr": 0.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ],
+              "uplift_vs_accept_all_inr": 99872.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                325.78,
+                1771.61
+              ]
+            },
+            "accept_all": {
+              "n_evaluated": 100,
+              "n_contested": 0,
+              "n_accepted": 100,
+              "n_escalated": 0,
+              "gross_inr_contested": 0.0,
+              "gross_inr_accepted": 765994.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 0.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 0.0,
+              "avg_value_per_dispute_inr": 0.0,
+              "missed_opportunities": 30,
+              "missed_opportunity_amount_inr": 154872.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": -99872.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -1771.61,
+                -325.78
+              ],
+              "uplift_vs_accept_all_inr": 0.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                0.0,
+                0.0
+              ]
+            },
+            "heuristic_decision_as_is": {
+              "n_evaluated": 100,
+              "n_contested": 42,
+              "n_accepted": 58,
+              "n_escalated": 0,
+              "gross_inr_contested": 323759.0,
+              "gross_inr_accepted": 442235.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 118278.0,
+              "fees_inr": 9000.0,
+              "operational_costs_inr": 8400.0,
+              "avg_value_per_dispute_inr": 1182.78,
+              "missed_opportunities": 6,
+              "missed_opportunity_amount_inr": 19194.0,
+              "incorrect_contests": 18,
+              "uplift_vs_contest_all_inr": 18406.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -4.86,
+                349.0
+              ],
+              "uplift_vs_accept_all_inr": 118278.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                546.89,
+                1899.73
+              ]
+            },
+            "heuristic_with_escalation": {
+              "n_evaluated": 100,
+              "n_contested": 18,
+              "n_accepted": 0,
+              "n_escalated": 82,
+              "gross_inr_contested": 125181.0,
+              "gross_inr_accepted": 0.0,
+              "gross_inr_escalated": 640813.0,
+              "net_value_inr_simulated": 91672.0,
+              "fees_inr": 35000.0,
+              "operational_costs_inr": 28200.0,
+              "avg_value_per_dispute_inr": 916.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 70,
+              "uplift_vs_contest_all_inr": -8200.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                -89.0,
+                -74.0
+              ],
+              "uplift_vs_accept_all_inr": 91672.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                241.82,
+                1688.68
+              ]
+            },
+            "oracle_upper_bound": {
+              "n_evaluated": 100,
+              "n_contested": 30,
+              "n_accepted": 70,
+              "n_escalated": 0,
+              "gross_inr_contested": 154872.0,
+              "gross_inr_accepted": 611122.0,
+              "gross_inr_escalated": 0.0,
+              "net_value_inr_simulated": 148872.0,
+              "fees_inr": 0.0,
+              "operational_costs_inr": 6000.0,
+              "avg_value_per_dispute_inr": 1488.72,
+              "missed_opportunities": 0,
+              "missed_opportunity_amount_inr": 0.0,
+              "incorrect_contests": 0,
+              "uplift_vs_contest_all_inr": 49000.0,
+              "uplift_vs_contest_all_ci95_per_case_inr": [
+                434.0,
+                553.0
+              ],
+              "uplift_vs_accept_all_inr": 148872.0,
+              "uplift_vs_accept_all_ci95_per_case_inr": [
+                871.78,
+                2212.61
+              ]
+            }
+          }
+        },
+        "break_even_contest_effort_inr_vs_contest_all": {
+          "heuristic_decision_as_is": 0.0,
+          "heuristic_with_escalation": 838.82
+        }
+      }
+    },
     "reason_classifier": {
       "accuracy": 0.85,
       "macro_f1": 0.8994,
@@ -512,6 +5037,37 @@
           "recall": 1.0,
           "f1": 1.0,
           "support": 14
+        }
+      },
+      "abstained_unclassified": 12,
+      "coverage": 0.88,
+      "accuracy_on_answered": 0.9659,
+      "confusion_matrix": {
+        "item_not_received": {
+          "item_not_received": 9,
+          "unclassified": 6
+        },
+        "not_as_described": {
+          "duplicate_charge": 2,
+          "not_as_described": 11,
+          "unclassified": 2
+        },
+        "unauthorised": {
+          "unauthorised": 13,
+          "item_not_received": 1
+        },
+        "duplicate_charge": {
+          "duplicate_charge": 14
+        },
+        "subscription_cancelled": {
+          "subscription_cancelled": 14
+        },
+        "refund_not_received": {
+          "refund_not_received": 10,
+          "unclassified": 4
+        },
+        "other": {
+          "other": 14
         }
       }
     },
@@ -566,7 +5122,13 @@
           "mean_predicted_prob": 0.919,
           "actual_win_rate": 0.65
         }
-      ]
+      ],
+      "p_win_status": "experimental_uncalibrated",
+      "n_with_numeric_p_win": 88,
+      "brier_score": 0.2269,
+      "log_loss": 0.6985,
+      "base_rate_brier_baseline": 0.2034,
+      "label_source": "simulator rule (evaluate_winnability), not observed merchant outcomes"
     },
     "financial_value_recovery_inr": {
       "effort_cost_per_case_inr": 0.0,
@@ -859,6 +5421,32 @@
         "f1": 1.0,
         "support": 10
       }
+    },
+    "abstained_unclassified": 0,
+    "coverage": 1.0,
+    "accuracy_on_answered": 1.0,
+    "confusion_matrix": {
+      "not_as_described": {
+        "not_as_described": 8
+      },
+      "refund_not_received": {
+        "refund_not_received": 8
+      },
+      "other": {
+        "other": 10
+      },
+      "item_not_received": {
+        "item_not_received": 8
+      },
+      "subscription_cancelled": {
+        "subscription_cancelled": 2
+      },
+      "unauthorised": {
+        "unauthorised": 5
+      },
+      "duplicate_charge": {
+        "duplicate_charge": 4
+      }
     }
   },
   "extraction_accuracy": 1.0,
@@ -912,7 +5500,13 @@
         "mean_predicted_prob": 0.93,
         "actual_win_rate": 1.0
       }
-    ]
+    ],
+    "p_win_status": "experimental_uncalibrated",
+    "n_with_numeric_p_win": 45,
+    "brier_score": 0.0948,
+    "log_loss": 0.3186,
+    "base_rate_brier_baseline": 0.24,
+    "label_source": "simulator rule (evaluate_winnability), not observed merchant outcomes"
   },
   "financial_value_recovery_inr": {
     "effort_cost_per_case_inr": 0.0,

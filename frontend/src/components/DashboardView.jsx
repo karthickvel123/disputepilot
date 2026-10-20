@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   ShieldAlert, 
   TrendingUp, 
@@ -11,10 +11,31 @@ import {
   IndianRupee,
   PieChart,
   Sparkles,
-  ExternalLink
+  ExternalLink,
+  ArrowUpRight,
+  ShieldCheck
 } from 'lucide-react';
+import { listDisputes } from '../api';
 
 export default function DashboardView({ metrics, onSelectDispute, onNavigateToDisputes }) {
+  const [recentDisputes, setRecentDisputes] = useState([]);
+  const [loadingRecent, setLoadingRecent] = useState(false);
+
+  useEffect(() => {
+    async function loadRecent() {
+      setLoadingRecent(true);
+      try {
+        const data = await listDisputes({ page: 1, per_page: 5 });
+        setRecentDisputes(data.items || []);
+      } catch (e) {
+        console.warn('Could not load recent disputes on dashboard', e);
+      } finally {
+        setLoadingRecent(false);
+      }
+    }
+    loadRecent();
+  }, []);
+
   if (!metrics) {
     return (
       <div className="py-20 text-center">
@@ -34,6 +55,7 @@ export default function DashboardView({ metrics, onSelectDispute, onNavigateToDi
 
   const reasonList = Object.entries(metrics.reason_breakdown || {}).sort((a, b) => b[1] - a[1]);
   const totalReasons = reasonList.reduce((acc, curr) => acc + curr[1], 0) || 1;
+
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -144,8 +166,118 @@ export default function DashboardView({ metrics, onSelectDispute, onNavigateToDi
         </div>
       </div>
 
+      {/* Priority Dispute Action Queue */}
+      <div className="glass-panel p-6 border border-slate-800">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <ShieldAlert className="w-5 h-5 text-indigo-400" />
+            <h3 className="font-heading text-base font-bold text-white">Priority Dispute Action Queue</h3>
+            <span className="text-xs font-mono text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">
+              REAL-TIME TRIAGE
+            </span>
+          </div>
+          <button
+            onClick={() => onNavigateToDisputes('all')}
+            className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 font-medium"
+          >
+            <span>View Full Worklist</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+
+        {loadingRecent ? (
+          <div className="py-8 text-center text-slate-500 text-xs">
+            <div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+            Loading priority queue...
+          </div>
+        ) : recentDisputes.length === 0 ? (
+          <div className="py-8 text-center text-slate-500 text-xs">
+            No active disputes pending action.
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr className="border-b border-slate-800/80 bg-slate-900/40 text-slate-400 font-semibold uppercase tracking-wider text-[10px]">
+                  <th className="py-2.5 px-3">Dispute ID</th>
+                  <th className="py-2.5 px-3">Amount</th>
+                  <th className="py-2.5 px-3">Reason</th>
+                  <th className="py-2.5 px-3">SLA Status</th>
+                  <th className="py-2.5 px-3">Win Probability</th>
+                  <th className="py-2.5 px-3">AI Recommendation</th>
+                  <th className="py-2.5 px-3 text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-800/40">
+                {recentDisputes.map((item) => (
+                  <tr
+                    key={item.case_id}
+                    onClick={() => onSelectDispute(item.case_id)}
+                    className="hover:bg-slate-800/30 cursor-pointer transition-colors group"
+                  >
+                    <td className="py-3 px-3 font-mono font-medium text-slate-200 group-hover:text-indigo-300">
+                      {item.dispute_id || item.case_id}
+                    </td>
+                    <td className="py-3 px-3 font-mono font-semibold text-white">
+                      {item.amount_display}
+                    </td>
+                    <td className="py-3 px-3 capitalize text-slate-300">
+                      {item.reason_class.replace(/_/g, ' ')}
+                    </td>
+                    <td className="py-3 px-3">
+                      <span className={`px-2 py-0.5 rounded text-[11px] font-mono ${
+                        item.urgency === 'critical' ? 'bg-rose-500/15 text-rose-300 border border-rose-500/30 animate-pulse' :
+                        item.urgency === 'urgent' ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30' :
+                        'bg-slate-800 text-slate-300'
+                      }`}>
+                        {item.hours_remaining}h remaining
+                      </span>
+                    </td>
+                    <td className="py-3 px-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-14 h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full rounded-full ${
+                              item.p_win >= 0.6 ? 'bg-emerald-400' : item.p_win >= 0.4 ? 'bg-amber-400' : 'bg-rose-400'
+                            }`}
+                            style={{ width: `${Math.round(item.p_win * 100)}%` }}
+                          ></div>
+                        </div>
+                        <span className="font-mono text-[11px] text-slate-300">
+                          {Math.round(item.p_win * 100)}%
+                        </span>
+                      </div>
+                    </td>
+                    <td className="py-3 px-3">
+                      <span className={`badge ${
+                        item.recommendation?.decision === 'contest' ? 'badge-won' : 'badge-lost'
+                      }`}>
+                        {item.recommendation?.decision?.toUpperCase()}
+                      </span>
+                    </td>
+                    <td className="py-3 px-3 text-right">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onSelectDispute(item.case_id);
+                        }}
+                        className="inline-flex items-center gap-1 text-xs text-indigo-400 hover:text-indigo-300 font-semibold group-hover:translate-x-0.5 transition-all"
+                      >
+                        <span>Review</span>
+                        <ArrowUpRight className="w-3.5 h-3.5" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
       {/* Analytics Breakdown: Reason Codes & Quick Worklist */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
         {/* Reason Code Distribution */}
         <div className="glass-panel p-6 lg:col-span-1 flex flex-col justify-between">
           <div>

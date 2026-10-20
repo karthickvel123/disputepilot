@@ -101,7 +101,7 @@ Run evaluation anytime with `make eval` (or on Windows: `uv run python -m disput
 | Metric | Clean Set (In-Distribution Rules) | Messy Set (Rules-Only) | Real LLM (Gemini, status: PARTIAL) | Metric Classification |
 | :--- | :--- | :--- | :--- | :--- |
 | **Reason Code Accuracy** | 100.00% | 6.00% | 15 of 16 | LLM fallback (Gemini), n=16 unique cases |
-| **Reason Code Macro-F1** | 100.00% | 9.33% | omitted (sample too small) | LLM fallback (Gemini), n=16 unique cases |
+| **Reason Code Macro-F1** | 100.00% | 9.80% | omitted (sample too small) | LLM fallback (Gemini), n=16 unique cases |
 | **Field-Level Extraction Accuracy** | fake regex baseline, appendix only | fake regex baseline, appendix only | n too small (1 document) | fake regex baseline, appendix only |
 | **Missing-Category Recall** | 100.00% | 100.00% | N/A (omitted for budget) | **Pipeline sanity check, not performance** |
 | **Raw Sentence Grounding Rate** | 100.00% | 100.00% | N/A (omitted for budget) | Pre-verifier fact coverage |
@@ -109,8 +109,8 @@ Run evaluation anytime with `make eval` (or on Windows: `uv run python -m disput
 | **Prompt Injection Containment** | 100.00% | 100.00% | N/A (omitted for budget) | Fencing check |
 | **PCI-DSS Card Leaks** | **0** | **0** | N/A (omitted for budget) | Deterministic Luhn scanner |
 | **Decision Accuracy vs. Winnable** | 88.89% | 72.00% | N/A (omitted for budget) | **Pipeline sanity check, not performance** (heuristic vs sim rules) |
-| **DisputePilot Policy Recovery (INR)** | ₹116,783.00* | ₹26,999.00* | N/A (omitted for budget) | Simulated, under assumptions listed here |
-| **Uplift vs Contest-All (INR)** | ₹-71,995.00* | ₹-127,873.00* | N/A (omitted for budget) | Simulated, under assumptions listed here |
+| **DisputePilot Policy Recovery (INR)** | ₹116,783.00* | ₹22,499.00* | N/A (omitted for budget) | Simulated, under assumptions listed here |
+| **Uplift vs Contest-All (INR)** | ₹-71,995.00* | ₹-132,373.00* | N/A (omitted for budget) | Simulated, under assumptions listed here |
 
 \* *Simulated under default assumptions (effort cost = ₹0.00, dispute fee = ₹0.00). Whether realistic dispute fees make uplift positive is not tested.*
 

@@ -23,7 +23,7 @@ import {
   X
 } from 'lucide-react';
 
-export default function LandingPage({ onLaunchConsole, metrics }) {
+export default function LandingPage({ onLaunchConsole, onQuickDemoLogin, metrics }) {
   const [openFaq, setOpenFaq] = useState(null);
   const [activeModal, setActiveModal] = useState(null); // 'privacy' | 'terms' | 'specs'
 
@@ -78,21 +78,32 @@ export default function LandingPage({ onLaunchConsole, metrics }) {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
           <button
             id="btn-hero-launch"
-            onClick={onLaunchConsole}
-            className="w-full sm:w-auto px-8 py-3.5 rounded-xl font-semibold text-white bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-3 text-base"
+            onClick={onQuickDemoLogin || onLaunchConsole}
+            className="w-full sm:w-auto px-8 py-3.5 rounded-xl font-semibold text-white bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-3 text-base"
           >
-            <span>Launch Merchant Console</span>
-            <ArrowRight className="w-5 h-5" />
+            <Sparkles className="w-5 h-5 text-cyan-200" />
+            <span>⚡ Launch Interactive Demo (1-Click)</span>
+            <ArrowRight className="w-5 h-5 text-indigo-200" />
+          </button>
+
+          <button
+            id="btn-hero-signin"
+            onClick={onLaunchConsole}
+            className="w-full sm:w-auto px-6 py-3.5 rounded-xl font-medium text-slate-300 hover:text-white bg-slate-900/80 hover:bg-slate-800 border border-slate-700 transition-all text-base flex items-center justify-center gap-2"
+          >
+            <Lock className="w-4 h-4 text-indigo-400" />
+            <span>Sign In / Custom Login</span>
           </button>
 
           <a
             href="#faq"
-            className="w-full sm:w-auto px-6 py-3.5 rounded-xl font-medium text-slate-300 hover:text-white bg-slate-900/60 hover:bg-slate-800/80 border border-slate-800 transition-all text-base flex items-center justify-center gap-2"
+            className="w-full sm:w-auto px-5 py-3.5 rounded-xl font-medium text-slate-400 hover:text-white bg-transparent hover:bg-slate-900/40 border border-transparent hover:border-slate-800 transition-all text-base flex items-center justify-center gap-2"
           >
-            <HelpCircle className="w-4 h-4 text-indigo-400" />
-            <span>Product FAQ</span>
+            <HelpCircle className="w-4 h-4 text-slate-400" />
+            <span>FAQ</span>
           </a>
         </div>
+
 
         {/* Live Metrics Strip */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto mb-16">

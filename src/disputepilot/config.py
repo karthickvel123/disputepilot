@@ -27,6 +27,23 @@ LIVE_KEY_PREFIX = "rzp_live_"
 _TRUE = {"1", "true", "yes", "on"}
 
 
+def _load_dotenv_if_present() -> None:
+    for env_path in (Path(".env"), Path(__file__).resolve().parents[2] / ".env"):
+        if env_path.is_file():
+            try:
+                for line in env_path.read_text(encoding="utf-8").splitlines():
+                    line = line.strip()
+                    if not line or line.startswith("#") or "=" not in line:
+                        continue
+                    k, v = line.split("=", 1)
+                    k, v = k.strip(), v.strip().strip("'\"")
+                    if k and k not in os.environ:
+                        os.environ[k] = v
+            except OSError:
+                pass
+            break
+
+
 def _env(name: str, default: str = "") -> str:
     return (os.environ.get(name) or default).strip()
 
@@ -43,6 +60,7 @@ class ConfigError(RuntimeError):
 
 
 @dataclass(frozen=True)
+
 class Settings:
     """Resolved runtime settings. Secrets are held in memory only and never repr'd."""
 
@@ -135,9 +153,18 @@ class Settings:
 
 def load_settings() -> Settings:
     """Read settings from the environment right now (call again after changing env in tests)."""
+    _load_dotenv_if_present()
+    raw_mode = _env("DATA_MODE")
+    if not raw_mode:
+        has_rzp = bool(_env("RAZORPAY_KEY_ID"))
+        mode = "live" if has_rzp else "sim"
+    else:
+        mode = raw_mode.lower()
+
     return Settings(
-        data_mode=_env("DATA_MODE", "live").lower(),
+        data_mode=mode,
         razorpay_key_id=_env("RAZORPAY_KEY_ID"),
+
         razorpay_key_secret=_env("RAZORPAY_KEY_SECRET"),
         razorpay_base_url=_env("RAZORPAY_BASE_URL", DEFAULT_RAZORPAY_BASE_URL).rstrip("/"),
         razorpay_webhook_secret=_env("RAZORPAY_WEBHOOK_SECRET"),

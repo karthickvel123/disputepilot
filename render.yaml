@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: disputepilot-backend
+    runtime: docker
+    plan: free
+    region: oregon
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: DATA_MODE
+        value: sim
+      - key: COOKIE_SECURE
+        value: "true"
+      - key: COOKIE_SAMESITE
+        value: none
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: DISPUTEPILOT_ALLOW_DEV_USERS
+        value: "false"
+      - key: INITIAL_REVIEWER_USERNAME
+        value: reviewer

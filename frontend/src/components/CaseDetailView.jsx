@@ -484,8 +484,9 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
               AI Decision Copilot
             </h4>
             <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-              GEMINI 1.5 PRO
+              GEMINI 2.5 FLASH / PRO
             </span>
+
           </div>
 
           {analysis ? (
