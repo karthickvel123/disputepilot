@@ -166,6 +166,11 @@ def prune_dispute_events(max_age_days: int = 90, db_path: Path | str = DEFAULT_D
         return pruned
 
 
+from disputepilot.core.rate_limit import SlidingWindowRateLimiter
+
+MAX_WEBHOOK_BYTES = 256 * 1024  # 256 KB limit on webhook payloads
+
+
 def verify_webhook_signature(raw_body: bytes, signature: str | None, secret: str | None) -> bool:
     """Verify incoming X-Razorpay-Signature using HMAC-SHA256 over raw request body.
 
@@ -194,9 +199,12 @@ def verify_webhook_signature(raw_body: bytes, signature: str | None, secret: str
 def create_webhook_router(
     webhook_secret: str | None = None,
     db_path: Path | str = DEFAULT_DB_PATH,
+    rate_limiter: SlidingWindowRateLimiter | None = None,
+    max_body_bytes: int = MAX_WEBHOOK_BYTES,
 ) -> APIRouter:
     """Factory function creating a configured FastAPI webhook APIRouter."""
     r = APIRouter()
+    limiter = rate_limiter or SlidingWindowRateLimiter(max_requests=120, window_seconds=60)
 
     configured_secret = (
         webhook_secret if webhook_secret is not None else os.environ.get("RAZORPAY_WEBHOOK_SECRET", "")
@@ -231,7 +239,16 @@ def create_webhook_router(
             webhook_secret if webhook_secret is not None else os.environ.get("RAZORPAY_WEBHOOK_SECRET", "")
         )
 
-        # 1. Fail Closed: If secret is unset or empty, reject every request
+        # 1. Rate Limiting (per client IP)
+        client_ip = request.client.host if request.client else "unknown"
+        if not limiter.is_allowed(client_ip):
+            logger.warning("Webhook rate limit exceeded for client IP: %s", client_ip)
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail="Too many webhook requests from this IP. Please throttle.",
+            )
+
+        # 2. Fail Closed: If secret is unset or empty, reject every request
         if not secret or not secret.strip():
             logger.warning("Rejected webhook delivery: RAZORPAY_WEBHOOK_SECRET is unset or empty.")
             raise HTTPException(
@@ -239,16 +256,35 @@ def create_webhook_router(
                 detail="RAZORPAY_WEBHOOK_SECRET is unset or empty. Webhook endpoint rejects all requests (fail-closed).",
             )
 
-        raw_body = await request.body()
+        # 3. Payload Body-Size Limit (Reject payload early if Content-Length exceeds limit)
+        content_length = request.headers.get("content-length")
+        if content_length and content_length.isdigit() and int(content_length) > max_body_bytes:
+            raise HTTPException(
+                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                detail=f"Webhook payload exceeds maximum allowed size of {max_body_bytes} bytes.",
+            )
 
-        # 2. Signature Verification
+        raw_body = await request.body()
+        if len(raw_body) > max_body_bytes:
+            raise HTTPException(
+                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                detail=f"Webhook payload exceeds maximum allowed size of {max_body_bytes} bytes.",
+            )
+
+        # 4. Signature Verification (Missing or invalid signature rejected with 400)
+        if not x_razorpay_signature or not x_razorpay_signature.strip():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid webhook signature: Missing X-Razorpay-Signature header",
+            )
+
         if not verify_webhook_signature(raw_body, x_razorpay_signature, secret):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Invalid webhook signature",
             )
 
-        # 3. Extract Event payload and identifier
+        # 5. Extract Event payload and identifier
         try:
             event_json = json.loads(raw_body.decode("utf-8"))
         except (json.JSONDecodeError, UnicodeDecodeError):
@@ -262,8 +298,14 @@ def create_webhook_router(
             # Fallback deterministic hash if provider omitted event id
             event_id = f"evt_{hashlib.sha256(raw_body).hexdigest()[:16]}"
 
-        # 4. Extract dispute details
-        event_type = event_json.get("event", "unknown")
+        # 6. Extract dispute details and normalize event name
+        raw_event_type = str(event_json.get("event", "unknown"))
+        # Support both payment.dispute.* and dispute.* canonical names
+        if raw_event_type.startswith("dispute."):
+            normalized_event_type = f"payment.{raw_event_type}"
+        else:
+            normalized_event_type = raw_event_type
+
         dispute_entity = (
             event_json.get("payload", {})
             .get("dispute", {})
@@ -273,11 +315,11 @@ def create_webhook_router(
         payment_id = dispute_entity.get("payment_id")
         received_at = int(time.time())
 
-        # 5. Atomic Deduplication with Sanitized Storage
+        # 7. Atomic Deduplication with Sanitized Storage
         sanitized_payload = sanitize_webhook_payload(event_json)
         inserted = record_dispute_event_atomic(
             event_id=event_id,
-            event_type=event_type,
+            event_type=normalized_event_type,
             dispute_id=dispute_id,
             payment_id=payment_id,
             payload_json=json.dumps(sanitized_payload),
@@ -294,14 +336,14 @@ def create_webhook_router(
 
         for listener in event_listeners:
             try:
-                listener(event_type, dispute_id)
+                listener(normalized_event_type, dispute_id)
             except Exception:
                 logger.exception("Webhook event listener failed")
 
         return {
             "status": "processed",
             "event_id": event_id,
-            "event_type": event_type,
+            "event_type": normalized_event_type,
             "dispute_id": dispute_id,
         }
 
@@ -310,3 +352,4 @@ def create_webhook_router(
 
 # Default package router reading RAZORPAY_WEBHOOK_SECRET from environment
 default_router = create_webhook_router()
+

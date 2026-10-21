@@ -501,16 +501,19 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
 
               <div className="space-y-1">
                 <div className="flex justify-between text-xs">
-                  <span className="text-slate-400">Win Probability:</span>
+                  <span className="text-slate-400">Win Probability (Heuristic):</span>
                   <span className="font-mono font-bold text-emerald-400">
-                    {Math.round((analysis.recommendation?.p_win || 0.85) * 100)}%
+                    {analysis.recommendation?.p_win != null ? `${Math.round(analysis.recommendation.p_win * 100)}%` : 'n/a'}
                   </span>
                 </div>
                 <div className="w-full h-2 bg-slate-900 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-gradient-to-r from-emerald-500 to-cyan-400 rounded-full"
-                    style={{ width: `${Math.round((analysis.recommendation?.p_win || 0.85) * 100)}%` }}
+                    style={{ width: `${Math.round((analysis.recommendation?.p_win != null ? analysis.recommendation.p_win : 0) * 100)}%` }}
                   ></div>
+                </div>
+                <div className="text-[10px] text-slate-400 pt-0.5">
+                  * Prior heuristic. Final dispute outcome is decided by card scheme adjudication.
                 </div>
               </div>
 

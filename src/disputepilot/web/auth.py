@@ -30,6 +30,15 @@ def hash_password(password: str, salt: bytes | None = None) -> str:
 DEFAULT_HASH = hash_password(DEFAULT_REVIEWER_PASSWORD, salt=DEFAULT_SALT)
 
 
+def is_demo_password_hash(stored_hash: str) -> bool:
+    """Check if the provided hash is the default demo hash or resolves to 'password123'."""
+    if not stored_hash:
+        return False
+    if stored_hash == DEFAULT_HASH:
+        return True
+    return verify_password(DEFAULT_REVIEWER_PASSWORD, stored_hash)
+
+
 def verify_password(password: str, stored_hash: str) -> bool:
     """Verify a plain password against a stored scrypt or sha256 hash."""
     if not stored_hash:
@@ -80,6 +89,8 @@ def get_configured_credentials() -> tuple[str, str]:
     user = os.environ.get("REVIEWER_USER", "").strip()
     pwd_hash = os.environ.get("REVIEWER_PASSWORD_HASH", "").strip()
     if user and pwd_hash:
+        if _is_production_mode() and is_demo_password_hash(pwd_hash):
+            return "", ""
         return user, pwd_hash
     # Never expose well-known demo credentials on a public production deployment,
     # even when DATA_MODE=sim. Missing configured credentials must fail closed.
@@ -131,7 +142,51 @@ def create_session_cookie_value(user: str, role: str = "reviewer") -> tuple[str,
     return cookie_value, csrf_token
 
 
-SESSION_MAX_AGE_SECONDS = 86400  # keep in sync with the cookie max_age set at login
+def get_session_max_age_seconds() -> int:
+    """Retrieve session maximum age in seconds from environment or default to 86400 (24 hours)."""
+    try:
+        val = int(os.environ.get("SESSION_TTL_SECONDS", "86400"))
+        return max(300, val)
+    except (ValueError, TypeError):
+        return 86400
+
+
+SESSION_MAX_AGE_SECONDS = get_session_max_age_seconds()
+
+
+def validate_password_strength(password: str, username: str = "", is_production: bool | None = None) -> None:
+    """Validate password meets complexity requirements for financial review access.
+
+    In development / simulation: minimum 8 characters, letters and digits.
+    In production: minimum 10 characters, mixed case, and digits or special characters.
+    """
+    if is_production is None:
+        is_production = _is_production_mode()
+
+    if not password:
+        raise ValueError("Password cannot be empty.")
+
+    min_len = 10 if is_production else 8
+    if len(password) < min_len:
+        raise ValueError(f"Password must be at least {min_len} characters long.")
+
+    if username and password.strip().lower() == username.strip().lower():
+        raise ValueError("Password cannot match username.")
+
+    has_letter = any(c.isalpha() for c in password)
+    has_digit = any(c.isdigit() for c in password)
+    has_symbol = any(not c.isalnum() for c in password)
+
+    if not (has_letter and (has_digit or has_symbol)):
+        raise ValueError("Password must contain both letters and numbers or symbols.")
+
+    if is_production:
+        if is_demo_password_hash(hash_password(password, salt=DEFAULT_SALT)):
+            raise ValueError("Demo passwords are prohibited in production.")
+        has_upper = any(c.isupper() for c in password)
+        has_lower = any(c.islower() for c in password)
+        if not (has_upper and has_lower):
+            raise ValueError("Production password must contain both uppercase and lowercase letters.")
 
 
 def safe_next_path(candidate: str | None, default: str = "/") -> str:
@@ -170,7 +225,8 @@ def parse_session_cookie(cookie_value: str | None, now: float | None = None) -> 
             created = data.get("created_at")
             current = time.time() if now is None else now
             # Enforce lifetime on the server: a copied cookie must not outlive the session.
-            if not isinstance(created, int | float) or created > current + 60 or current - created > SESSION_MAX_AGE_SECONDS:
+            max_age = get_session_max_age_seconds()
+            if not isinstance(created, int | float) or created > current + 60 or current - created > max_age:
                 return None
             return data
     except (ValueError, UnicodeDecodeError, json.JSONDecodeError):

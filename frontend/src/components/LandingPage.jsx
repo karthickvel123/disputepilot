@@ -24,7 +24,15 @@ import {
   Zap
 } from 'lucide-react';
 
-export default function LandingPage({ onLaunchConsole, onQuickDemoLogin, onSimulateDispute, metrics }) {
+export default function LandingPage({ 
+  onLaunchConsole, 
+  onQuickDemoLogin, 
+  onSimulateDispute, 
+  metrics,
+  systemSettings,
+  isDemoAllowed = false,
+  isSimMode = false
+}) {
   const [openFaq, setOpenFaq] = useState(null);
   const [activeModal, setActiveModal] = useState(null); // 'privacy' | 'terms' | 'specs'
   const [simulating, setSimulating] = useState(false);
@@ -95,22 +103,34 @@ export default function LandingPage({ onLaunchConsole, onQuickDemoLogin, onSimul
 
         {/* Call to Actions */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-          <button
-            id="btn-hero-launch"
-            onClick={onQuickDemoLogin || onLaunchConsole}
-            className="w-full sm:w-auto px-8 py-3.5 rounded-xl font-semibold text-white bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 shadow-xl shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-3 text-base"
-          >
-            <Sparkles className="w-5 h-5 text-cyan-200" />
-            <span>⚡ Launch Interactive Demo (1-Click)</span>
-            <ArrowRight className="w-5 h-5 text-indigo-200" />
-          </button>
+          {isDemoAllowed ? (
+            <button
+              id="btn-hero-launch"
+              onClick={onQuickDemoLogin || onLaunchConsole}
+              className="w-full sm:w-auto px-8 py-3.5 rounded-xl font-semibold text-white bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 shadow-xl shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-3 text-base cursor-pointer"
+            >
+              <Sparkles className="w-5 h-5 text-cyan-200" />
+              <span>⚡ Launch Interactive Demo (1-Click)</span>
+              <ArrowRight className="w-5 h-5 text-indigo-200" />
+            </button>
+          ) : (
+            <button
+              id="btn-hero-launch"
+              onClick={onLaunchConsole}
+              className="w-full sm:w-auto px-8 py-3.5 rounded-xl font-semibold text-white bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 shadow-xl shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-3 text-base cursor-pointer"
+            >
+              <Lock className="w-5 h-5 text-cyan-200" />
+              <span>Launch Merchant Console</span>
+              <ArrowRight className="w-5 h-5 text-indigo-200" />
+            </button>
+          )}
 
           {onSimulateDispute && (
             <button
               id="btn-hero-simulate"
               disabled={simulating}
               onClick={handleSimulateClick}
-              className="w-full sm:w-auto px-6 py-3.5 rounded-xl font-medium text-emerald-300 hover:text-white bg-emerald-950/40 hover:bg-emerald-900/60 border border-emerald-500/40 hover:border-emerald-400 transition-all text-base flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/10 hover:-translate-y-0.5"
+              className="w-full sm:w-auto px-6 py-3.5 rounded-xl font-medium text-emerald-300 hover:text-white bg-emerald-950/40 hover:bg-emerald-900/60 border border-emerald-500/40 hover:border-emerald-400 transition-all text-base flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/10 hover:-translate-y-0.5 cursor-pointer"
             >
               <Zap className="w-4 h-4 text-emerald-400" />
               <span>{simulating ? 'Simulating Webhook...' : '⚡ Simulate Inbound Webhook'}</span>
@@ -120,7 +140,7 @@ export default function LandingPage({ onLaunchConsole, onQuickDemoLogin, onSimul
           <button
             id="btn-hero-signin"
             onClick={onLaunchConsole}
-            className="w-full sm:w-auto px-6 py-3.5 rounded-xl font-medium text-slate-300 hover:text-white bg-slate-900/80 hover:bg-slate-800 border border-slate-700 hover:border-slate-600 transition-all text-base flex items-center justify-center gap-2"
+            className="w-full sm:w-auto px-6 py-3.5 rounded-xl font-medium text-slate-300 hover:text-white bg-slate-900/80 hover:bg-slate-800 border border-slate-700 hover:border-slate-600 transition-all text-base flex items-center justify-center gap-2 cursor-pointer"
           >
             <Lock className="w-4 h-4 text-indigo-400" />
             <span>Sign In / Custom Login</span>
@@ -130,25 +150,39 @@ export default function LandingPage({ onLaunchConsole, onQuickDemoLogin, onSimul
         {/* Metrics Strip with Clear Provenance Labeling */}
         <div className="max-w-4xl mx-auto mb-16">
           <div className="flex items-center justify-center gap-2 mb-3">
-            <span className={`text-[10px] font-mono px-3 py-1 rounded-full border shadow-sm ${metrics ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : 'bg-slate-800/80 text-amber-300 border-amber-500/30'}`}>
-              {metrics ? '● LIVE WORKSPACE METRICS' : '○ ILLUSTRATIVE BENCHMARK / DEMO DATA'}
+            <span className={`text-[10px] font-mono px-3 py-1 rounded-full border shadow-sm ${
+              metrics
+                ? isSimMode
+                  ? 'bg-amber-500/10 text-amber-300 border-amber-500/30'
+                  : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                : 'bg-slate-800/80 text-slate-400 border-slate-700'
+            }`}>
+              {metrics 
+                ? isSimMode 
+                  ? '○ SIMULATION WORKSPACE METRICS' 
+                  : '● LIVE RAZORPAY METRICS' 
+                : '○ NO DATA YET'}
             </span>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="glass-panel-premium card-sheen p-5 text-center">
               <div className="font-heading text-3xl font-extrabold text-white mb-1">
-                {metrics ? metrics.total_disputes : '250+'}
+                {metrics && metrics.total_disputes !== undefined ? metrics.total_disputes : 'No data yet'}
               </div>
               <div className="text-xs text-slate-400 font-medium">Disputes Handled</div>
-              <div className="text-[10px] text-indigo-400/90 mt-1">Real-time webhook queue</div>
+              <div className="text-[10px] text-indigo-400/90 mt-1">
+                {metrics ? 'Recorded in database' : 'Awaiting dispute events'}
+              </div>
             </div>
 
             <div className="glass-panel-premium card-sheen p-5 text-center">
               <div className="font-heading text-3xl font-extrabold text-emerald-400 mb-1">
-                {metrics?.win_rate_percent !== undefined && metrics?.win_rate_percent !== null ? `${metrics.win_rate_percent}%` : '84.2%'}
+                {metrics && metrics.win_rate_percent !== undefined && metrics.win_rate_percent !== null ? `${metrics.win_rate_percent}%` : 'No data yet'}
               </div>
-              <div className="text-xs text-slate-400 font-medium">Win Rate on Contests</div>
-              <div className="text-[10px] text-emerald-400/90 mt-1">+42.7% vs scheme baseline</div>
+              <div className="text-xs text-slate-400 font-medium">Win Rate on Contests {isSimMode ? '(Simulated)' : ''}</div>
+              <div className="text-[10px] text-emerald-400/90 mt-1">
+                {metrics && metrics.win_rate_percent !== null ? (isSimMode ? 'Synthetic test outcome' : 'Historical resolution rate') : 'Awaiting closed disputes'}
+              </div>
             </div>
 
             <div className="glass-panel-premium card-sheen p-5 text-center">
@@ -162,6 +196,9 @@ export default function LandingPage({ onLaunchConsole, onQuickDemoLogin, onSimul
               <div className="text-xs text-slate-400 font-medium">Tamper-Evident Ledger</div>
               <div className="text-[10px] text-purple-400/90 mt-1">Merkle-linked audit chain</div>
             </div>
+          </div>
+          <div className="text-[11px] text-slate-400 text-center mt-3.5 max-w-2xl mx-auto leading-relaxed">
+            * Disclaimer: Win rate, recovery, and win probability numbers are {isSimMode ? 'derived from synthetic test fixtures' : 'experimental prior heuristics'}. Actual dispute outcomes depend on bank scheme adjudication (Visa, Mastercard, RuPay).
           </div>
         </div>
 

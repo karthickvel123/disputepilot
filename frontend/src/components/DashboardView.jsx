@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { listDisputes } from '../api';
 
-export default function DashboardView({ metrics, onSelectDispute, onNavigateToDisputes, onSimulateDispute }) {
+export default function DashboardView({ metrics, onSelectDispute, onNavigateToDisputes, onSimulateDispute, isSimMode }) {
   const [recentDisputes, setRecentDisputes] = useState([]);
   const [loadingRecent, setLoadingRecent] = useState(false);
   const [simulating, setSimulating] = useState(false);
@@ -189,18 +189,22 @@ export default function DashboardView({ metrics, onSelectDispute, onNavigateToDi
         {/* Card 3: Win Rate */}
         <div className="glass-panel-premium card-sheen p-5 border-t-2 border-t-emerald-500/80">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Scheme Win Rate</span>
+            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+              Scheme Win Rate {isSimMode ? '(Simulated)' : ''}
+            </span>
             <span className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-sm shadow-emerald-500/20">
               <TrendingUp className="w-4 h-4" />
             </span>
           </div>
           <div className="flex items-baseline gap-2 mb-2">
             <span className="font-heading text-3xl font-extrabold text-emerald-400 tracking-tight">
-              {metrics.win_rate_percent !== null ? `${metrics.win_rate_percent}%` : '84.2%'}
+              {metrics.win_rate_percent !== null && metrics.win_rate_percent !== undefined ? `${metrics.win_rate_percent}%` : 'No data yet'}
             </span>
-            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
-              +42.7%
-            </span>
+            {metrics.win_rate_percent !== null && metrics.win_rate_percent !== undefined && (
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                {isSimMode ? 'SIMULATED' : 'CLOSED'}
+              </span>
+            )}
           </div>
           <div className="text-xs text-slate-400 flex items-center gap-2 pt-2 border-t border-slate-800/80">
             <span className="text-emerald-400 font-semibold">{metrics.won} won</span>
@@ -228,6 +232,19 @@ export default function DashboardView({ metrics, onSelectDispute, onNavigateToDi
             <span>Awaiting cryptographic token sign-off</span>
           </div>
         </div>
+      </div>
+
+      {/* Metric Calibration Disclaimer */}
+      <div className="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 text-[11px] text-slate-400 flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-sm">
+        <div className="flex items-center gap-2">
+          <span className={`w-2 h-2 rounded-full ${isSimMode ? 'bg-amber-400 animate-pulse' : 'bg-cyan-400'}`}></span>
+          <span>
+            <strong className="text-slate-300">{isSimMode ? '○ SIMULATION WORKSPACE METRICS' : '● LIVE RAZORPAY ENVIRONMENT'}:</strong> Win rates, recovery totals, and probability scores are {isSimMode ? 'derived from synthetic test fixtures' : 'uncalibrated prior heuristics'}. Actual dispute outcomes depend on bank scheme adjudication (Visa, Mastercard, RuPay).
+          </span>
+        </div>
+        <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider whitespace-nowrap self-start sm:self-center">
+          Bank Scheme Adjudication
+        </span>
       </div>
 
       {/* Priority Dispute Action Queue */}

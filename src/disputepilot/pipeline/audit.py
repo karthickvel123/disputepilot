@@ -232,7 +232,7 @@ def reconcile_audit_log(
                 conn.commit()
             reconciled += 1
         except Exception as exc:
-            logger.error("Failed to reconcile audit entry from line: %s, error: %s", line_str, exc)
+            logger.error("Failed to reconcile audit entry (%d bytes), error: %s", len(line_str), exc)
             unprocessed_lines.append(line_str)
 
     if unprocessed_lines:

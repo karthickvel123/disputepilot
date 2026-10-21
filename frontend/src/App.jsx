@@ -89,22 +89,30 @@ export default function App() {
     }
   }
 
+  const isSimMode = systemSettings?.data_mode === 'sim';
+  const isDemoAllowed = Boolean(
+    systemSettings?.is_demo_allowed ||
+    (systemSettings?.data_mode === 'sim' && systemSettings?.app_env !== 'production')
+  );
+
   async function handleQuickDemoLogin() {
+    if (!isDemoAllowed) {
+      setLoginModalOpen(true);
+      return;
+    }
     try {
       const data = await login('reviewer', 'password123');
       handleLoginSuccess(data.user, data.role);
     } catch (e) {
-      try {
-        const reg = await register('reviewer', 'password123', 'Authorized Reviewer');
-        handleLoginSuccess(reg.user, reg.role);
-      } catch (err) {
-        console.warn('Quick login error, opening modal:', err);
-        setLoginModalOpen(true);
-      }
+      setLoginModalOpen(true);
     }
   }
 
   async function handleSimulateDispute() {
+    if (!isSimMode) {
+      showToast('Dispute simulation is disabled in live mode.');
+      return;
+    }
     const randomId = Math.floor(1000 + Math.random() * 9000);
     const carrierList = ['Delhivery', 'BlueDart', 'DTDC', 'IndiaPost'];
     const carrier = carrierList[Math.floor(Math.random() * carrierList.length)];
@@ -205,18 +213,23 @@ export default function App() {
         userRole={userRole}
         onLogout={handleLogout}
         systemSettings={systemSettings}
+        isDemoAllowed={isDemoAllowed}
+        isSimMode={isSimMode}
         onOpenLanding={() => setActiveView('landing')}
-        onQuickDemoLogin={handleQuickDemoLogin}
-        onSimulateDispute={handleSimulateDispute}
+        onQuickDemoLogin={isDemoAllowed ? handleQuickDemoLogin : null}
+        onSimulateDispute={isSimMode ? handleSimulateDispute : null}
       />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6">
         {activeView === 'landing' && (
           <LandingPage
             onLaunchConsole={handleLaunchConsole}
-            onQuickDemoLogin={handleQuickDemoLogin}
-            onSimulateDispute={handleSimulateDispute}
+            onQuickDemoLogin={isDemoAllowed ? handleQuickDemoLogin : null}
+            onSimulateDispute={isSimMode ? handleSimulateDispute : null}
             metrics={metrics}
+            systemSettings={systemSettings}
+            isDemoAllowed={isDemoAllowed}
+            isSimMode={isSimMode}
           />
         )}
 
@@ -226,7 +239,8 @@ export default function App() {
             metrics={metrics}
             onSelectDispute={handleSelectCase}
             onNavigateToDisputes={handleNavigateToDisputes}
-            onSimulateDispute={handleSimulateDispute}
+            onSimulateDispute={isSimMode ? handleSimulateDispute : null}
+            isSimMode={isSimMode}
           />
         )}
 
@@ -267,6 +281,8 @@ export default function App() {
         isOpen={loginModalOpen}
         onClose={() => setLoginModalOpen(false)}
         onLoginSuccess={handleLoginSuccess}
+        systemSettings={systemSettings}
+        isDemoAllowed={isDemoAllowed}
       />
 
       {/* Footer */}

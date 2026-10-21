@@ -26,11 +26,13 @@ export default function Navbar({
   userRole = 'reviewer', 
   onLogout, 
   systemSettings, 
+  isDemoAllowed = false,
+  isSimMode = false,
   onOpenLanding,
   onQuickDemoLogin,
   onSimulateDispute
 }) {
-  const isSim = systemSettings?.data_mode === 'sim';
+  const isSim = isSimMode || systemSettings?.data_mode === 'sim';
 
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -294,15 +296,17 @@ export default function Navbar({
             </div>
           ) : (
             <div className="flex items-center gap-2">
-              <button
-                id="btn-nav-quick-demo"
-                onClick={onQuickDemoLogin || (() => setActiveTab('dashboard'))}
-                className="btn bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white font-semibold text-xs shadow-md shadow-indigo-500/25 flex items-center gap-1.5 hover:-translate-y-0.5 transition-all"
-                title="Instant one-click access as Merchant Reviewer"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-cyan-200" />
-                <span>1-Click Demo</span>
-              </button>
+              {isDemoAllowed && (
+                <button
+                  id="btn-nav-quick-demo"
+                  onClick={onQuickDemoLogin || (() => setActiveTab('dashboard'))}
+                  className="btn bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white font-semibold text-xs shadow-md shadow-indigo-500/25 flex items-center gap-1.5 hover:-translate-y-0.5 transition-all"
+                  title="Instant one-click access as Merchant Reviewer"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-cyan-200" />
+                  <span>1-Click Demo</span>
+                </button>
+              )}
               <button
                 id="btn-launch-login"
                 onClick={() => setActiveTab('dashboard')}

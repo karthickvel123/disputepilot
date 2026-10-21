@@ -81,6 +81,7 @@ class Settings:
     push_draft_on_process: bool = False
     require_independent_approval: bool = False
     cors_allowed_origins: str = ""
+    app_env: str = "development"
 
     # ---- derived -----------------------------------------------------------------
     @property
@@ -136,8 +137,25 @@ class Settings:
         return out
 
     def auth_problems(self) -> list[str]:
-        """Why reviewers cannot log in (live mode only)."""
+        """Why reviewers cannot log in."""
         out: list[str] = []
+        is_prod = self.app_env in ("production", "prod")
+
+        if is_prod:
+            if not self.session_secret or len(self.session_secret) < 32:
+                out.append("SESSION_SECRET must be set to a random string of at least 32 characters in production.")
+            from disputepilot.web.auth import is_demo_password_hash
+            if not self.reviewer_user or not self.reviewer_password_hash:
+                out.append(
+                    "REVIEWER_USER and REVIEWER_PASSWORD_HASH must be configured in production."
+                )
+            elif is_demo_password_hash(self.reviewer_password_hash):
+                out.append(
+                    "In production, REVIEWER_PASSWORD_HASH cannot use the default demo password hash. "
+                    "Generate a production password hash with: python scripts/hash_password.py"
+                )
+            return out
+
         if not self.is_live:
             return out
         if not self.session_secret or len(self.session_secret) < 32:
@@ -153,6 +171,76 @@ class Settings:
         return self.razorpay_problems() + self.auth_problems()
 
 
+def validate_production_startup(settings: Settings, cors_origins: list[str] | None = None) -> None:
+    """Validate runtime environment before booting in production.
+
+    Fails fast with a clear ConfigError if any of these are true:
+    1. SESSION_SECRET is default or under 32 chars.
+    2. COOKIE_SECURE is not true.
+    3. Demo credentials are in use.
+    4. DATA_MODE=live but the Razorpay key, secret or webhook secret is missing.
+    5. CORS allows a wildcard with credentials.
+    """
+    if settings.app_env.lower() not in {"production", "prod"}:
+        return
+
+    # Rule 1: SESSION_SECRET is default or under 32 chars
+    known_defaults = {"", "default", "secret", "change_me", "dev_secret", "insecure_default_secret_key_1234", "password123"}
+    if not settings.session_secret or len(settings.session_secret) < 32 or settings.session_secret.lower() in known_defaults:
+        raise ConfigError(
+            "Production startup aborted: SESSION_SECRET must be configured with a cryptographically secure random string "
+            "of at least 32 characters (e.g. generate via: python -c 'import secrets; print(secrets.token_hex(32))')."
+        )
+
+    # Rule 2: COOKIE_SECURE is not true
+    if not settings.cookie_secure:
+        raise ConfigError(
+            "Production startup aborted: COOKIE_SECURE must be enabled (COOKIE_SECURE=true) in production "
+            "to prevent session cookies from being transmitted over unencrypted HTTP."
+        )
+
+    # Rule 3: Demo credentials are in use
+    from disputepilot.web.auth import is_demo_password_hash
+    if (
+        not settings.reviewer_user
+        or not settings.reviewer_password_hash
+        or settings.reviewer_user.lower() == "reviewer"
+        or is_demo_password_hash(settings.reviewer_password_hash)
+    ):
+        raise ConfigError(
+            "Production startup aborted: Demo credentials are in use. REVIEWER_USER and REVIEWER_PASSWORD_HASH must be "
+            "set to dedicated production credentials, and cannot use the demo account ('reviewer') or demo password hash. "
+            "Generate a secure hash using: python scripts/hash_password.py"
+        )
+
+    # Rule 4: DATA_MODE=live but Razorpay key, secret or webhook secret is missing
+    if settings.data_mode == "live":
+        missing_rzp = []
+        if not settings.razorpay_key_id:
+            missing_rzp.append("RAZORPAY_KEY_ID")
+        if not settings.razorpay_key_secret:
+            missing_rzp.append("RAZORPAY_KEY_SECRET")
+        if not settings.razorpay_webhook_secret:
+            missing_rzp.append("RAZORPAY_WEBHOOK_SECRET")
+        if missing_rzp:
+            raise ConfigError(
+                f"Production startup aborted: DATA_MODE=live requires all Razorpay integration secrets to be set. "
+                f"Missing: {', '.join(missing_rzp)}."
+            )
+
+    # Rule 5: CORS allows a wildcard with credentials
+    origins = cors_origins if cors_origins is not None else (
+        [o.strip() for o in settings.cors_allowed_origins.split(",") if o.strip()]
+        if settings.cors_allowed_origins
+        else []
+    )
+    if "*" in origins:
+        raise ConfigError(
+            "Production startup aborted: CORS configuration allows wildcard origin '*' while credentials are enabled. "
+            "Configure an exact origin allowlist via CORS_ALLOWED_ORIGINS (e.g. https://your-merchant-app.com)."
+        )
+
+
 def load_settings() -> Settings:
     """Read settings from the environment right now (call again after changing env in tests)."""
     _load_dotenv_if_present()
@@ -160,9 +248,11 @@ def load_settings() -> Settings:
     # Live mode requires an explicit DATA_MODE=live setting.
     raw_mode = _env("DATA_MODE")
     mode = raw_mode.lower() if raw_mode else "sim"
+    env_name = _env("APP_ENV", "development").lower()
 
     return Settings(
         data_mode=mode,
+        app_env=env_name,
         razorpay_key_id=_env("RAZORPAY_KEY_ID"),
 
         razorpay_key_secret=_env("RAZORPAY_KEY_SECRET"),
@@ -173,7 +263,7 @@ def load_settings() -> Settings:
         reviewer_user=_env("REVIEWER_USER"),
         reviewer_password_hash=_env("REVIEWER_PASSWORD_HASH"),
         cookie_secure=_flag(
-            "COOKIE_SECURE", default=_env("APP_ENV").lower() in {"production", "prod"}
+            "COOKIE_SECURE", default=env_name in {"production", "prod"}
         ),
         llm_api_key=_env("LLM_API_KEY") or _env("GEMINI_API_KEY"),
         data_dir=Path(_env("DATA_DIR", "data")),
@@ -183,7 +273,7 @@ def load_settings() -> Settings:
         # Separation of duties is enabled by default in production; dev/test stays convenient.
         require_independent_approval=_flag(
             "REQUIRE_INDEPENDENT_APPROVAL",
-            default=_env("APP_ENV").lower() in {"production", "prod"},
+            default=env_name in {"production", "prod"},
         ),
         cors_allowed_origins=_env("CORS_ALLOWED_ORIGINS"),
     )

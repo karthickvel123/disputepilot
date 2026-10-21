@@ -63,6 +63,7 @@ from disputepilot.razorpay.webhook import default_router as webhook_router
 from disputepilot.safety.ingest import ingest_document
 from disputepilot.web.auth import (
     SESSION_COOKIE_NAME,
+    SESSION_MAX_AGE_SECONDS,
     create_session_cookie_value,
     get_configured_credentials,
     get_cookie_samesite_and_secure,
@@ -72,6 +73,8 @@ from disputepilot.web.auth import (
     verify_password,
 )
 from disputepilot.web.limits import BodyLimitMiddleware
+from disputepilot.web.login_security import login_security
+from disputepilot.web.user_store import get_user_store
 
 logger = logging.getLogger("disputepilot.web.app")
 
@@ -90,6 +93,31 @@ async def security_headers(request: Request, call_next: Any) -> Any:
     response.headers.setdefault("X-Frame-Options", "DENY")
     response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
     response.headers.setdefault("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
+
+    # Task 15: Content-Security-Policy with frame-ancestors 'none' for robust clickjacking defense
+    csp_directives = [
+        "default-src 'self'",
+        "script-src 'self' 'unsafe-inline'",
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+        "font-src 'self' https://fonts.gstatic.com data:",
+        "img-src 'self' data: https:",
+        "connect-src 'self' https:",
+        "frame-ancestors 'none'",
+        "object-src 'none'",
+        "base-uri 'self'",
+        "form-action 'self'",
+    ]
+    response.headers.setdefault("Content-Security-Policy", "; ".join(csp_directives))
+
+    # Task 15: Strict-Transport-Security (HSTS) when running over HTTPS or in production
+    app_env = os.environ.get("APP_ENV", "").strip().lower()
+    is_prod = app_env in ("production", "prod")
+    cookie_secure = getattr(settings, "cookie_secure", False)
+    if is_prod or cookie_secure or request.url.scheme == "https":
+        response.headers.setdefault(
+            "Strict-Transport-Security",
+            "max-age=31536000; includeSubDomains; preload",
+        )
     return response
 
 
@@ -137,6 +165,15 @@ except OSError as exc:
     ) from exc
 razorpay_problems: list[str] = settings.razorpay_problems()
 auth_problems: list[str] = settings.auth_problems()
+
+cors_origins = (
+    [o.strip() for o in settings.cors_allowed_origins.split(",") if o.strip()]
+    if settings.cors_allowed_origins
+    else []
+)
+from disputepilot.config import validate_production_startup
+validate_production_startup(settings, cors_origins)
+
 for _problem in razorpay_problems + auth_problems:
     logger.warning("Configuration problem: %s", _problem)
 
@@ -478,14 +515,38 @@ def login_view(request: Request, next: str | None = None) -> Any:
 
 @app.post("/login")
 async def login_action(request: Request) -> Any:
-    """Authenticate single reviewer and issue signed session cookie with CSRF token."""
+    """Authenticate single reviewer and issue signed session cookie with CSRF token, rate limiting, and lockout."""
+    client_ip = request.headers.get("x-forwarded-for", "").split(",")[0].strip() or (
+        request.client.host if request.client else "127.0.0.1"
+    )
+    if not login_security.check_ip_rate_limit(client_ip):
+        raise HTTPException(status_code=429, detail="Too many login attempts from this IP address. Please try again later.")
+
     form = await get_form_data(request)
     username = form.get("username", "").strip()
     password = form.get("password", "")
     next_url = safe_next_path(form.get("next", "/"))
 
+    is_locked, remaining_seconds = login_security.is_account_locked(username)
+    if is_locked:
+        raise HTTPException(
+            status_code=429,
+            detail=f"Account locked temporarily due to repeated failed login attempts. Please try again in {remaining_seconds} seconds.",
+        )
+
+    user_store = get_user_store(settings.data_dir)
+    authenticated_user = user_store.authenticate(username, password)
     expected_user, expected_hash = get_configured_credentials()
-    if username != expected_user or not verify_password(password, expected_hash):
+    if not authenticated_user and username == expected_user and verify_password(password, expected_hash):
+        authenticated_user = {"username": expected_user, "role": "reviewer"}
+
+    if not authenticated_user:
+        newly_locked = login_security.record_failed_attempt(username)
+        if newly_locked:
+            raise HTTPException(
+                status_code=429,
+                detail="Account locked temporarily due to repeated failed login attempts. Please try again in 15 minutes.",
+            )
         content_type = request.headers.get("content-type", "")
         if "application/json" in content_type:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid username or password.")
@@ -496,7 +557,9 @@ async def login_action(request: Request) -> Any:
             status_code=status.HTTP_401_UNAUTHORIZED,
         )
 
-    cookie_val, _ = create_session_cookie_value(user=username)
+    login_security.record_successful_login(username)
+    role = authenticated_user.get("role", "reviewer")
+    cookie_val, _ = create_session_cookie_value(user=username, role=role)
     response = RedirectResponse(url=next_url, status_code=status.HTTP_303_SEE_OTHER)
     samesite, secure = get_cookie_samesite_and_secure(settings.cookie_secure)
     response.set_cookie(
@@ -504,7 +567,7 @@ async def login_action(request: Request) -> Any:
         value=cookie_val,
         httponly=True,
         samesite=samesite,
-        max_age=86400,
+        max_age=SESSION_MAX_AGE_SECONDS,
         secure=secure,
     )
     return response
@@ -1141,6 +1204,19 @@ async def upload_evidence_action(request: Request, case_id: str) -> RedirectResp
         raise HTTPException(status_code=404, detail=f"Case '{case_id}' not found.")
     _ensure_actionable(case)
 
+    # Comprehensive binary card scanning for PDF uploads
+    if ext == ".pdf":
+        from disputepilot.safety.card_scanner import scan_pdf_bytes
+        pdf_findings = scan_pdf_bytes(
+            data,
+            protected_ids={case.order.id if case.order else "", case.dispute.id, case.dispute.payment_id},
+        )
+        if pdf_findings:
+            raise HTTPException(
+                status_code=400,
+                detail="A payment card number or CVV was detected in the uploaded PDF document. Remove it before uploading.",
+            )
+
     excerpt = str(form.get("excerpt", "")).strip()[:20000]
     if excerpt:
         scan = ingest_document(
@@ -1156,6 +1232,18 @@ async def upload_evidence_action(request: Request, case_id: str) -> RedirectResp
             )
 
     digest = hashlib.sha256(data).hexdigest()
+
+    # Persist copy to durable volume storage
+    storage_dir = (settings.data_dir / "evidence_files").resolve()
+    storage_dir.mkdir(parents=True, exist_ok=True)
+    safe_name = Path(file_name).name
+    evidence_disk_path = (storage_dir / f"{digest}_{safe_name}").resolve()
+    if evidence_disk_path.is_relative_to(storage_dir):
+        try:
+            evidence_disk_path.write_bytes(data)
+        except OSError as disk_err:
+            logger.warning("Could not persist evidence file to durable storage: %s", disk_err)
+
     existing = locker.find_uploaded_by_hash(digest)
     if existing and existing.razorpay_doc_id:
         doc_id = existing.razorpay_doc_id
@@ -1218,3 +1306,10 @@ def status_view(check: bool = False) -> dict[str, Any]:
         except Exception as exc:  # noqa: BLE001
             body["razorpay_check"] = {"ok": False, "error": describe_error(exc)}
     return body
+
+
+@app.get("/health")
+def root_health() -> dict[str, str]:
+    """Root health check probe for load balancers and container orchestrators."""
+    return {"status": "healthy", "service": "disputepilot"}
+

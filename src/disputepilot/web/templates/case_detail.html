@@ -135,7 +135,7 @@
 
   <div class="grid-3">
     <div>
-      <label>Estimated Win Probability</label>
+      <label>Estimated Win Probability <small style="font-weight: normal; color: #6b7280;">(Prior Heuristic)</small></label>
       {% if recommendation.p_win == "n/a" or recommendation.p_win is string %}
       <div style="font-size: 1.25rem; font-weight: 700;">n/a</div>
       <small class="text-muted">Estimated band: [n/a &ndash; n/a]</small>
@@ -143,6 +143,7 @@
       <div style="font-size: 1.25rem; font-weight: 700;">{{ "%.0f"|format(recommendation.p_win * 100) }}%</div>
       <small class="text-muted">Estimated band: [{{ "%.0f"|format(recommendation.p_win_low * 100) }}% &ndash; {{ "%.0f"|format(recommendation.p_win_high * 100) }}%]</small>
       {% endif %}
+      <div style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">Live dispute outcomes depend on bank scheme adjudication.</div>
     </div>
     <div>
       <label>Expected Value (EV)</label>

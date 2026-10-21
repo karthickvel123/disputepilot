@@ -14,6 +14,7 @@ from disputepilot.web.auth import (
     _is_production_mode,
     _is_sim_mode,
     hash_password,
+    validate_password_strength,
     verify_password,
 )
 
@@ -158,8 +159,7 @@ class UserStore:
         clean_user = username.strip()
         if not clean_user:
             raise ValueError("Username cannot be empty.")
-        if len(password) < 6:
-            raise ValueError("Password must be at least 6 characters.")
+        validate_password_strength(password, username=clean_user)
         if role not in {"admin", "reviewer", "auditor"}:
             role = "reviewer"
 
@@ -202,6 +202,7 @@ class UserStore:
             return False
         if len(new_password) < 6:
             raise ValueError("New password must be at least 6 characters.")
+        validate_password_strength(new_password, username=username)
         new_hash = hash_password(new_password)
         with self._get_conn() as conn:
             conn.execute(

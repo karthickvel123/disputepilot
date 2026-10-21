@@ -10,6 +10,7 @@ import hashlib
 import io
 import json
 import logging
+import os
 import re
 import secrets
 import time
@@ -78,6 +79,7 @@ from disputepilot.safety.card_scanner import scan_pdf_bytes
 from disputepilot.safety.ingest import ingest_document
 from disputepilot.web.auth import (
     SESSION_COOKIE_NAME,
+    SESSION_MAX_AGE_SECONDS,
     create_session_cookie_value,
     get_configured_credentials,
     get_cookie_samesite_and_secure,
@@ -86,6 +88,7 @@ from disputepilot.web.auth import (
     verify_password,
 )
 from disputepilot.web.comments_store import get_comments_store
+from disputepilot.web.login_security import login_security
 from disputepilot.web.user_store import get_user_store
 
 logger = logging.getLogger("disputepilot.web.api")
@@ -405,7 +408,23 @@ class ChangePasswordRequest(BaseModel):
 
 @router.post("/auth/login")
 async def api_login(request: Request, body: LoginRequest) -> JSONResponse:
-    """Authenticate and return session cookie + CSRF token."""
+    """Authenticate and return session cookie + CSRF token with rate limiting and lockout defenses."""
+    client_ip = request.headers.get("x-forwarded-for", "").split(",")[0].strip() or (
+        request.client.host if request.client else "127.0.0.1"
+    )
+    if not login_security.check_ip_rate_limit(client_ip):
+        raise HTTPException(
+            status_code=429,
+            detail="Too many login attempts from this IP address. Please try again later.",
+        )
+
+    is_locked, remaining_seconds = login_security.is_account_locked(body.username)
+    if is_locked:
+        raise HTTPException(
+            status_code=429,
+            detail=f"Account locked temporarily due to repeated failed login attempts. Please try again in {remaining_seconds} seconds.",
+        )
+
     user_store = get_user_store(_settings.data_dir if _settings else None)
     authenticated_user = user_store.authenticate(body.username, body.password)
 
@@ -418,11 +437,19 @@ async def api_login(request: Request, body: LoginRequest) -> JSONResponse:
         }
 
     if not authenticated_user:
+        newly_locked = login_security.record_failed_attempt(body.username)
+        if newly_locked:
+            raise HTTPException(
+                status_code=429,
+                detail="Account locked temporarily due to repeated failed login attempts. Please try again in 15 minutes.",
+            )
         raise HTTPException(status_code=401, detail="Invalid username or password.")
 
     username = authenticated_user["username"]
     role = authenticated_user.get("role", "reviewer")
     full_name = authenticated_user.get("full_name", username)
+
+    login_security.record_successful_login(username)
 
     cookie_val, csrf_token = create_session_cookie_value(user=username, role=role)
     response = JSONResponse(
@@ -440,7 +467,7 @@ async def api_login(request: Request, body: LoginRequest) -> JSONResponse:
         value=cookie_val,
         httponly=True,
         samesite=samesite,
-        max_age=86400,
+        max_age=SESSION_MAX_AGE_SECONDS,
         secure=secure,
     )
     return response
@@ -448,14 +475,31 @@ async def api_login(request: Request, body: LoginRequest) -> JSONResponse:
 
 @router.post("/auth/register")
 async def api_register(request: Request, body: RegisterRequest) -> JSONResponse:
-    """Register a new reviewer account.
+    """Register a new account.
 
+    In production mode, open self-registration is disabled. Only authenticated administrators
+    can provision new accounts.
     Public self-registration strictly assigns role='reviewer'.
     Privileged or elevated roles (e.g. admin, auditor) can never be self-assigned
     and must only be granted through protected admin role-management endpoints.
     """
+    app_env = getattr(_settings, "app_env", os.environ.get("APP_ENV", "development")).lower()
+    is_prod = app_env in ("production", "prod")
+
+    session = get_session(request)
+    session_role = _get_user_role(session) if session else ""
+    is_admin = session_role == "admin"
+
+    if is_prod and not is_admin:
+        raise HTTPException(
+            status_code=403,
+            detail="Open self-registration is disabled in production. Accounts must be provisioned by an administrator.",
+        )
+
+    # Only an authenticated administrator can assign elevated roles (admin, auditor); public self-registration is always reviewer
+    assigned_role = body.role if is_admin and body.role in {"reviewer", "auditor", "admin"} else "reviewer"
+
     user_store = get_user_store(_settings.data_dir if _settings else None)
-    assigned_role = "reviewer"
     try:
         new_user = user_store.create_user(
             username=body.username,
@@ -466,7 +510,7 @@ async def api_register(request: Request, body: RegisterRequest) -> JSONResponse:
     except ValueError as err:
         raise HTTPException(status_code=400, detail=str(err)) from err
 
-    cookie_val, csrf_token = create_session_cookie_value(user=new_user["username"], role="reviewer")
+    cookie_val, csrf_token = create_session_cookie_value(user=new_user["username"], role=assigned_role)
     response = JSONResponse(
         content={
             "user": new_user["username"],
@@ -1741,17 +1785,23 @@ async def api_verify_audit(request: Request) -> dict[str, Any]:
 
 @router.get("/settings")
 async def api_settings(request: Request) -> dict[str, Any]:
-    """System configuration status (no secrets)."""
-    _require_session(request)
+    """System configuration status (no secrets). Accessible publicly for environment detection."""
+    app_env = getattr(_settings, "app_env", os.environ.get("APP_ENV", "development")).lower()
+    is_prod = app_env in ("production", "prod")
+    data_mode = _settings.data_mode if _settings else "sim"
+    is_demo_allowed = (data_mode == "sim") and not is_prod
 
     return {
-        "data_mode": _settings.data_mode if _settings else "sim",
+        "app_env": app_env,
+        "data_mode": data_mode,
         "key_mode": _settings.key_mode if _settings else "test",
         "razorpay_base_url": _settings.razorpay_base_url if _settings else "https://api.razorpay.com",
         "has_razorpay": _settings.has_razorpay_credentials if _settings else False,
         "has_llm": _settings.has_llm if _settings else False,
         "has_webhook_secret": bool(_settings.razorpay_webhook_secret) if _settings else False,
         "max_upload_bytes": _settings.max_upload_bytes if _settings else 10 * 1024 * 1024,
+        "allow_self_registration": not is_prod,
+        "is_demo_allowed": is_demo_allowed,
         "problems": _razorpay_problems + _auth_problems,
         "evidence_categories": list(EVIDENCE_CATEGORIES),
     }
@@ -1795,6 +1845,12 @@ async def api_create_dispute(request: Request, body: CreateDisputeRequest) -> di
     """Manually create or import a new dispute case."""
     session = _require_session(request)
     _require_csrf(request, session)
+
+    if _settings and not _settings.is_sim:
+        raise HTTPException(
+            status_code=403,
+            detail="Dispute simulation (/disputes/create) is only permitted when DATA_MODE=sim.",
+        )
 
     clean_id = body.dispute_id.strip()
     if not clean_id.startswith("disp_"):
@@ -2250,8 +2306,9 @@ async def api_get_notifications(request: Request) -> dict[str, Any]:
 
 @router.post("/notifications/{notif_id}/read")
 async def api_mark_notification_read(request: Request, notif_id: str) -> dict[str, Any]:
-    """Acknowledge or dismiss an in-app notification."""
-    _require_session(request)
+    """Acknowledge or dismiss an in-app notification with CSRF validation."""
+    session = _require_session(request)
+    _require_csrf(request, session)
     return {"ok": True, "id": notif_id}
 
 
@@ -2313,7 +2370,10 @@ async def api_save_org_settings(request: Request, body: OrgSettingsRequest) -> d
 @router.post("/integrations/razorpay/test")
 async def api_test_razorpay_connection(request: Request) -> dict[str, Any]:
     """Test connection to Razorpay Gateway."""
-    _require_session(request)
+    session = _require_session(request)
+    csrf = request.headers.get("x-csrf-token")
+    if csrf and not validate_csrf(session, csrf):
+        raise HTTPException(status_code=403, detail="CSRF validation failed.")
     gw = _get_gateway()
     if gw is None or (_settings and _settings.is_sim):
         return {
@@ -2344,7 +2404,10 @@ async def api_test_razorpay_connection(request: Request) -> dict[str, Any]:
 @router.post("/integrations/ai/test")
 async def api_test_ai_connection(request: Request) -> dict[str, Any]:
     """Test AI provider response."""
-    _require_session(request)
+    session = _require_session(request)
+    csrf = request.headers.get("x-csrf-token")
+    if csrf and not validate_csrf(session, csrf):
+        raise HTTPException(status_code=403, detail="CSRF validation failed.")
     if _llm_client and hasattr(_llm_client, "generate_json"):
         start = time.time()
         try:

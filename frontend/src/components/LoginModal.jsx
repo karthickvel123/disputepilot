@@ -2,15 +2,17 @@ import React, { useState } from 'react';
 import { Shield, Key, AlertCircle, ArrowRight, Lock, User, UserPlus, Sparkles, CheckCircle2, X } from 'lucide-react';
 import { login, registerUser } from '../api';
 
-export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
+export default function LoginModal({ isOpen, onClose, onLoginSuccess, systemSettings, isDemoAllowed = false }) {
   const [mode, setMode] = useState('login'); // 'login' | 'register'
-  const [username, setUsername] = useState('reviewer');
-  const [password, setPassword] = useState('password123');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [role, setRole] = useState('reviewer'); // 'reviewer' | 'auditor' | 'admin'
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+
+  const allowRegistration = systemSettings?.allow_self_registration !== false;
 
   if (!isOpen) return null;
 
@@ -26,6 +28,9 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
         onLoginSuccess(data.user, data.role);
         onClose();
       } else {
+        if (!allowRegistration) {
+          throw new Error('Self-registration is disabled in this environment. Contact an administrator.');
+        }
         const data = await registerUser({
           username,
           password,
@@ -46,6 +51,10 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
   }
 
   async function handleQuickLogin(userToLogin, passToLogin) {
+    if (!isDemoAllowed) {
+      setError('Demo logins are disabled in this environment.');
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
@@ -53,14 +62,6 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
       onLoginSuccess(data.user, data.role);
       onClose();
     } catch (err) {
-      if (userToLogin === 'reviewer') {
-        try {
-          const reg = await registerUser({ username: 'reviewer', password: 'password123', full_name: 'Authorized Reviewer' });
-          onLoginSuccess(reg.user, reg.role);
-          onClose();
-          return;
-        } catch (_) {}
-      }
       setError(err.message || 'Quick login failed. Please verify credentials.');
     } finally {
       setLoading(false);
@@ -68,6 +69,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
   }
 
   function handleFillDemo(demoRole = 'reviewer') {
+    if (!isDemoAllowed) return;
     if (demoRole === 'reviewer') {
       setUsername('reviewer');
       setPassword('password123');
@@ -109,7 +111,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
         </div>
 
         {/* Quick Demo Access for Evaluators */}
-        {mode === 'login' && (
+        {isDemoAllowed && mode === 'login' && (
           <div className="mb-6 p-4 rounded-xl bg-gradient-to-br from-indigo-950/70 via-slate-900 to-slate-950 border border-indigo-500/35 shadow-lg shadow-indigo-500/5">
             <div className="flex items-center justify-between mb-2.5">
               <div className="flex items-center gap-1.5">
@@ -149,7 +151,6 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
           </div>
         )}
 
-
         {/* Tab Switcher */}
         <div className="flex rounded-lg bg-slate-900/80 p-1 mb-6 border border-slate-800">
           <button
@@ -166,20 +167,29 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
           >
             Sign In
           </button>
-          <button
-            type="button"
-            onClick={() => {
-              setMode('register');
-              setError(null);
-            }}
-            className={`flex-1 py-1.5 text-xs font-semibold rounded-md transition-all ${
-              mode === 'register'
-                ? 'bg-indigo-600 text-white shadow-sm'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            Create Account
-          </button>
+          {allowRegistration ? (
+            <button
+              type="button"
+              onClick={() => {
+                setMode('register');
+                setError(null);
+              }}
+              className={`flex-1 py-1.5 text-xs font-semibold rounded-md transition-all ${
+                mode === 'register'
+                  ? 'bg-indigo-600 text-white shadow-sm'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              Create Account
+            </button>
+          ) : (
+            <div
+              className="flex-1 py-1.5 text-xs font-semibold rounded-md text-slate-500 text-center cursor-not-allowed"
+              title="Open self-registration is disabled in production"
+            >
+              Registration Disabled
+            </div>
+          )}
         </div>
 
         {error && (
@@ -277,7 +287,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
               )}
             </button>
 
-            {mode === 'login' && (
+            {isDemoAllowed && mode === 'login' && (
               <div className="flex items-center justify-center gap-3 pt-1">
                 <button
                   id="btn-fill-demo"

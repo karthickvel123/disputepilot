@@ -9,6 +9,7 @@
 8. CSRF tokens and signed session cookies are strictly verified.
 """
 
+import time
 import uuid
 from pathlib import Path
 
@@ -306,3 +307,138 @@ def test_production_mode_does_not_seed_demo_accounts(
     assert prod_store.authenticate("reviewer", "password123") is None
     assert prod_store.authenticate("admin", "admin_secret_2026") is None
     assert prod_store.authenticate("admin", "password123") is None
+
+
+def test_login_rate_limiting_and_account_lockout() -> None:
+    """Login endpoints must enforce IP sliding-window rate limits and account lockout after repeated failures."""
+    from disputepilot.web.login_security import login_security
+
+    client = TestClient(app)
+    login_security.reset()
+
+    target_user = f"lockout_target_{uuid.uuid4().hex[:6]}"
+    # 1. Five consecutive failed login attempts must lock the account
+    for attempt in range(5):
+        res = client.post(
+            "/api/v1/auth/login",
+            json={"username": target_user, "password": "wrong_password_123"},
+            headers={"x-forwarded-for": f"198.51.100.{attempt + 1}"},
+        )
+        if attempt < 4:
+            assert res.status_code == 401
+        else:
+            # 5th failed attempt triggers lockout
+            assert res.status_code == 429
+            assert "locked" in res.json()["detail"].lower()
+
+    # 6th attempt from a different IP is still locked because account is locked
+    res_locked = client.post(
+        "/api/v1/auth/login",
+        json={"username": target_user, "password": "any_password_123"},
+        headers={"x-forwarded-for": "198.51.100.99"},
+    )
+    assert res_locked.status_code == 429
+    assert "locked" in res_locked.json()["detail"].lower()
+
+    # Clean up
+    login_security.reset()
+
+
+def test_password_policy_enforcement(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Passwords must satisfy complexity requirements in development and production."""
+    from disputepilot.web.auth import validate_password_strength
+
+    # 1. Too short
+    with pytest.raises(ValueError, match="at least 8 characters"):
+        validate_password_strength("short1", is_production=False)
+
+    # 2. Letters only (no digits or symbols)
+    with pytest.raises(ValueError, match="contain both letters and numbers"):
+        validate_password_strength("onlylettershere", is_production=False)
+
+    # 3. Same as username
+    with pytest.raises(ValueError, match="cannot match username"):
+        validate_password_strength("MyUser1234", username="MyUser1234", is_production=False)
+
+    # 4. Valid non-production password
+    validate_password_strength("validpass123", is_production=False)
+
+    # 5. Production complexity: minimum 10 chars, uppercase and lowercase
+    with pytest.raises(ValueError, match="at least 10 characters"):
+        validate_password_strength("Short1!", is_production=True)
+
+    with pytest.raises(ValueError, match="uppercase and lowercase"):
+        validate_password_strength("lowercaseonly123!", is_production=True)
+
+    with pytest.raises(ValueError, match="Demo passwords are prohibited"):
+        validate_password_strength("password123", is_production=True)
+
+    # Valid production password
+    validate_password_strength("SecureReviewer2026!", is_production=True)
+
+
+def test_session_expiry_enforcement() -> None:
+    """Sessions past their maximum age must be rejected upon verification."""
+    from disputepilot.web.auth import create_session_cookie_value, parse_session_cookie
+
+    cookie_val, _ = create_session_cookie_value("test_user", "reviewer")
+    # Fresh cookie verifies
+    session = parse_session_cookie(cookie_val)
+    assert session is not None
+    assert session["user"] == "test_user"
+
+    # Simulated future time exceeding 24h (86400s)
+    future_time = time.time() + 90000
+    expired_session = parse_session_cookie(cookie_val, now=future_time)
+    assert expired_session is None
+
+
+def test_csrf_on_integration_and_notification_routes(reviewer_client: tuple[TestClient, str, str]) -> None:
+    """Integration probe and notification mutating routes must strictly reject missing CSRF tokens."""
+    client, user, csrf_token = reviewer_client
+
+    # 1. Notification read: Reject without CSRF
+    res_no_csrf = client.post("/api/v1/notifications/notif_123/read")
+    assert res_no_csrf.status_code == 403
+    assert "CSRF" in res_no_csrf.json()["detail"]
+
+    # Notification read: Accept with valid CSRF
+    res_with_csrf = client.post(
+        "/api/v1/notifications/notif_123/read",
+        headers={"x-csrf-token": csrf_token},
+    )
+    assert res_with_csrf.status_code == 200
+
+    # 2. Rejection state mutation: Reject without CSRF
+    res_rej_no_csrf = client.post("/api/v1/disputes/disp_test_01/reject", json={"reason": "Test note"})
+    assert res_rej_no_csrf.status_code == 403
+    assert "CSRF" in res_rej_no_csrf.json()["detail"]
+
+    # 3. Comment state mutation: Reject without CSRF
+    res_com_no_csrf = client.post("/api/v1/disputes/disp_test_01/comments", json={"comment": "Test comment"})
+    assert res_com_no_csrf.status_code == 403
+    assert "CSRF" in res_com_no_csrf.json()["detail"]
+
+    # 4. Diagnostic test routes: Reject invalid CSRF token
+    res_bad_csrf = client.post(
+        "/api/v1/integrations/ai/test",
+        headers={"x-csrf-token": "tampered_bad_csrf_token"},
+    )
+    assert res_bad_csrf.status_code == 403
+
+
+def test_security_headers_csp_hsts_frame_ancestors() -> None:
+    """Responses must include Content-Security-Policy (with frame-ancestors 'none') and HSTS when secure."""
+    client = TestClient(app)
+    res = client.get("/api/v1/settings")
+    assert res.status_code == 200
+
+    headers = res.headers
+    assert headers["x-content-type-options"] == "nosniff"
+    assert headers["x-frame-options"] == "DENY"
+
+    csp = headers.get("content-security-policy", "")
+    assert "frame-ancestors 'none'" in csp
+    assert "default-src 'self'" in csp
+    assert "base-uri 'self'" in csp
+

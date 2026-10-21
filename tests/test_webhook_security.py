@@ -290,3 +290,110 @@ def test_webhook_missing_secret_returns_500_fail_closed(tmp_path: Path, monkeypa
     assert response.status_code == 500
     assert "fail-closed" in response.json()["detail"].lower()
 
+
+def test_webhook_missing_signature_returns_400(tmp_path: Path) -> None:
+    """Request without X-Razorpay-Signature header must be rejected with 400 Bad Request."""
+    db_file = tmp_path / "webhook_events.db"
+    router = create_webhook_router(webhook_secret=WEBHOOK_SECRET, db_path=db_file)
+    client = make_test_client(router)
+
+    raw_body = b'{"event": "payment.dispute.created", "id": "evt_no_sig"}'
+    response = client.post(
+        "/webhook",
+        content=raw_body,
+        headers={"Content-Type": "application/json"},
+    )
+    assert response.status_code == 400
+    assert "missing" in response.json()["detail"].lower()
+
+
+def test_webhook_payload_size_limit_returns_413(tmp_path: Path) -> None:
+    """Payloads exceeding maximum body size must be rejected with HTTP 413."""
+    db_file = tmp_path / "webhook_events.db"
+    # Set a small limit of 512 bytes for testing
+    router = create_webhook_router(webhook_secret=WEBHOOK_SECRET, db_path=db_file, max_body_bytes=512)
+    client = make_test_client(router)
+
+    oversized_data = {"event": "payment.dispute.created", "padding": "x" * 600}
+    raw_body = json.dumps(oversized_data).encode("utf-8")
+    sig = hmac.new(WEBHOOK_SECRET.encode("utf-8"), raw_body, hashlib.sha256).hexdigest()
+
+    response = client.post(
+        "/webhook",
+        content=raw_body,
+        headers={"Content-Type": "application/json", "X-Razorpay-Signature": sig},
+    )
+    assert response.status_code == 413
+    assert "exceeds maximum allowed size" in response.json()["detail"]
+
+
+def test_webhook_rate_limiting_returns_429(tmp_path: Path) -> None:
+    """Requests exceeding sliding-window rate limit must be rejected with HTTP 429."""
+    from disputepilot.core.rate_limit import SlidingWindowRateLimiter
+
+    db_file = tmp_path / "webhook_events.db"
+    # Allow at most 2 requests per 60s
+    limiter = SlidingWindowRateLimiter(max_requests=2, window_seconds=60)
+    router = create_webhook_router(webhook_secret=WEBHOOK_SECRET, db_path=db_file, rate_limiter=limiter)
+    client = make_test_client(router)
+
+    def send_req(evt_id: str):
+        payload = {"event": "payment.dispute.created", "id": evt_id}
+        body = json.dumps(payload).encode("utf-8")
+        sig = hmac.new(WEBHOOK_SECRET.encode("utf-8"), body, hashlib.sha256).hexdigest()
+        return client.post(
+            "/webhook",
+            content=body,
+            headers={"Content-Type": "application/json", "X-Razorpay-Signature": sig},
+        )
+
+    r1 = send_req("evt_rl_1")
+    assert r1.status_code == 200
+    r2 = send_req("evt_rl_2")
+    assert r2.status_code == 200
+
+    # 3rd request should hit rate limit
+    r3 = send_req("evt_rl_3")
+    assert r3.status_code == 429
+    assert "too many webhook requests" in r3.json()["detail"].lower()
+
+
+def test_webhook_normalizes_dispute_and_payment_dispute_events(tmp_path: Path) -> None:
+    """Both payment.dispute.* and dispute.* events are processed and normalized."""
+    db_file = tmp_path / "webhook_events.db"
+    router = create_webhook_router(webhook_secret=WEBHOOK_SECRET, db_path=db_file)
+    client = make_test_client(router)
+
+    # 1. Official payment.dispute.created
+    p1 = {
+        "event": "payment.dispute.created",
+        "id": "evt_official_01",
+        "payload": {"dispute": {"entity": {"id": "disp_off_01", "payment_id": "pay_off_01"}}},
+    }
+    b1 = json.dumps(p1).encode("utf-8")
+    s1 = hmac.new(WEBHOOK_SECRET.encode("utf-8"), b1, hashlib.sha256).hexdigest()
+    res1 = client.post(
+        "/webhook",
+        content=b1,
+        headers={"Content-Type": "application/json", "X-Razorpay-Signature": s1},
+    )
+    assert res1.status_code == 200
+    assert res1.json()["event_type"] == "payment.dispute.created"
+
+    # 2. Short dispute.under_review normalized to payment.dispute.under_review
+    p2 = {
+        "event": "dispute.under_review",
+        "id": "evt_short_01",
+        "payload": {"dispute": {"entity": {"id": "disp_short_01", "payment_id": "pay_short_01"}}},
+    }
+    b2 = json.dumps(p2).encode("utf-8")
+    s2 = hmac.new(WEBHOOK_SECRET.encode("utf-8"), b2, hashlib.sha256).hexdigest()
+    res2 = client.post(
+        "/webhook",
+        content=b2,
+        headers={"Content-Type": "application/json", "X-Razorpay-Signature": s2},
+    )
+    assert res2.status_code == 200
+    assert res2.json()["event_type"] == "payment.dispute.under_review"
+
+

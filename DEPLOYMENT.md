@@ -86,20 +86,52 @@ uv run pytest tests/test_security_concurrency.py tests/test_webhook_security.py
 
 ## 4. Production Deployment Best Practices
 
-### A. Persistent Volume Mounting
-DisputePilot uses SQLite for high-performance, single-node transactional data storage (audit logs, approval tokens, webhook deduplication). When deploying on containerized platforms (e.g. Render, Railway, Fly.io, AWS ECS):
-- Attach a **Persistent Disk** mounted at `/app/data`.
-- Set `DATABASE_PATH=/app/data/disputepilot.db`.
-- This ensures tokens and audit logs persist across container restarts and zero-downtime redeployments.
+### A. Tenancy Architecture: Single-Tenant Per Merchant ("One Deployment Per Merchant")
+DisputePilot is designed with a strict **single-tenant isolation model**:
+- **One deployment per merchant**: Each merchant organization runs in an independent container instance with its own dedicated persistent volume, encryption keys, and isolated database.
+- **Cross-Tenant Leakage Prevention**: Prevents any risk of cross-merchant data leakage, shared-database corruption, or authorization bypasses for high-value financial chargebacks and evidence documents.
+- **Audit Provenance**: Every table and audit ledger entry includes a `merchant_id` column to guarantee cryptographic provenance.
 
-### B. Fail-Closed Webhooks
+### B. Persistent Volume Mounting
+DisputePilot stores relational data and evidence documents under `DATA_DIR` (default `/data` or `data`):
+- Attach a **Persistent Disk** (Render Disk, Kubernetes PVC, or AWS EBS volume) mounted at `/data`.
+- Set `DATA_DIR=/data`.
+- All SQLite databases (`disputes.db`, `approvals.db`, `locker.db`, `audit.db`, `users.db`, `comments.db`) and durable evidence files (`data/evidence_files/`) reside on this volume.
+
+### C. Automated Atomic Backups
+DisputePilot includes an atomic online backup tool in `scripts/backup_restore.py`:
+```bash
+# Create point-in-time backup with SHA-256 manifest and SQLite integrity validation
+python scripts/backup_restore.py backup --data-dir /data --dest /data/backups --merchant-id my_merchant
+
+# Verify backup archive integrity
+python scripts/backup_restore.py verify --archive /data/backups/disputepilot_backup_my_merchant_1720000000.tar.gz
+
+# Restore from backup archive
+python scripts/backup_restore.py restore --archive /data/backups/disputepilot_backup_my_merchant_1720000000.tar.gz --target-dir /data
+```
+
+### D. PostgreSQL Migration Path (via Alembic)
+DisputePilot includes an Alembic migration suite for transitioning from SQLite to PostgreSQL:
+```bash
+# 1. Configure DATABASE_URL in .env
+DATABASE_URL=postgresql://user:password@pg-host:5432/disputepilot
+
+# 2. Preview static DDL SQL
+uv run alembic upgrade head --sql
+
+# 3. Apply schema to live PostgreSQL database
+uv run alembic upgrade head
+```
+
+### E. Fail-Closed Webhooks
 In production, verify that `RAZORPAY_WEBHOOK_SECRET` is set in the hosting provider's dashboard.
 Configure Razorpay Webhook settings in the Razorpay Merchant Dashboard:
-- **Webhook URL**: `https://<your-domain>/api/v1/razorpay/webhook`
-- **Active Events**: `dispute.created`, `dispute.won`, `dispute.lost`, `dispute.closed`, `dispute.under_review`
+- **Webhook URL**: `https://<your-domain>/webhook/razorpay/webhook`
+- **Active Events**: `payment.dispute.created`, `payment.dispute.under_review`, `payment.dispute.action_required`, `payment.dispute.won`, `payment.dispute.lost`, `payment.dispute.closed`
 - **Secret**: Must match the `RAZORPAY_WEBHOOK_SECRET` environment variable.
 
-### C. Docker Deployment
+### F. Docker Deployment
 A production-ready Dockerfile:
 ```dockerfile
 FROM python:3.12-slim
@@ -112,6 +144,8 @@ COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-dev
 
 COPY src ./src
+COPY migrations ./migrations
+COPY alembic.ini ./
 COPY data/cases ./data/cases
 
 ENV APP_ENV=production \
@@ -131,3 +165,4 @@ CMD ["uv", "run", "uvicorn", "disputepilot.web:app", "--host", "0.0.0.0", "--por
 1. **Simulator Mode Safety**: In `DATA_MODE=sim`, the gateway strictly intercepts all calls via `SimGateway`. Zero network traffic reaches `api.razorpay.com`.
 2. **Approval Gate Circuit Breaker**: No dispute can be submitted or accepted without a single-use approval token.
 3. **Idempotency Protection**: Every mutation request sent to Razorpay sends dual idempotency headers and performs pre-retry dispute status queries to prevent duplicate processing.
+4. **Rate Limiting & Body Limits**: Webhook receiver enforces a 256 KB body size limit and 120 req/min sliding-window rate limit.

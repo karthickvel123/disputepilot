@@ -159,7 +159,7 @@ class RebuttalDrafter:
                 user=user_prompt,
                 json_schema=schema,
             )
-        except (ValueError, KeyError, TypeError, AttributeError) as exc:
+        except Exception as exc:  # noqa: BLE001
             logger.error("LLM rebuttal drafting failed: %s", exc)
             raw_res = {}
 

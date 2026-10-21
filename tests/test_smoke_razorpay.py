@@ -11,7 +11,8 @@ Verifies:
 import httpx
 import pytest
 
-from scripts.smoke_razorpay import run_smoke
+from pathlib import Path
+from scripts.smoke_razorpay import run_e2e_pilot_smoke, run_smoke
 
 
 def test_smoke_refuses_non_test_key(capsys: pytest.CaptureFixture[str]) -> None:
@@ -144,3 +145,130 @@ def test_smoke_handles_4xx_without_leaking_credentials(capsys: pytest.CaptureFix
     assert "Disputes Returned: 0" in captured.out
     assert test_secret not in combined_output
     assert "Authorization" not in combined_output
+
+
+def test_e2e_pilot_smoke_success(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """Verify run_e2e_pilot_smoke runs all 6 steps cleanly with mock transport."""
+    test_key = "rzp_test_e2e_key_123"
+    test_secret = "secret_e2e_test_987654"
+    test_webhook_sec = "whsec_e2e_test_abcdef"
+    db_file = tmp_path / "e2e_smoke.db"
+
+    def mock_handler(request: httpx.Request) -> httpx.Response:
+        url_str = str(request.url)
+        # GET /v1/disputes/:id
+        if "/v1/disputes/disp_e2e_target_01" in url_str and request.method == "GET":
+            return httpx.Response(
+                200,
+                json={
+                    "id": "disp_e2e_target_01",
+                    "entity": "dispute",
+                    "payment_id": "pay_e2e_01",
+                    "amount": 50000,
+                    "currency": "INR",
+                    "reason_code": "fraud",
+                    "status": "open",
+                    "phase": "chargeback",
+                    "respond_by": 1720000000,
+                    "created_at": 1719000000,
+                    "evidence": {},
+                },
+            )
+        # GET /v1/disputes collection
+        if url_str.rstrip("/").endswith("/v1/disputes") and request.method == "GET":
+            return httpx.Response(
+                200,
+                json={
+                    "entity": "collection",
+                    "count": 1,
+                    "items": [
+                        {
+                            "id": "disp_e2e_target_01",
+                            "entity": "dispute",
+                            "payment_id": "pay_e2e_01",
+                            "amount": 50000,
+                            "currency": "INR",
+                            "reason_code": "fraud",
+                            "status": "open",
+                            "phase": "chargeback",
+                            "respond_by": 1720000000,
+                            "created_at": 1719000000,
+                            "evidence": {},
+                        }
+                    ],
+                },
+            )
+        # POST /v1/documents
+        if "/v1/documents" in url_str and request.method == "POST":
+            return httpx.Response(
+                200,
+                json={"id": "doc_e2e_mock_01", "entity": "document", "purpose": "dispute_evidence"},
+            )
+        # PATCH /v1/disputes/{id}/contest
+        if "/contest" in url_str and request.method == "PATCH":
+            return httpx.Response(
+                200,
+                json={
+                    "id": "disp_e2e_target_01",
+                    "entity": "dispute",
+                    "payment_id": "pay_e2e_01",
+                    "amount": 50000,
+                    "currency": "INR",
+                    "reason_code": "fraud",
+                    "status": "under_review",
+                    "phase": "chargeback",
+                    "respond_by": 1720000000,
+                    "created_at": 1719000000,
+                    "evidence": {"shipping_proof": ["doc_e2e_mock_01"]},
+                },
+            )
+        return httpx.Response(404, json={"error": "Not Found"})
+
+    client = httpx.Client(transport=httpx.MockTransport(mock_handler))
+
+    exit_code = run_e2e_pilot_smoke(
+        key_id=test_key,
+        key_secret=test_secret,
+        webhook_secret=test_webhook_sec,
+        client=client,
+        dispute_id="disp_e2e_target_01",
+        action="submit",
+        db_path=db_file,
+    )
+
+    assert exit_code == 0
+    captured = capsys.readouterr()
+    combined_output = captured.out + captured.err
+
+    # Check that all 6 steps succeeded
+    assert "[Step 1/6]" in captured.out
+    assert "Webhook HMAC-SHA256 signature verified." in captured.out
+    assert "Idempotency verified" in captured.out
+    assert "[Step 2/6]" in captured.out
+    assert "Case verified in database" in captured.out
+    assert "[Step 3/6]" in captured.out
+    assert "Zero payment card or CVV findings detected." in captured.out
+    assert "[Step 4/6]" in captured.out
+    assert "[Step 5/6]" in captured.out
+    assert "Approval token issued" in captured.out
+    assert "[Step 6/6]" in captured.out
+    assert "Contest succeeded!" in captured.out
+    assert "ALL 6 STEPS PASSED" in captured.out
+
+    # Critical: Secrets must not leak
+    assert test_secret not in combined_output
+    assert test_webhook_sec not in combined_output
+    assert "Authorization" not in combined_output
+
+
+def test_e2e_pilot_smoke_refuses_live_key(capsys: pytest.CaptureFixture[str]) -> None:
+    """run_e2e_pilot_smoke refuses to execute if key is a live key."""
+    code = run_e2e_pilot_smoke(
+        key_id="rzp_live_forbidden_key",
+        key_secret="some_secret",
+        webhook_secret="some_wh_secret",
+    )
+    assert code == 1
+    out = capsys.readouterr()
+    assert "must start with 'rzp_test_'." in (out.out + out.err)
+
