@@ -212,16 +212,16 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
   return (
     <div className="space-y-6 animate-fade-in pb-16">
       {/* Header and Action Controls */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-800/80 pb-5">
         <div>
-          <h2 className="font-heading text-2xl font-bold text-white flex items-center gap-2">
-            <span>Dispute Triage Worklist</span>
-            <span className="text-xs font-mono font-medium px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">
-              {total} disputes
+          <div className="flex items-center gap-2.5 mb-1">
+            <h2 className="font-heading text-2xl font-bold text-white tracking-tight">Dispute Triage Worklist</h2>
+            <span className="text-xs font-mono font-semibold px-2.5 py-0.5 rounded-full bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">
+              {total} active cases
             </span>
-          </h2>
+          </div>
           <p className="text-xs text-slate-400">
-            Prioritized by bank response deadline and automated win probability scoring.
+            Real-time queue prioritized by scheme SLA response deadlines and AI win confidence.
           </p>
         </div>
 
@@ -230,7 +230,7 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
           <a
             href={getDisputesExportUrl()}
             download="disputepilot_cases.csv"
-            className="btn btn-secondary text-xs flex items-center gap-1.5"
+            className="btn btn-secondary text-xs flex items-center gap-1.5 hover:border-slate-700"
             title="Export CSV"
           >
             <Download className="w-3.5 h-3.5" />
@@ -239,7 +239,7 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
 
           <button
             onClick={() => setImportModalOpen(true)}
-            className="btn btn-secondary text-xs flex items-center gap-1.5"
+            className="btn btn-secondary text-xs flex items-center gap-1.5 hover:border-slate-700"
           >
             <Upload className="w-3.5 h-3.5" />
             <span>Import CSV</span>
@@ -247,7 +247,7 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
 
           <button
             onClick={() => setCreateModalOpen(true)}
-            className="btn btn-primary text-xs flex items-center gap-1.5"
+            className="btn btn-primary text-xs flex items-center gap-1.5 shadow-md shadow-indigo-500/20"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>New Dispute</span>
@@ -256,12 +256,12 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
       </div>
 
       {bannerMessage && (
-        <div className="p-3.5 rounded-xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs flex items-center justify-between gap-2">
+        <div className="p-3.5 rounded-xl bg-indigo-500/15 border border-indigo-500/30 text-indigo-200 text-xs flex items-center justify-between gap-2 shadow-lg shadow-indigo-500/5 animate-fade-in">
           <div className="flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-            <span>{bannerMessage}</span>
+            <span className="font-medium">{bannerMessage}</span>
           </div>
-          <button onClick={() => setBannerMessage(null)} className="text-indigo-400 hover:text-white">
+          <button onClick={() => setBannerMessage(null)} className="text-slate-400 hover:text-white cursor-pointer">
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
@@ -283,10 +283,10 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
                 setStatusFilter(tab.id);
                 setPage(1);
               }}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                 statusFilter === tab.id
-                  ? 'bg-indigo-600/20 text-indigo-300 border border-indigo-500/30'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
+                  ? 'bg-indigo-600/25 text-indigo-300 border border-indigo-500/40 shadow-sm'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/70 border border-transparent'
               }`}
             >
               {tab.label}
@@ -305,7 +305,7 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
                 setReasonFilter(e.target.value);
                 setPage(1);
               }}
-              className="bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-300 outline-none focus:border-indigo-500"
+              className="bg-slate-900/90 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-300 outline-none focus:border-indigo-500 cursor-pointer"
             >
               <option value="all">All Reason Codes</option>
               <option value="item_not_received">Item Not Received</option>
@@ -337,43 +337,44 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
       </div>
 
       {/* Table Content */}
-      <div className="glass-panel overflow-hidden border border-slate-800">
+      <div className="glass-panel-premium card-sheen overflow-hidden border border-slate-800/90 shadow-xl">
         {loading ? (
-          <div className="py-16 text-center">
+          <div className="py-20 text-center">
             <div className="w-7 h-7 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
             <p className="text-slate-400 text-xs">Loading triage worklist...</p>
           </div>
         ) : error ? (
-          <div className="p-8 text-center text-rose-400 text-xs">
+          <div className="p-10 text-center text-rose-400 text-xs">
             <AlertTriangle className="w-6 h-6 mx-auto mb-2 text-rose-400" />
             <p>{error}</p>
           </div>
         ) : items.length === 0 ? (
-          <div className="py-16 text-center text-slate-400 text-xs">
+          <div className="py-20 text-center text-slate-400 text-xs">
             <FileText className="w-8 h-8 mx-auto mb-2 text-slate-600" />
-            <p className="font-medium text-slate-300 mb-1">No matching disputes found</p>
+            <p className="font-semibold text-slate-300 mb-1">No matching disputes found</p>
             <p className="text-[11px] text-slate-500">Try adjusting your search query or status filter.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="border-b border-slate-800/80 bg-slate-900/40 text-slate-400 font-semibold uppercase tracking-wider text-[10px]">
+                <tr className="border-b border-slate-800/90 text-slate-400 font-semibold uppercase tracking-wider text-[10px]">
                   <th className="py-3 px-4">Case & Dispute ID</th>
+                  <th className="py-3 px-4">Customer</th>
                   <th className="py-3 px-4">Amount</th>
                   <th className="py-3 px-4">Reason Class</th>
                   <th className="py-3 px-4">Deadline Urgency</th>
-                  <th className="py-3 px-4">Win Probability</th>
+                  <th className="py-3 px-4">Win Confidence</th>
                   <th className="py-3 px-4">AI Recommendation</th>
                   <th className="py-3 px-4 text-right">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/40">
+              <tbody className="divide-y divide-slate-800/50">
                 {items.map((item) => (
                   <tr
                     key={item.case_id}
                     onClick={() => onSelectCase(item.case_id)}
-                    className="hover:bg-slate-800/30 cursor-pointer transition-colors group"
+                    className="modern-table-row cursor-pointer group"
                   >
                     {/* Case & Dispute ID */}
                     <td className="py-3.5 px-4">
@@ -385,15 +386,27 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
                       </div>
                     </td>
 
+                    {/* Customer */}
+                    <td className="py-3.5 px-4">
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-[10px] font-bold text-slate-300 uppercase">
+                          {(item.customer_name || 'Customer').charAt(0)}
+                        </div>
+                        <span className="text-slate-300 font-medium truncate max-w-[120px]">
+                          {item.customer_name || 'Verified Cardholder'}
+                        </span>
+                      </div>
+                    </td>
+
                     {/* Amount */}
-                    <td className="py-3.5 px-4 font-mono font-semibold text-white">
+                    <td className="py-3.5 px-4 font-mono font-bold text-white">
                       {item.amount_display}
                     </td>
 
                     {/* Reason Class */}
                     <td className="py-3.5 px-4">
-                      <span className="font-mono text-[11px] px-2 py-0.5 rounded bg-slate-800/60 text-slate-300 border border-slate-700/50 capitalize">
-                        {item.reason_class.replace(/_/g, ' ')}
+                      <span className="font-mono text-[11px] px-2 py-0.5 rounded bg-slate-800/70 text-slate-300 border border-slate-700/60 capitalize">
+                        {item.reason_class ? item.reason_class.replace(/_/g, ' ') : 'Chargeback'}
                       </span>
                     </td>
 
@@ -417,7 +430,7 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
                             style={{ width: `${Math.round(item.p_win * 100)}%` }}
                           ></div>
                         </div>
-                        <span className="font-mono text-[11px] text-slate-300">
+                        <span className="font-mono text-[11px] text-slate-300 font-semibold">
                           {Math.round(item.p_win * 100)}%
                         </span>
                       </div>
@@ -435,7 +448,7 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
                           e.stopPropagation();
                           onSelectCase(item.case_id);
                         }}
-                        className="inline-flex items-center gap-1 text-xs text-indigo-400 hover:text-indigo-300 group-hover:translate-x-0.5 transition-all font-medium"
+                        className="inline-flex items-center gap-1 text-xs text-indigo-400 hover:text-indigo-300 group-hover:translate-x-0.5 transition-all font-semibold cursor-pointer"
                       >
                         <span>Review</span>
                         <ArrowUpRight className="w-3.5 h-3.5" />
@@ -450,16 +463,16 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
 
         {/* Pagination Footer */}
         {totalPages > 1 && (
-          <div className="px-4 py-3 border-t border-slate-800/80 bg-slate-900/30 flex items-center justify-between text-xs text-slate-400">
+          <div className="px-5 py-3.5 border-t border-slate-800/80 bg-slate-900/40 flex items-center justify-between text-xs text-slate-400">
             <div>
-              Showing page <span className="font-medium text-white">{page}</span> of{' '}
-              <span className="font-medium text-white">{totalPages}</span>
+              Showing page <span className="font-semibold text-white">{page}</span> of{' '}
+              <span className="font-semibold text-white">{totalPages}</span> ({total} cases)
             </div>
             <div className="flex items-center gap-2">
               <button
                 disabled={page <= 1}
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
-                className="btn btn-secondary text-xs px-2.5 py-1"
+                className="btn btn-secondary text-xs px-3 py-1 cursor-pointer"
               >
                 <ChevronLeft className="w-3.5 h-3.5" />
                 <span>Prev</span>
@@ -467,7 +480,7 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
               <button
                 disabled={page >= totalPages}
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                className="btn btn-secondary text-xs px-2.5 py-1"
+                className="btn btn-secondary text-xs px-3 py-1 cursor-pointer"
               >
                 <span>Next</span>
                 <ChevronRight className="w-3.5 h-3.5" />

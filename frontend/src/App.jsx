@@ -215,6 +215,7 @@ export default function App() {
           <LandingPage
             onLaunchConsole={handleLaunchConsole}
             onQuickDemoLogin={handleQuickDemoLogin}
+            onSimulateDispute={handleSimulateDispute}
             metrics={metrics}
           />
         )}
@@ -225,6 +226,7 @@ export default function App() {
             metrics={metrics}
             onSelectDispute={handleSelectCase}
             onNavigateToDisputes={handleNavigateToDisputes}
+            onSimulateDispute={handleSimulateDispute}
           />
         )}
 

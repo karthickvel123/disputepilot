@@ -255,29 +255,33 @@ export default function SettingsView() {
           {/* Integration Status Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             {/* Razorpay Gateway */}
-            <div className="glass-panel p-5 space-y-4">
+            <div className="glass-panel-premium card-sheen p-6 space-y-4 relative overflow-hidden">
+              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-indigo-500 to-purple-500" />
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-indigo-500/10 border border-indigo-500/25 flex items-center justify-center text-indigo-400 shadow-sm">
                     <Server className="w-4 h-4" />
                   </div>
-                  <h3 className="font-heading text-sm font-bold text-white">Razorpay Disputes Gateway</h3>
+                  <div>
+                    <h3 className="font-heading text-sm font-bold text-white">Razorpay Disputes Gateway</h3>
+                    <p className="text-[11px] text-slate-400">Direct payment partner integration</p>
+                  </div>
                 </div>
                 <span className={`badge ${settings?.has_razorpay ? 'badge-won' : 'badge-urgent'}`}>
                   {settings?.has_razorpay ? 'CONFIGURED' : 'SIMULATION MODE'}
                 </span>
               </div>
 
-              <div className="space-y-2 text-xs">
-                <div className="flex justify-between py-1 border-b border-slate-800/60">
+              <div className="space-y-2.5 text-xs pt-1">
+                <div className="flex justify-between py-1.5 border-b border-slate-800/60">
                   <span className="text-slate-400">Data Mode</span>
                   <span className="font-mono text-indigo-400 uppercase font-semibold">{settings?.data_mode}</span>
                 </div>
-                <div className="flex justify-between py-1 border-b border-slate-800/60">
+                <div className="flex justify-between py-1.5 border-b border-slate-800/60">
                   <span className="text-slate-400">Key Mode</span>
                   <span className="font-mono text-slate-300 uppercase">{settings?.key_mode}</span>
                 </div>
-                <div className="flex justify-between py-1">
+                <div className="flex justify-between py-1.5">
                   <span className="text-slate-400">Base API URL</span>
                   <span className="font-mono text-slate-400 truncate max-w-[200px]" title={settings?.razorpay_base_url}>
                     {settings?.razorpay_base_url}
@@ -312,29 +316,33 @@ export default function SettingsView() {
             </div>
 
             {/* Gemini AI Engine */}
-            <div className="glass-panel p-5 space-y-4">
+            <div className="glass-panel-premium card-sheen p-6 space-y-4 relative overflow-hidden">
+              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-cyan-500 to-blue-500" />
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/25 flex items-center justify-center text-cyan-400 shadow-sm">
                     <Cpu className="w-4 h-4" />
                   </div>
-                  <h3 className="font-heading text-sm font-bold text-white">Gemini Multimodal AI</h3>
+                  <div>
+                    <h3 className="font-heading text-sm font-bold text-white">Gemini Multimodal AI</h3>
+                    <p className="text-[11px] text-slate-400">Automated defense reasoning engine</p>
+                  </div>
                 </div>
                 <span className={`badge ${settings?.has_llm ? 'badge-won' : 'badge-open'}`}>
                   {settings?.has_llm ? 'ONLINE' : 'ACTIVE RULES'}
                 </span>
               </div>
 
-              <div className="space-y-2 text-xs">
-                <div className="flex justify-between py-1 border-b border-slate-800/60">
+              <div className="space-y-2.5 text-xs pt-1">
+                <div className="flex justify-between py-1.5 border-b border-slate-800/60">
                   <span className="text-slate-400">Model Engine</span>
                   <span className="font-mono text-cyan-400 font-semibold">Gemini 2.5 Flash / 1.5 Pro</span>
                 </div>
-                <div className="flex justify-between py-1 border-b border-slate-800/60">
+                <div className="flex justify-between py-1.5 border-b border-slate-800/60">
                   <span className="text-slate-400">SDK Status</span>
                   <span className="font-mono text-slate-300">google-genai / Deterministic Rules</span>
                 </div>
-                <div className="flex justify-between py-1">
+                <div className="flex justify-between py-1.5">
                   <span className="text-slate-400">Hallucination Guard</span>
                   <span className="font-medium text-emerald-400">Deterministic Citation Grounding</span>
                 </div>
@@ -369,7 +377,8 @@ export default function SettingsView() {
 
           {/* Webhooks & Security Status */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <div className="glass-panel p-5">
+            <div className="glass-panel-premium card-sheen p-6 relative overflow-hidden">
+              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-purple-500 to-indigo-500" />
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <Webhook className="w-4 h-4 text-purple-400" />
@@ -379,15 +388,17 @@ export default function SettingsView() {
                   {settings?.has_webhook_secret ? 'HMAC VERIFIED' : 'TEST FAIL-CLOSED'}
                 </span>
               </div>
-              <p className="text-xs text-slate-400 mb-2">
-                All Razorpay dispute webhook payloads verified via HMAC-SHA256 signature before ingestion.
+              <p className="text-xs text-slate-400 mb-3">
+                All incoming Razorpay dispute payloads are verified via HMAC-SHA256 signature before ingestion.
               </p>
-              <div className="font-mono text-[11px] text-indigo-300 bg-slate-950 p-2 rounded border border-slate-800">
-                POST /webhook/razorpay
+              <div className="font-mono text-[11px] text-indigo-300 bg-slate-950/80 p-2.5 rounded-lg border border-slate-800 flex items-center justify-between">
+                <span>POST /webhook/razorpay</span>
+                <span className="text-[10px] text-slate-500">256-bit HMAC</span>
               </div>
             </div>
 
-            <div className="glass-panel p-5">
+            <div className="glass-panel-premium card-sheen p-6 relative overflow-hidden">
+              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-emerald-500 to-teal-500" />
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <Shield className="w-4 h-4 text-emerald-400" />
@@ -395,11 +406,12 @@ export default function SettingsView() {
                 </div>
                 <span className="badge badge-won">PAN REJECT ACTIVE</span>
               </div>
-              <p className="text-xs text-slate-400 mb-2">
+              <p className="text-xs text-slate-400 mb-3">
                 Documents are verified with magic byte inspection. Full credit card numbers are rejected before disk write.
               </p>
-              <div className="font-mono text-[11px] text-emerald-300 bg-slate-950 p-2 rounded border border-slate-800">
-                Locker Path: data/evidence_files/
+              <div className="font-mono text-[11px] text-emerald-300 bg-slate-950/80 p-2.5 rounded-lg border border-slate-800 flex items-center justify-between">
+                <span>Locker Path: data/evidence_files/</span>
+                <span className="text-[10px] text-slate-500">SHA-256 Checksum</span>
               </div>
             </div>
           </div>
@@ -408,10 +420,11 @@ export default function SettingsView() {
 
       {/* Tab 2: Organization & Automation Settings */}
       {activeTab === 'org' && (
-        <form onSubmit={handleSaveOrg} className="glass-panel p-6 space-y-5">
-          <div className="border-b border-slate-800 pb-3">
+        <form onSubmit={handleSaveOrg} className="glass-panel-premium card-sheen p-7 space-y-6 relative overflow-hidden">
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+          <div className="border-b border-slate-800 pb-4">
             <h3 className="font-heading text-base font-bold text-white">Merchant Organization Profile</h3>
-            <p className="text-xs text-slate-400">Configure business identity, notification routing, and automated dispute triage thresholds.</p>
+            <p className="text-xs text-slate-400 mt-0.5">Configure business identity, notification routing, and automated dispute triage thresholds.</p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
@@ -477,7 +490,7 @@ export default function SettingsView() {
           <div className="pt-2 border-t border-slate-800 space-y-3">
             <h4 className="font-heading text-xs font-bold text-white uppercase tracking-wider">Automation & Urgency Rules</h4>
 
-            <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs">
+            <div className="flex items-center justify-between p-4 rounded-xl bg-slate-900/60 border border-slate-800/80 text-xs hover:border-slate-700 transition-colors">
               <div>
                 <span className="font-semibold text-slate-200 block">Automatic Chargeback Triage</span>
                 <span className="text-slate-400 text-[11px]">Automatically score win probability and match courier delivery proofs upon webhook arrival.</span>
@@ -490,7 +503,7 @@ export default function SettingsView() {
               />
             </div>
 
-            <div className="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs space-y-1.5">
+            <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800/80 text-xs space-y-2 hover:border-slate-700 transition-colors">
               <label className="block font-semibold text-slate-200">
                 High-Value Urgency Threshold: ₹{(orgSettings.high_value_threshold_paise / 100).toLocaleString('en-IN')}
               </label>
@@ -504,7 +517,7 @@ export default function SettingsView() {
                 step="100000"
                 value={orgSettings.high_value_threshold_paise}
                 onChange={(e) => setOrgSettings({ ...orgSettings, high_value_threshold_paise: parseInt(e.target.value) })}
-                className="w-full accent-indigo-500"
+                className="w-full accent-indigo-500 cursor-pointer"
               />
             </div>
           </div>
@@ -526,13 +539,14 @@ export default function SettingsView() {
       {activeTab === 'security' && (
         <div className="space-y-6">
           {/* Change Password Form */}
-          <form onSubmit={handleChangePassword} className="glass-panel p-6 space-y-4">
+          <form onSubmit={handleChangePassword} className="glass-panel-premium card-sheen p-7 space-y-4 relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-amber-500 to-indigo-500" />
             <div className="border-b border-slate-800 pb-3">
               <h3 className="font-heading text-base font-bold text-white flex items-center gap-2">
-                <Key className="w-4 h-4 text-indigo-400" />
+                <Key className="w-4 h-4 text-amber-400" />
                 <span>Change Your Password</span>
               </h3>
-              <p className="text-xs text-slate-400">Update your reviewer password. Passwords are salted with random 16-byte salt and hashed with scrypt.</p>
+              <p className="text-xs text-slate-400 mt-0.5">Update your reviewer password. Passwords are salted with random 16-byte salt and hashed with scrypt.</p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
@@ -582,7 +596,8 @@ export default function SettingsView() {
           </form>
 
           {/* Team Members List */}
-          <div className="glass-panel p-6 space-y-4">
+          <div className="glass-panel-premium card-sheen p-7 space-y-4 relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-indigo-500 to-cyan-500" />
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <div className="flex items-center gap-2">
                 <Users className="w-4 h-4 text-indigo-400" />
@@ -593,22 +608,28 @@ export default function SettingsView() {
 
             <div className="divide-y divide-slate-800/80 text-xs">
               {users.map((u) => (
-                <div key={u.id} className="py-3 flex items-center justify-between">
-                  <div>
-                    <span className="font-bold text-white mr-2">{u.full_name || u.username}</span>
-                    <span className="font-mono text-slate-400">(@{u.username})</span>
+                <div key={u.id} className="py-3 flex items-center justify-between hover:bg-slate-800/20 px-2 rounded-lg transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-[11px] font-bold text-white shadow-sm">
+                      {(u.full_name || u.username)[0].toUpperCase()}
+                    </div>
+                    <div>
+                      <span className="font-bold text-white mr-2">{u.full_name || u.username}</span>
+                      <span className="font-mono text-slate-400">(@{u.username})</span>
+                    </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <select
                       value={u.role}
                       onChange={(e) => handleRoleChange(u.username, e.target.value)}
-                      className="bg-slate-900 border border-slate-700/80 rounded px-2 py-1 text-xs text-slate-200 focus:outline-none focus:border-indigo-500 font-mono"
+                      className="bg-slate-900 border border-slate-700/80 rounded px-2.5 py-1 text-xs text-slate-200 focus:outline-none focus:border-indigo-500 font-mono"
                     >
                       <option value="reviewer">Reviewer</option>
                       <option value="auditor">Compliance Auditor</option>
                       <option value="admin">Admin</option>
                     </select>
-                    <span className="text-[11px] text-slate-500 font-mono hidden sm:inline">
+                    <span className="text-[11px] text-emerald-400 font-mono hidden sm:inline flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                       Active
                     </span>
                   </div>

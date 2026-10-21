@@ -80,25 +80,25 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
 
   return (
     <div className="modal-overlay">
-      <div className="modal-content p-6 sm:p-8 relative max-w-md">
+      <div className="modal-content card-sheen p-6 sm:p-8 relative max-w-md border border-slate-700/80 shadow-2xl">
         {/* Close Button */}
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800/60 transition-colors"
+          className="absolute top-4 right-4 text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800/80 transition-colors cursor-pointer"
           title="Close modal"
         >
           <X className="w-5 h-5" />
         </button>
 
         {/* Header */}
-        <div className="text-center mb-5">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-cyan-400 p-[1.5px] mx-auto mb-3 shadow-lg shadow-indigo-500/20">
+        <div className="text-center mb-6">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-cyan-400 p-[1.5px] mx-auto mb-3.5 shadow-lg shadow-indigo-500/25">
             <div className="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center text-indigo-400">
               <Shield className="w-6 h-6" />
             </div>
           </div>
-          <h3 className="font-heading text-2xl font-bold text-white mb-1">
+          <h3 className="font-heading text-2xl font-bold text-white mb-1.5 tracking-tight">
             {mode === 'login' ? 'Merchant Console Access' : 'Create Merchant Account'}
           </h3>
           <p className="text-xs text-slate-400">
@@ -110,30 +110,40 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
 
         {/* Quick Demo Access for Evaluators */}
         {mode === 'login' && (
-          <div className="mb-5 p-3.5 rounded-xl bg-gradient-to-br from-indigo-950/60 via-slate-900 to-slate-950 border border-indigo-500/30">
-            <div className="flex items-center justify-between mb-2">
+          <div className="mb-6 p-4 rounded-xl bg-gradient-to-br from-indigo-950/70 via-slate-900 to-slate-950 border border-indigo-500/35 shadow-lg shadow-indigo-500/5">
+            <div className="flex items-center justify-between mb-2.5">
               <div className="flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-                <span className="text-[11px] font-semibold text-indigo-300">Razorpay Evaluator 1-Click Access</span>
+                <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+                <span className="text-[11px] font-bold text-indigo-300">Razorpay Evaluator 1-Click Access</span>
               </div>
-              <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">TEST MODE</span>
+              <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/25">
+                READY
+              </span>
             </div>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-2.5">
               <button
                 type="button"
                 disabled={loading}
                 onClick={() => handleQuickLogin('reviewer', 'password123')}
-                className="px-3 py-2 rounded-lg bg-indigo-600/25 hover:bg-indigo-600/40 border border-indigo-500/40 text-indigo-200 text-xs font-semibold flex items-center justify-center gap-1.5 transition-all hover:scale-[1.02]"
+                className="p-2.5 rounded-xl bg-indigo-600/25 hover:bg-indigo-600/40 border border-indigo-500/40 text-indigo-200 text-xs font-semibold flex flex-col items-center justify-center gap-1 transition-all hover:scale-[1.02] cursor-pointer"
               >
-                <span>⚡ Reviewer Access</span>
+                <div className="flex items-center gap-1">
+                  <span>⚡</span>
+                  <span className="font-bold">Reviewer</span>
+                </div>
+                <span className="text-[10px] text-indigo-300/80 font-normal">Triage & Approval Tokens</span>
               </button>
               <button
                 type="button"
                 disabled={loading}
                 onClick={() => handleQuickLogin('admin', 'admin_secret_2026')}
-                className="px-3 py-2 rounded-lg bg-purple-600/25 hover:bg-purple-600/40 border border-purple-500/40 text-purple-200 text-xs font-semibold flex items-center justify-center gap-1.5 transition-all hover:scale-[1.02]"
+                className="p-2.5 rounded-xl bg-purple-600/25 hover:bg-purple-600/40 border border-purple-500/40 text-purple-200 text-xs font-semibold flex flex-col items-center justify-center gap-1 transition-all hover:scale-[1.02] cursor-pointer"
               >
-                <span>🛡️ Admin Access</span>
+                <div className="flex items-center gap-1">
+                  <span>🛡️</span>
+                  <span className="font-bold">Admin</span>
+                </div>
+                <span className="text-[10px] text-purple-300/80 font-normal">Settings & Webhooks</span>
               </button>
             </div>
           </div>

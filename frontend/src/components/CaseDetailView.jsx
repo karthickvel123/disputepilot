@@ -428,7 +428,7 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
       {/* Overview Cards Row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {/* Card 1: Dispute & Payment Details */}
-        <div className="glass-panel p-5">
+        <div className="glass-panel-premium card-sheen p-5 border-t-2 border-t-indigo-500/80">
           <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
             Financial Details
           </h4>
@@ -453,7 +453,7 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
         </div>
 
         {/* Card 2: Order & Customer Information */}
-        <div className="glass-panel p-5">
+        <div className="glass-panel-premium card-sheen p-5 border-t-2 border-t-cyan-500/80">
           <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
             Order Verification
           </h4>
@@ -478,15 +478,14 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
         </div>
 
         {/* Card 3: AI Recommendation & Win Probability */}
-        <div className="glass-panel p-5">
+        <div className="glass-panel-premium card-sheen p-5 border-t-2 border-t-emerald-500/80">
           <div className="flex items-center justify-between mb-3">
             <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
               AI Decision Copilot
             </h4>
-            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
               GEMINI 2.5 FLASH / PRO
             </span>
-
           </div>
 
           {analysis ? (
@@ -590,7 +589,7 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
       {activeTab === 'rebuttal' && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left 2 Cols: Rebuttal Editor */}
-          <div className="lg:col-span-2 glass-panel p-6 space-y-4">
+          <div className="lg:col-span-2 glass-panel-premium card-sheen p-6 space-y-4">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-heading text-base font-bold text-white flex items-center gap-2">
@@ -653,7 +652,7 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
           {/* Right Col: Scheme Checklist & Safety Findings */}
           <div className="space-y-6">
             {/* Checklist */}
-            <div className="glass-panel p-5">
+            <div className="glass-panel-premium card-sheen p-5">
               <h4 className="font-heading text-xs font-bold text-white uppercase tracking-wider mb-3 flex items-center gap-2">
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
                 <span>Required Scheme Evidence</span>
@@ -676,7 +675,7 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
             </div>
 
             {/* Safety & PCI Scanning */}
-            <div className="glass-panel p-5">
+            <div className="glass-panel-premium card-sheen p-5">
               <h4 className="font-heading text-xs font-bold text-white uppercase tracking-wider mb-3 flex items-center gap-2">
                 <Shield className="w-3.5 h-3.5 text-cyan-400" />
                 <span>PCI-DSS & Safety Scan</span>
@@ -705,7 +704,7 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
       {activeTab === 'evidence' && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left 2 Cols: Locker Documents List */}
-          <div className="lg:col-span-2 glass-panel p-6">
+          <div className="lg:col-span-2 glass-panel-premium card-sheen p-6">
             <h3 className="font-heading text-base font-bold text-white mb-2">
               Dispute Evidence Documents
             </h3>

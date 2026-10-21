@@ -194,10 +194,10 @@ export default function Navbar({
                 <button
                   type="button"
                   onClick={onSimulateDispute}
-                  className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-indigo-600/20 hover:bg-indigo-600/35 border border-indigo-500/40 text-indigo-300 text-xs font-semibold shadow-sm transition-all"
+                  className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-indigo-500/20 via-cyan-500/15 to-indigo-500/20 hover:from-indigo-500/30 hover:to-cyan-500/25 border border-indigo-500/40 text-indigo-200 text-xs font-semibold shadow-sm transition-all hover:scale-[1.02] cursor-pointer"
                   title="Generate a new realistic dispute to test automated AI triage in real time"
                 >
-                  <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+                  <Sparkles className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
                   <span>+ Simulate Dispute</span>
                 </button>
               )}
@@ -207,34 +207,34 @@ export default function Navbar({
                 <button
                   id="btn-notifications"
                   onClick={() => setNotifOpen(!notifOpen)}
-                  className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-900 relative transition-colors"
+                  className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-900/90 relative transition-colors cursor-pointer border border-transparent hover:border-slate-800"
                   title="Notifications"
                 >
                   <Bell className="w-4 h-4" />
                   {unreadCount > 0 && (
-                    <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+                    <span className="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping"></span>
                   )}
                   {unreadCount > 0 && (
-                    <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500"></span>
+                    <span className="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-rose-500 border border-slate-950"></span>
                   )}
                 </button>
 
                 {/* Notifications Dropdown */}
                 {notifOpen && (
-                  <div className="absolute right-0 mt-2 w-80 sm:w-96 glass-panel border border-slate-800 shadow-2xl rounded-xl z-50 divide-y divide-slate-800/80 overflow-hidden animate-fade-in">
-                    <div className="p-3 bg-slate-900/80 flex items-center justify-between">
+                  <div className="absolute right-0 mt-2 w-80 sm:w-96 glass-panel-premium border border-slate-700/80 shadow-2xl rounded-xl z-50 divide-y divide-slate-800/80 overflow-hidden animate-fade-in">
+                    <div className="p-3.5 bg-slate-900/90 flex items-center justify-between border-b border-slate-800">
                       <span className="text-xs font-bold text-white flex items-center gap-1.5">
                         <Bell className="w-3.5 h-3.5 text-indigo-400" />
                         <span>System Notifications</span>
                       </span>
-                      <span className="text-[10px] font-mono text-slate-400">
-                        {notifications.length} active
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">
+                        {notifications.length} alerts
                       </span>
                     </div>
 
                     <div className="max-h-80 overflow-y-auto divide-y divide-slate-800/40 text-xs">
                       {notifications.length === 0 ? (
-                        <div className="p-6 text-center text-slate-500 text-xs">
+                        <div className="p-6 text-center text-slate-400 text-xs">
                           No pending alerts or notifications.
                         </div>
                       ) : (
@@ -242,16 +242,21 @@ export default function Navbar({
                           <div
                             key={n.id}
                             onClick={() => handleNotificationClick(n)}
-                            className="p-3 hover:bg-slate-900/60 cursor-pointer transition-colors"
+                            className="p-3.5 hover:bg-slate-900/70 cursor-pointer transition-colors"
                           >
                             <div className="flex items-start justify-between gap-2 mb-1">
-                              <span className={`font-semibold ${
+                              <span className={`font-semibold flex items-center gap-1.5 ${
                                 n.type === 'urgent' ? 'text-rose-400' : n.type === 'warning' ? 'text-amber-400' : 'text-indigo-400'
                               }`}>
-                                {n.title}
+                                {n.type === 'urgent' ? (
+                                  <Clock className="w-3 h-3 text-rose-400 animate-pulse flex-shrink-0" />
+                                ) : (
+                                  <Shield className="w-3 h-3 text-indigo-400 flex-shrink-0" />
+                                )}
+                                <span>{n.title}</span>
                               </span>
                               {n.case_id && (
-                                <span className="font-mono text-[10px] text-slate-500">
+                                <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">
                                   {n.case_id}
                                 </span>
                               )}
@@ -265,16 +270,23 @@ export default function Navbar({
                 )}
               </div>
 
-              {/* User badge */}
-              <div className="text-right hidden sm:block">
-                <div className="text-xs font-semibold text-slate-200">{user}</div>
-                <div className="text-[10px] font-mono capitalize text-indigo-400">{userRole}</div>
+              {/* User profile with avatar initial */}
+              <div className="flex items-center gap-2 pl-1">
+                <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-indigo-500 to-cyan-400 p-[1px] shadow-sm shadow-indigo-500/30">
+                  <div className="w-full h-full bg-slate-950 rounded-full flex items-center justify-center text-[11px] font-bold text-white uppercase">
+                    {user?.charAt(0) || 'U'}
+                  </div>
+                </div>
+                <div className="text-right hidden sm:block">
+                  <div className="text-xs font-semibold text-slate-200">{user}</div>
+                  <div className="text-[10px] font-mono capitalize text-indigo-400">{userRole}</div>
+                </div>
               </div>
 
               <button
                 id="btn-logout"
                 onClick={onLogout}
-                className="btn btn-ghost text-xs p-2 text-slate-400 hover:text-rose-400"
+                className="btn btn-ghost text-xs p-2 text-slate-400 hover:text-rose-400 rounded-lg"
                 title="Sign out"
               >
                 <LogOut className="w-4 h-4" />
@@ -285,7 +297,7 @@ export default function Navbar({
               <button
                 id="btn-nav-quick-demo"
                 onClick={onQuickDemoLogin || (() => setActiveTab('dashboard'))}
-                className="btn bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white font-semibold text-xs shadow-md shadow-indigo-500/25 flex items-center gap-1.5"
+                className="btn bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white font-semibold text-xs shadow-md shadow-indigo-500/25 flex items-center gap-1.5 hover:-translate-y-0.5 transition-all"
                 title="Instant one-click access as Merchant Reviewer"
               >
                 <Sparkles className="w-3.5 h-3.5 text-cyan-200" />

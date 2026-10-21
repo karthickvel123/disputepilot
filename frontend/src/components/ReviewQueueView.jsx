@@ -182,8 +182,8 @@ export default function ReviewQueueView({ onSelectCase }) {
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           {/* Left Column: Queue List */}
-          <div className="lg:col-span-5 glass-panel divide-y divide-slate-800/80 overflow-hidden">
-            <div className="p-3 bg-slate-900/60 text-[11px] font-semibold uppercase tracking-wider text-slate-400 flex justify-between items-center">
+          <div className="lg:col-span-5 glass-panel-premium card-sheen divide-y divide-slate-800/80 overflow-hidden shadow-xl">
+            <div className="p-3.5 bg-slate-900/70 text-[11px] font-semibold uppercase tracking-wider text-slate-400 flex justify-between items-center border-b border-slate-800">
               <span>Pending Drafts ({queueCases.length})</span>
               <span>Sorted by Urgency</span>
             </div>
@@ -197,7 +197,7 @@ export default function ReviewQueueView({ onSelectCase }) {
                     onClick={() => loadDetail(item.case_id)}
                     className={`p-4 cursor-pointer transition-all ${
                       isSelected
-                        ? 'bg-indigo-600/15 border-l-4 border-indigo-500'
+                        ? 'bg-indigo-600/20 border-l-4 border-indigo-500 shadow-sm'
                         : 'hover:bg-slate-800/40 border-l-4 border-transparent'
                     }`}
                   >
@@ -218,8 +218,8 @@ export default function ReviewQueueView({ onSelectCase }) {
                     </div>
 
                     <div className="flex items-center justify-between pt-1 text-[11px]">
-                      <span className="text-emerald-400 font-medium">Win prob: {Math.round(item.p_win * 100)}%</span>
-                      <span className="text-slate-500 flex items-center gap-0.5">
+                      <span className="text-emerald-400 font-semibold">Win prob: {Math.round(item.p_win * 100)}%</span>
+                      <span className="text-indigo-400 font-semibold flex items-center gap-0.5">
                         <span>Review</span>
                         <ChevronRight className="w-3.5 h-3.5" />
                       </span>
@@ -231,7 +231,7 @@ export default function ReviewQueueView({ onSelectCase }) {
           </div>
 
           {/* Right Column: Case Rebuttal Inspection & Action Panel */}
-          <div className="lg:col-span-7 glass-panel p-6 space-y-6">
+          <div className="lg:col-span-7 glass-panel-premium card-sheen p-6 space-y-6 shadow-xl">
             {loadingDetail || !selectedCase ? (
               <div className="py-24 text-center">
                 <div className="w-7 h-7 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
