@@ -27,7 +27,7 @@ make build-frontend
 # Or directly:
 cd frontend && npm install && npm run build && cd ..
 
-# 4. Run the complete test suite (214 tests passing)
+# 4. Run the complete test suite (293 tests passing)
 make test
 # Or on Windows (without make):
 uv run pytest

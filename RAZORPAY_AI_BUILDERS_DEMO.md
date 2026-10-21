@@ -95,5 +95,5 @@ Indian D2C brands, SaaS platforms, and digital merchants processing payments via
 ## 5. Summary of System Maturity
 
 DisputePilot stands ready for technical inspection:
-- **Clean Codebase**: 196 tests passing, 0 linter errors, Python 3.12, strict type annotations with Pydantic v2.
+- **Clean Codebase**: 293 tests passing, 0 known vulnerabilities (pip-audit & npm audit), Python 3.12, strict type annotations with Pydantic v2.
 - **Defensible Engineering**: Clear boundary definitions, fail-closed security, and full regression test coverage.
