@@ -4,6 +4,9 @@ import datetime
 import hashlib
 import json
 import logging
+import tempfile
+import shutil
+import os
 import time
 from pathlib import Path
 from typing import Any
@@ -112,9 +115,26 @@ app.include_router(webhook_router, prefix="/webhook/razorpay")
 
 
 # ---------------------------------------------------------------------------------------------
-# Runtime wiring. DATA_MODE=live (default) talks to Razorpay; DATA_MODE=sim uses synthetic fixtures.
+# Runtime wiring. DATA_MODE=sim is the safe default; DATA_MODE=live must be explicitly enabled.
 # ---------------------------------------------------------------------------------------------
 settings = load_settings()
+# Fail fast when the configured data directory is missing or not writable. In
+# production this directory must be backed by durable storage (e.g. a Render disk).
+try:
+    settings.data_dir.mkdir(parents=True, exist_ok=True)
+    # On first boot with a newly attached persistent disk, seed it from the image's
+    # fixture/data directory. Copy only when the target is empty; never overwrite
+    # existing persistent state on subsequent deploys.
+    bundled_data_dir = Path("data")
+    target_is_bundled_dir = settings.data_dir.resolve() == bundled_data_dir.resolve()
+    if not target_is_bundled_dir and bundled_data_dir.is_dir() and not any(item.name != "lost+found" for item in settings.data_dir.iterdir()):
+        shutil.copytree(bundled_data_dir, settings.data_dir, dirs_exist_ok=True)
+    with tempfile.NamedTemporaryFile(prefix=".disputepilot-write-test-", dir=settings.data_dir, delete=True):
+        pass
+except OSError as exc:
+    raise RuntimeError(
+        f"DATA_DIR is not writable: {settings.data_dir}. Configure a writable persistent storage path."
+    ) from exc
 razorpay_problems: list[str] = settings.razorpay_problems()
 auth_problems: list[str] = settings.auth_problems()
 for _problem in razorpay_problems + auth_problems:
@@ -131,7 +151,11 @@ llm_client = None  # sim: pipeline default (FakeLLMClient). live: real model or 
 gateway: DisputesGateway | None
 
 if settings.is_sim:
-    gateway = SimGateway(approval_service=approval_service)
+    gateway = SimGateway(
+        data_dir=settings.data_dir / "cases",
+        drafts_dir=settings.data_dir / "drafts",
+        approval_service=approval_service,
+    )
 elif not razorpay_problems:
     gateway = RazorpayGateway(
         key_id=settings.razorpay_key_id,
@@ -161,14 +185,18 @@ cors_origins = (
     if settings.cors_allowed_origins
     else []
 )
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=cors_origins,
-    allow_origin_regex=r"https?://(localhost|127\.0\.0\.1)(:\d+)?|https://.*\.vercel\.app|https://.*\.onrender\.com",
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# Production uses only the explicit CORS_ALLOWED_ORIGINS allowlist. Broad Vercel/Render
+# wildcard trust is unsafe with credentialed requests because unrelated tenants can host apps
+# on those shared domains. Localhost convenience is restricted to non-production environments.
+_cors_options = {
+    "allow_origins": cors_origins,
+    "allow_credentials": True,
+    "allow_methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    "allow_headers": ["Authorization", "Content-Type", "X-CSRF-Token", "X-Requested-With"],
+}
+if os.environ.get("APP_ENV", "").strip().lower() not in {"production", "prod"}:
+    _cors_options["allow_origin_regex"] = r"https?://(localhost|127\.0\.0\.1)(:\d+)?"
+app.add_middleware(CORSMiddleware, **_cors_options)
 
 configure_api(
     settings=settings,
@@ -515,7 +543,7 @@ def worklist_view(request: Request) -> HTMLResponse:
     list_error: str | None = None
     hidden_note: str | None = None
     if settings.is_sim:
-        cases_dir = Path("data/cases")
+        cases_dir = settings.data_dir / "cases"
         raw_cases = load_cases_from_directory(cases_dir) if cases_dir.exists() else []
         triage_input: list[Any] = list(raw_cases)
         case_map: dict[str, DisputeCase] = {c.case_id: c for c in raw_cases}

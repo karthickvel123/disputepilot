@@ -44,6 +44,31 @@ def test_settings_guard_live_keys_and_missing_credentials(monkeypatch: pytest.Mo
     assert "SECRETVALUE123" not in repr(load_settings())  # secrets never appear in repr/logs
 
 
+def test_settings_default_to_sim_even_when_razorpay_credentials_exist(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Credentials must not silently switch a deployment into real API mode."""
+    monkeypatch.delenv("DATA_MODE", raising=False)
+    monkeypatch.setenv("RAZORPAY_KEY_ID", "rzp_test_example")
+    monkeypatch.setenv("RAZORPAY_KEY_SECRET", "not-a-real-secret")
+    assert load_settings().data_mode == "sim"
+
+    monkeypatch.setenv("DATA_MODE", "live")
+    assert load_settings().data_mode == "live"
+
+
+def test_independent_approval_defaults_on_in_production(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Production should require separation of duties unless explicitly overridden."""
+    monkeypatch.setenv("APP_ENV", "production")
+    monkeypatch.delenv("REQUIRE_INDEPENDENT_APPROVAL", raising=False)
+    assert load_settings().require_independent_approval is True
+
+    monkeypatch.setenv("REQUIRE_INDEPENDENT_APPROVAL", "false")
+    assert load_settings().require_independent_approval is False
+
+
 def test_pdf_is_valid_and_multi_page() -> None:
     pdf = text_to_pdf("\n".join(f"line {i} \u20b9 (x)" for i in range(200)))
     assert pdf.startswith(b"%PDF-1.4") and pdf.rstrip().endswith(b"%%EOF")

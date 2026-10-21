@@ -5,7 +5,7 @@ process environment (optionally populated from a local, git-ignored ``.env``).
 
 Modes
 -----
-``DATA_MODE=live`` (default)
+``DATA_MODE=live`` (explicit opt-in only)
     Disputes, payments, orders and refunds come from the Razorpay API using the
     configured credentials. Writes (draft / submit / accept / document upload) go to
     the same API. Only ``rzp_test_`` keys are accepted unless ``ALLOW_LIVE_KEYS=true``.
@@ -64,7 +64,7 @@ class ConfigError(RuntimeError):
 class Settings:
     """Resolved runtime settings. Secrets are held in memory only and never repr'd."""
 
-    data_mode: str = "live"
+    data_mode: str = "sim"
     razorpay_key_id: str = field(default="", repr=False)
     razorpay_key_secret: str = field(default="", repr=False)
     razorpay_base_url: str = DEFAULT_RAZORPAY_BASE_URL
@@ -156,12 +156,10 @@ class Settings:
 def load_settings() -> Settings:
     """Read settings from the environment right now (call again after changing env in tests)."""
     _load_dotenv_if_present()
+    # Safe by default: credentials alone must never opt a deployment into live API calls.
+    # Live mode requires an explicit DATA_MODE=live setting.
     raw_mode = _env("DATA_MODE")
-    if not raw_mode:
-        has_rzp = bool(_env("RAZORPAY_KEY_ID"))
-        mode = "live" if has_rzp else "sim"
-    else:
-        mode = raw_mode.lower()
+    mode = raw_mode.lower() if raw_mode else "sim"
 
     return Settings(
         data_mode=mode,
@@ -182,6 +180,10 @@ def load_settings() -> Settings:
         max_upload_bytes=int(_env("MAX_UPLOAD_BYTES", str(4 * 1024 * 1024))),
         disputes_cache_ttl=int(_env("DISPUTES_CACHE_TTL", "30")),
         push_draft_on_process=_flag("PUSH_DRAFT_ON_PROCESS"),
-        require_independent_approval=_flag("REQUIRE_INDEPENDENT_APPROVAL"),
+        # Separation of duties is enabled by default in production; dev/test stays convenient.
+        require_independent_approval=_flag(
+            "REQUIRE_INDEPENDENT_APPROVAL",
+            default=_env("APP_ENV").lower() in {"production", "prod"},
+        ),
         cors_allowed_origins=_env("CORS_ALLOWED_ORIGINS"),
     )

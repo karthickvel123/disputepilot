@@ -49,7 +49,8 @@ class UserStore:
             configured_user = os.environ.get("REVIEWER_USER") or os.environ.get("INITIAL_REVIEWER_USERNAME")
             configured_hash = os.environ.get("REVIEWER_PASSWORD_HASH") or os.environ.get("INITIAL_REVIEWER_PASSWORD_HASH")
 
-            # In production, never seed demo accounts or demo passwords
+            # In production, never seed demo accounts or leave the known development
+            # credentials behind if a pre-existing local database is reused.
             if _is_production_mode():
                 if count == 0 and configured_user and configured_hash:
                     now = int(time.time())
@@ -57,6 +58,29 @@ class UserStore:
                         "INSERT INTO users (username, password_hash, full_name, role, created_at) VALUES (?, ?, ?, ?, ?)",
                         (configured_user, configured_hash, "Authorized Merchant Reviewer", "reviewer", now),
                     )
+                    conn.commit()
+                else:
+                    demo_admin_hash = hash_password("admin_secret_2026", salt=DEFAULT_SALT)
+                    # Remove only accounts matching the exact built-in demo hashes.
+                    conn.execute(
+                        "DELETE FROM users WHERE lower(username) = 'admin' AND password_hash = ?",
+                        (demo_admin_hash,),
+                    )
+                    if configured_user and configured_hash:
+                        # Replace only the known default reviewer hash; preserve user-changed passwords.
+                        conn.execute(
+                            "UPDATE users SET password_hash = ? WHERE lower(username) = lower(?) AND password_hash = ?",
+                            (configured_hash, configured_user, DEFAULT_HASH),
+                        )
+                        conn.execute(
+                            "DELETE FROM users WHERE lower(username) = 'reviewer' AND lower(username) != lower(?) AND password_hash = ?",
+                            (configured_user, DEFAULT_HASH),
+                        )
+                    else:
+                        conn.execute(
+                            "DELETE FROM users WHERE lower(username) = 'reviewer' AND password_hash = ?",
+                            (DEFAULT_HASH,),
+                        )
                     conn.commit()
                 return
 

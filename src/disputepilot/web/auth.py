@@ -64,7 +64,7 @@ def verify_password(password: str, stored_hash: str) -> bool:
 
 
 def _is_sim_mode() -> bool:
-    return os.environ.get("DATA_MODE", "live").strip().lower() == "sim"
+    return os.environ.get("DATA_MODE", "sim").strip().lower() == "sim"
 
 
 def _is_production_mode() -> bool:
@@ -98,13 +98,13 @@ def get_session_secret() -> str:
     """Retrieve the session signing key from the environment.
 
     If SESSION_SECRET is unset, a random per-process key is used (sessions then do not survive a
-    restart) rather than a key committed to source. DATA_MODE=sim keeps a fixed dev key so tests
-    stay deterministic.
+    restart) rather than a key committed to source. Only non-production sim mode uses a fixed dev key
+    so local tests stay deterministic.
     """
     configured = os.environ.get("SESSION_SECRET", "").strip()
     if configured:
         return configured
-    if _is_sim_mode():
+    if _is_sim_mode() and not _is_production_mode():
         return "disputepilot_dev_only_session_key_sim_mode"
     return _EPHEMERAL_SECRET
 

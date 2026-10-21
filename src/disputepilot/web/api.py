@@ -220,16 +220,40 @@ DRAFTS_DIR_NAME = "drafts"
 LETTER_PREFIX = "rebuttal-letter-"
 
 
+def _cases_dir() -> Path:
+    st = _get_settings()
+    return st.data_dir / "cases"
+
+
 def _drafts_dir() -> Path:
     st = _get_settings()
     return st.data_dir / DRAFTS_DIR_NAME
 
 
+def _evidence_dir() -> Path:
+    st = _get_settings()
+    return st.data_dir / "evidence_files"
+
+
+def _org_settings_file() -> Path:
+    st = _get_settings()
+    return st.data_dir / "org_settings.json"
+
+
+def _audit_db_path() -> Path:
+    st = _get_settings()
+    return st.data_dir / "audit.db"
+
+
+def _reminders_db_path() -> Path:
+    st = _get_settings()
+    return st.data_dir / "reminders.db"
+
+
 def _load_case(case_id: str) -> DisputeCase:
     st = _get_settings()
     if st.is_sim:
-        cases_dir = (st.data_dir / "cases") if st and hasattr(st, "data_dir") else Path("data/cases")
-        return _load_case_by_id(case_id, data_dir=cases_dir)
+        return _load_case_by_id(case_id, data_dir=_cases_dir())
     ls = _get_live_source()
     if ls is None:
         _require_gateway()
@@ -505,11 +529,14 @@ async def api_change_password(request: Request, body: ChangePasswordRequest) -> 
     session = _require_session(request)
     _require_csrf(request, session)
     user_store = get_user_store(_settings.data_dir if _settings else None)
-    success = user_store.update_password(
-        username=session["user"],
-        old_password=body.old_password,
-        new_password=body.new_password,
-    )
+    try:
+        success = user_store.update_password(
+            username=session["user"],
+            old_password=body.old_password,
+            new_password=body.new_password,
+        )
+    except ValueError as err:
+        raise HTTPException(status_code=400, detail=str(err)) from err
     if not success:
         raise HTTPException(status_code=400, detail="Current password incorrect or update failed.")
     return {"ok": True, "message": "Password updated successfully."}
@@ -566,7 +593,7 @@ async def api_dashboard_metrics(request: Request) -> dict[str, Any]:
     disputes = []
     list_error = None
     if _settings.is_sim:
-        cases_dir = Path("data/cases")
+        cases_dir = _cases_dir()
         if cases_dir.exists():
             raw = load_cases_from_directory(cases_dir)
             disputes = list(raw)
@@ -667,7 +694,7 @@ async def api_list_disputes(
 
     list_error = None
     if _settings.is_sim:
-        cases_dir = Path("data/cases")
+        cases_dir = _cases_dir()
         raw_cases = load_cases_from_directory(cases_dir) if cases_dir.exists() else []
         triage_input = list(raw_cases)
         case_map = {c.case_id: c for c in raw_cases}
@@ -772,9 +799,17 @@ async def api_export_disputes_csv(request: Request) -> Response:
     """Export disputes list as downloadable CSV."""
     _require_session(request)
 
-    cases_dir = Path("data/cases")
-    raw_cases = load_cases_from_directory(cases_dir) if cases_dir.exists() else []
-    triage_items = triage_cases(list(raw_cases)) if raw_cases else []
+    if _settings.is_sim:
+        cases_dir = _cases_dir()
+        raw_cases = load_cases_from_directory(cases_dir) if cases_dir.exists() else []
+        triage_input = list(raw_cases)
+    else:
+        if _live_source is None:
+            raise HTTPException(status_code=503, detail="Razorpay not configured.")
+        live_disputes, _ = _live_source.list_disputes()
+        triage_input = [_triage_dict(d) for d in live_disputes]
+
+    triage_items = triage_cases(triage_input) if triage_input else []
 
     output = io.StringIO()
     writer = csv.writer(output)
@@ -931,14 +966,24 @@ async def api_analyze_dispute(request: Request, case_id: str) -> dict[str, Any]:
 
     try:
         if _settings.is_sim:
-            result = process_case(case_id=case_id, gateway=_gateway)
+            result = process_case(
+                case_id=case_id,
+                gateway=_gateway,
+                data_dir=_cases_dir(),
+                drafts_dir=_drafts_dir(),
+                audit_db_path=_audit_db_path(),
+                reminders_db_path=_reminders_db_path(),
+            )
         else:
             result = process_case(
                 case_id=case_id,
                 gateway=_require_gateway(),
                 llm_client=_llm_client,
                 case=case,
+                data_dir=_cases_dir(),
                 drafts_dir=_drafts_dir(),
+                audit_db_path=_audit_db_path(),
+                reminders_db_path=_reminders_db_path(),
                 push_draft=_settings.push_draft_on_process,
             )
     except HTTPException:
@@ -1447,7 +1492,7 @@ async def api_upload_evidence(
             if not doc_id:
                 raise HTTPException(status_code=502, detail="Razorpay accepted upload but returned no doc ID.")
 
-    storage_dir = ((_settings.data_dir if _settings else Path("data")) / "evidence_files").resolve()
+    storage_dir = _evidence_dir().resolve()
     storage_dir.mkdir(parents=True, exist_ok=True)
     safe_name = Path(file_name).name
     evidence_disk_path = (storage_dir / f"{digest}_{safe_name}").resolve()
@@ -1537,7 +1582,7 @@ async def api_download_evidence(request: Request, case_id: str, doc_id: int) -> 
     if doc.dispute_id not in (case_id, case.dispute.id):
         raise HTTPException(status_code=403, detail="Evidence document does not belong to this dispute.")
 
-    storage_dir = ((_settings.data_dir if _settings else Path("data")) / "evidence_files").resolve()
+    storage_dir = _evidence_dir().resolve()
     storage_dir.mkdir(parents=True, exist_ok=True)
     safe_name = Path(doc.file_name).name
     evidence_disk_path = (storage_dir / f"{doc.sha256}_{safe_name}").resolve()
@@ -1583,14 +1628,16 @@ async def api_delete_evidence(request: Request, case_id: str, doc_id: int) -> di
     if not success:
         raise HTTPException(status_code=400, detail="Failed to delete evidence document.")
 
-    storage_dir = ((_settings.data_dir if _settings else Path("data")) / "evidence_files").resolve()
-    safe_name = Path(doc.file_name).name
-    evidence_disk_path = (storage_dir / f"{doc.sha256}_{safe_name}").resolve()
-    if evidence_disk_path.is_relative_to(storage_dir) and evidence_disk_path.exists():
-        try:
-            evidence_disk_path.unlink()
-        except OSError:
-            pass
+    remaining_refs = _locker.count_by_hash(doc.sha256) if hasattr(_locker, "count_by_hash") else 0
+    if remaining_refs == 0:
+        storage_dir = _evidence_dir().resolve()
+        safe_name = Path(doc.file_name).name
+        evidence_disk_path = (storage_dir / f"{doc.sha256}_{safe_name}").resolve()
+        if evidence_disk_path.is_relative_to(storage_dir) and evidence_disk_path.exists():
+            try:
+                evidence_disk_path.unlink()
+            except OSError:
+                pass
 
     # Drop cached draft to trigger re-evaluation
     result_path = _drafts_dir() / f"{case_id}_result.json"
@@ -1757,7 +1804,7 @@ async def api_create_dispute(request: Request, body: CreateDisputeRequest) -> di
         raise HTTPException(status_code=400, detail=f"Invalid dispute ID format: '{clean_id}'.")
 
     case_id = clean_id
-    cases_dir = ((_settings.data_dir if _settings else Path("data")) / "cases").resolve()
+    cases_dir = _cases_dir().resolve()
     cases_dir.mkdir(parents=True, exist_ok=True)
     target_path = (cases_dir / f"{case_id}.json").resolve()
 
@@ -1882,7 +1929,7 @@ async def api_import_csv(request: Request, body: ImportDisputesRequest) -> dict[
     if missing:
         raise HTTPException(status_code=400, detail=f"CSV missing required columns: {', '.join(missing)}")
 
-    cases_dir = ((_settings.data_dir if _settings else Path("data")) / "cases").resolve()
+    cases_dir = _cases_dir().resolve()
     cases_dir.mkdir(parents=True, exist_ok=True)
 
     valid_cases: list[dict[str, Any]] = []
@@ -1890,7 +1937,8 @@ async def api_import_csv(request: Request, body: ImportDisputesRequest) -> dict[
     seen_ids: set[str] = set()
 
     for idx, row in enumerate(reader, start=2):
-        disp_id = row.get("dispute_id", "").strip()
+        clean_row = {str(k).strip().lower(): str(v).strip() for k, v in row.items() if k is not None}
+        disp_id = clean_row.get("dispute_id", "")
         if not disp_id:
             errors.append({"row": idx, "error": "Missing dispute_id"})
             continue
@@ -1912,7 +1960,7 @@ async def api_import_csv(request: Request, body: ImportDisputesRequest) -> dict[
         seen_ids.add(disp_id)
 
         try:
-            amt = float(row.get("amount", "0").replace(",", "").strip())
+            amt = float(clean_row.get("amount", "0").replace(",", "").strip())
             if amt <= 0:
                 raise ValueError("Amount must be greater than zero.")
             amt_paise = round(amt * 100)
@@ -1920,12 +1968,12 @@ async def api_import_csv(request: Request, body: ImportDisputesRequest) -> dict[
             errors.append({"row": idx, "dispute_id": disp_id, "error": str(val_err)})
             continue
 
-        reason_code = row.get("reason_code", "chargeback").strip()
-        reason_desc = row.get("reason_description", "Cardholder disputed charge").strip()
+        reason_code = clean_row.get("reason_code", "chargeback").strip()
+        reason_desc = clean_row.get("reason_description", "Cardholder disputed charge").strip()
 
         # Parse deadline
-        raw_respond_by = row.get("respond_by") or row.get("deadline") or row.get("due_date")
-        raw_days = row.get("days_to_respond")
+        raw_respond_by = clean_row.get("respond_by") or clean_row.get("deadline") or clean_row.get("due_date")
+        raw_days = clean_row.get("days_to_respond")
         deadline_assumed = False
         now_ts = int(time.time())
         if raw_respond_by:
@@ -1945,20 +1993,20 @@ async def api_import_csv(request: Request, body: ImportDisputesRequest) -> dict[
             deadline_assumed = True
 
         # Parse payment_id and order_id
-        payment_id = row.get("payment_id", "").strip()
+        payment_id = clean_row.get("payment_id", "").strip()
         synthetic_payment_id = False
         if not payment_id:
             payment_id = f"pay_{secrets.token_hex(7)}"
             synthetic_payment_id = True
 
-        order_id = row.get("order_id", "").strip()
+        order_id = clean_row.get("order_id", "").strip()
         synthetic_order_id = False
         if not order_id:
             order_id = f"order_{secrets.token_hex(7)}"
             synthetic_order_id = True
 
         # Parse winnable
-        raw_winnable = row.get("winnable")
+        raw_winnable = clean_row.get("winnable")
         winnable_val: bool | None = None
         if raw_winnable is not None and str(raw_winnable).strip():
             winnable_val = str(raw_winnable).strip().lower() in ("true", "1", "yes")
@@ -1969,9 +2017,9 @@ async def api_import_csv(request: Request, body: ImportDisputesRequest) -> dict[
             "amount_display": f"₹{amt:,.2f}",
             "reason_code": reason_code,
             "reason_description": reason_desc,
-            "customer_name": row.get("customer_name", "Cardholder").strip() or "Cardholder",
-            "customer_email": row.get("customer_email", "customer@example.com").strip() or "customer@example.com",
-            "tracking_number": row.get("tracking_number", "BD123456789IN").strip() or "BD123456789IN",
+            "customer_name": clean_row.get("customer_name", "Cardholder").strip() or "Cardholder",
+            "customer_email": clean_row.get("customer_email", "customer@example.com").strip() or "customer@example.com",
+            "tracking_number": clean_row.get("tracking_number", "BD123456789IN").strip() or "BD123456789IN",
             "respond_by": respond_by,
             "deadline_assumed": deadline_assumed,
             "payment_id": payment_id,
@@ -2091,6 +2139,8 @@ class RejectDraftRequest(BaseModel):
 async def api_list_comments(request: Request, case_id: str) -> dict[str, Any]:
     """List reviewer collaboration comments on a dispute."""
     _require_session(request)
+    if not CASE_ID_PATTERN.match(case_id):
+        raise HTTPException(status_code=404, detail=f"Invalid case ID: '{case_id}'.")
     comments_store = get_comments_store(_settings.data_dir if _settings else None)
     return {"comments": comments_store.list_comments(case_id)}
 
@@ -2100,12 +2150,17 @@ async def api_add_comment(request: Request, case_id: str, body: CommentRequest) 
     """Add a reviewer note/comment on a dispute."""
     session = _require_session(request)
     _require_csrf(request, session)
+    if not CASE_ID_PATTERN.match(case_id):
+        raise HTTPException(status_code=404, detail=f"Invalid case ID: '{case_id}'.")
     comments_store = get_comments_store(_settings.data_dir if _settings else None)
-    new_comment = comments_store.add_comment(
-        case_id=case_id,
-        author=session["user"],
-        comment=body.comment,
-    )
+    try:
+        new_comment = comments_store.add_comment(
+            case_id=case_id,
+            author=session["user"],
+            comment=body.comment,
+        )
+    except ValueError as err:
+        raise HTTPException(status_code=400, detail=str(err)) from err
     record_audit_event(
         case_id=case_id,
         action="add_comment",
@@ -2120,6 +2175,8 @@ async def api_reject_draft(request: Request, case_id: str, body: RejectDraftRequ
     """Reject an AI rebuttal draft, requiring revision."""
     session = _require_session(request)
     _require_csrf(request, session)
+    if not CASE_ID_PATTERN.match(case_id):
+        raise HTTPException(status_code=404, detail=f"Invalid case ID: '{case_id}'.")
     result_path = _drafts_dir() / f"{case_id}_result.json"
     if not result_path.exists():
         raise HTTPException(status_code=404, detail="No active draft found for this case.")
@@ -2155,7 +2212,7 @@ async def api_get_notifications(request: Request) -> dict[str, Any]:
     notifications = []
     now = int(time.time())
 
-    cases_dir = Path("data/cases")
+    cases_dir = _cases_dir()
     if cases_dir.exists():
         raw_cases = load_cases_from_directory(cases_dir)
         triage_items = triage_cases(list(raw_cases)) if raw_cases else []
@@ -2219,9 +2276,10 @@ class OrgSettingsRequest(BaseModel):
 async def api_get_org_settings(request: Request) -> dict[str, Any]:
     """Get organization profile and automation rules."""
     _require_session(request)
-    if ORG_SETTINGS_FILE.exists():
+    org_file = _org_settings_file()
+    if org_file.exists():
         try:
-            return json.loads(ORG_SETTINGS_FILE.read_text(encoding="utf-8"))
+            return json.loads(org_file.read_text(encoding="utf-8"))
         except (json.JSONDecodeError, OSError):
             pass
 
@@ -2241,9 +2299,10 @@ async def api_save_org_settings(request: Request, body: OrgSettingsRequest) -> d
     """Save organization profile and automation rules (admin-only)."""
     session = _require_admin_session(request)
     _require_csrf(request, session)
-    ORG_SETTINGS_FILE.parent.mkdir(parents=True, exist_ok=True)
+    org_file = _org_settings_file()
+    org_file.parent.mkdir(parents=True, exist_ok=True)
     payload = body.model_dump()
-    ORG_SETTINGS_FILE.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    org_file.write_text(json.dumps(payload, indent=2), encoding="utf-8")
     return {"ok": True, "settings": payload, "message": "Organization settings saved successfully."}
 
 
@@ -2286,13 +2345,18 @@ async def api_test_razorpay_connection(request: Request) -> dict[str, Any]:
 async def api_test_ai_connection(request: Request) -> dict[str, Any]:
     """Test AI provider response."""
     _require_session(request)
-    if _llm_client and hasattr(_llm_client, "generate"):
+    if _llm_client and hasattr(_llm_client, "generate_json"):
         start = time.time()
         try:
+            _llm_client.generate_json(
+                system="Health check probe. Respond with status ok.",
+                user="ping",
+                json_schema={"type": "object", "properties": {"status": {"type": "string"}}, "required": ["status"]},
+            )
             latency = int((time.time() - start) * 1000)
             return {
                 "status": "connected",
-                "model": "gemini-2.5-flash",
+                "model": getattr(_llm_client, "model", "gemini-2.5-flash"),
                 "latency_ms": latency,
                 "message": "Gemini AI model online and responding to reasoning probes.",
             }

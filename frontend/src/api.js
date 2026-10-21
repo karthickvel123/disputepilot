@@ -1,4 +1,10 @@
-const API_BASE = (import.meta.env.VITE_API_BASE_URL || '/api/v1').replace(/\/+$/, '');
+// In production, prefer the deployed Render API even when Vercel's env var is missing.
+// VITE_API_BASE_URL should still be configured in Vercel for environment-specific deployments.
+const DEFAULT_PRODUCTION_API = 'https://disputepilot.onrender.com/api/v1';
+const API_BASE = (
+  import.meta.env.VITE_API_BASE_URL ||
+  (import.meta.env.PROD ? DEFAULT_PRODUCTION_API : '/api/v1')
+).replace(/\/+$/, '');
 
 let currentCsrfToken = '';
 
@@ -27,7 +33,18 @@ async function request(endpoint, options = {}) {
     credentials: 'include', // sends and receives cookies
   };
 
-  const response = await fetch(url, config);
+  let response;
+  try {
+    response = await fetch(url, config);
+  } catch (cause) {
+    const err = new Error(
+      `Unable to reach the DisputePilot API at ${API_BASE}. Check the backend URL, backend health, and CORS settings.`,
+      { cause }
+    );
+    err.status = 0;
+    err.data = { detail: err.message };
+    throw err;
+  }
 
   if (response.status === 401 && endpoint !== '/auth/login' && endpoint !== '/auth/me') {
     window.dispatchEvent(new CustomEvent('auth:unauthorized'));
@@ -36,7 +53,14 @@ async function request(endpoint, options = {}) {
   const contentType = response.headers.get('content-type') || '';
   let data = null;
   if (contentType.includes('application/json')) {
-    data = await response.json();
+    try {
+      data = await response.json();
+    } catch (cause) {
+      const err = new Error(`The API returned invalid JSON for '${endpoint}'.` , { cause });
+      err.status = 502;
+      err.data = { detail: err.message };
+      throw err;
+    }
   } else {
     const rawText = await response.text();
     if (rawText.trim().toLowerCase().startsWith('<!doctype') || rawText.trim().toLowerCase().startsWith('<html')) {

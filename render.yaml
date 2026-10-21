@@ -2,14 +2,24 @@ services:
   - type: web
     name: disputepilot-backend
     runtime: docker
-    plan: free
+    # Persistent disks are not available on Render free web services. This paid
+    # instance is required to retain SQLite databases and uploaded evidence.
+    plan: starter
     region: oregon
     healthCheckPath: /api/v1/health
+    disk:
+      name: disputepilot-data
+      mountPath: /var/data/disputepilot
+      sizeGB: 1
     envVars:
       - key: APP_ENV
         value: production
       - key: DATA_MODE
         value: sim
+      - key: DATA_DIR
+        value: /var/data/disputepilot
+      - key: CORS_ALLOWED_ORIGINS
+        value: https://frontend-blue-nine-19.vercel.app
       - key: COOKIE_SECURE
         value: "true"
       - key: COOKIE_SAMESITE
@@ -18,5 +28,9 @@ services:
         generateValue: true
       - key: DISPUTEPILOT_ALLOW_DEV_USERS
         value: "false"
-      - key: INITIAL_REVIEWER_USERNAME
+      - key: REQUIRE_INDEPENDENT_APPROVAL
+        value: "true"
+      - key: REVIEWER_USER
         value: reviewer
+      - key: REVIEWER_PASSWORD_HASH
+        sync: false

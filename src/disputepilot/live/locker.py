@@ -142,6 +142,12 @@ class EvidenceLocker:
             cur = c.execute("DELETE FROM locker_documents WHERE id = ?", (doc_id,))
             return cur.rowcount > 0
 
+    def count_by_hash(self, sha256: str) -> int:
+        """Count locker documents with the specified SHA-256."""
+        with self._conn() as c:
+            row = c.execute("SELECT COUNT(*) FROM locker_documents WHERE sha256 = ?", (sha256,)).fetchone()
+            return int(row[0]) if row else 0
+
     def evidence_ids(self, dispute_id: str) -> dict[str, list[str]]:
         """Category -> Razorpay document ids for every locker file already uploaded."""
         out: dict[str, list[str]] = {}

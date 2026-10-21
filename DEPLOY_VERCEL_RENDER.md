@@ -89,7 +89,7 @@ Copy the generated hash string into `INITIAL_REVIEWER_PASSWORD_HASH`.
    - **Output Directory**: `frontend/dist` (or `dist` if root directory is set to `frontend`)
 4. In **Environment Variables**, add:
    - **Key**: `VITE_API_BASE_URL`
-   - **Value**: `https://disputepilot-backend.onrender.com/api/v1` *(replace with your actual Render service URL)*
+   - **Value**: `https://disputepilot.onrender.com/api/v1` *(replace with your actual Render service URL if different)*
 5. Click **Deploy**.
 
 ---
@@ -129,3 +129,5 @@ If you are running in `DATA_MODE=live` with test mode keys:
    - `dispute.closed`
    - `dispute.under_review`
 6. Click **Save Webhook**.
+
+**Reviewer login:** generate a password hash locally with `python scripts/hash_password.py` and set it as Render `REVIEWER_PASSWORD_HASH`. Never commit the plaintext password.

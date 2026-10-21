@@ -2,7 +2,7 @@
 FROM node:20-bookworm-slim AS frontend-builder
 WORKDIR /build
 COPY frontend/package*.json ./
-RUN npm install
+RUN npm ci
 COPY frontend/ ./
 RUN npm run build
 
@@ -18,7 +18,11 @@ WORKDIR /app
 
 COPY pyproject.toml uv.lock README.md CONTEXT.md ./
 COPY src ./src
-COPY data ./data
+# Include only synthetic fixture inputs. Never bake runtime databases, user accounts,
+# approvals, audit logs, drafts, or evidence into a production image.
+COPY data/cases ./data/cases
+COPY data/cases_messy ./data/cases_messy
+COPY data/org_settings.json ./data/org_settings.json
 COPY --from=frontend-builder /build/dist ./frontend/dist
 
 RUN uv sync --frozen --no-dev

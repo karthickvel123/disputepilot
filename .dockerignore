@@ -7,3 +7,12 @@ __pycache__
 *.py[cod]
 *.db
 *.sqlite3
+
+# Never send runtime databases, generated drafts, or uploaded evidence to Docker builds.
+data/*.db
+data/*.sqlite
+data/*.sqlite3
+data/drafts/
+data/evidence_files/
+.env*
+!.env.example
