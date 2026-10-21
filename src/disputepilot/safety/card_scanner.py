@@ -1,6 +1,7 @@
 """Card scanner and redaction module with Luhn validation."""
 
 import re
+import zlib
 from typing import NamedTuple
 
 from pydantic import BaseModel
@@ -191,3 +192,62 @@ def redact_text(
         redacted = redacted[:start] + replacement + redacted[end:]
 
     return redacted
+
+
+def extract_text_from_pdf_bytes(pdf_bytes: bytes) -> str:
+    """Extract text from raw PDF bytes by inspecting text literals and decompressing FlateDecode streams."""
+    extracted_chunks: list[str] = []
+
+    # 1. Search for stream ... endstream blocks and decompress FlateDecode
+    stream_pattern = re.compile(rb"stream[\r\n]+(.*?)[\r\n]+endstream", re.DOTALL)
+    for match in stream_pattern.finditer(pdf_bytes):
+        raw_stream = match.group(1)
+        decompressed: bytes | None = None
+        try:
+            decompressed = zlib.decompress(raw_stream)
+        except Exception:
+            try:
+                decompressed = zlib.decompress(raw_stream, -zlib.MAX_WBITS)
+            except Exception:
+                decompressed = raw_stream
+
+        if decompressed:
+            # Extract parenthesized string literals from decompressed stream
+            text_literals = re.findall(rb"\((?:\\.|[^()\\])*\)", decompressed)
+            for lit in text_literals:
+                clean_lit = lit[1:-1].replace(rb"\(", b"(").replace(rb"\)", b")").replace(rb"\\", b"\\")
+                extracted_chunks.append(clean_lit.decode("latin1", errors="ignore"))
+
+            # Also extract runs of printable ASCII characters
+            printable_runs = re.findall(rb"[\x20-\x7E]{4,}", decompressed)
+            for pr in printable_runs:
+                extracted_chunks.append(pr.decode("latin1", errors="ignore"))
+
+    # 2. Also search for parenthesized strings and printable runs across uncompressed PDF bytes
+    raw_literals = re.findall(rb"\((?:\\.|[^()\\])*\)", pdf_bytes)
+    for lit in raw_literals:
+        clean_lit = lit[1:-1].replace(rb"\(", b"(").replace(rb"\)", b")").replace(rb"\\", b"\\")
+        extracted_chunks.append(clean_lit.decode("latin1", errors="ignore"))
+
+    raw_runs = re.findall(rb"[\x20-\x7E]{4,}", pdf_bytes)
+    for pr in raw_runs:
+        extracted_chunks.append(pr.decode("latin1", errors="ignore"))
+
+    return "\n".join(extracted_chunks)
+
+
+def scan_pdf_bytes(
+    pdf_bytes: bytes,
+    protected_ids: set[str] | list[str] | None = None,
+) -> list[CardFinding]:
+    """Scan raw PDF bytes for Luhn-valid payment card numbers and CVV values.
+
+    Args:
+        pdf_bytes: Raw bytes of the uploaded PDF.
+        protected_ids: Optional set of identifiers to protect from scanning/redaction.
+
+    Returns:
+        List of CardFinding objects.
+    """
+    extracted_text = extract_text_from_pdf_bytes(pdf_bytes)
+    return scan_text(extracted_text, protected_ids=protected_ids)

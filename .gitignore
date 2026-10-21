@@ -51,6 +51,7 @@ venv.bak/
 .pytest_cache/
 .coverage
 htmlcov/
+test-tmp/
 
 # Ruff / Linter
 .ruff_cache/

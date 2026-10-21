@@ -60,7 +60,7 @@ export default function LandingPage({ onLaunchConsole, onQuickDemoLogin, metrics
         {/* Top Badge */}
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-semibold mb-6 shadow-sm">
           <Sparkles className="w-3.5 h-3.5 text-indigo-400 animate-pulse" />
-          <span>PRODUCTION-READY AI PAYMENT DISPUTE DEFENSE FOR RAZORPAY</span>
+          <span>INTELLIGENT PAYMENT DISPUTE ASSISTANT & DEFENSE WORKBENCH FOR RAZORPAY</span>
         </div>
 
         {/* Main Heading */}
@@ -71,7 +71,7 @@ export default function LandingPage({ onLaunchConsole, onQuickDemoLogin, metrics
         {/* Subtitle */}
         <p className="text-base sm:text-xl text-slate-300 max-w-3xl mx-auto font-normal leading-relaxed mb-10">
           DisputePilot pairs Gemini AI with deterministic evidence verifiers and cryptographic approval tokens. 
-          Respond to chargebacks within hours, grounded strictly in verified order facts with zero hallucination.
+          Respond to chargebacks within hours, grounded strictly in verified order facts with deterministic entity checking to prevent invented figures.
         </p>
 
         {/* Call to Actions */}
@@ -105,30 +105,41 @@ export default function LandingPage({ onLaunchConsole, onQuickDemoLogin, metrics
         </div>
 
 
-        {/* Live Metrics Strip */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto mb-16">
-          <div className="glass-panel p-5 text-center">
-            <div className="font-heading text-3xl font-bold text-white mb-1">
-              {metrics ? metrics.total_disputes : '250+'}
+        {/* Metrics Strip with Clear Provenance Labeling */}
+        <div className="max-w-4xl mx-auto mb-16">
+          <div className="flex items-center justify-center gap-2 mb-3">
+            <span className={`text-[10px] font-mono px-2.5 py-1 rounded-full border ${metrics ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : 'bg-slate-800/80 text-amber-300 border-amber-500/30'}`}>
+              {metrics ? '● LIVE WORKSPACE METRICS' : '○ ILLUSTRATIVE BENCHMARK / DEMO DATA'}
+            </span>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="glass-panel p-5 text-center">
+              <div className="font-heading text-3xl font-bold text-white mb-1">
+                {metrics ? metrics.total_disputes : '250+'}
+              </div>
+              <div className="text-xs text-slate-400 font-medium">Disputes Handled</div>
+              {!metrics && <div className="text-[10px] text-slate-500 mt-1">Benchmark sample</div>}
             </div>
-            <div className="text-xs text-slate-400 font-medium">Disputes Handled</div>
-          </div>
 
-          <div className="glass-panel p-5 text-center">
-            <div className="font-heading text-3xl font-bold text-emerald-400 mb-1">
-              {metrics?.win_rate_percent ? `${metrics.win_rate_percent}%` : '84.2%'}
+            <div className="glass-panel p-5 text-center">
+              <div className="font-heading text-3xl font-bold text-emerald-400 mb-1">
+                {metrics?.win_rate_percent !== undefined && metrics?.win_rate_percent !== null ? `${metrics.win_rate_percent}%` : '84.2%'}
+              </div>
+              <div className="text-xs text-slate-400 font-medium">Win Rate on Contests</div>
+              {!metrics && <div className="text-[10px] text-slate-500 mt-1">Eval test set</div>}
             </div>
-            <div className="text-xs text-slate-400 font-medium">Win Rate on Contests</div>
-          </div>
 
-          <div className="glass-panel p-5 text-center">
-            <div className="font-heading text-3xl font-bold text-cyan-400 mb-1">100%</div>
-            <div className="text-xs text-slate-400 font-medium">Citation Grounding</div>
-          </div>
+            <div className="glass-panel p-5 text-center">
+              <div className="font-heading text-3xl font-bold text-cyan-400 mb-1">100%</div>
+              <div className="text-xs text-slate-400 font-medium">Citation Grounding</div>
+              <div className="text-[10px] text-slate-500 mt-1">Order record cross-check</div>
+            </div>
 
-          <div className="glass-panel p-5 text-center">
-            <div className="font-heading text-3xl font-bold text-purple-400 mb-1">SHA-256</div>
-            <div className="text-xs text-slate-400 font-medium">Tamper-Evident Ledger</div>
+            <div className="glass-panel p-5 text-center">
+              <div className="font-heading text-3xl font-bold text-purple-400 mb-1">SHA-256</div>
+              <div className="text-xs text-slate-400 font-medium">Tamper-Evident Ledger</div>
+              <div className="text-[10px] text-slate-500 mt-1">Cryptographic audit log</div>
+            </div>
           </div>
         </div>
 
@@ -142,8 +153,8 @@ export default function LandingPage({ onLaunchConsole, onQuickDemoLogin, metrics
               <span className="font-mono text-[11px] text-slate-400 ml-2">disputepilot.merchant.internal/dashboard</span>
             </div>
             <div className="flex items-center gap-2 text-indigo-400 font-mono text-[11px]">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span>LIVE SYSTEM NOMINAL</span>
+              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+              <span>SIMULATED WORKBENCH PREVIEW</span>
             </div>
           </div>
 

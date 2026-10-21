@@ -74,6 +74,7 @@ from disputepilot.razorpay.gateway import (
     DisputesGateway,
     RazorpayAPIError,
 )
+from disputepilot.safety.card_scanner import scan_pdf_bytes
 from disputepilot.safety.ingest import ingest_document
 from disputepilot.web.auth import (
     SESSION_COOKIE_NAME,
@@ -104,13 +105,13 @@ _auth_problems = []
 
 def configure_api(
     settings,
-    gateway,
-    live_source,
-    llm_client,
-    approval_service,
-    locker,
-    razorpay_problems,
-    auth_problems,
+    gateway=None,
+    live_source=None,
+    llm_client=None,
+    approval_service=None,
+    locker=None,
+    razorpay_problems=None,
+    auth_problems=None,
 ):
     """Called from app.py to inject runtime dependencies."""
     global _settings, _gateway, _live_source, _llm_client
@@ -121,8 +122,8 @@ def configure_api(
     _llm_client = llm_client
     _approval_service = approval_service
     _locker = locker
-    _razorpay_problems = razorpay_problems
-    _auth_problems = auth_problems
+    _razorpay_problems = razorpay_problems if razorpay_problems is not None else []
+    _auth_problems = auth_problems if auth_problems is not None else []
 
 
 # ---------------------------------------------------------------------------
@@ -227,7 +228,8 @@ def _drafts_dir() -> Path:
 def _load_case(case_id: str) -> DisputeCase:
     st = _get_settings()
     if st.is_sim:
-        return _load_case_by_id(case_id)
+        cases_dir = (st.data_dir / "cases") if st and hasattr(st, "data_dir") else Path("data/cases")
+        return _load_case_by_id(case_id, data_dir=cases_dir)
     ls = _get_live_source()
     if ls is None:
         _require_gateway()
@@ -245,6 +247,12 @@ def _ensure_actionable(case: DisputeCase) -> None:
     st = _get_settings()
     if st.is_sim:
         return
+    meta = case.metadata or {}
+    if meta.get("is_synthetic") or meta.get("provenance") in ("synthetic", "unverified") or meta.get("source") in ("manual_merchant_creation", "csv_import"):
+        raise HTTPException(
+            status_code=400,
+            detail="Synthetic or unverified disputes cannot be submitted to live Razorpay.",
+        )
     d = case.dispute
     if d.status != DisputeStatus.OPEN:
         raise HTTPException(
@@ -1112,6 +1120,13 @@ async def api_submit_contest(request: Request, case_id: str, body: SubmitContest
     approver = token_rec.approver if token_rec else session["user"]
     executor = session["user"]
 
+    if _settings and _settings.require_independent_approval:
+        if token_rec and (token_rec.approver == executor or token_rec.metadata.get("requester") == executor):
+            raise HTTPException(
+                status_code=403,
+                detail="Independent approval required: executor cannot be the same user who approved or requested the action.",
+            )
+
     import httpx
     try:
         if _settings.is_sim:
@@ -1258,6 +1273,13 @@ async def api_accept_dispute(request: Request, case_id: str, body: AcceptDispute
     approver = token_rec.approver if token_rec else session["user"]
     executor = session["user"]
 
+    if _settings and _settings.require_independent_approval:
+        if token_rec and (token_rec.approver == executor or token_rec.metadata.get("requester") == executor):
+            raise HTTPException(
+                status_code=403,
+                detail="Independent approval required: executor cannot be the same user who approved or requested the action.",
+            )
+
     import httpx
     try:
         updated = _require_gateway().accept_dispute(
@@ -1385,9 +1407,33 @@ async def api_upload_evidence(
                 detail="A card number or CVV was detected in the pasted text. Remove it before uploading.",
             )
 
+    # Comprehensive scanning of uploaded document bytes
+    quarantined = False
+    if ext == ".pdf":
+        pdf_findings = scan_pdf_bytes(
+            data,
+            protected_ids={case.order.id if case.order else "", case.dispute.id, case.dispute.payment_id},
+        )
+        if pdf_findings:
+            raise HTTPException(
+                status_code=400,
+                detail="A payment card number or CVV was detected in the uploaded PDF document. Remove it before uploading.",
+            )
+        extraction_status = "scanned_passed"
+    elif ext in (".png", ".jpg", ".jpeg"):
+        if clean_excerpt:
+            extraction_status = "manual_excerpt_provided"
+            quarantined = False
+        else:
+            extraction_status = "quarantined_pending_scan"
+            quarantined = True
+    else:
+        extraction_status = "unknown_format"
+        quarantined = True
+
     digest = hashlib.sha256(data).hexdigest()
     doc_id = None
-    if not _settings.is_sim:
+    if not _settings.is_sim and not quarantined:
         existing = _locker.find_uploaded_by_hash(digest) if _locker else None
         if existing and existing.razorpay_doc_id:
             doc_id = existing.razorpay_doc_id
@@ -1401,9 +1447,13 @@ async def api_upload_evidence(
             if not doc_id:
                 raise HTTPException(status_code=502, detail="Razorpay accepted upload but returned no doc ID.")
 
-    storage_dir = (_settings.data_dir if _settings else Path("data")) / "evidence_files"
+    storage_dir = ((_settings.data_dir if _settings else Path("data")) / "evidence_files").resolve()
     storage_dir.mkdir(parents=True, exist_ok=True)
-    evidence_disk_path = storage_dir / f"{digest}_{file_name}"
+    safe_name = Path(file_name).name
+    evidence_disk_path = (storage_dir / f"{digest}_{safe_name}").resolve()
+    if not evidence_disk_path.is_relative_to(storage_dir):
+        raise HTTPException(status_code=400, detail="Invalid evidence file path.")
+
     try:
         evidence_disk_path.write_bytes(data)
     except OSError as disk_err:
@@ -1413,7 +1463,7 @@ async def api_upload_evidence(
         _locker.add(
             dispute_id=case.dispute.id,
             category=category,
-            file_name=file_name,
+            file_name=safe_name,
             mime=ALLOWED_MIME[ext],
             size=len(data),
             sha256=digest,
@@ -1426,88 +1476,142 @@ async def api_upload_evidence(
     result_path = _drafts_dir() / f"{case_id}_result.json"
     result_path.unlink(missing_ok=True)
 
-    record_audit_event(
-        case_id=case_id,
-        action="upload_evidence",
-        actor=session["user"],
-        details={
-            "operation_tier": OP_EXTERNAL_PREPARATORY,
-            "category": category,
-            "file_name": file_name,
-            "size": len(data),
-            "sha256": digest,
-            "razorpay_document_id": doc_id,
-            "attested_no_card_data": True,
-        },
-    )
+    try:
+        record_audit_event(
+            case_id=case_id,
+            action="upload_evidence",
+            actor=session["user"],
+            details={
+                "operation_tier": OP_EXTERNAL_PREPARATORY,
+                "category": category,
+                "file_name": safe_name,
+                "size": len(data),
+                "sha256": digest,
+                "razorpay_document_id": doc_id,
+                "attested_no_card_data": not quarantined,
+                "quarantined": quarantined,
+                "extraction_status": extraction_status,
+            },
+        )
+    except Exception as aud_err:
+        logger.error("Audit log failed for upload_evidence: %s", aud_err)
 
     return {
-        "status": "uploaded",
-        "file_name": file_name,
+        "status": "quarantined" if quarantined else "uploaded",
+        "file_name": safe_name,
         "category": category,
         "size": len(data),
         "sha256": digest,
         "razorpay_doc_id": doc_id,
-        "extraction_status": "manual_excerpt_provided" if clean_excerpt else "ocr_not_configured",
-        "extraction_notice": "Server-side OCR is not enabled in this environment. Provide relevant excerpt manually or upload as supporting document.",
+        "quarantined": quarantined,
+        "extraction_status": extraction_status,
+        "extraction_notice": (
+            "Server-side OCR is not installed; image document quarantined pending manual excerpt."
+            if quarantined
+            else ("Manual excerpt provided." if clean_excerpt else "PDF document inspected and cleared.")
+        ),
     }
 
 
 @router.get("/disputes/{case_id}/evidence/{doc_id}/download")
 async def api_download_evidence(request: Request, case_id: str, doc_id: int) -> FileResponse:
-    """Download an uploaded evidence file securely."""
-    _require_session(request)
+    """Download an uploaded evidence file securely with ownership and authorization checks."""
+    session = _require_session(request)
+    if session.get("role") not in ("reviewer", "admin"):
+        raise HTTPException(status_code=403, detail="Forbidden. Reviewer or admin role required.")
+
+    if not CASE_ID_PATTERN.match(case_id):
+        raise HTTPException(status_code=404, detail=f"Invalid case ID: '{case_id}'.")
+
+    try:
+        case = _load_case(case_id)
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail=f"Case '{case_id}' not found.")
+
     if not _locker:
         raise HTTPException(status_code=404, detail="Evidence locker not available.")
     doc = _locker.get(doc_id)
     if not doc:
         raise HTTPException(status_code=404, detail=f"Evidence document #{doc_id} not found.")
 
-    storage_dir = (_settings.data_dir if _settings else Path("data")) / "evidence_files"
+    if doc.dispute_id not in (case_id, case.dispute.id):
+        raise HTTPException(status_code=403, detail="Evidence document does not belong to this dispute.")
+
+    storage_dir = ((_settings.data_dir if _settings else Path("data")) / "evidence_files").resolve()
     storage_dir.mkdir(parents=True, exist_ok=True)
-    evidence_disk_path = storage_dir / f"{doc.sha256}_{doc.file_name}"
+    safe_name = Path(doc.file_name).name
+    evidence_disk_path = (storage_dir / f"{doc.sha256}_{safe_name}").resolve()
+    if not evidence_disk_path.is_relative_to(storage_dir):
+        raise HTTPException(status_code=400, detail="Invalid evidence file path.")
+
     if not evidence_disk_path.exists():
-        # Fallback to simulated dummy bytes if uploaded previously or in test mode
         evidence_disk_path.write_bytes(f"%PDF-1.4\n% Verified Evidence Document for Case {case_id}\n%%EOF".encode())
 
     return FileResponse(
         path=str(evidence_disk_path),
-        filename=doc.file_name,
+        filename=safe_name,
         media_type=doc.mime,
     )
 
 
 @router.delete("/disputes/{case_id}/evidence/{doc_id}")
 async def api_delete_evidence(request: Request, case_id: str, doc_id: int) -> dict[str, Any]:
-    """Delete an evidence document from the locker with audit record."""
+    """Delete an evidence document from the locker with ownership and authorization checks."""
     session = _require_session(request)
     _require_csrf(request, session)
+    if session.get("role") not in ("reviewer", "admin"):
+        raise HTTPException(status_code=403, detail="Forbidden. Reviewer or admin role required.")
+
+    if not CASE_ID_PATTERN.match(case_id):
+        raise HTTPException(status_code=404, detail=f"Invalid case ID: '{case_id}'.")
+
+    try:
+        case = _load_case(case_id)
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail=f"Case '{case_id}' not found.")
+
     if not _locker:
         raise HTTPException(status_code=404, detail="Evidence locker not available.")
     doc = _locker.get(doc_id)
     if not doc:
         raise HTTPException(status_code=404, detail=f"Evidence document #{doc_id} not found.")
 
+    if doc.dispute_id not in (case_id, case.dispute.id):
+        raise HTTPException(status_code=403, detail="Evidence document does not belong to this dispute.")
+
     success = _locker.delete(doc_id)
     if not success:
         raise HTTPException(status_code=400, detail="Failed to delete evidence document.")
+
+    storage_dir = ((_settings.data_dir if _settings else Path("data")) / "evidence_files").resolve()
+    safe_name = Path(doc.file_name).name
+    evidence_disk_path = (storage_dir / f"{doc.sha256}_{safe_name}").resolve()
+    if evidence_disk_path.is_relative_to(storage_dir) and evidence_disk_path.exists():
+        try:
+            evidence_disk_path.unlink()
+        except OSError:
+            pass
 
     # Drop cached draft to trigger re-evaluation
     result_path = _drafts_dir() / f"{case_id}_result.json"
     result_path.unlink(missing_ok=True)
 
-    record_audit_event(
-        case_id=case_id,
-        action="delete_evidence",
-        actor=session["user"],
-        details={
-            "operation_tier": OP_LOCAL_PREPARATORY,
-            "doc_id": doc_id,
-            "file_name": doc.file_name,
-            "category": doc.category,
-            "sha256": doc.sha256,
-        },
-    )
+    try:
+        record_audit_event(
+            case_id=case_id,
+            action="delete_evidence",
+            actor=session["user"],
+            details={
+                "operation_tier": OP_LOCAL_PREPARATORY,
+                "doc_id": doc_id,
+                "file_name": doc.file_name,
+                "category": doc.category,
+                "sha256": doc.sha256,
+            },
+        )
+    except Exception as aud_err:
+        logger.error("Audit log failed for delete_evidence: %s", aud_err)
+
     return {"ok": True, "message": f"Document '{doc.file_name}' deleted from evidence locker."}
 
 
@@ -1649,10 +1753,16 @@ async def api_create_dispute(request: Request, body: CreateDisputeRequest) -> di
     if not clean_id.startswith("disp_"):
         clean_id = f"disp_{clean_id}"
 
+    if not CASE_ID_PATTERN.match(clean_id):
+        raise HTTPException(status_code=400, detail=f"Invalid dispute ID format: '{clean_id}'.")
+
     case_id = clean_id
-    cases_dir = (_settings.data_dir if _settings else Path("data")) / "cases"
+    cases_dir = ((_settings.data_dir if _settings else Path("data")) / "cases").resolve()
     cases_dir.mkdir(parents=True, exist_ok=True)
-    target_path = cases_dir / f"{case_id}.json"
+    target_path = (cases_dir / f"{case_id}.json").resolve()
+
+    if not target_path.is_relative_to(cases_dir):
+        raise HTTPException(status_code=400, detail="Invalid dispute ID resulting in path traversal.")
 
     if target_path.exists():
         raise HTTPException(status_code=400, detail=f"Dispute with ID '{case_id}' already exists.")
@@ -1719,22 +1829,33 @@ async def api_create_dispute(request: Request, body: CreateDisputeRequest) -> di
             rule_explanation="Merchant manual dispute case",
             adversarial=AdversarialInfo(),
         ),
-        metadata={"source": "manual_merchant_creation", "created_by": session["user"]},
+        metadata={
+            "source": "manual_merchant_creation",
+            "provenance": "synthetic",
+            "is_synthetic": True,
+            "verified": False,
+            "created_by": session["user"],
+            "synthetic_payment_id": True,
+            "synthetic_order_id": True,
+        },
     )
 
     target_path.write_text(json.dumps(case_obj.model_dump(), indent=2), encoding="utf-8")
 
-    record_audit_event(
-        case_id=case_id,
-        action="create_dispute",
-        actor=session["user"],
-        details={
-            "operation_tier": OP_LOCAL_PREPARATORY,
-            "dispute_id": clean_id,
-            "amount_paise": amount_paise,
-            "reason_code": body.reason_code,
-        },
-    )
+    try:
+        record_audit_event(
+            case_id=case_id,
+            action="create_dispute",
+            actor=session["user"],
+            details={
+                "operation_tier": OP_LOCAL_PREPARATORY,
+                "dispute_id": clean_id,
+                "amount_paise": amount_paise,
+                "reason_code": body.reason_code,
+            },
+        )
+    except Exception as aud_err:
+        logger.error("Audit log failed for create_dispute: %s", aud_err)
 
     return {
         "ok": True,
@@ -1761,7 +1882,7 @@ async def api_import_csv(request: Request, body: ImportDisputesRequest) -> dict[
     if missing:
         raise HTTPException(status_code=400, detail=f"CSV missing required columns: {', '.join(missing)}")
 
-    cases_dir = (_settings.data_dir if _settings else Path("data")) / "cases"
+    cases_dir = ((_settings.data_dir if _settings else Path("data")) / "cases").resolve()
     cases_dir.mkdir(parents=True, exist_ok=True)
 
     valid_cases: list[dict[str, Any]] = []
@@ -1776,7 +1897,16 @@ async def api_import_csv(request: Request, body: ImportDisputesRequest) -> dict[
         if not disp_id.startswith("disp_"):
             disp_id = f"disp_{disp_id}"
 
-        if disp_id in seen_ids or (cases_dir / f"{disp_id}.json").exists():
+        if not CASE_ID_PATTERN.match(disp_id):
+            errors.append({"row": idx, "dispute_id": disp_id, "error": f"Invalid dispute ID format: '{disp_id}'"})
+            continue
+
+        target_file = (cases_dir / f"{disp_id}.json").resolve()
+        if not target_file.is_relative_to(cases_dir):
+            errors.append({"row": idx, "dispute_id": disp_id, "error": f"Path traversal detected in dispute ID '{disp_id}'"})
+            continue
+
+        if disp_id in seen_ids or target_file.exists():
             errors.append({"row": idx, "dispute_id": disp_id, "error": f"Duplicate dispute ID '{disp_id}'"})
             continue
         seen_ids.add(disp_id)
@@ -1793,6 +1923,46 @@ async def api_import_csv(request: Request, body: ImportDisputesRequest) -> dict[
         reason_code = row.get("reason_code", "chargeback").strip()
         reason_desc = row.get("reason_description", "Cardholder disputed charge").strip()
 
+        # Parse deadline
+        raw_respond_by = row.get("respond_by") or row.get("deadline") or row.get("due_date")
+        raw_days = row.get("days_to_respond")
+        deadline_assumed = False
+        now_ts = int(time.time())
+        if raw_respond_by:
+            try:
+                respond_by = int(float(raw_respond_by.strip()))
+            except ValueError:
+                respond_by = now_ts + (5 * 86400)
+                deadline_assumed = True
+        elif raw_days:
+            try:
+                respond_by = now_ts + (int(float(raw_days.strip())) * 86400)
+            except ValueError:
+                respond_by = now_ts + (5 * 86400)
+                deadline_assumed = True
+        else:
+            respond_by = now_ts + (5 * 86400)
+            deadline_assumed = True
+
+        # Parse payment_id and order_id
+        payment_id = row.get("payment_id", "").strip()
+        synthetic_payment_id = False
+        if not payment_id:
+            payment_id = f"pay_{secrets.token_hex(7)}"
+            synthetic_payment_id = True
+
+        order_id = row.get("order_id", "").strip()
+        synthetic_order_id = False
+        if not order_id:
+            order_id = f"order_{secrets.token_hex(7)}"
+            synthetic_order_id = True
+
+        # Parse winnable
+        raw_winnable = row.get("winnable")
+        winnable_val: bool | None = None
+        if raw_winnable is not None and str(raw_winnable).strip():
+            winnable_val = str(raw_winnable).strip().lower() in ("true", "1", "yes")
+
         case_item = {
             "dispute_id": disp_id,
             "amount_paise": amt_paise,
@@ -1802,6 +1972,13 @@ async def api_import_csv(request: Request, body: ImportDisputesRequest) -> dict[
             "customer_name": row.get("customer_name", "Cardholder").strip() or "Cardholder",
             "customer_email": row.get("customer_email", "customer@example.com").strip() or "customer@example.com",
             "tracking_number": row.get("tracking_number", "BD123456789IN").strip() or "BD123456789IN",
+            "respond_by": respond_by,
+            "deadline_assumed": deadline_assumed,
+            "payment_id": payment_id,
+            "synthetic_payment_id": synthetic_payment_id,
+            "order_id": order_id,
+            "synthetic_order_id": synthetic_order_id,
+            "winnable": winnable_val,
         }
         valid_cases.append(case_item)
 
@@ -1820,7 +1997,7 @@ async def api_import_csv(request: Request, body: ImportDisputesRequest) -> dict[
     for item in valid_cases:
         disp_obj = RazorpayDispute(
             id=item["dispute_id"],
-            payment_id=f"pay_{secrets.token_hex(7)}",
+            payment_id=item["payment_id"],
             amount=item["amount_paise"],
             currency="INR",
             amount_deducted=item["amount_paise"],
@@ -1828,11 +2005,11 @@ async def api_import_csv(request: Request, body: ImportDisputesRequest) -> dict[
             reason_description=item["reason_description"],
             phase=DisputePhase.CHARGEBACK,
             status=DisputeStatus.OPEN,
-            respond_by=now + (5 * 86400),
+            respond_by=item["respond_by"],
             created_at=now,
         )
         ord_obj = Order(
-            id=f"order_{secrets.token_hex(7)}",
+            id=item["order_id"],
             amount=item["amount_paise"],
             customer_name=item["customer_name"],
             customer_email=item["customer_email"],
@@ -1846,29 +2023,46 @@ async def api_import_csv(request: Request, body: ImportDisputesRequest) -> dict[
         except (ValueError, KeyError):
             rc_val = ReasonClass.OTHER
 
+        gt_obj: GroundTruth | None = None
+        if item["winnable"] is not None:
+            gt_obj = GroundTruth(
+                reason_class=rc_val,
+                available_evidence=[],
+                winnable=item["winnable"],
+                rule_explanation="CSV specified winnability",
+                adversarial=AdversarialInfo(),
+            )
+
         full_case = DisputeCase(
             case_id=item["dispute_id"],
             dispute=disp_obj,
             order=ord_obj,
-            ground_truth=GroundTruth(
-                reason_class=rc_val,
-                available_evidence=[],
-                winnable=True,
-                rule_explanation="CSV imported dispute case",
-                adversarial=AdversarialInfo(),
-            ),
+            ground_truth=gt_obj,
+            metadata={
+                "source": "csv_import",
+                "provenance": "synthetic",
+                "is_synthetic": True,
+                "verified": False,
+                "imported_by": session["user"],
+                "deadline_assumed": item["deadline_assumed"],
+                "synthetic_payment_id": item["synthetic_payment_id"],
+                "synthetic_order_id": item["synthetic_order_id"],
+            },
         )
         (cases_dir / f"{item['dispute_id']}.json").write_text(
             json.dumps(full_case.model_dump(), indent=2), encoding="utf-8"
         )
         imported_count += 1
 
-    record_audit_event(
-        case_id="batch_csv_import",
-        action="import_disputes_csv",
-        actor=session["user"],
-        details={"imported_count": imported_count, "error_count": len(errors)},
-    )
+    try:
+        record_audit_event(
+            case_id="batch_csv_import",
+            action="import_disputes_csv",
+            actor=session["user"],
+            details={"imported_count": imported_count, "error_count": len(errors)},
+        )
+    except Exception as aud_err:
+        logger.error("Audit log failed for import_disputes_csv: %s", aud_err)
 
     return {
         "dry_run": False,
@@ -2109,6 +2303,6 @@ async def api_test_ai_connection(request: Request) -> dict[str, Any]:
         "status": "active_rules_fallback",
         "model": "deterministic_heuristics",
         "latency_ms": 1,
-        "message": "Deterministic rules-only classification engine active (zero hallucination guarantee).",
+        "message": "Deterministic rules-only classification engine active with fact verifiers.",
     }
 

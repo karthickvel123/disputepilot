@@ -79,6 +79,8 @@ class Settings:
     max_upload_bytes: int = 4 * 1024 * 1024
     disputes_cache_ttl: int = 30
     push_draft_on_process: bool = False
+    require_independent_approval: bool = False
+    cors_allowed_origins: str = ""
 
     # ---- derived -----------------------------------------------------------------
     @property
@@ -180,4 +182,6 @@ def load_settings() -> Settings:
         max_upload_bytes=int(_env("MAX_UPLOAD_BYTES", str(4 * 1024 * 1024))),
         disputes_cache_ttl=int(_env("DISPUTES_CACHE_TTL", "30")),
         push_draft_on_process=_flag("PUSH_DRAFT_ON_PROCESS"),
+        require_independent_approval=_flag("REQUIRE_INDEPENDENT_APPROVAL"),
+        cors_allowed_origins=_env("CORS_ALLOWED_ORIGINS"),
     )

@@ -8,7 +8,7 @@ import ReviewQueueView from './components/ReviewQueueView';
 import AuditLedgerView from './components/AuditLedgerView';
 import SettingsView from './components/SettingsView';
 import LoginModal from './components/LoginModal';
-import { getMe, logout, login, createDispute, getDashboardMetrics, getSettings } from './api';
+import { getMe, logout, login, register, createDispute, getDashboardMetrics, getSettings } from './api';
 
 export default function App() {
   const [user, setUser] = useState(null);

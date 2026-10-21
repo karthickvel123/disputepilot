@@ -390,12 +390,21 @@ class RazorpayGateway(DisputesGateway):
                     return resp
 
             except (httpx.ConnectError, httpx.ReadTimeout, httpx.WriteTimeout, httpx.NetworkError, httpx.TimeoutException):
+                if pre_retry_check is not None:
+                    updated_dispute = pre_retry_check()
+                    if updated_dispute is not None:
+                        return updated_dispute
                 if attempt == self.max_retries - 1:
                     raise
 
             # Exponential backoff before next attempt
             sleep_duration = self.backoff_factor * (2**attempt)
             time.sleep(sleep_duration)
+
+        if pre_retry_check is not None:
+            updated_dispute = pre_retry_check()
+            if updated_dispute is not None:
+                return updated_dispute
 
         if last_resp is not None:
             return last_resp

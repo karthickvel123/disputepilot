@@ -156,8 +156,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from disputepilot.web.api import configure_api
 from disputepilot.web.api import router as api_router
 
+cors_origins = (
+    [o.strip() for o in settings.cors_allowed_origins.split(",") if o.strip()]
+    if settings.cors_allowed_origins
+    else []
+)
 app.add_middleware(
     CORSMiddleware,
+    allow_origins=cors_origins,
     allow_origin_regex=r"https?://(localhost|127\.0\.0\.1)(:\d+)?|https://.*\.vercel\.app|https://.*\.onrender\.com",
     allow_credentials=True,
     allow_methods=["*"],
@@ -294,6 +300,12 @@ def _ensure_actionable(case: DisputeCase) -> None:
     """Live only: Razorpay rejects contest/accept unless the dispute is open and within deadline."""
     if settings.is_sim:
         return
+    meta = case.metadata or {}
+    if meta.get("is_synthetic") or meta.get("provenance") in ("synthetic", "unverified") or meta.get("source") in ("manual_merchant_creation", "csv_import"):
+        raise HTTPException(
+            status_code=400,
+            detail="Synthetic or unverified disputes cannot be submitted to live Razorpay.",
+        )
     d = case.dispute
     if d.status != DisputeStatus.OPEN:
         raise HTTPException(status_code=400, detail=f"Dispute is '{d.status.value}'; Razorpay only accepts a response while it is 'open'.")
@@ -826,6 +838,14 @@ async def submit_contest_action(
             detail="Payload hash mismatch. The content submitted does not match the approved payload.",
         )
 
+    if settings.require_independent_approval:
+        token_rec = approval_service.get_token_record(approval_token) if approval_service else None
+        if token_rec and (token_rec.approver == reviewer_name or token_rec.metadata.get("requester") == reviewer_name):
+            raise HTTPException(
+                status_code=403,
+                detail="Independent approval required: executor cannot be the same user who approved or requested the action.",
+            )
+
     try:
         if settings.is_sim:
             updated = _require_gateway().contest_dispute(
@@ -964,6 +984,15 @@ async def accept_dispute_action(
         )
 
     _ensure_actionable(case)
+
+    if settings.require_independent_approval:
+        token_rec = approval_service.get_token_record(approval_token) if approval_service else None
+        if token_rec and (token_rec.approver == reviewer_name or token_rec.metadata.get("requester") == reviewer_name):
+            raise HTTPException(
+                status_code=403,
+                detail="Independent approval required: executor cannot be the same user who approved or requested the action.",
+            )
+
     try:
         updated = _require_gateway().accept_dispute(
             dispute_id=case.dispute.id,

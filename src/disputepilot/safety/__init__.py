@@ -2,8 +2,10 @@
 
 from disputepilot.safety.card_scanner import (
     CardFinding,
+    extract_text_from_pdf_bytes,
     is_luhn_valid,
     redact_text,
+    scan_pdf_bytes,
     scan_text,
 )
 from disputepilot.safety.ingest import (
@@ -31,12 +33,14 @@ __all__ = [
     "IngestResult",
     "Vault",
     "detect_injection",
+    "extract_text_from_pdf_bytes",
     "get_vault",
     "ingest_document",
     "is_luhn_valid",
     "purge_vault",
     "redact_text",
     "rehydrate",
+    "scan_pdf_bytes",
     "scan_text",
     "tokenize_pii",
     "wrap_untrusted",

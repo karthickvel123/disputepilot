@@ -33,12 +33,22 @@ async function request(endpoint, options = {}) {
     window.dispatchEvent(new CustomEvent('auth:unauthorized'));
   }
 
-  const contentType = response.headers.get('content-type');
+  const contentType = response.headers.get('content-type') || '';
   let data = null;
-  if (contentType && contentType.includes('application/json')) {
+  if (contentType.includes('application/json')) {
     data = await response.json();
   } else {
-    data = { detail: await response.text() };
+    const rawText = await response.text();
+    if (rawText.trim().toLowerCase().startsWith('<!doctype') || rawText.trim().toLowerCase().startsWith('<html')) {
+      const deployErr = new Error(
+        `Backend API routing mismatch: Received HTML instead of JSON for '${endpoint}'. ` +
+        `Ensure VITE_API_BASE_URL is set in your environment pointing to the actual backend API server.`
+      );
+      deployErr.status = 502;
+      deployErr.data = { detail: deployErr.message };
+      throw deployErr;
+    }
+    data = { detail: rawText };
   }
 
   if (!response.ok) {
@@ -236,6 +246,13 @@ export async function registerUser({ username, password, full_name, role = 'revi
     setCsrfToken(data.csrf_token);
   }
   return data;
+}
+
+export async function register(usernameOrObj, password, full_name, role = 'reviewer') {
+  if (typeof usernameOrObj === 'object' && usernameOrObj !== null) {
+    return registerUser(usernameOrObj);
+  }
+  return registerUser({ username: usernameOrObj, password, full_name, role });
 }
 
 export async function changePassword({ old_password, new_password }) {
