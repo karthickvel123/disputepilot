@@ -83,92 +83,92 @@ export default function Navbar({
   }
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-slate-800 bg-slate-950/80 backdrop-blur-md">
+    <header className="sticky top-0 z-40 w-full border-b border-white/[0.06] bg-[#07090e]/80 backdrop-blur-xl">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         
         {/* Brand / Logo */}
-        <div className="flex items-center gap-3 cursor-pointer" onClick={onOpenLanding}>
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-cyan-400 p-[1.5px] shadow-lg shadow-indigo-500/25">
-            <div className="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
-              <Shield className="w-5 h-5 text-indigo-400" />
+        <div className="flex items-center gap-3 cursor-pointer group" onClick={onOpenLanding}>
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-500 to-cyan-400 p-[1px] shadow-sm">
+            <div className="w-full h-full bg-[#07090e] rounded-[7px] flex items-center justify-center">
+              <Shield className="w-4 h-4 text-indigo-400 group-hover:text-cyan-300 transition-colors" />
             </div>
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-heading text-lg font-bold tracking-tight text-white">DisputePilot</span>
-              <span className="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-500/15 text-indigo-400 border border-indigo-500/30">
-                AI REVIEWS
+              <span className="font-heading text-base font-bold tracking-tight text-white">DisputePilot</span>
+              <span className="text-[10px] font-mono font-medium px-1.5 py-0.2 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+                PRO
               </span>
             </div>
-            <p className="text-[11px] text-slate-400 font-sans hidden sm:block">Razorpay Dispute Defense</p>
+            <p className="text-[10px] text-slate-400 font-sans hidden sm:block">Razorpay Defense Console</p>
           </div>
         </div>
 
         {/* Navigation Tabs */}
         {user && (
-          <nav className="hidden md:flex items-center gap-1">
+          <nav className="hidden md:flex items-center gap-1 bg-white/[0.03] p-1 rounded-xl border border-white/[0.05]">
             <button
               id="nav-dashboard"
               onClick={() => setActiveTab('dashboard')}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition-colors ${
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                 activeTab === 'dashboard'
-                  ? 'bg-indigo-600/15 text-indigo-400 border border-indigo-500/30 shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
+                  ? 'bg-white/[0.08] text-white shadow-sm'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
               }`}
             >
-              <LayoutDashboard className="w-4 h-4" />
+              <LayoutDashboard className="w-3.5 h-3.5" />
               <span>Dashboard</span>
             </button>
 
             <button
               id="nav-disputes"
               onClick={() => setActiveTab('disputes')}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition-colors ${
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                 activeTab === 'disputes' || activeTab === 'detail'
-                  ? 'bg-indigo-600/15 text-indigo-400 border border-indigo-500/30 shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
+                  ? 'bg-white/[0.08] text-white shadow-sm'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
               }`}
             >
-              <FileText className="w-4 h-4" />
+              <FileText className="w-3.5 h-3.5" />
               <span>Worklist</span>
             </button>
 
             <button
               id="nav-review-queue"
               onClick={() => setActiveTab('review-queue')}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition-colors ${
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                 activeTab === 'review-queue'
-                  ? 'bg-indigo-600/15 text-indigo-400 border border-indigo-500/30 shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
+                  ? 'bg-white/[0.08] text-white shadow-sm'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
               }`}
             >
-              <ShieldCheck className="w-4 h-4" />
+              <ShieldCheck className="w-3.5 h-3.5" />
               <span>Review Queue</span>
             </button>
 
             <button
               id="nav-audit"
               onClick={() => setActiveTab('audit')}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition-colors ${
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                 activeTab === 'audit'
-                  ? 'bg-indigo-600/15 text-indigo-400 border border-indigo-500/30 shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
+                  ? 'bg-white/[0.08] text-white shadow-sm'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
               }`}
             >
-              <History className="w-4 h-4" />
+              <History className="w-3.5 h-3.5" />
               <span>Audit Ledger</span>
             </button>
 
             <button
               id="nav-settings"
               onClick={() => setActiveTab('settings')}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition-colors ${
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                 activeTab === 'settings'
-                  ? 'bg-indigo-600/15 text-indigo-400 border border-indigo-500/30 shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
+                  ? 'bg-white/[0.08] text-white shadow-sm'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
               }`}
             >
-              <Settings className="w-4 h-4" />
+              <Settings className="w-3.5 h-3.5" />
               <span>Settings</span>
             </button>
           </nav>
@@ -178,28 +178,28 @@ export default function Navbar({
         <div className="flex items-center gap-3">
           {/* Data Mode Pill */}
           <div
-            className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-mono font-medium border ${
+            className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono font-medium border ${
               isSim
-                ? 'bg-amber-500/10 text-amber-400 border-amber-500/30'
-                : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                ? 'bg-amber-500/10 text-amber-300 border-amber-500/20'
+                : 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20'
             }`}
             title={isSim ? "Operating in synthetic evaluation simulation mode" : "Connected to live Razorpay API"}
           >
-            <span className={`w-1.5 h-1.5 rounded-full ${isSim ? 'bg-amber-400 animate-pulse' : 'bg-emerald-400'}`}></span>
+            <span className={`w-1.5 h-1.5 rounded-full ${isSim ? 'bg-amber-400' : 'bg-emerald-400'}`}></span>
             <span>{isSim ? 'SIMULATION' : 'RAZORPAY LIVE'}</span>
           </div>
 
           {user ? (
-            <div className="flex items-center gap-3 pl-2 border-l border-slate-800 relative">
+            <div className="flex items-center gap-3 pl-2 border-l border-white/[0.08] relative">
               {/* Quick Simulate Dispute Button */}
               {onSimulateDispute && (
                 <button
                   type="button"
                   onClick={onSimulateDispute}
-                  className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-indigo-500/20 via-cyan-500/15 to-indigo-500/20 hover:from-indigo-500/30 hover:to-cyan-500/25 border border-indigo-500/40 text-indigo-200 text-xs font-semibold shadow-sm transition-all hover:scale-[1.02] cursor-pointer"
+                  className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/25 text-indigo-300 text-xs font-medium transition-colors cursor-pointer"
                   title="Generate a new realistic dispute to test automated AI triage in real time"
                 >
-                  <Sparkles className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
+                  <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
                   <span>+ Simulate Dispute</span>
                 </button>
               )}
@@ -209,7 +209,7 @@ export default function Navbar({
                 <button
                   id="btn-notifications"
                   onClick={() => setNotifOpen(!notifOpen)}
-                  className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-900/90 relative transition-colors cursor-pointer border border-transparent hover:border-slate-800"
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.05] relative transition-colors cursor-pointer border border-transparent"
                   title="Notifications"
                 >
                   <Bell className="w-4 h-4" />
@@ -300,10 +300,10 @@ export default function Navbar({
                 <button
                   id="btn-nav-quick-demo"
                   onClick={onQuickDemoLogin || (() => setActiveTab('dashboard'))}
-                  className="btn bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white font-semibold text-xs shadow-md shadow-indigo-500/25 flex items-center gap-1.5 hover:-translate-y-0.5 transition-all"
+                  className="btn btn-primary text-xs flex items-center gap-1.5"
                   title="Instant one-click access as Merchant Reviewer"
                 >
-                  <Sparkles className="w-3.5 h-3.5 text-cyan-200" />
+                  <Sparkles className="w-3.5 h-3.5 text-indigo-200" />
                   <span>1-Click Demo</span>
                 </button>
               )}

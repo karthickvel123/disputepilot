@@ -76,31 +76,31 @@ export default function DashboardView({ metrics, onSelectDispute, onNavigateToDi
   return (
     <div className="space-y-8 animate-fade-in pb-12">
       {/* Executive Header Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-800/80">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/[0.06]">
         <div>
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center gap-2.5 mb-1.5">
             <h2 className="font-heading text-2xl font-bold text-white tracking-tight">Payment Defense Operations</h2>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
               <span>LIVE TRIAGE</span>
             </span>
           </div>
-          <p className="text-xs text-slate-400">
-            Automated fact extraction, scheme rebuttal generation, and cryptographic token verification.
+          <p className="text-xs text-slate-400 max-w-2xl">
+            Autonomous fact extraction, scheme rebuttal generation, and cryptographic token verification.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           {onSimulateDispute && (
             <button
               id="btn-dash-simulate"
               disabled={simulating}
               onClick={handleSimulateClick}
-              className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-indigo-500/20 via-cyan-500/15 to-indigo-500/20 hover:from-indigo-500/30 hover:to-cyan-500/25 border border-indigo-500/40 text-indigo-200 text-xs font-semibold shadow-md transition-all flex items-center gap-2 cursor-pointer hover:scale-[1.02]"
+              className="btn btn-secondary text-xs flex items-center gap-1.5"
               title="Inject a realistic incoming chargeback webhook"
             >
-              <Zap className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
-              <span>{simulating ? 'Ingesting Webhook...' : '⚡ Simulate Inbound Dispute'}</span>
+              <Zap className="w-3.5 h-3.5 text-indigo-400" />
+              <span>{simulating ? 'Ingesting...' : 'Simulate Dispute'}</span>
             </button>
           )}
 
@@ -109,26 +109,26 @@ export default function DashboardView({ metrics, onSelectDispute, onNavigateToDi
             className="btn btn-secondary text-xs"
           >
             <Clock className="w-3.5 h-3.5 text-amber-400" />
-            <span>Urgent Queue ({metrics.urgent_disputes})</span>
+            <span>Urgent ({metrics.urgent_disputes})</span>
           </button>
         </div>
       </div>
 
       {/* Top Banner: Urgency Alert if any */}
       {metrics.urgent_disputes > 0 && (
-        <div className="p-4 rounded-xl bg-gradient-to-r from-amber-500/15 via-amber-500/10 to-transparent border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-lg shadow-amber-500/5">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400 flex-shrink-0">
-              <Clock className="w-5 h-5 animate-pulse" />
+        <div className="p-4 sm:p-5 rounded-2xl bg-amber-500/[0.06] border border-amber-500/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 flex-shrink-0">
+              <Clock className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="font-heading text-sm font-bold text-amber-200 flex items-center gap-2">
-                <span>{metrics.urgent_disputes} dispute{metrics.urgent_disputes > 1 ? 's' : ''} require immediate response!</span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30">
+              <h4 className="font-heading text-sm font-semibold text-amber-200 flex items-center gap-2">
+                <span>{metrics.urgent_disputes} dispute{metrics.urgent_disputes > 1 ? 's' : ''} require immediate response</span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-rose-500/15 text-rose-300 border border-rose-500/25">
                   CRITICAL SLA
                 </span>
               </h4>
-              <p className="text-xs text-amber-300/80">
+              <p className="text-xs text-slate-400 mt-0.5">
                 Disputes within the 48-hour deadline window will auto-forfeit liability to the cardholder if unanswered.
               </p>
             </div>
@@ -136,7 +136,7 @@ export default function DashboardView({ metrics, onSelectDispute, onNavigateToDi
           <button
             id="btn-view-urgent"
             onClick={() => onNavigateToDisputes('urgent')}
-            className="btn btn-secondary text-xs border-amber-500/40 text-amber-300 hover:bg-amber-500/20 whitespace-nowrap self-start sm:self-center"
+            className="btn btn-secondary text-xs border-amber-500/30 text-amber-300 hover:bg-amber-500/10 whitespace-nowrap self-start sm:self-center"
           >
             <span>Review Urgent Cases</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -144,191 +144,191 @@ export default function DashboardView({ metrics, onSelectDispute, onNavigateToDi
         </div>
       )}
 
-      {/* KPI Cards Grid */}
+      {/* KPI Cards Grid - Spacious & Clean */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {/* Card 1: Total & Open */}
-        <div className="glass-panel-premium card-sheen stat-accent-indigo p-5 hover:scale-[1.01] transition-transform">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Active Disputes</span>
-            <span className="p-2 rounded-xl bg-indigo-500/15 text-indigo-400 border border-indigo-500/30 shadow-md shadow-indigo-500/20">
+        <div className="glass-panel p-6 hover:border-white/[0.12] transition-colors">
+          <div className="flex items-center justify-between mb-3.5">
+            <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">Active Disputes</span>
+            <span className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-indigo-400">
               <FileText className="w-4 h-4" />
             </span>
           </div>
-          <div className="flex items-baseline gap-2 mb-2">
-            <span className="font-heading text-3xl sm:text-4xl font-extrabold text-white tracking-tight">{metrics.open_disputes}</span>
-            <span className="text-xs text-slate-400 font-medium">of {metrics.total_disputes} total</span>
+          <div className="flex items-baseline gap-2.5 mb-3">
+            <span className="font-heading text-3xl sm:text-4xl font-bold text-white tracking-tight">{metrics.open_disputes}</span>
+            <span className="text-xs text-slate-400">of {metrics.total_disputes} total</span>
           </div>
-          <div className="text-xs text-slate-400 flex items-center gap-1.5 pt-2.5 border-t border-slate-800/80">
-            <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse"></span>
-            <span><strong className="text-slate-200 font-semibold">{metrics.under_review}</strong> in bank scheme review</span>
+          <div className="text-xs text-slate-400 flex items-center gap-2 pt-3 border-t border-white/[0.06]">
+            <span className="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
+            <span><strong className="text-slate-200 font-medium">{metrics.under_review}</strong> in bank review</span>
           </div>
         </div>
 
         {/* Card 2: Value at Risk */}
-        <div className="glass-panel-premium card-sheen stat-accent-cyan p-5 hover:scale-[1.01] transition-transform">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Amount at Risk</span>
-            <span className="p-2 rounded-xl bg-cyan-500/15 text-cyan-400 border border-cyan-500/30 shadow-md shadow-cyan-500/20">
+        <div className="glass-panel p-6 hover:border-white/[0.12] transition-colors">
+          <div className="flex items-center justify-between mb-3.5">
+            <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">Amount at Risk</span>
+            <span className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-cyan-400">
               <IndianRupee className="w-4 h-4" />
             </span>
           </div>
-          <div className="flex items-baseline gap-2 mb-2">
-            <span className="font-heading text-3xl sm:text-4xl font-extrabold text-white tracking-tight font-mono">
+          <div className="flex items-baseline gap-2 mb-3">
+            <span className="font-heading text-3xl sm:text-4xl font-bold text-white tracking-tight font-mono">
               {formatRupees(metrics.total_amount_paise)}
             </span>
           </div>
-          <div className="text-xs text-slate-400 flex items-center justify-between pt-2.5 border-t border-slate-800/80">
-            <span className="flex items-center gap-1.5 text-emerald-400 font-semibold font-mono">
+          <div className="text-xs text-slate-400 flex items-center justify-between pt-3 border-t border-white/[0.06]">
+            <span className="flex items-center gap-1.5 text-emerald-400 font-mono font-medium">
               <CheckCircle2 className="w-3.5 h-3.5" />
               <span>{formatRupees(metrics.won_amount_paise)}</span>
             </span>
-            <span className="text-[11px] text-slate-400">won & protected</span>
+            <span className="text-slate-400">won & protected</span>
           </div>
         </div>
 
         {/* Card 3: Win Rate */}
-        <div className="glass-panel-premium card-sheen stat-accent-emerald p-5 hover:scale-[1.01] transition-transform">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-              Scheme Win Rate {isSimMode ? '(Simulated)' : ''}
+        <div className="glass-panel p-6 hover:border-white/[0.12] transition-colors">
+          <div className="flex items-center justify-between mb-3.5">
+            <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">
+              Win Rate {isSimMode ? '(Sim)' : ''}
             </span>
-            <span className="p-2 rounded-xl bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 shadow-md shadow-emerald-500/20">
+            <span className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-emerald-400">
               <TrendingUp className="w-4 h-4" />
             </span>
           </div>
-          <div className="flex items-baseline gap-2 mb-2">
-            <span className="font-heading text-3xl sm:text-4xl font-extrabold text-emerald-400 tracking-tight">
-              {metrics.win_rate_percent !== null && metrics.win_rate_percent !== undefined ? `${metrics.win_rate_percent}%` : 'No data yet'}
+          <div className="flex items-baseline gap-2 mb-3">
+            <span className="font-heading text-3xl sm:text-4xl font-bold text-emerald-400 tracking-tight">
+              {metrics.win_rate_percent !== null && metrics.win_rate_percent !== undefined ? `${metrics.win_rate_percent}%` : '—'}
             </span>
             {metrics.win_rate_percent !== null && metrics.win_rate_percent !== undefined && (
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
                 {isSimMode ? 'SIMULATED' : 'CLOSED'}
               </span>
             )}
           </div>
-          <div className="text-xs text-slate-400 flex items-center gap-2 pt-2.5 border-t border-slate-800/80">
-            <span className="text-emerald-400 font-semibold">{metrics.won} won</span>
+          <div className="text-xs text-slate-400 flex items-center gap-2 pt-3 border-t border-white/[0.06]">
+            <span className="text-emerald-400 font-medium">{metrics.won} won</span>
             <span>•</span>
-            <span className="text-rose-400 font-semibold">{metrics.lost} lost</span>
+            <span className="text-rose-400 font-medium">{metrics.lost} lost</span>
           </div>
         </div>
 
         {/* Card 4: Drafts Ready */}
-        <div className="glass-panel-premium card-sheen stat-accent-purple p-5 hover:scale-[1.01] transition-transform">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Pending Review</span>
-            <span className="p-2 rounded-xl bg-purple-500/15 text-purple-400 border border-purple-500/30 shadow-md shadow-purple-500/20">
+        <div className="glass-panel p-6 hover:border-white/[0.12] transition-colors">
+          <div className="flex items-center justify-between mb-3.5">
+            <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">Pending Review</span>
+            <span className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-purple-400">
               <Sparkles className="w-4 h-4" />
             </span>
           </div>
-          <div className="flex items-baseline gap-2 mb-2">
-            <span className="font-heading text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+          <div className="flex items-baseline gap-2 mb-3">
+            <span className="font-heading text-3xl sm:text-4xl font-bold text-white tracking-tight">
               {metrics.drafts_pending_review}
             </span>
-            <span className="text-xs text-slate-400 font-medium">AI drafts ready</span>
+            <span className="text-xs text-slate-400">drafts ready</span>
           </div>
-          <div className="text-xs text-slate-400 flex items-center gap-1.5 pt-2.5 border-t border-slate-800/80">
-            <span className="w-2 h-2 rounded-full bg-purple-400 animate-pulse"></span>
-            <span>Awaiting cryptographic sign-off</span>
+          <div className="text-xs text-slate-400 flex items-center gap-2 pt-3 border-t border-white/[0.06]">
+            <span className="w-1.5 h-1.5 rounded-full bg-purple-400"></span>
+            <span>Awaiting sign-off</span>
           </div>
         </div>
       </div>
 
-      {/* Metric Calibration Disclaimer */}
-      <div className="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 text-[11px] text-slate-400 flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-sm">
+      {/* Metric Calibration Discreet Disclaimer */}
+      <div className="px-1 text-[11px] text-slate-400 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <span className={`w-2 h-2 rounded-full ${isSimMode ? 'bg-amber-400 animate-pulse' : 'bg-cyan-400'}`}></span>
+          <span className={`w-1.5 h-1.5 rounded-full ${isSimMode ? 'bg-amber-400' : 'bg-cyan-400'}`}></span>
           <span>
-            <strong className="text-slate-300">{isSimMode ? '○ SIMULATION WORKSPACE METRICS' : '● LIVE RAZORPAY ENVIRONMENT'}:</strong> Win rates, recovery totals, and probability scores are {isSimMode ? 'derived from synthetic test fixtures' : 'uncalibrated prior heuristics'}. Actual dispute outcomes depend on bank scheme adjudication (Visa, Mastercard, RuPay).
+            {isSimMode ? 'Simulation mode metrics derived from test fixtures' : 'Live Razorpay environment'}. Dispute outcomes depend on scheme adjudication.
           </span>
         </div>
-        <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider whitespace-nowrap self-start sm:self-center">
-          Bank Scheme Adjudication
+        <span className="font-mono text-slate-400 uppercase tracking-wider">
+          Visa • Mastercard • RuPay
         </span>
       </div>
 
-      {/* Priority Dispute Action Queue */}
-      <div className="glass-panel-premium card-sheen p-6 border border-slate-800/90 shadow-xl">
+      {/* Priority Dispute Action Queue - Spacious Table */}
+      <div className="glass-panel p-6 sm:p-7">
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-2.5">
-            <ShieldAlert className="w-5 h-5 text-indigo-400" />
-            <h3 className="font-heading text-base font-bold text-white">Priority Dispute Action Queue</h3>
-            <span className="text-xs font-mono text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-full border border-indigo-500/20">
-              REAL-TIME TRIAGE
+            <ShieldAlert className="w-4 h-4 text-indigo-400" />
+            <h3 className="font-heading text-base font-semibold text-white">Priority Action Queue</h3>
+            <span className="text-[10px] font-mono text-indigo-300 bg-indigo-500/10 px-2 py-0.5 rounded-full border border-indigo-500/20">
+              REAL-TIME
             </span>
           </div>
           <button
             onClick={() => onNavigateToDisputes('all')}
-            className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 font-semibold group cursor-pointer"
+            className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 font-medium group cursor-pointer"
           >
-            <span>View Full Worklist</span>
+            <span>View All</span>
             <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
           </button>
         </div>
 
         {loadingRecent ? (
-          <div className="py-12 text-center text-slate-400 text-xs">
+          <div className="py-16 text-center text-slate-400 text-xs">
             <div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
-            Loading priority queue...
+            Loading queue...
           </div>
         ) : recentDisputes.length === 0 ? (
-          <div className="py-12 text-center text-slate-400 text-xs">
+          <div className="py-16 text-center text-slate-400 text-xs">
             No active disputes pending action.
           </div>
         ) : (
-          <div className="overflow-x-auto -mx-6 px-6">
+          <div className="overflow-x-auto -mx-6 sm:-mx-7 px-6 sm:px-7">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="border-b border-slate-800/90 text-slate-400 font-semibold uppercase tracking-wider text-[10px]">
-                  <th className="py-3 px-3">Dispute ID</th>
-                  <th className="py-3 px-3">Customer</th>
-                  <th className="py-3 px-3">Amount</th>
-                  <th className="py-3 px-3">Reason</th>
-                  <th className="py-3 px-3">SLA Status</th>
-                  <th className="py-3 px-3">Win Probability</th>
-                  <th className="py-3 px-3">AI Recommendation</th>
-                  <th className="py-3 px-3 text-right">Action</th>
+                <tr className="border-b border-white/[0.06] text-slate-400 font-medium text-[11px]">
+                  <th className="py-3 px-4 font-medium">Dispute ID</th>
+                  <th className="py-3 px-4 font-medium">Customer</th>
+                  <th className="py-3 px-4 font-medium">Amount</th>
+                  <th className="py-3 px-4 font-medium">Reason</th>
+                  <th className="py-3 px-4 font-medium">Deadline</th>
+                  <th className="py-3 px-4 font-medium">Win Confidence</th>
+                  <th className="py-3 px-4 font-medium">Recommendation</th>
+                  <th className="py-3 px-4 text-right font-medium">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/50">
+              <tbody className="divide-y divide-white/[0.04]">
                 {recentDisputes.map((item) => (
                   <tr
                     key={item.case_id}
                     onClick={() => onSelectDispute(item.case_id)}
                     className="modern-table-row cursor-pointer group"
                   >
-                    <td className="py-3.5 px-3 font-mono font-medium text-slate-200 group-hover:text-indigo-300">
+                    <td className="py-4 px-4 font-mono font-medium text-slate-200 group-hover:text-indigo-300">
                       {item.dispute_id || item.case_id}
                     </td>
-                    <td className="py-3.5 px-3">
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-[10px] font-bold text-slate-300 uppercase">
-                          {(item.customer_name || 'Customer').charAt(0)}
+                    <td className="py-4 px-4">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-6 h-6 rounded-full bg-white/[0.06] flex items-center justify-center text-[10px] font-bold text-slate-300 uppercase">
+                          {(item.customer_name || 'C').charAt(0)}
                         </div>
-                        <span className="text-slate-300 font-medium truncate max-w-[120px]">
-                          {item.customer_name || 'Verified Cardholder'}
+                        <span className="text-slate-300 font-medium truncate max-w-[130px]">
+                          {item.customer_name || 'Cardholder'}
                         </span>
                       </div>
                     </td>
-                    <td className="py-3.5 px-3 font-mono font-bold text-white">
+                    <td className="py-4 px-4 font-mono font-semibold text-white">
                       {item.amount_display}
                     </td>
-                    <td className="py-3.5 px-3 capitalize text-slate-300">
+                    <td className="py-4 px-4 capitalize text-slate-300">
                       {item.reason_class ? item.reason_class.replace(/_/g, ' ') : 'Chargeback'}
                     </td>
-                    <td className="py-3.5 px-3">
+                    <td className="py-4 px-4">
                       <span className={`px-2 py-0.5 rounded text-[11px] font-mono inline-flex items-center gap-1 ${
-                        item.urgency === 'critical' ? 'bg-rose-500/15 text-rose-300 border border-rose-500/30 animate-pulse' :
-                        item.urgency === 'urgent' ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30' :
-                        'bg-slate-800 text-slate-300'
+                        item.urgency === 'critical' ? 'bg-rose-500/15 text-rose-300 border border-rose-500/25' :
+                        item.urgency === 'urgent' ? 'bg-amber-500/15 text-amber-300 border border-amber-500/25' :
+                        'bg-white/[0.04] text-slate-300'
                       }`}>
                         <Clock className="w-3 h-3" />
                         <span>{item.hours_remaining}h left</span>
                       </span>
                     </td>
-                    <td className="py-3.5 px-3">
-                      <div className="flex items-center gap-2">
-                        <div className="w-14 h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                    <td className="py-4 px-4">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-16 h-1.5 bg-slate-800 rounded-full overflow-hidden">
                           <div
                             className={`h-full rounded-full ${
                               item.p_win >= 0.6 ? 'bg-emerald-400' : item.p_win >= 0.4 ? 'bg-amber-400' : 'bg-rose-400'
@@ -336,25 +336,25 @@ export default function DashboardView({ metrics, onSelectDispute, onNavigateToDi
                             style={{ width: `${Math.round(item.p_win * 100)}%` }}
                           ></div>
                         </div>
-                        <span className="font-mono text-[11px] text-slate-300 font-semibold">
+                        <span className="font-mono text-[11px] text-slate-300">
                           {Math.round(item.p_win * 100)}%
                         </span>
                       </div>
                     </td>
-                    <td className="py-3.5 px-3">
+                    <td className="py-4 px-4">
                       <span className={`badge ${
                         item.recommendation?.decision === 'contest' ? 'badge-won' : 'badge-lost'
                       }`}>
                         {item.recommendation?.decision?.toUpperCase()}
                       </span>
                     </td>
-                    <td className="py-3.5 px-3 text-right">
+                    <td className="py-4 px-4 text-right">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           onSelectDispute(item.case_id);
                         }}
-                        className="inline-flex items-center gap-1 text-xs text-indigo-400 hover:text-indigo-300 font-semibold group-hover:translate-x-0.5 transition-all cursor-pointer"
+                        className="inline-flex items-center gap-1 text-xs text-indigo-400 hover:text-indigo-300 font-medium cursor-pointer"
                       >
                         <span>Inspect</span>
                         <ArrowUpRight className="w-3.5 h-3.5" />
@@ -368,36 +368,36 @@ export default function DashboardView({ metrics, onSelectDispute, onNavigateToDi
         )}
       </div>
 
-      {/* Analytics Breakdown: Reason Codes & Quick Worklist */}
+      {/* Analytics Breakdown: Reason Codes & Autonomous Defense */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
         {/* Reason Code Distribution */}
-        <div className="glass-panel p-6 lg:col-span-1 flex flex-col justify-between">
+        <div className="glass-panel p-6 sm:p-7 lg:col-span-1 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-heading text-base font-bold text-white flex items-center gap-2">
+              <h3 className="font-heading text-base font-semibold text-white flex items-center gap-2">
                 <PieChart className="w-4 h-4 text-indigo-400" />
-                <span>Dispute Reason Categories</span>
+                <span>Dispute Categories</span>
               </h3>
             </div>
             <p className="text-xs text-slate-400 mb-5">
-              Distribution across primary bank dispute reason categories.
+              Breakdown across primary dispute reason classes.
             </p>
 
-            <div className="space-y-3.5">
+            <div className="space-y-4">
               {reasonList.map(([reason, count]) => {
                 const percent = Math.round((count / totalReasons) * 100);
                 return (
                   <div key={reason} className="space-y-1.5">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="font-medium text-slate-300 capitalize">
+                      <span className="text-slate-300 capitalize">
                         {reason.replace(/_/g, ' ')}
                       </span>
                       <span className="font-mono text-slate-400">{count} ({percent}%)</span>
                     </div>
-                    <div className="w-full h-2 bg-slate-900 rounded-full overflow-hidden">
+                    <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-gradient-to-r from-indigo-500 to-cyan-400 rounded-full transition-all duration-500"
+                        className="h-full bg-gradient-to-r from-indigo-500 to-cyan-400 rounded-full"
                         style={{ width: `${percent}%` }}
                       ></div>
                     </div>
@@ -407,86 +407,86 @@ export default function DashboardView({ metrics, onSelectDispute, onNavigateToDi
             </div>
           </div>
 
-          <div className="pt-6 mt-6 border-t border-slate-800/80">
+          <div className="pt-6 mt-6 border-t border-white/[0.06]">
             <button
               id="btn-goto-worklist"
               onClick={() => onNavigateToDisputes('all')}
               className="btn btn-secondary w-full text-xs"
             >
-              <span>Explore All Disputes in Worklist</span>
+              <span>Explore All in Worklist</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
 
         {/* Defense Workflow Summary */}
-        <div className="glass-panel p-6 lg:col-span-2">
+        <div className="glass-panel p-6 sm:p-7 lg:col-span-2">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-heading text-base font-bold text-white flex items-center gap-2">
+            <h3 className="font-heading text-base font-semibold text-white flex items-center gap-2">
               <ShieldAlert className="w-4 h-4 text-emerald-400" />
-              <span>Autonomous Defense Checklist</span>
+              <span>Defense Guardrails</span>
             </h3>
             <span className="text-xs font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-              ALL SYSTEMS ONLINE
+              ACTIVE
             </span>
           </div>
 
           <p className="text-xs text-slate-400 mb-6">
-            DisputePilot verifies every response before submission to maintain a 0% merchant compliance penalty record.
+            Multi-stage verification pipeline ensuring high scheme acceptance and compliance.
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
-              <div className="flex items-center gap-2 font-semibold text-xs text-slate-200 mb-1">
+            <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.06]">
+              <div className="flex items-center gap-2 font-medium text-xs text-slate-200 mb-1">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                 <span>Deterministic Fact Verifier</span>
               </div>
               <p className="text-slate-400 text-xs">
-                Extracts shipment tracking codes, invoice dates, and delivery confirmations with zero model hallucinations.
+                Extracts tracking codes, dates, and delivery confirmations with zero hallucinations.
               </p>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
-              <div className="flex items-center gap-2 font-semibold text-xs text-slate-200 mb-1">
+            <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.06]">
+              <div className="flex items-center gap-2 font-medium text-xs text-slate-200 mb-1">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                <span>PCI-DSS Card Number Shield</span>
+                <span>PCI-DSS Card Shield</span>
               </div>
               <p className="text-slate-400 text-xs">
-                Scans all incoming evidence attachments and drops any files containing full card PAN or CVV values.
+                Scans evidence attachments and drops any files containing full card PAN or CVV values.
               </p>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
-              <div className="flex items-center gap-2 font-semibold text-xs text-slate-200 mb-1">
+            <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.06]">
+              <div className="flex items-center gap-2 font-medium text-xs text-slate-200 mb-1">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                <span>Cryptographic Approval Gate</span>
+                <span>Cryptographic Gate</span>
               </div>
               <p className="text-slate-400 text-xs">
-                Tokens cryptographically bound to exact submission JSON payload hashes. Prevents altered payloads.
+                Tokens cryptographically bound to exact submission JSON payload hashes.
               </p>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
-              <div className="flex items-center gap-2 font-semibold text-xs text-slate-200 mb-1">
+            <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.06]">
+              <div className="flex items-center gap-2 font-medium text-xs text-slate-200 mb-1">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                <span>SHA-256 Tamper-Evident Ledger</span>
+                <span>SHA-256 Audit Chain</span>
               </div>
               <p className="text-slate-400 text-xs">
-                Every view, draft revision, token issuance, and submission is recorded in a verifiable hash chain.
+                Every view, draft revision, token issuance, and submission is immutably hashed.
               </p>
             </div>
           </div>
 
-          <div className="mt-6 pt-5 border-t border-slate-800/80 flex items-center justify-between">
+          <div className="mt-6 pt-5 border-t border-white/[0.06] flex items-center justify-between">
             <div className="text-xs text-slate-400">
-              Mode: <span className="font-mono text-indigo-400">{metrics.data_mode.toUpperCase()}</span> • 
-              LLM: <span className="font-mono text-emerald-400">{metrics.has_llm ? 'ACTIVE (GEMINI)' : 'SIMULATED'}</span>
+              Mode: <span className="font-mono text-indigo-300">{metrics.data_mode.toUpperCase()}</span> • 
+              LLM: <span className="font-mono text-emerald-400">{metrics.has_llm ? 'GEMINI' : 'SIMULATED'}</span>
             </div>
             <button
               onClick={() => onNavigateToDisputes('urgent')}
               className="btn btn-primary text-xs"
             >
-              <span>Triage High Priority Disputes</span>
+              <span>Triage Disputes</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>

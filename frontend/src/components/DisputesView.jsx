@@ -212,25 +212,25 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
   return (
     <div className="space-y-6 animate-fade-in pb-16">
       {/* Header and Action Controls */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-800/80 pb-5">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-white/[0.06] pb-5">
         <div>
-          <div className="flex items-center gap-2.5 mb-1">
-            <h2 className="font-heading text-2xl font-bold text-white tracking-tight">Dispute Triage Worklist</h2>
-            <span className="text-xs font-mono font-semibold px-2.5 py-0.5 rounded-full bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">
-              {total} active cases
+          <div className="flex items-center gap-2.5 mb-1.5">
+            <h2 className="font-heading text-2xl font-bold text-white tracking-tight">Dispute Worklist</h2>
+            <span className="text-xs font-mono font-medium px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+              {total} cases
             </span>
           </div>
           <p className="text-xs text-slate-400">
-            Real-time queue prioritized by scheme SLA response deadlines and AI win confidence.
+            Real-time triage queue prioritized by scheme SLA response deadlines and AI win confidence.
           </p>
         </div>
 
-        {/* Action Buttons: Create Dispute, Import CSV, Export CSV */}
+        {/* Action Buttons: Export, Import, New */}
         <div className="flex flex-wrap items-center gap-2.5">
           <a
             href={getDisputesExportUrl()}
             download="disputepilot_cases.csv"
-            className="btn btn-secondary text-xs flex items-center gap-1.5 hover:border-slate-700"
+            className="btn btn-secondary text-xs flex items-center gap-1.5"
             title="Export CSV"
           >
             <Download className="w-3.5 h-3.5" />
@@ -239,7 +239,7 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
 
           <button
             onClick={() => setImportModalOpen(true)}
-            className="btn btn-secondary text-xs flex items-center gap-1.5 hover:border-slate-700"
+            className="btn btn-secondary text-xs flex items-center gap-1.5"
           >
             <Upload className="w-3.5 h-3.5" />
             <span>Import CSV</span>
@@ -247,7 +247,7 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
 
           <button
             onClick={() => setCreateModalOpen(true)}
-            className="btn btn-primary text-xs flex items-center gap-1.5 shadow-md shadow-indigo-500/20"
+            className="btn btn-primary text-xs flex items-center gap-1.5"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>New Dispute</span>
@@ -256,7 +256,7 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
       </div>
 
       {bannerMessage && (
-        <div className="p-3.5 rounded-xl bg-indigo-500/15 border border-indigo-500/30 text-indigo-200 text-xs flex items-center justify-between gap-2 shadow-lg shadow-indigo-500/5 animate-fade-in">
+        <div className="p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-200 text-xs flex items-center justify-between gap-2 animate-fade-in">
           <div className="flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
             <span className="font-medium">{bannerMessage}</span>
@@ -269,8 +269,8 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
 
       {/* Filter and Search Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        {/* Filter Tabs */}
-        <div className="flex flex-wrap items-center gap-1.5">
+        {/* Segmented Filter Tabs */}
+        <div className="flex flex-wrap items-center gap-1 bg-white/[0.03] p-1 rounded-xl border border-white/[0.06]">
           {[
             { id: 'all', label: 'All Cases' },
             { id: 'urgent', label: 'Urgent (<48h)' },
@@ -283,10 +283,10 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
                 setStatusFilter(tab.id);
                 setPage(1);
               }}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
                 statusFilter === tab.id
-                  ? 'bg-indigo-600/25 text-indigo-300 border border-indigo-500/40 shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/70 border border-transparent'
+                  ? 'bg-white/[0.08] text-white shadow-sm'
+                  : 'text-slate-400 hover:text-slate-200'
               }`}
             >
               {tab.label}
@@ -305,7 +305,7 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
                 setReasonFilter(e.target.value);
                 setPage(1);
               }}
-              className="bg-slate-900/90 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-300 outline-none focus:border-indigo-500 cursor-pointer"
+              className="bg-[#0d1220] border border-white/[0.08] rounded-lg px-2.5 py-1.5 text-xs text-slate-300 outline-none focus:border-indigo-500 cursor-pointer"
             >
               <option value="all">All Reason Codes</option>
               <option value="item_not_received">Item Not Received</option>
@@ -337,7 +337,7 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
       </div>
 
       {/* Table Content */}
-      <div className="glass-panel-premium card-sheen overflow-hidden border border-slate-800/90 shadow-xl">
+      <div className="glass-panel overflow-hidden border border-white/[0.06] shadow-xl">
         {loading ? (
           <div className="py-20 text-center">
             <div className="w-7 h-7 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
@@ -358,18 +358,18 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="border-b border-slate-800/90 text-slate-400 font-semibold uppercase tracking-wider text-[10px]">
-                  <th className="py-3 px-4">Case & Dispute ID</th>
-                  <th className="py-3 px-4">Customer</th>
-                  <th className="py-3 px-4">Amount</th>
-                  <th className="py-3 px-4">Reason Class</th>
-                  <th className="py-3 px-4">Deadline Urgency</th>
-                  <th className="py-3 px-4">Win Confidence</th>
-                  <th className="py-3 px-4">AI Recommendation</th>
-                  <th className="py-3 px-4 text-right">Action</th>
+                <tr className="border-b border-white/[0.06] text-slate-400 font-medium text-[11px]">
+                  <th className="py-3.5 px-4 font-medium">Case & Dispute ID</th>
+                  <th className="py-3.5 px-4 font-medium">Customer</th>
+                  <th className="py-3.5 px-4 font-medium">Amount</th>
+                  <th className="py-3.5 px-4 font-medium">Reason Class</th>
+                  <th className="py-3.5 px-4 font-medium">Deadline Urgency</th>
+                  <th className="py-3.5 px-4 font-medium">Win Confidence</th>
+                  <th className="py-3.5 px-4 font-medium">AI Recommendation</th>
+                  <th className="py-3.5 px-4 text-right font-medium">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/50">
+              <tbody className="divide-y divide-white/[0.04]">
                 {items.map((item) => (
                   <tr
                     key={item.case_id}
@@ -377,7 +377,7 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
                     className="modern-table-row cursor-pointer group"
                   >
                     {/* Case & Dispute ID */}
-                    <td className="py-3.5 px-4">
+                    <td className="py-4 px-4">
                       <div className="font-mono font-medium text-slate-200 group-hover:text-indigo-300 transition-colors">
                         {item.case_id}
                       </div>
@@ -387,37 +387,37 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
                     </td>
 
                     {/* Customer */}
-                    <td className="py-3.5 px-4">
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-[10px] font-bold text-slate-300 uppercase">
-                          {(item.customer_name || 'Customer').charAt(0)}
+                    <td className="py-4 px-4">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-6 h-6 rounded-full bg-white/[0.06] flex items-center justify-center text-[10px] font-bold text-slate-300 uppercase">
+                          {(item.customer_name || 'C').charAt(0)}
                         </div>
-                        <span className="text-slate-300 font-medium truncate max-w-[120px]">
-                          {item.customer_name || 'Verified Cardholder'}
+                        <span className="text-slate-300 font-medium truncate max-w-[130px]">
+                          {item.customer_name || 'Cardholder'}
                         </span>
                       </div>
                     </td>
 
                     {/* Amount */}
-                    <td className="py-3.5 px-4 font-mono font-bold text-white">
+                    <td className="py-4 px-4 font-mono font-semibold text-white">
                       {item.amount_display}
                     </td>
 
                     {/* Reason Class */}
-                    <td className="py-3.5 px-4">
-                      <span className="font-mono text-[11px] px-2 py-0.5 rounded bg-slate-800/70 text-slate-300 border border-slate-700/60 capitalize">
+                    <td className="py-4 px-4">
+                      <span className="font-mono text-[11px] px-2 py-0.5 rounded bg-white/[0.04] text-slate-300 border border-white/[0.06] capitalize">
                         {item.reason_class ? item.reason_class.replace(/_/g, ' ') : 'Chargeback'}
                       </span>
                     </td>
 
                     {/* Deadline Urgency */}
-                    <td className="py-3.5 px-4">
+                    <td className="py-4 px-4">
                       {getUrgencyBadge(item.urgency, item.hours_remaining)}
                     </td>
 
                     {/* Win Probability */}
-                    <td className="py-3.5 px-4">
-                      <div className="flex items-center gap-2">
+                    <td className="py-4 px-4">
+                      <div className="flex items-center gap-2.5">
                         <div className="w-16 h-1.5 bg-slate-800 rounded-full overflow-hidden">
                           <div
                             className={`h-full rounded-full ${
@@ -430,27 +430,27 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
                             style={{ width: `${Math.round(item.p_win * 100)}%` }}
                           ></div>
                         </div>
-                        <span className="font-mono text-[11px] text-slate-300 font-semibold">
+                        <span className="font-mono text-[11px] text-slate-300">
                           {Math.round(item.p_win * 100)}%
                         </span>
                       </div>
                     </td>
 
                     {/* AI Recommendation */}
-                    <td className="py-3.5 px-4">
+                    <td className="py-4 px-4">
                       {getRecommendationBadge(item.recommendation)}
                     </td>
 
                     {/* Action Link */}
-                    <td className="py-3.5 px-4 text-right">
+                    <td className="py-4 px-4 text-right">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           onSelectCase(item.case_id);
                         }}
-                        className="inline-flex items-center gap-1 text-xs text-indigo-400 hover:text-indigo-300 group-hover:translate-x-0.5 transition-all font-semibold cursor-pointer"
+                        className="inline-flex items-center gap-1 text-xs text-indigo-400 hover:text-indigo-300 font-medium cursor-pointer"
                       >
-                        <span>Review</span>
+                        <span>Inspect</span>
                         <ArrowUpRight className="w-3.5 h-3.5" />
                       </button>
                     </td>
