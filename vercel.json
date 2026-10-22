@@ -1,9 +1,13 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "cd frontend && npm install && npm run build",
+  "buildCommand": "npm --prefix frontend install && npm --prefix frontend run build",
   "outputDirectory": "frontend/dist",
   "framework": "vite",
   "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://disputepilot.onrender.com/api/:path*"
+    },
     {
       "source": "/((?!api/).*)",
       "destination": "/index.html"
