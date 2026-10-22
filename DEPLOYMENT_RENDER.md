@@ -9,30 +9,34 @@ security, persistence, and integration limitations in `LIVE_SETUP.md` have been 
 Commit the project, including `Dockerfile` and this guide. Do not commit `.env`, API keys, passwords,
 customer evidence, or generated secrets.
 
-## 2. Create a Render web service
+## 2. Deploy via Render Blueprint or Web Service
 
+### Option A: Automatic Blueprint Deployment (Recommended for Demo)
+DisputePilot includes a `render.yaml` blueprint. In Render:
+1. Click **New +** → **Blueprint**.
+2. Select this repository.
+3. Render automatically provisions the Docker service with the persistent 1GB disk and configured environment variables (`APP_ENV=staging`, `DATA_MODE=sim`).
+4. Click **Apply**.
+5. Once deployed, reviewers can log in with:
+   - **Username**: `reviewer`
+   - **Password**: `password123`
+
+### Option B: Manual Web Service Setup
 1. In Render, choose **New → Web Service** and connect the GitHub repository.
-2. Choose **Docker** as the runtime; Render will build from `Dockerfile`.
+2. Choose **Docker** as the runtime; Render builds from `Dockerfile`.
 3. Set the following environment variables in the Render dashboard:
 
-   | Variable | Value |
-   |---|---|
-   | `APP_ENV` | `production` |
-   | `DATA_MODE` | `sim` |
-   | `COOKIE_SECURE` | `true` |
-   | `REVIEWER_USER` | A demo username you choose |
-   | `REVIEWER_PASSWORD_HASH` | Output from `python scripts/hash_password.py` |
-   | `SESSION_SECRET` | A unique random secret of at least 32 characters |
+   | Variable | Demo Showcase Value | Live Production Value |
+   |---|---|---|
+   | `APP_ENV` | `staging` | `production` |
+   | `DATA_MODE` | `sim` | `live` |
+   | `COOKIE_SECURE` | `true` | `true` |
+   | `REVIEWER_USER` | `reviewer` | A dedicated admin username |
+   | `REVIEWER_PASSWORD_HASH` | (omitted or demo) | Salted scrypt hash from `scripts/hash_password.py` |
+   | `SESSION_SECRET` | (auto-generated) | Cryptographic 32+ char hex secret |
 
-   Generate credentials locally with `python scripts/hash_password.py` and follow its prompts/output.
-   Set the resulting username/hash/secret in Render's environment settings, not in source control.
-   Production simulated mode does not fall back to the default `reviewer` / `password123` credentials;
-   if you omit these variables, login remains unavailable rather than exposing a known demo password.
-   If the script prints both the password hash and session secret, copy those values into the matching
-   environment variables. Keep the plaintext demo password only for your own demo access.
-
-4. Deploy and wait for the service to become healthy.
-5. Open the public service URL and sign in with the demo credentials you configured.
+4. Deploy and wait for the service to become healthy (`/api/v1/health`).
+5. Open the public service URL and sign in.
 
 ## 3. Verify the deployment
 

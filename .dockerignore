@@ -16,3 +16,9 @@ data/drafts/
 data/evidence_files/
 .env*
 !.env.example
+
+# Node and frontend build artifacts
+node_modules/
+frontend/node_modules/
+.vercel/
+frontend/.vercel/
