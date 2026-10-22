@@ -1,4 +1,4 @@
-.PHONY: test lint run run-sim eval sim smoke
+.PHONY: test lint run run-sim eval eval-real sim smoke
 
 test:
 	uv run pytest
@@ -17,6 +17,10 @@ smoke:
 
 eval:
 	uv run python -m disputepilot.evals.runner
+
+# Needs LLM_API_KEY (Gemini). Resumes from evals/real_llm_outputs.jsonl, so quota-limited runs can be repeated.
+eval-real:
+	uv run python -m disputepilot.evals.runner --real-llm
 
 sim:
 	uv run python -m disputepilot.sim.generate --n 150 --out data/cases

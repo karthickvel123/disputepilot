@@ -27,7 +27,7 @@ This step-by-step walkthrough script guides you through verifying DisputePilot's
 - **Dispute Amount:** ₹4,500.00 (450,000 paise)
 - **Reason Code:** `13.1` (*Item Not Received*)
 - **What to Observe:**
-  1. **Recommendation Card:** Engine recommends `CONTEST` with high estimated win probability (~90%) and positive expected value (EV = ₹3,800.00).
+  1. **Recommendation Card:** Engine recommends `CONTEST`; the card shows the computed win probability and expected value. The win probability is an uncalibrated heuristic prior, not a measured rate.
   2. **Evidence Checklist:** `shipping_proof`, `billing_proof`, and `cancellation_policy` are all marked **PRESENT** (green).
   3. **Rebuttal Letter Draft:** Notice the 4 clean sections (Summary, Timeline, Evidence Submitted, Conclusion). Every claim has an inline citation pill like `#fact_courier_tracking` or `#fact_delivery_timestamp`.
   4. **Deterministic Verifier Report:** Displays `Verifier: 0 sentence(s) removed. Remaining sentences cite verified facts.`.

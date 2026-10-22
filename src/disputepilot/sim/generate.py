@@ -33,10 +33,6 @@ def save_cases(cases: list[Any], out_dir: Path) -> None:
             with open(doc_path, "w", encoding="utf-8") as f:
                 f.write(doc.content)
 
-        # 3. Also write case.json inside the case folder for folder-based access
-        with open(case_folder / "case.json", "w", encoding="utf-8") as f:
-            json.dump(case_data, f, indent=2)
-
 
 def print_distribution_summary(cases: list[Any]) -> None:
     """Print label and adversarial distribution summary table to stdout."""

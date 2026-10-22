@@ -4,7 +4,7 @@
 
 DisputePilot helps Razorpay merchants respond to payment disputes (chargebacks) by triaging incoming claims, auditing supporting fulfillment evidence, and recommending whether to contest or accept liability. It drafts citation-grounded rebuttal letters where unsupported numbers, dates and IDs are stripped by a deterministic verifier against factual order and shipping records. Built with strict safety non-negotiables, DisputePilot requires cryptographically bound human approval before any dispute is contested or accepted.
 
-It now features a **high-conversion Landing Page, Analytics Dashboard, Evidence Locker, Rebuttal Studio, and Cryptographic Audit Chain Verifier** built with React + Vite, backed by an authenticated JSON REST API (`/api/v1`) with cryptographic CSRF protection and HMAC session management.
+The web app has a landing page, analytics dashboard, evidence locker, rebuttal studio and audit-chain verifier (React + Vite), served by a session-authenticated JSON API (`/api/v1`) with CSRF protection and HMAC-signed sessions.
 
 ---
 
@@ -27,12 +27,12 @@ make build-frontend
 # Or directly:
 cd frontend && npm install && npm run build && cd ..
 
-# 4. Run the complete test suite (293 tests passing)
+# 4. Run the test suite (offline, fake LLM)
 make test
 # Or on Windows (without make):
 uv run pytest
 
-# 5. Run the code linter (0 errors)
+# 5. Run the linter
 make lint
 # Or on Windows (without make):
 uv run ruff check src tests
@@ -136,6 +136,24 @@ Offline test mode runs `FakeLLMClient`, a regex and keyword matching harness wri
 
 ---
 
+## 🔁 Refreshing the evaluation
+
+The committed numbers in `evals/` and the table above were produced **before** a keyword-precision fix in
+`reasons.yaml`: the single words `fake` and `duplicate` were replaced by explicit phrases (`fake product`,
+`duplicate charge`, ...) because they produced four confidently wrong rule matches on the messy set. Those
+cases now abstain and go to the LLM or a human. The count of correct rule matches is unchanged, so the headline
+rules-only accuracy should stay at 6%, but coverage and the confidently-wrong count change.
+
+```bash
+make eval        # offline, regenerates evals/report.md and evals/results.json
+export LLM_API_KEY=...   # Gemini key
+make eval-real   # finishes the real-LLM sample; resumes from checkpoints
+```
+
+Run `make eval` and update the table before quoting any number from it.
+
+---
+
 ## 🧪 Razorpay Test-Mode Smoke Test
 
 To verify connectivity and test credentials against Razorpay's API without writing any data, run:
@@ -177,14 +195,11 @@ Before connecting DisputePilot to live Razorpay webhooks:
 
 ---
 
-## 📖 Key Documentation & Deliverables
+## 📖 Documentation
 
-- **[Final Independent Verification & Release Audit](FINAL_VERIFICATION_REPORT.md)**
-- **[Comprehensive Security & Architecture Audit Report](AUDIT_REPORT.md)**
-- **[Record of Applied Fixes & Hardening](FIXES_APPLIED.md)**
-- **[Security Regression Test Inventory](SECURITY_TESTS.md)**
-- **[Empirical Evaluation Report & Methodology](EVALUATION_REPORT.md)**
-- **[Razorpay AI Builders Demo Script & Interview Guide](RAZORPAY_AI_BUILDERS_DEMO.md)**
-- **[Production & Sandbox Deployment Guide](DEPLOYMENT.md)**
-- **[System Architecture Deep Dive](docs/ARCHITECTURE.md)**
-
+- [Demo walkthrough](DEMO.md): 5-minute scripted tour using the bundled synthetic cases
+- [Architecture](docs/ARCHITECTURE.md)
+- [Deployment, configuration and known limitations](docs/DEPLOYMENT.md)
+- [Operations runbook](docs/OPERATIONS_RUNBOOK.md)
+- [Evaluation report](evals/report.md): what each metric does and does not show
+- [Compliance notes](docs/compliance/): privacy policy, retention, customer data flow

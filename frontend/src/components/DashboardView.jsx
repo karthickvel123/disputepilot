@@ -19,6 +19,7 @@ import {
   Layers
 } from 'lucide-react';
 import { listDisputes } from '../api';
+import WorkflowGuide from './WorkflowGuide';
 
 export default function DashboardView({ metrics, onSelectDispute, onNavigateToDisputes, onSimulateDispute, isSimMode }) {
   const [recentDisputes, setRecentDisputes] = useState([]);
@@ -80,13 +81,13 @@ export default function DashboardView({ metrics, onSelectDispute, onNavigateToDi
         <div>
           <div className="flex items-center gap-2.5 mb-1.5">
             <h2 className="font-heading text-2xl font-bold text-white tracking-tight">Payment Defense Operations</h2>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-              <span>LIVE TRIAGE</span>
+            <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full border flex items-center gap-1.5 ${isSimMode ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'}`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${isSimMode ? 'bg-amber-400' : 'bg-emerald-400'}`}></span>
+              <span>{isSimMode ? 'SYNTHETIC DATA' : 'LIVE DATA'}</span>
             </span>
           </div>
           <p className="text-xs text-slate-400 max-w-2xl">
-            Autonomous fact extraction, scheme rebuttal generation, and cryptographic token verification.
+            Triage, evidence checks and grounded rebuttal drafts. Every submission needs a named human approval.
           </p>
         </div>
 
@@ -114,6 +115,8 @@ export default function DashboardView({ metrics, onSelectDispute, onNavigateToDi
         </div>
       </div>
 
+      <WorkflowGuide />
+
       {/* Top Banner: Urgency Alert if any */}
       {metrics.urgent_disputes > 0 && (
         <div className="p-4 sm:p-5 rounded-2xl bg-amber-500/[0.06] border border-amber-500/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -129,7 +132,7 @@ export default function DashboardView({ metrics, onSelectDispute, onNavigateToDi
                 </span>
               </h4>
               <p className="text-xs text-slate-400 mt-0.5">
-                Disputes within the 48-hour deadline window will auto-forfeit liability to the cardholder if unanswered.
+                Disputes close to their response deadline are forfeited to the cardholder if unanswered.
               </p>
             </div>
           </div>

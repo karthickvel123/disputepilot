@@ -9,7 +9,7 @@
   label fallback in the classifier metric; stale README figures.
 - Nothing here is observed revenue. Labels are simulator-derived; costs below are **illustrative assumptions**,
   not Razorpay fee schedules.
-- Tests: `uv run pytest -q` → **235 passed** (214 original + 21 new). Ruff clean on new files.
+- Tests: run `uv run pytest -q` locally for the current result.
 
 ## 1. Original baseline (same commands, reproduced)
 | Slice | n | Contest-all ₹ | Policy ₹ | Uplift ₹ |
