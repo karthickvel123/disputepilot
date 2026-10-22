@@ -428,7 +428,7 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
       {/* Overview Cards Row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {/* Card 1: Dispute & Payment Details */}
-        <div className="glass-panel-premium card-sheen p-5 border-t-2 border-t-indigo-500/80">
+        <div className="glass-panel-premium card-sheen stat-accent-indigo p-5">
           <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
             Financial Details
           </h4>
@@ -453,7 +453,7 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
         </div>
 
         {/* Card 2: Order & Customer Information */}
-        <div className="glass-panel-premium card-sheen p-5 border-t-2 border-t-cyan-500/80">
+        <div className="glass-panel-premium card-sheen stat-accent-cyan p-5">
           <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
             Order Verification
           </h4>
@@ -478,7 +478,7 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
         </div>
 
         {/* Card 3: AI Recommendation & Win Probability */}
-        <div className="glass-panel-premium card-sheen p-5 border-t-2 border-t-emerald-500/80">
+        <div className="glass-panel-premium card-sheen stat-accent-emerald p-5">
           <div className="flex items-center justify-between mb-3">
             <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
               AI Decision Copilot

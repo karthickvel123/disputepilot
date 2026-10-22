@@ -147,38 +147,38 @@ export default function DashboardView({ metrics, onSelectDispute, onNavigateToDi
       {/* KPI Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {/* Card 1: Total & Open */}
-        <div className="glass-panel-premium card-sheen p-5 border-t-2 border-t-indigo-500/80">
+        <div className="glass-panel-premium card-sheen stat-accent-indigo p-5 hover:scale-[1.01] transition-transform">
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Active Disputes</span>
-            <span className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 shadow-sm shadow-indigo-500/20">
+            <span className="p-2 rounded-xl bg-indigo-500/15 text-indigo-400 border border-indigo-500/30 shadow-md shadow-indigo-500/20">
               <FileText className="w-4 h-4" />
             </span>
           </div>
           <div className="flex items-baseline gap-2 mb-2">
-            <span className="font-heading text-3xl font-extrabold text-white tracking-tight">{metrics.open_disputes}</span>
+            <span className="font-heading text-3xl sm:text-4xl font-extrabold text-white tracking-tight">{metrics.open_disputes}</span>
             <span className="text-xs text-slate-400 font-medium">of {metrics.total_disputes} total</span>
           </div>
-          <div className="text-xs text-slate-400 flex items-center gap-1.5 pt-2 border-t border-slate-800/80">
+          <div className="text-xs text-slate-400 flex items-center gap-1.5 pt-2.5 border-t border-slate-800/80">
             <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse"></span>
-            <span><strong className="text-slate-200 font-semibold">{metrics.under_review}</strong> in bank review</span>
+            <span><strong className="text-slate-200 font-semibold">{metrics.under_review}</strong> in bank scheme review</span>
           </div>
         </div>
 
         {/* Card 2: Value at Risk */}
-        <div className="glass-panel-premium card-sheen p-5 border-t-2 border-t-cyan-500/80">
+        <div className="glass-panel-premium card-sheen stat-accent-cyan p-5 hover:scale-[1.01] transition-transform">
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Amount at Risk</span>
-            <span className="p-2 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 shadow-sm shadow-cyan-500/20">
+            <span className="p-2 rounded-xl bg-cyan-500/15 text-cyan-400 border border-cyan-500/30 shadow-md shadow-cyan-500/20">
               <IndianRupee className="w-4 h-4" />
             </span>
           </div>
           <div className="flex items-baseline gap-2 mb-2">
-            <span className="font-heading text-3xl font-extrabold text-white tracking-tight">
+            <span className="font-heading text-3xl sm:text-4xl font-extrabold text-white tracking-tight font-mono">
               {formatRupees(metrics.total_amount_paise)}
             </span>
           </div>
-          <div className="text-xs text-slate-400 flex items-center justify-between pt-2 border-t border-slate-800/80">
-            <span className="flex items-center gap-1 text-emerald-400 font-semibold">
+          <div className="text-xs text-slate-400 flex items-center justify-between pt-2.5 border-t border-slate-800/80">
+            <span className="flex items-center gap-1.5 text-emerald-400 font-semibold font-mono">
               <CheckCircle2 className="w-3.5 h-3.5" />
               <span>{formatRupees(metrics.won_amount_paise)}</span>
             </span>
@@ -187,26 +187,26 @@ export default function DashboardView({ metrics, onSelectDispute, onNavigateToDi
         </div>
 
         {/* Card 3: Win Rate */}
-        <div className="glass-panel-premium card-sheen p-5 border-t-2 border-t-emerald-500/80">
+        <div className="glass-panel-premium card-sheen stat-accent-emerald p-5 hover:scale-[1.01] transition-transform">
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
               Scheme Win Rate {isSimMode ? '(Simulated)' : ''}
             </span>
-            <span className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-sm shadow-emerald-500/20">
+            <span className="p-2 rounded-xl bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 shadow-md shadow-emerald-500/20">
               <TrendingUp className="w-4 h-4" />
             </span>
           </div>
           <div className="flex items-baseline gap-2 mb-2">
-            <span className="font-heading text-3xl font-extrabold text-emerald-400 tracking-tight">
+            <span className="font-heading text-3xl sm:text-4xl font-extrabold text-emerald-400 tracking-tight">
               {metrics.win_rate_percent !== null && metrics.win_rate_percent !== undefined ? `${metrics.win_rate_percent}%` : 'No data yet'}
             </span>
             {metrics.win_rate_percent !== null && metrics.win_rate_percent !== undefined && (
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
                 {isSimMode ? 'SIMULATED' : 'CLOSED'}
               </span>
             )}
           </div>
-          <div className="text-xs text-slate-400 flex items-center gap-2 pt-2 border-t border-slate-800/80">
+          <div className="text-xs text-slate-400 flex items-center gap-2 pt-2.5 border-t border-slate-800/80">
             <span className="text-emerald-400 font-semibold">{metrics.won} won</span>
             <span>•</span>
             <span className="text-rose-400 font-semibold">{metrics.lost} lost</span>
@@ -214,22 +214,22 @@ export default function DashboardView({ metrics, onSelectDispute, onNavigateToDi
         </div>
 
         {/* Card 4: Drafts Ready */}
-        <div className="glass-panel-premium card-sheen p-5 border-t-2 border-t-purple-500/80">
+        <div className="glass-panel-premium card-sheen stat-accent-purple p-5 hover:scale-[1.01] transition-transform">
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Pending Review</span>
-            <span className="p-2 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20 shadow-sm shadow-purple-500/20">
+            <span className="p-2 rounded-xl bg-purple-500/15 text-purple-400 border border-purple-500/30 shadow-md shadow-purple-500/20">
               <Sparkles className="w-4 h-4" />
             </span>
           </div>
           <div className="flex items-baseline gap-2 mb-2">
-            <span className="font-heading text-3xl font-extrabold text-white tracking-tight">
+            <span className="font-heading text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
               {metrics.drafts_pending_review}
             </span>
             <span className="text-xs text-slate-400 font-medium">AI drafts ready</span>
           </div>
-          <div className="text-xs text-slate-400 flex items-center gap-1.5 pt-2 border-t border-slate-800/80">
-            <span className="w-2 h-2 rounded-full bg-purple-400"></span>
-            <span>Awaiting cryptographic token sign-off</span>
+          <div className="text-xs text-slate-400 flex items-center gap-1.5 pt-2.5 border-t border-slate-800/80">
+            <span className="w-2 h-2 rounded-full bg-purple-400 animate-pulse"></span>
+            <span>Awaiting cryptographic sign-off</span>
           </div>
         </div>
       </div>

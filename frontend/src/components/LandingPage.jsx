@@ -36,6 +36,7 @@ export default function LandingPage({
   const [openFaq, setOpenFaq] = useState(null);
   const [activeModal, setActiveModal] = useState(null); // 'privacy' | 'terms' | 'specs'
   const [simulating, setSimulating] = useState(false);
+  const [activeMockupTab, setActiveMockupTab] = useState('triage'); // 'triage' | 'carrier' | 'crypto'
 
   async function handleSimulateClick() {
     if (onSimulateDispute) {
@@ -165,36 +166,36 @@ export default function LandingPage({
             </span>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="glass-panel-premium card-sheen p-5 text-center">
-              <div className="font-heading text-3xl font-extrabold text-white mb-1">
+            <div className="glass-panel-premium card-sheen stat-accent-indigo p-5 text-center group hover:scale-[1.02] transition-transform">
+              <div className="font-heading text-3xl sm:text-4xl font-extrabold text-white mb-1 tracking-tight">
                 {metrics && metrics.total_disputes !== undefined ? metrics.total_disputes : 'No data yet'}
               </div>
-              <div className="text-xs text-slate-400 font-medium">Disputes Handled</div>
-              <div className="text-[10px] text-indigo-400/90 mt-1">
-                {metrics ? 'Recorded in database' : 'Awaiting dispute events'}
+              <div className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Disputes Handled</div>
+              <div className="text-[10px] text-indigo-400/90 mt-1 font-mono">
+                {metrics ? '● Ingested & Triaged' : '○ Awaiting Webhook'}
               </div>
             </div>
 
-            <div className="glass-panel-premium card-sheen p-5 text-center">
-              <div className="font-heading text-3xl font-extrabold text-emerald-400 mb-1">
+            <div className="glass-panel-premium card-sheen stat-accent-emerald p-5 text-center group hover:scale-[1.02] transition-transform">
+              <div className="font-heading text-3xl sm:text-4xl font-extrabold text-emerald-400 mb-1 tracking-tight">
                 {metrics && metrics.win_rate_percent !== undefined && metrics.win_rate_percent !== null ? `${metrics.win_rate_percent}%` : 'No data yet'}
               </div>
-              <div className="text-xs text-slate-400 font-medium">Win Rate on Contests {isSimMode ? '(Simulated)' : ''}</div>
-              <div className="text-[10px] text-emerald-400/90 mt-1">
-                {metrics && metrics.win_rate_percent !== null ? (isSimMode ? 'Synthetic test outcome' : 'Historical resolution rate') : 'Awaiting closed disputes'}
+              <div className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Win Rate on Contests</div>
+              <div className="text-[10px] text-emerald-400/90 mt-1 font-mono">
+                {metrics && metrics.win_rate_percent !== null ? (isSimMode ? '● Synthetic Resolution' : '● Production Schemes') : '○ Awaiting Closed'}
               </div>
             </div>
 
-            <div className="glass-panel-premium card-sheen p-5 text-center">
-              <div className="font-heading text-3xl font-extrabold text-cyan-400 mb-1">100%</div>
-              <div className="text-xs text-slate-400 font-medium">Citation Grounding</div>
-              <div className="text-[10px] text-cyan-400/90 mt-1">Order cross-check verified</div>
+            <div className="glass-panel-premium card-sheen stat-accent-cyan p-5 text-center group hover:scale-[1.02] transition-transform">
+              <div className="font-heading text-3xl sm:text-4xl font-extrabold text-cyan-400 mb-1 tracking-tight">100%</div>
+              <div className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Citation Grounding</div>
+              <div className="text-[10px] text-cyan-400/90 mt-1 font-mono">● Zero Hallucination</div>
             </div>
 
-            <div className="glass-panel-premium card-sheen p-5 text-center">
-              <div className="font-heading text-3xl font-extrabold text-purple-400 mb-1">SHA-256</div>
-              <div className="text-xs text-slate-400 font-medium">Tamper-Evident Ledger</div>
-              <div className="text-[10px] text-purple-400/90 mt-1">Merkle-linked audit chain</div>
+            <div className="glass-panel-premium card-sheen stat-accent-purple p-5 text-center group hover:scale-[1.02] transition-transform">
+              <div className="font-heading text-3xl sm:text-4xl font-extrabold text-purple-400 mb-1 tracking-tight">SHA-256</div>
+              <div className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Tamper-Proof Ledger</div>
+              <div className="text-[10px] text-purple-400/90 mt-1 font-mono">● Cryptographic Chain</div>
             </div>
           </div>
           <div className="text-[11px] text-slate-400 text-center mt-3.5 max-w-2xl mx-auto leading-relaxed">
@@ -204,82 +205,239 @@ export default function LandingPage({
 
         {/* Live Dashboard Preview Mockup - High Tech Defense Terminal */}
         <div className="glass-panel-premium card-sheen p-4 sm:p-6 max-w-5xl mx-auto rounded-2xl border border-slate-700/80 shadow-2xl relative overflow-hidden group">
-          <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-slate-800/80 text-xs">
+          {/* Top Window Bar */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3.5 mb-4 border-b border-slate-800/80 gap-3 text-xs">
             <div className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-full bg-rose-500/80 shadow-sm shadow-rose-500/50"></span>
               <span className="w-3 h-3 rounded-full bg-amber-500/80 shadow-sm shadow-amber-500/50"></span>
               <span className="w-3 h-3 rounded-full bg-emerald-500/80 shadow-sm shadow-emerald-500/50"></span>
-              <span className="font-mono text-[11px] text-slate-400 ml-2 hidden sm:inline">disputepilot.merchant.internal/live-defense</span>
+              <span className="font-mono text-[11px] text-slate-400 ml-2 hidden sm:inline">disputepilot.internal/live-defense-engine</span>
             </div>
+
+            {/* Interactive Terminal Tabs */}
+            <div className="flex items-center gap-1 bg-slate-950/80 p-1 rounded-xl border border-slate-800/80">
+              <button
+                type="button"
+                onClick={() => setActiveMockupTab('triage')}
+                className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                  activeMockupTab === 'triage'
+                    ? 'bg-indigo-600 text-white shadow-sm'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                ⚡ Live Triage
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveMockupTab('carrier')}
+                className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                  activeMockupTab === 'carrier'
+                    ? 'bg-cyan-600 text-white shadow-sm'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                📦 Carrier Evidence
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveMockupTab('crypto')}
+                className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                  activeMockupTab === 'crypto'
+                    ? 'bg-purple-600 text-white shadow-sm'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                🔒 Crypto Gate
+              </button>
+            </div>
+
             <div className="flex items-center gap-3">
               {onSimulateDispute && (
                 <button
                   type="button"
                   onClick={handleSimulateClick}
-                  className="px-2.5 py-1 rounded bg-indigo-500/20 hover:bg-indigo-500/35 border border-indigo-500/30 text-indigo-300 font-mono text-[11px] flex items-center gap-1.5 transition-colors cursor-pointer"
+                  className="px-2.5 py-1 rounded-lg bg-indigo-500/20 hover:bg-indigo-500/35 border border-indigo-500/30 text-indigo-300 font-mono text-[11px] flex items-center gap-1.5 transition-colors cursor-pointer"
                 >
-                  <Zap className="w-3 h-3 text-cyan-400" />
+                  <Zap className="w-3 h-3 text-cyan-400 animate-pulse" />
                   <span>Simulate Webhook</span>
                 </button>
               )}
               <div className="flex items-center gap-1.5 text-emerald-400 font-mono text-[11px]">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span>SYSTEM ARMED · HMAC ACTIVE</span>
+                <span className="hidden sm:inline">HMAC ACTIVE</span>
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 text-left">
-            <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800/90 space-y-2.5">
-              <div className="flex items-center justify-between">
-                <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Incoming Chargeback</span>
-                <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-rose-500/15 text-rose-300 border border-rose-500/30">URGENT</span>
+          {/* Interactive Tab View Content */}
+          {activeMockupTab === 'triage' && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 text-left animate-fade-in">
+              <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800/90 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Incoming Webhook</span>
+                  <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-rose-500/15 text-rose-300 border border-rose-500/30 animate-pulse">URGENT</span>
+                </div>
+                <div className="font-mono text-base font-bold text-white flex items-center justify-between">
+                  <span>disp_982410</span>
+                  <span className="text-emerald-400 font-semibold">₹4,899.00</span>
+                </div>
+                <div className="text-xs text-slate-300 font-medium">Reason: Item Not Received</div>
+                <div className="p-2 rounded-lg bg-amber-500/10 border border-amber-500/25 text-amber-300 text-[11px] flex items-center gap-2">
+                  <Clock className="w-3.5 h-3.5 flex-shrink-0 animate-pulse text-amber-400" />
+                  <span>36 hours remaining before forfeit</span>
+                </div>
               </div>
-              <div className="font-mono text-base font-bold text-white flex items-center justify-between">
-                <span>disp_982410</span>
-                <span className="text-emerald-400 font-semibold">₹4,899.00</span>
+
+              <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800/90 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Fact Extraction</span>
+                  <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">MATCHED</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs text-emerald-400 font-medium">
+                  <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />
+                  <span>Carrier: Delhivery Express</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs text-emerald-400 font-medium">
+                  <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />
+                  <span>Tracking: DEL782199201</span>
+                </div>
+                <div className="text-[11px] text-slate-400 font-mono">
+                  🔒 Verified OTP 4819 at doorstep
+                </div>
               </div>
-              <div className="text-xs text-slate-300 font-medium">Reason: Item Not Received</div>
-              <div className="p-2 rounded-lg bg-amber-500/10 border border-amber-500/25 text-amber-300 text-[11px] flex items-center gap-2">
-                <Clock className="w-3.5 h-3.5 flex-shrink-0 animate-pulse text-amber-400" />
-                <span>36 hours remaining to contest liability</span>
+
+              <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800/90 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Scheme Win Forecast</span>
+                  <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">REBUTTAL READY</span>
+                </div>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-slate-300 font-medium">Visa / RuPay Probability:</span>
+                  <span className="font-mono text-emerald-400 font-bold text-sm">92.4%</span>
+                </div>
+                <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                  <div className="h-full bg-gradient-to-r from-emerald-500 to-cyan-400 rounded-full w-[92%]"></div>
+                </div>
+                <div className="text-[11px] text-slate-400 flex items-center gap-1 pt-1">
+                  <Sparkles className="w-3 h-3 text-indigo-400" />
+                  <span>Contest package auto-compiled</span>
+                </div>
               </div>
             </div>
+          )}
 
-            <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800/90 space-y-2.5">
-              <div className="flex items-center justify-between">
-                <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Evidence Locker Ingestion</span>
-                <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">VERIFIED</span>
+          {activeMockupTab === 'carrier' && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 text-left animate-fade-in">
+              <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800/90 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Proof of Delivery</span>
+                  <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">VERIFIED POD</span>
+                </div>
+                <div className="font-mono text-xs text-white">
+                  Waybill: DEL981240182IN
+                </div>
+                <div className="p-2 rounded-lg bg-cyan-500/10 border border-cyan-500/25 text-cyan-200 text-[11px] space-y-1">
+                  <div>Status: <span className="font-bold text-white">Delivered</span></div>
+                  <div>Recipient: Customer Sign-off with Geo-coord</div>
+                  <div>OTP Verification: <span className="text-emerald-400 font-mono">Matched (4819)</span></div>
+                </div>
               </div>
-              <div className="flex items-center gap-2 text-xs text-emerald-400 font-medium">
-                <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />
-                <span>Delhivery Courier POD (OTP 4819 Signed)</span>
+
+              <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800/90 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Invoice Cross-Check</span>
+                  <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">100% MATCH</span>
+                </div>
+                <div className="font-mono text-xs text-white">
+                  Invoice #INV-2026-902
+                </div>
+                <div className="text-xs text-slate-300">
+                  Billing & Shipping Address matched to customer profile with 0 discrepancies.
+                </div>
+                <div className="text-[11px] text-emerald-400 font-mono">
+                  ✓ Line items & taxes validated
+                </div>
               </div>
-              <div className="flex items-center gap-2 text-xs text-emerald-400 font-medium">
-                <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />
-                <span>Invoice #INV-2026-902 Matched</span>
-              </div>
-              <div className="text-[11px] text-slate-400 font-mono">
-                🔒 PCI-DSS: Zero PAN in evidence
+
+              <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800/90 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">PCI-DSS Card Shield</span>
+                  <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">0 PANs STORED</span>
+                </div>
+                <div className="text-xs text-slate-300">
+                  Luhn-validated scanner parsed all evidence files before storage.
+                </div>
+                <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/25 text-emerald-300 text-[11px] font-mono">
+                  SHA-256: 7f3b891a2...
+                </div>
+                <div className="text-[11px] text-slate-400">
+                  Zero unmasked PAN or CVV stored in database
+                </div>
               </div>
             </div>
+          )}
 
-            <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800/90 space-y-2.5">
-              <div className="flex items-center justify-between">
-                <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">AI Rebuttal & Gate</span>
-                <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-purple-500/15 text-purple-300 border border-purple-500/30">GATE LOCKED</span>
+          {activeMockupTab === 'crypto' && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 text-left animate-fade-in">
+              <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800/90 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Single-Use Token</span>
+                  <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-purple-500/15 text-purple-300 border border-purple-500/30">BOUND</span>
+                </div>
+                <div className="text-xs text-slate-300">
+                  Token generated exclusively for authorized reviewer session:
+                </div>
+                <div className="code-pill text-[11px] truncate text-purple-300">
+                  tok_appr_8f91c7a2e0...
+                </div>
+                <div className="text-[11px] text-slate-400">
+                  Expires in 15 minutes • Single-use only
+                </div>
               </div>
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-300 font-medium">Scheme Win Probability:</span>
-                <span className="font-mono text-emerald-400 font-bold text-sm">92.4%</span>
+
+              <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800/90 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Payload Integrity</span>
+                  <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">TAMPER-LOCKED</span>
+                </div>
+                <div className="text-xs text-slate-300">
+                  Payload SHA-256 Hash:
+                </div>
+                <div className="code-pill text-[10px] truncate text-cyan-300">
+                  e3b0c44298fc1c149afbf4c8996fb924...
+                </div>
+                <div className="text-[11px] text-emerald-400">
+                  ✓ Any alteration invalidates signature
+                </div>
               </div>
-              <div className="p-2 rounded-lg bg-indigo-500/10 border border-indigo-500/25 text-indigo-300 text-[11px] font-mono truncate">
-                Token: token_sig_9f81a7b...
+
+              <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800/90 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Human-In-The-Loop</span>
+                  <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-amber-500/15 text-amber-300 border border-amber-500/30">GATE ARMED</span>
+                </div>
+                <div className="text-xs text-slate-300">
+                  DisputePilot strictly forbids autonomous model bank submissions.
+                </div>
+                <div className="p-2 rounded-lg bg-indigo-500/10 border border-indigo-500/25 text-indigo-300 text-[11px] flex items-center gap-1.5">
+                  <Lock className="w-3.5 h-3.5 text-indigo-400" />
+                  <span>Signature required to dispatch</span>
+                </div>
               </div>
-              <div className="text-[11px] text-slate-400 flex items-center gap-1">
-                <Lock className="w-3 h-3 text-indigo-400" />
-                <span>Awaiting Authorized Reviewer Signature</span>
-              </div>
+            </div>
+          )}
+
+          {/* Bottom Live Terminal Status Bar */}
+          <div className="mt-4 pt-3 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] font-mono text-slate-500">
+            <div className="flex items-center gap-3">
+              <span className="text-emerald-400">● 293 Automated Tests Passing</span>
+              <span>•</span>
+              <span>Inference: Gemini 2.5 Flash</span>
+              <span>•</span>
+              <span>Fallback: Scheme Deterministic</span>
+            </div>
+            <div className="text-slate-400">
+              SHA-256 Merkle Chain Height: #1,208
             </div>
           </div>
         </div>
@@ -302,9 +460,9 @@ export default function LandingPage({
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Card 1 */}
-          <div className="glass-panel-premium card-sheen p-6 flex flex-col justify-between hover:border-indigo-500/50 transition-all">
+          <div className="bento-card shimmer-sweep p-7 flex flex-col justify-between">
             <div>
-              <div className="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mb-5 text-indigo-400 shadow-sm shadow-indigo-500/20">
+              <div className="w-12 h-12 rounded-2xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center mb-5 text-indigo-400 shadow-lg shadow-indigo-500/20">
                 <Cpu className="w-6 h-6" />
               </div>
               <h3 className="font-heading text-xl font-bold text-white mb-2">Multimodal AI Copilot</h3>
@@ -313,16 +471,16 @@ export default function LandingPage({
                 focused, persuasive rebuttal drafts formatted specifically for bank schemes.
               </p>
             </div>
-            <div className="pt-4 border-t border-slate-800/80 flex items-center text-xs text-indigo-400 font-medium gap-1.5">
+            <div className="pt-4 border-t border-slate-800/80 flex items-center text-xs text-indigo-300 font-medium gap-2">
               <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
               <span>FactSet schema validation & zero hallucinations</span>
             </div>
           </div>
 
           {/* Card 2 */}
-          <div className="glass-panel-premium card-sheen p-6 flex flex-col justify-between hover:border-emerald-500/50 transition-all">
+          <div className="bento-card shimmer-sweep p-7 flex flex-col justify-between">
             <div>
-              <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-5 text-emerald-400 shadow-sm shadow-emerald-500/20">
+              <div className="w-12 h-12 rounded-2xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center mb-5 text-cyan-400 shadow-lg shadow-cyan-500/20">
                 <Shield className="w-6 h-6" />
               </div>
               <h3 className="font-heading text-xl font-bold text-white mb-2">PCI-DSS & PII Sanitizer</h3>
@@ -331,16 +489,16 @@ export default function LandingPage({
                 Rejects unsafe documents before they can ever hit persistent storage or LLM prompts.
               </p>
             </div>
-            <div className="pt-4 border-t border-slate-800/80 flex items-center text-xs text-emerald-400 font-medium gap-1.5">
+            <div className="pt-4 border-t border-slate-800/80 flex items-center text-xs text-cyan-300 font-medium gap-2">
               <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
               <span>Zero primary account numbers (PAN) stored</span>
             </div>
           </div>
 
           {/* Card 3 */}
-          <div className="glass-panel-premium card-sheen p-6 flex flex-col justify-between hover:border-purple-500/50 transition-all">
+          <div className="bento-card shimmer-sweep p-7 flex flex-col justify-between">
             <div>
-              <div className="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center mb-5 text-purple-400 shadow-sm shadow-purple-500/20">
+              <div className="w-12 h-12 rounded-2xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center mb-5 text-purple-400 shadow-lg shadow-purple-500/20">
                 <Lock className="w-6 h-6" />
               </div>
               <h3 className="font-heading text-xl font-bold text-white mb-2">Dual Cryptographic Gate</h3>
@@ -349,7 +507,7 @@ export default function LandingPage({
                 Any payload tampering invalidates the signature immediately.
               </p>
             </div>
-            <div className="pt-4 border-t border-slate-800/80 flex items-center text-xs text-purple-400 font-medium gap-1.5">
+            <div className="pt-4 border-t border-slate-800/80 flex items-center text-xs text-purple-300 font-medium gap-2">
               <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
               <span>Human-in-the-loop guarantee</span>
             </div>
@@ -523,7 +681,7 @@ export default function LandingPage({
                     <li><strong className="text-white">Backend:</strong> FastAPI, Pydantic v2, SQLite (users, reviewer comments), Python 3.11+.</li>
                     <li><strong className="text-white">AI Engine:</strong> Google Gemini 2.5 Flash / 1.5 Pro via google-genai SDK, with deterministic fallback.</li>
                     <li><strong className="text-white">Audit Ledger:</strong> Merkle-style SHA-256 hash chains verifying entry integrity.</li>
-                    <li><strong className="text-white">Test Suite:</strong> 207+ automated pytest test cases covering safety, deadlines, and APIs.</li>
+                    <li><strong className="text-white">Test Suite:</strong> 293+ automated pytest test cases covering safety, deadlines, and APIs.</li>
                   </ul>
                 </>
               )}

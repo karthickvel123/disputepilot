@@ -2,17 +2,15 @@
 @import "tailwindcss";
 
 :root {
-
-
-  --bg-primary: #070a12;
-  --bg-secondary: #0d121f;
-  --bg-tertiary: #131b2e;
-  --bg-card: rgba(19, 27, 46, 0.7);
-  --bg-card-hover: rgba(26, 36, 61, 0.85);
+  --bg-primary: #05070e;
+  --bg-secondary: #0a0e1a;
+  --bg-tertiary: #101626;
+  --bg-card: rgba(14, 20, 36, 0.72);
+  --bg-card-hover: rgba(20, 28, 50, 0.88);
   
   --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-focus: rgba(99, 102, 241, 0.5);
-  --border-strong: rgba(255, 255, 255, 0.15);
+  --border-focus: rgba(99, 102, 241, 0.6);
+  --border-strong: rgba(255, 255, 255, 0.16);
 
   --text-primary: #f8fafc;
   --text-secondary: #94a3b8;
@@ -21,29 +19,31 @@
   --accent-indigo: #6366f1;
   --accent-indigo-hover: #4f46e5;
   --accent-emerald: #10b981;
-  --accent-emerald-subtle: rgba(16, 185, 129, 0.12);
+  --accent-emerald-subtle: rgba(16, 185, 129, 0.14);
   --accent-amber: #f59e0b;
-  --accent-amber-subtle: rgba(245, 158, 11, 0.12);
+  --accent-amber-subtle: rgba(245, 158, 11, 0.14);
   --accent-rose: #f43f5e;
-  --accent-rose-subtle: rgba(244, 63, 94, 0.12);
+  --accent-rose-subtle: rgba(244, 63, 94, 0.14);
   --accent-cyan: #06b6d4;
-  --accent-cyan-subtle: rgba(6, 182, 212, 0.12);
+  --accent-cyan-subtle: rgba(6, 182, 212, 0.14);
   --accent-purple: #8b5cf6;
-  --accent-purple-subtle: rgba(139, 92, 246, 0.12);
+  --accent-purple-subtle: rgba(139, 92, 246, 0.14);
 
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-heading: 'Outfit', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
-  --shadow-glow: 0 0 25px -5px rgba(99, 102, 241, 0.25);
-  --shadow-glow-emerald: 0 0 25px -5px rgba(16, 185, 129, 0.25);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
+  --shadow-glow: 0 0 30px -5px rgba(99, 102, 241, 0.3);
+  --shadow-glow-cyan: 0 0 30px -5px rgba(6, 182, 212, 0.3);
+  --shadow-glow-emerald: 0 0 30px -5px rgba(16, 185, 129, 0.3);
 
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 14px;
+  --radius-xl: 18px;
   --radius-full: 9999px;
 }
 
@@ -63,13 +63,17 @@ body {
   min-height: 100vh;
 }
 
-/* Background aesthetic mesh */
-.bg-mesh {
-  background: 
-    radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.08) 0%, transparent 40%),
-    radial-gradient(circle at 85% 25%, rgba(6, 182, 212, 0.07) 0%, transparent 45%),
-    radial-gradient(circle at 50% 85%, rgba(139, 92, 246, 0.06) 0%, transparent 50%),
-    var(--bg-primary);
+/* Background aesthetic mesh with subtle engineering grid */
+.bg-mesh,
+.bg-grid-mesh {
+  background-color: #05070e;
+  background-image: 
+    radial-gradient(ellipse 85% 60% at 50% -20%, rgba(99, 102, 241, 0.14) 0%, transparent 60%),
+    radial-gradient(circle at 90% 25%, rgba(6, 182, 212, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 10% 75%, rgba(139, 92, 246, 0.07) 0%, transparent 50%),
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 32px 32px, 32px 32px;
 }
 
 /* Typography utilities */
@@ -84,24 +88,25 @@ body {
 /* Glassmorphism card styles */
 .glass-panel {
   background: var(--bg-card);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6), inset 0 1px 0 0 rgba(255, 255, 255, 0.09);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .glass-panel:hover {
-  border-color: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.15);
 }
 
 .glass-panel-interactive:hover {
   background: var(--bg-card-hover);
-  border-color: rgba(99, 102, 241, 0.4);
+  border-color: rgba(99, 102, 241, 0.45);
   transform: translateY(-2px);
-  box-shadow: var(--shadow-glow);
+  box-shadow: var(--shadow-glow), inset 0 1px 0 0 rgba(255, 255, 255, 0.12);
 }
+
 
 /* Modern buttons */
 .btn {
@@ -415,5 +420,129 @@ body {
 }
 
 .modern-table-row:hover {
-  background-color: rgba(99, 102, 241, 0.06);
+  background-color: rgba(99, 102, 241, 0.07);
+}
+
+/* Stat card top glowing hairline borders */
+.stat-accent-indigo {
+  position: relative;
+  overflow: hidden;
+}
+.stat-accent-indigo::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #6366f1, #818cf8, transparent);
+}
+
+.stat-accent-cyan {
+  position: relative;
+  overflow: hidden;
+}
+.stat-accent-cyan::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #06b6d4, #38bdf8, transparent);
+}
+
+.stat-accent-emerald {
+  position: relative;
+  overflow: hidden;
+}
+.stat-accent-emerald::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #10b981, #34d399, transparent);
+}
+
+.stat-accent-purple {
+  position: relative;
+  overflow: hidden;
+}
+.stat-accent-purple::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #8b5cf6, #c084fc, transparent);
+}
+
+/* Radar & Live Beacon */
+.radar-beacon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.radar-beacon::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 9999px;
+  background: inherit;
+  opacity: 0.6;
+  animation: radar-ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes radar-ping {
+  0% { transform: scale(1); opacity: 0.8; }
+  75%, 100% { transform: scale(2.4); opacity: 0; }
+}
+
+/* Linear-style Bento Grid Box */
+.bento-card {
+  background: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.08), transparent 70%),
+              rgba(14, 20, 36, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-xl);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+}
+.bento-card:hover {
+  border-color: rgba(99, 102, 241, 0.4);
+  transform: translateY(-3px);
+  box-shadow: 0 20px 40px -15px rgba(99, 102, 241, 0.25), inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
+}
+
+/* Shimmer scanline effect */
+.shimmer-sweep {
+  position: relative;
+  overflow: hidden;
+}
+.shimmer-sweep::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    60deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.04) 25%,
+    transparent 30%
+  );
+  transform: rotate(30deg);
+  animation: shimmer-anim 6s infinite;
+  pointer-events: none;
+}
+@keyframes shimmer-anim {
+  0% { transform: translateX(-100%) rotate(30deg); }
+  50%, 100% { transform: translateX(100%) rotate(30deg); }
 }
