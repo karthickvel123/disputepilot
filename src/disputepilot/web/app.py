@@ -171,8 +171,18 @@ cors_origins = (
     if settings.cors_allowed_origins
     else []
 )
-from disputepilot.config import validate_production_startup
-validate_production_startup(settings, cors_origins)
+from disputepilot.config import ConfigError, validate_production_startup
+try:
+    validate_production_startup(settings, cors_origins)
+except ConfigError as exc:
+    if settings.is_sim:
+        logger.warning(
+            "Production startup validation check warning in SIMULATION mode: %s. "
+            "Continuing startup because DATA_MODE=sim (synthetic demo sandbox).",
+            exc,
+        )
+    else:
+        raise
 
 for _problem in razorpay_problems + auth_problems:
     logger.warning("Configuration problem: %s", _problem)
