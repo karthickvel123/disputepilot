@@ -187,82 +187,82 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
     if (!rec) return null;
     if (rec.decision === 'contest') {
       return (
-        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-          <CheckCircle2 className="w-3 h-3" />
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+          <CheckCircle2 className="w-3.5 h-3.5" />
           <span>Contest</span>
-          {rec.is_uncertain && <span className="text-[10px] text-amber-400">(Uncertain)</span>}
+          {rec.is_uncertain && <span className="text-xs text-amber-400">(Uncertain)</span>}
         </span>
       );
     }
     if (rec.decision === 'accept') {
       return (
-        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20">
-          <AlertTriangle className="w-3 h-3" />
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20">
+          <AlertTriangle className="w-3.5 h-3.5" />
           <span>Accept Liability</span>
         </span>
       );
     }
     return (
-      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-800 text-slate-300">
+      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-md text-xs font-semibold bg-slate-800 text-slate-300">
         Review
       </span>
     );
   }
 
   return (
-    <div className="space-y-6 animate-fade-in pb-16">
+    <div className="space-y-7 animate-fade-in pb-16">
       {/* Header and Action Controls */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-white/[0.06] pb-5">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-white/[0.06] pb-6">
         <div>
-          <div className="flex items-center gap-2.5 mb-1.5">
-            <h2 className="font-heading text-2xl font-bold text-white tracking-tight">Dispute Worklist</h2>
-            <span className="text-xs font-mono font-medium px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+          <div className="flex items-center gap-3 mb-2">
+            <h2 className="font-heading text-2xl sm:text-3xl font-bold text-white tracking-tight">Dispute Worklist</h2>
+            <span className="text-xs font-mono font-semibold px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
               {total} cases
             </span>
           </div>
-          <p className="text-xs text-slate-400">
+          <p className="text-sm text-slate-400">
             Real-time triage queue prioritized by scheme SLA response deadlines and AI win confidence.
           </p>
         </div>
 
         {/* Action Buttons: Export, Import, New */}
-        <div className="flex flex-wrap items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-3">
           <a
             href={getDisputesExportUrl()}
             download="disputepilot_cases.csv"
-            className="btn btn-secondary text-xs flex items-center gap-1.5"
+            className="btn btn-secondary text-sm h-11 px-4 flex items-center gap-2"
             title="Export CSV"
           >
-            <Download className="w-3.5 h-3.5" />
+            <Download className="w-4 h-4" />
             <span>Export CSV</span>
           </a>
 
           <button
             onClick={() => setImportModalOpen(true)}
-            className="btn btn-secondary text-xs flex items-center gap-1.5"
+            className="btn btn-secondary text-sm h-11 px-4 flex items-center gap-2"
           >
-            <Upload className="w-3.5 h-3.5" />
+            <Upload className="w-4 h-4" />
             <span>Import CSV</span>
           </button>
 
           <button
             onClick={() => setCreateModalOpen(true)}
-            className="btn btn-primary text-xs flex items-center gap-1.5"
+            className="btn btn-primary text-sm h-11 px-5 font-semibold flex items-center gap-2"
           >
-            <Plus className="w-3.5 h-3.5" />
+            <Plus className="w-4 h-4" />
             <span>New Dispute</span>
           </button>
         </div>
       </div>
 
       {bannerMessage && (
-        <div className="p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-200 text-xs flex items-center justify-between gap-2 animate-fade-in">
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+        <div className="p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-200 text-sm flex items-center justify-between gap-2 animate-fade-in">
+          <div className="flex items-center gap-2.5">
+            <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
             <span className="font-medium">{bannerMessage}</span>
           </div>
-          <button onClick={() => setBannerMessage(null)} className="text-slate-400 hover:text-white cursor-pointer">
-            <X className="w-3.5 h-3.5" />
+          <button onClick={() => setBannerMessage(null)} className="text-slate-400 hover:text-white cursor-pointer px-2 py-1 font-bold">
+            <X className="w-4 h-4" />
           </button>
         </div>
       )}
@@ -270,10 +270,10 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
       {/* Filter and Search Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         {/* Segmented Filter Tabs */}
-        <div className="flex flex-wrap items-center gap-1 bg-white/[0.03] p-1 rounded-xl border border-white/[0.06]">
+        <div className="flex flex-wrap items-center gap-1.5 bg-slate-900/80 p-1.5 rounded-xl border border-slate-800">
           {[
             { id: 'all', label: 'All Cases' },
-            { id: 'urgent', label: 'Urgent (<48h)' },
+            { id: 'urgent', label: 'Urgent / overdue' },
             { id: 'pending', label: 'Needs AI Analysis' },
             { id: 'analyzed', label: 'Analyzed & Drafted' },
           ].map((tab) => (
@@ -283,10 +283,10 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
                 setStatusFilter(tab.id);
                 setPage(1);
               }}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all cursor-pointer ${
                 statusFilter === tab.id
-                  ? 'bg-white/[0.08] text-white shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-indigo-600 text-white shadow-sm'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
               }`}
             >
               {tab.label}
@@ -297,7 +297,7 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
         <div className="flex items-center gap-3">
           {/* Reason Filter */}
           <div className="flex items-center gap-2">
-            <Filter className="w-3.5 h-3.5 text-slate-400" />
+            <Filter className="w-4 h-4 text-slate-400" />
             <select
               id="select-reason-filter"
               value={reasonFilter}
@@ -305,7 +305,7 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
                 setReasonFilter(e.target.value);
                 setPage(1);
               }}
-              className="bg-[#0d1220] border border-white/[0.08] rounded-lg px-2.5 py-1.5 text-xs text-slate-300 outline-none focus:border-indigo-500 cursor-pointer"
+              className="bg-[#0d1220] border border-white/[0.08] rounded-xl px-4 h-11 text-sm text-slate-200 outline-none focus:border-indigo-500 cursor-pointer"
             >
               <option value="all">All Reason Codes</option>
               <option value="item_not_received">Item Not Received</option>
@@ -319,8 +319,8 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
           </div>
 
           {/* Search Input */}
-          <div className="relative w-full sm:w-64">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <div className="relative w-full sm:w-72">
+            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               id="input-search-disputes"
               type="text"
@@ -330,43 +330,43 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
                 setPage(1);
               }}
               placeholder="Search case, ID, reason..."
-              className="input-control pl-9 text-xs"
+              className="input-control pl-10 h-11 text-sm rounded-xl"
             />
           </div>
         </div>
       </div>
 
       {/* Table Content */}
-      <div className="glass-panel overflow-hidden border border-white/[0.06] shadow-xl">
+      <div className="glass-panel overflow-hidden border border-white/[0.06] shadow-xl rounded-2xl">
         {loading ? (
-          <div className="py-20 text-center">
-            <div className="w-7 h-7 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-            <p className="text-slate-400 text-xs">Loading triage worklist...</p>
+          <div className="py-24 text-center">
+            <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+            <p className="text-slate-400 text-sm">Loading triage worklist...</p>
           </div>
         ) : error ? (
-          <div className="p-10 text-center text-rose-400 text-xs">
+          <div className="p-10 text-center text-rose-400 text-sm">
             <AlertTriangle className="w-6 h-6 mx-auto mb-2 text-rose-400" />
             <p>{error}</p>
           </div>
         ) : items.length === 0 ? (
-          <div className="py-20 text-center text-slate-400 text-xs">
-            <FileText className="w-8 h-8 mx-auto mb-2 text-slate-600" />
-            <p className="font-semibold text-slate-300 mb-1">No matching disputes found</p>
-            <p className="text-[11px] text-slate-500">Try adjusting your search query or status filter.</p>
+          <div className="py-24 text-center text-slate-400 text-sm">
+            <FileText className="w-10 h-10 mx-auto mb-2 text-slate-600" />
+            <p className="font-semibold text-slate-200 text-base mb-1">No matching disputes found</p>
+            <p className="text-sm text-slate-400">Try adjusting your search query or status filter.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-xs">
+            <table className="w-full text-left border-collapse text-sm">
               <thead>
-                <tr className="border-b border-white/[0.06] text-slate-400 font-medium text-[11px]">
-                  <th className="py-3.5 px-4 font-medium">Case & Dispute ID</th>
-                  <th className="py-3.5 px-4 font-medium">Customer</th>
-                  <th className="py-3.5 px-4 font-medium">Amount</th>
-                  <th className="py-3.5 px-4 font-medium">Reason Class</th>
-                  <th className="py-3.5 px-4 font-medium">Deadline Urgency</th>
-                  <th className="py-3.5 px-4 font-medium">Win Confidence</th>
-                  <th className="py-3.5 px-4 font-medium">AI Recommendation</th>
-                  <th className="py-3.5 px-4 text-right font-medium">Action</th>
+                <tr className="border-b border-white/[0.06] text-slate-400 font-semibold text-xs tracking-wider uppercase">
+                  <th className="py-4 px-6 font-bold">Case & Dispute ID</th>
+                  <th className="py-4 px-6 font-bold">Customer</th>
+                  <th className="py-4 px-6 font-bold">Amount</th>
+                  <th className="py-4 px-6 font-bold">Reason Class</th>
+                  <th className="py-4 px-6 font-bold">Deadline Urgency</th>
+                  <th className="py-4 px-6 font-bold">Win Confidence</th>
+                  <th className="py-4 px-6 font-bold">AI Recommendation</th>
+                  <th className="py-4 px-6 text-right font-bold">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/[0.04]">
@@ -377,48 +377,48 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
                     className="modern-table-row cursor-pointer group"
                   >
                     {/* Case & Dispute ID */}
-                    <td className="py-4 px-4">
-                      <div className="font-mono font-medium text-slate-200 group-hover:text-indigo-300 transition-colors">
+                    <td className="py-5 px-6">
+                      <div className="font-mono font-bold text-slate-200 group-hover:text-indigo-300 transition-colors text-sm">
                         {item.case_id}
                       </div>
-                      <div className="font-mono text-[10px] text-slate-500">
+                      <div className="font-mono text-xs text-slate-400 mt-1">
                         {item.dispute_id}
                       </div>
                     </td>
 
                     {/* Customer */}
-                    <td className="py-4 px-4">
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-6 h-6 rounded-full bg-white/[0.06] flex items-center justify-center text-[10px] font-bold text-slate-300 uppercase">
+                    <td className="py-5 px-6">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-white/[0.06] flex items-center justify-center text-xs font-bold text-slate-300 uppercase">
                           {(item.customer_name || 'C').charAt(0)}
                         </div>
-                        <span className="text-slate-300 font-medium truncate max-w-[130px]">
+                        <span className="text-slate-200 font-semibold truncate max-w-[150px] text-sm">
                           {item.customer_name || 'Cardholder'}
                         </span>
                       </div>
                     </td>
 
                     {/* Amount */}
-                    <td className="py-4 px-4 font-mono font-semibold text-white">
+                    <td className="py-5 px-6 font-mono font-bold text-white text-base">
                       {item.amount_display}
                     </td>
 
                     {/* Reason Class */}
-                    <td className="py-4 px-4">
-                      <span className="font-mono text-[11px] px-2 py-0.5 rounded bg-white/[0.04] text-slate-300 border border-white/[0.06] capitalize">
+                    <td className="py-5 px-6">
+                      <span className="font-mono text-xs px-3 py-1.5 rounded-md bg-white/[0.04] text-slate-300 border border-white/[0.06] capitalize font-medium">
                         {item.reason_class ? item.reason_class.replace(/_/g, ' ') : 'Chargeback'}
                       </span>
                     </td>
 
                     {/* Deadline Urgency */}
-                    <td className="py-4 px-4">
+                    <td className="py-5 px-6">
                       {getUrgencyBadge(item.urgency, item.hours_remaining)}
                     </td>
 
                     {/* Win Probability */}
-                    <td className="py-4 px-4">
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-16 h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                    <td className="py-5 px-6">
+                      <div className="flex items-center gap-3">
+                        <div className="w-24 h-2.5 bg-slate-800 rounded-full overflow-hidden">
                           <div
                             className={`h-full rounded-full ${
                               item.p_win >= 0.6
@@ -430,28 +430,28 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
                             style={{ width: `${Math.round(item.p_win * 100)}%` }}
                           ></div>
                         </div>
-                        <span className="font-mono text-[11px] text-slate-300">
+                        <span className="font-mono text-xs font-semibold text-slate-300">
                           {Math.round(item.p_win * 100)}%
                         </span>
                       </div>
                     </td>
 
                     {/* AI Recommendation */}
-                    <td className="py-4 px-4">
+                    <td className="py-5 px-6">
                       {getRecommendationBadge(item.recommendation)}
                     </td>
 
                     {/* Action Link */}
-                    <td className="py-4 px-4 text-right">
+                    <td className="py-5 px-6 text-right">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           onSelectCase(item.case_id);
                         }}
-                        className="inline-flex items-center gap-1 text-xs text-indigo-400 hover:text-indigo-300 font-medium cursor-pointer"
+                        className="inline-flex items-center gap-1.5 text-sm text-indigo-400 hover:text-indigo-300 font-semibold cursor-pointer"
                       >
                         <span>Inspect</span>
-                        <ArrowUpRight className="w-3.5 h-3.5" />
+                        <ArrowUpRight className="w-4 h-4" />
                       </button>
                     </td>
                   </tr>
@@ -463,27 +463,27 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
 
         {/* Pagination Footer */}
         {totalPages > 1 && (
-          <div className="px-5 py-3.5 border-t border-slate-800/80 bg-slate-900/40 flex items-center justify-between text-xs text-slate-400">
+          <div className="px-6 py-4 border-t border-slate-800/80 bg-slate-900/40 flex items-center justify-between text-sm text-slate-400">
             <div>
               Showing page <span className="font-semibold text-white">{page}</span> of{' '}
               <span className="font-semibold text-white">{totalPages}</span> ({total} cases)
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5">
               <button
                 disabled={page <= 1}
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
-                className="btn btn-secondary text-xs px-3 py-1 cursor-pointer"
+                className="btn btn-secondary text-sm px-4 py-2 rounded-xl cursor-pointer"
               >
-                <ChevronLeft className="w-3.5 h-3.5" />
+                <ChevronLeft className="w-4 h-4" />
                 <span>Prev</span>
               </button>
               <button
                 disabled={page >= totalPages}
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                className="btn btn-secondary text-xs px-3 py-1 cursor-pointer"
+                className="btn btn-secondary text-sm px-4 py-2 rounded-xl cursor-pointer"
               >
                 <span>Next</span>
-                <ChevronRight className="w-3.5 h-3.5" />
+                <ChevronRight className="w-4 h-4" />
               </button>
             </div>
           </div>
@@ -493,36 +493,36 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
       {/* Modal: Create Dispute */}
       {createModalOpen && (
         <div className="modal-overlay">
-          <div className="modal-content p-6 sm:p-8 max-w-xl">
-            <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-800">
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+          <div className="modal-content p-7 sm:p-9 max-w-xl">
+            <div className="flex items-center justify-between mb-5 pb-4 border-b border-slate-800">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/25 flex items-center justify-center text-indigo-400 shadow-sm">
                   <Plus className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-heading text-lg font-bold text-white">Create Dispute Case</h3>
-                  <p className="text-xs text-slate-400">Queue a new chargeback for automated AI triage and fact extraction.</p>
+                  <h3 className="font-heading text-xl font-bold text-white">Create Dispute Case</h3>
+                  <p className="text-sm text-slate-400 mt-0.5">Queue a new chargeback for automated AI triage and fact extraction.</p>
                 </div>
               </div>
-              <button onClick={() => setCreateModalOpen(false)} className="text-slate-400 hover:text-white">
+              <button onClick={() => setCreateModalOpen(false)} className="text-slate-400 hover:text-white p-1">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleCreateSubmit} className="space-y-4 text-xs">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <form onSubmit={handleCreateSubmit} className="space-y-4 text-sm">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-300 mb-1">Dispute ID (optional)</label>
+                  <label className="block text-sm font-semibold text-slate-300 mb-1.5">Dispute ID (optional)</label>
                   <input
                     type="text"
                     value={createForm.dispute_id}
                     onChange={(e) => setCreateForm({ ...createForm, dispute_id: e.target.value })}
                     placeholder="e.g. disp_992144"
-                    className="input-control text-xs"
+                    className="input-control h-11 text-sm rounded-xl"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-300 mb-1">Disputed Amount (INR) *</label>
+                  <label className="block text-sm font-semibold text-slate-300 mb-1.5">Disputed Amount (INR) *</label>
                   <input
                     type="number"
                     step="0.01"
@@ -530,18 +530,18 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
                     value={createForm.amount_rupees}
                     onChange={(e) => setCreateForm({ ...createForm, amount_rupees: e.target.value })}
                     placeholder="e.g. 2499.00"
-                    className="input-control text-xs"
+                    className="input-control h-11 text-sm rounded-xl font-mono"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-300 mb-1">Reason Code *</label>
+                  <label className="block text-sm font-semibold text-slate-300 mb-1.5">Reason Code *</label>
                   <select
                     value={createForm.reason_code}
                     onChange={(e) => setCreateForm({ ...createForm, reason_code: e.target.value })}
-                    className="input-control text-xs"
+                    className="input-control h-11 text-sm rounded-xl"
                   >
                     <option value="item_not_received">Item Not Received</option>
                     <option value="not_as_described">Not As Described</option>
@@ -553,72 +553,72 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-300 mb-1">Days to Respond</label>
+                  <label className="block text-sm font-semibold text-slate-300 mb-1.5">Days to Respond</label>
                   <input
                     type="number"
                     min="1"
                     max="30"
                     value={createForm.days_to_respond}
                     onChange={(e) => setCreateForm({ ...createForm, days_to_respond: parseInt(e.target.value) || 7 })}
-                    className="input-control text-xs"
+                    className="input-control h-11 text-sm rounded-xl"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-slate-300 mb-1">Reason Description</label>
+                <label className="block text-sm font-semibold text-slate-300 mb-1.5">Reason Description</label>
                 <input
                   type="text"
                   value={createForm.reason_description}
                   onChange={(e) => setCreateForm({ ...createForm, reason_description: e.target.value })}
                   placeholder="e.g. Buyer claims delivery package was never received at doorstep."
-                  className="input-control text-xs"
+                  className="input-control h-11 text-sm rounded-xl"
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-300 mb-1">Customer Full Name *</label>
+                  <label className="block text-sm font-semibold text-slate-300 mb-1.5">Customer Full Name *</label>
                   <input
                     type="text"
                     required
                     value={createForm.customer_name}
                     onChange={(e) => setCreateForm({ ...createForm, customer_name: e.target.value })}
                     placeholder="e.g. Rohan Mehra"
-                    className="input-control text-xs"
+                    className="input-control h-11 text-sm rounded-xl"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-300 mb-1">Customer Email</label>
+                  <label className="block text-sm font-semibold text-slate-300 mb-1.5">Customer Email</label>
                   <input
                     type="email"
                     value={createForm.customer_email}
                     onChange={(e) => setCreateForm({ ...createForm, customer_email: e.target.value })}
                     placeholder="rohan@example.com"
-                    className="input-control text-xs"
+                    className="input-control h-11 text-sm rounded-xl"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-300 mb-1">Shipping Carrier</label>
+                  <label className="block text-sm font-semibold text-slate-300 mb-1.5">Shipping Carrier</label>
                   <input
                     type="text"
                     value={createForm.shipping_carrier}
                     onChange={(e) => setCreateForm({ ...createForm, shipping_carrier: e.target.value })}
                     placeholder="Delhivery / Blue Dart"
-                    className="input-control text-xs"
+                    className="input-control h-11 text-sm rounded-xl"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-300 mb-1">Courier Tracking Number</label>
+                  <label className="block text-sm font-semibold text-slate-300 mb-1.5">Courier Tracking Number</label>
                   <input
                     type="text"
                     value={createForm.tracking_number}
                     onChange={(e) => setCreateForm({ ...createForm, tracking_number: e.target.value })}
                     placeholder="e.g. DEL99881122"
-                    className="input-control text-xs"
+                    className="input-control h-11 text-sm rounded-xl font-mono"
                   />
                 </div>
               </div>
@@ -627,14 +627,14 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
                 <button
                   type="button"
                   onClick={() => setCreateModalOpen(false)}
-                  className="btn btn-secondary text-xs"
+                  className="btn btn-secondary h-11 px-5 text-sm font-semibold rounded-xl"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={creating}
-                  className="btn btn-primary text-xs flex items-center gap-2"
+                  className="btn btn-primary h-11 px-6 text-sm font-semibold rounded-xl flex items-center gap-2"
                 >
                   {creating ? 'Creating Case...' : 'Create & Triage Dispute'}
                 </button>
@@ -647,31 +647,31 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
       {/* Modal: Import CSV */}
       {importModalOpen && (
         <div className="modal-overlay">
-          <div className="modal-content p-6 sm:p-8 max-w-2xl">
-            <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-800">
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+          <div className="modal-content p-7 sm:p-9 max-w-2xl">
+            <div className="flex items-center justify-between mb-5 pb-4 border-b border-slate-800">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/25 flex items-center justify-center text-cyan-400 shadow-sm">
                   <FileSpreadsheet className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-heading text-lg font-bold text-white">Import Disputes from CSV</h3>
-                  <p className="text-xs text-slate-400">Batch ingest chargebacks with row-level preview and schema validation.</p>
+                  <h3 className="font-heading text-xl font-bold text-white">Import Disputes from CSV</h3>
+                  <p className="text-sm text-slate-400 mt-0.5">Batch ingest chargebacks with row-level preview and schema validation.</p>
                 </div>
               </div>
-              <button onClick={() => setImportModalOpen(false)} className="text-slate-400 hover:text-white">
+              <button onClick={() => setImportModalOpen(false)} className="text-slate-400 hover:text-white p-1">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="space-y-4 text-xs">
+            <div className="space-y-4 text-sm">
               <div className="flex items-center justify-between">
-                <label className="text-[11px] font-semibold text-slate-300">
+                <label className="text-sm font-semibold text-slate-300">
                   CSV Data (comma-separated):
                 </label>
                 <button
                   type="button"
                   onClick={handleFillCsvTemplate}
-                  className="text-xs text-cyan-400 hover:text-cyan-300 underline font-medium"
+                  className="text-xs text-cyan-400 hover:text-cyan-300 underline font-semibold"
                 >
                   Fill Sample Template
                 </button>
@@ -685,13 +685,13 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
                   setDryRunResult(null);
                 }}
                 placeholder="dispute_id,amount,reason_code,reason_description,customer_name,customer_email,tracking_number..."
-                className="input-control font-mono text-xs resize-none"
+                className="input-control font-mono text-xs sm:text-sm p-4 rounded-xl resize-none leading-relaxed min-h-[140px]"
               />
 
               {/* Dry run preview box */}
               {dryRunResult && (
                 <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between text-sm">
                     <span className="font-semibold text-slate-200">Pre-Import Validation Summary</span>
                     <div className="flex items-center gap-3">
                       <span className="text-emerald-400 font-bold">{dryRunResult.valid_count} Valid</span>
@@ -700,7 +700,7 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
                   </div>
 
                   {dryRunResult.errors?.length > 0 && (
-                    <div className="space-y-1 text-[11px] text-rose-300">
+                    <div className="space-y-1 text-xs text-rose-300">
                       {dryRunResult.errors.map((err, i) => (
                         <div key={i} className="flex items-center gap-1.5">
                           <AlertTriangle className="w-3.5 h-3.5 text-rose-400 flex-shrink-0" />
@@ -712,14 +712,14 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
 
                   {dryRunResult.preview?.length > 0 && (
                     <div>
-                      <span className="text-[10px] uppercase font-semibold text-slate-500 block mb-1">
+                      <span className="text-xs uppercase font-semibold text-slate-500 block mb-1">
                         Row Preview (first {dryRunResult.preview.length} rows):
                       </span>
                       <div className="space-y-1">
                         {dryRunResult.preview.map((p, idx) => (
-                          <div key={idx} className="p-2 rounded bg-slate-900 border border-slate-800/80 font-mono text-[11px] text-slate-300 flex justify-between">
+                          <div key={idx} className="p-2.5 rounded-lg bg-slate-900 border border-slate-800/80 font-mono text-xs text-slate-300 flex justify-between">
                             <span>{p.dispute_id} ({p.customer_name})</span>
-                            <span className="text-indigo-400 font-semibold">{p.amount_display}</span>
+                            <span className="text-indigo-400 font-bold">{p.amount_display}</span>
                           </div>
                         ))}
                       </div>
@@ -728,21 +728,21 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
                 </div>
               )}
 
-              <div className="flex items-center justify-between pt-3 border-t border-slate-800">
+              <div className="flex items-center justify-between pt-4 border-t border-slate-800">
                 <button
                   type="button"
                   onClick={handlePreviewCsv}
                   disabled={importing || !csvText.trim()}
-                  className="btn btn-secondary text-xs"
+                  className="btn btn-secondary h-11 px-5 text-sm font-semibold rounded-xl"
                 >
                   {importing ? 'Validating...' : 'Validate CSV (Dry Run)'}
                 </button>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
                   <button
                     type="button"
                     onClick={() => setImportModalOpen(false)}
-                    className="btn btn-secondary text-xs"
+                    className="btn btn-secondary h-11 px-5 text-sm font-semibold rounded-xl"
                   >
                     Cancel
                   </button>
@@ -750,7 +750,7 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
                     type="button"
                     onClick={handleExecuteCsvImport}
                     disabled={importing || !csvText.trim() || (dryRunResult && dryRunResult.valid_count === 0)}
-                    className="btn btn-primary text-xs"
+                    className="btn btn-primary h-11 px-6 text-sm font-semibold rounded-xl"
                   >
                     {importing ? 'Importing...' : 'Commit Batch Import'}
                   </button>

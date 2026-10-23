@@ -20,12 +20,14 @@ export default function App() {
   const [toastMessage, setToastMessage] = useState(null);
 
   const [metrics, setMetrics] = useState(null);
+  const [metricsError, setMetricsError] = useState('');
   const [systemSettings, setSystemSettings] = useState(null);
 
   useEffect(() => {
-    // Check existing session
     checkSession();
-    fetchInitialData();
+    getSettings()
+      .then(setSystemSettings)
+      .catch((error) => console.warn('Could not load system settings:', error));
 
     // Listen for 401s
     function handleUnauthorized() {
@@ -49,9 +51,15 @@ export default function App() {
       if (me?.user) {
         setUser(me.user);
         if (me?.role) setUserRole(me.role);
+        const dashboardMetrics = await getDashboardMetrics();
+        setMetrics(dashboardMetrics);
+        setMetricsError('');
       }
-    } catch {
-      // Not logged in; keep user null
+    } catch (error) {
+      if (error.status !== 401) {
+        console.warn('Could not restore the existing session:', error);
+        setMetricsError(error.message || 'Dashboard metrics could not be loaded.');
+      }
     }
   }
 
@@ -61,7 +69,12 @@ export default function App() {
         getDashboardMetrics(),
         getSettings(),
       ]);
-      if (m.status === 'fulfilled') setMetrics(m.value);
+      if (m.status === 'fulfilled') {
+        setMetrics(m.value);
+        setMetricsError('');
+      } else {
+        setMetricsError(m.reason?.message || 'Dashboard metrics could not be loaded.');
+      }
       if (s.status === 'fulfilled') setSystemSettings(s.value);
     } catch (e) {
       console.warn('Initial data load error:', e);
@@ -185,15 +198,15 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-mesh text-slate-100 flex flex-col font-sans">
+    <div className={`app-shell min-h-screen bg-mesh text-slate-100 font-sans ${user ? 'is-authenticated' : ''} ${activeView === 'landing' ? 'is-landing' : ''}`}>
       {/* Global Notification Toast */}
       {toastMessage && (
-        <div className="fixed top-18 right-6 z-50 p-4 rounded-xl bg-slate-900/95 border border-indigo-500/40 text-indigo-200 text-xs shadow-2xl backdrop-blur-md flex items-center gap-3 animate-slide-in">
-          <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
-          <span className="font-medium text-white">{toastMessage}</span>
+        <div className="fixed top-20 right-8 z-50 p-4 rounded-xl bg-slate-900/95 border border-indigo-500/40 text-indigo-100 text-sm shadow-2xl backdrop-blur-md flex items-center gap-3 animate-slide-in">
+          <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></span>
+          <span className="font-semibold text-white">{toastMessage}</span>
           <button
             onClick={() => setToastMessage(null)}
-            className="text-slate-400 hover:text-white ml-2 text-sm"
+            className="text-slate-400 hover:text-white ml-2 text-base font-bold"
           >
             ✕
           </button>
@@ -218,9 +231,11 @@ export default function App() {
         onOpenLanding={() => setActiveView('landing')}
         onQuickDemoLogin={isDemoAllowed ? handleQuickDemoLogin : null}
         onSimulateDispute={isSimMode ? handleSimulateDispute : null}
+        onSelectCase={handleSelectCase}
       />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+      <div className="app-workspace">
+      <main className="app-main flex-1 w-full mx-auto px-6 sm:px-8 lg:px-12 pt-24 sm:pt-28 pb-16">
         {activeView === 'landing' && (
           <LandingPage
             onLaunchConsole={handleLaunchConsole}
@@ -237,6 +252,8 @@ export default function App() {
         {activeView === 'dashboard' && (
           <DashboardView
             metrics={metrics}
+            metricsError={metricsError}
+            onRetryMetrics={fetchInitialData}
             onSelectDispute={handleSelectCase}
             onNavigateToDisputes={handleNavigateToDisputes}
             onSimulateDispute={isSimMode ? handleSimulateDispute : null}
@@ -286,13 +303,13 @@ export default function App() {
       />
 
       {/* Footer */}
-      <footer className="border-t border-slate-900 bg-slate-950 py-6 text-center text-xs text-slate-500">
+      <footer className="app-footer border-t border-slate-900 bg-slate-950 py-6 text-center text-sm text-slate-400">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <span className="font-heading font-bold text-slate-300">DisputePilot</span>
+          <div className="flex items-center gap-2 text-sm">
+            <span className="font-heading font-bold text-slate-200">DisputePilot</span>
             <span>— AI-Driven Payment Dispute Defense Platform for Razorpay</span>
           </div>
-          <div className="flex items-center gap-4 text-slate-400">
+          <div className="flex items-center gap-4 text-slate-400 text-sm">
             <span>Deterministic Verifier</span>
             <span>•</span>
             <span>PCI-DSS Shield</span>
@@ -301,6 +318,7 @@ export default function App() {
           </div>
         </div>
       </footer>
+      </div>
     </div>
   );
 }

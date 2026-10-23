@@ -4,11 +4,14 @@
 !.env.example
 
 # Data directory (SQLite databases & generated drafts)
+*.db
 data/*.db
 data/drafts/
 data/evidence_files/
+src/data/
 *.sqlite
 *.sqlite3
+frontend/scripts/*.png
 
 # Python artifacts
 __pycache__/

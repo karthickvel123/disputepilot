@@ -648,6 +648,10 @@ async def api_dashboard_metrics(request: Request) -> dict[str, Any]:
             disputes = live_disputes
 
     now = int(time.time())
+    triage_input = disputes if _settings.is_sim else [_triage_dict(d) for d in disputes]
+    triage_by_case_id = {
+        item.case_id: item for item in triage_cases(triage_input, now=now)
+    }
     total_disputes = len(disputes)
     open_count = 0
     urgent_count = 0
@@ -655,6 +659,7 @@ async def api_dashboard_metrics(request: Request) -> dict[str, Any]:
     lost_count = 0
     under_review = 0
     total_amount_paise = 0
+    amount_at_risk_paise = 0
     won_amount_paise = 0
     lost_amount_paise = 0
     reason_breakdown: dict[str, int] = {}
@@ -673,7 +678,9 @@ async def api_dashboard_metrics(request: Request) -> dict[str, Any]:
             respond_by = disp.respond_by
             if respond_by and 0 < (respond_by - now) <= 48 * 3600:
                 approaching_deadline += 1
+            if respond_by and (respond_by - now) <= 48 * 3600:
                 urgent_count += 1
+            amount_at_risk_paise += amount
         elif st_val == "won":
             won_count += 1
             won_amount_paise += amount
@@ -682,9 +689,10 @@ async def api_dashboard_metrics(request: Request) -> dict[str, Any]:
             lost_amount_paise += amount
         elif st_val == "under_review":
             under_review += 1
+            amount_at_risk_paise += amount
 
-        # Reason breakdown
-        rc = disp.reason_code if hasattr(disp, "reason_code") else "unknown"
+        triage_item = triage_by_case_id.get(getattr(d, "case_id", disp.id))
+        rc = triage_item.reason_class.value if triage_item else "unknown"
         reason_breakdown[rc] = reason_breakdown.get(rc, 0) + 1
 
     # Draft metrics
@@ -708,6 +716,7 @@ async def api_dashboard_metrics(request: Request) -> dict[str, Any]:
         "lost": lost_count,
         "drafts_pending_review": drafts_pending_review,
         "total_amount_paise": total_amount_paise,
+        "amount_at_risk_paise": amount_at_risk_paise,
         "won_amount_paise": won_amount_paise,
         "lost_amount_paise": lost_amount_paise,
         "win_rate_percent": win_rate,
@@ -759,6 +768,7 @@ async def api_list_disputes(
         disp_id = case_obj.dispute.id if case_obj else (t.case_id if not _settings.is_sim else f"disp_{t.case_id}")
         amount = t.amount_paise
         reason = t.reason_class.value if isinstance(t.reason_class, ReasonClass) else str(t.reason_class)
+        hours_remaining = round(t.hours_remaining, 1) if t.hours_remaining is not None else None
 
         # Recommendation from cache
         cached = drafts_dir / f"{t.case_id}_result.json"
@@ -785,7 +795,7 @@ async def api_list_disputes(
             "amount_paise": amount,
             "amount_display": f"₹{amount / 100:,.2f}",
             "urgency": t.urgency,
-            "hours_remaining": round(t.hours_remaining or 0.0, 1),
+            "hours_remaining": hours_remaining,
             "reason_class": reason,
             "p_win": round(t.p_win, 3),
             "recommendation": {
@@ -800,6 +810,10 @@ async def api_list_disputes(
             if status_filter == "analyzed" and not cached.exists():
                 continue
             if status_filter == "pending" and cached.exists():
+                continue
+            if status_filter == "urgent" and (
+                hours_remaining is None or hours_remaining > 48
+            ):
                 continue
 
         if reason_filter and reason_filter != "all" and reason != reason_filter:
@@ -2432,4 +2446,3 @@ async def api_test_ai_connection(request: Request) -> dict[str, Any]:
         "latency_ms": 1,
         "message": "Deterministic rules-only classification engine active with fact verifiers.",
     }
-

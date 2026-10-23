@@ -112,54 +112,54 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess, systemSett
 
         {/* Quick Demo Access for Evaluators */}
         {isDemoAllowed && mode === 'login' && (
-          <div className="mb-6 p-4 rounded-xl bg-gradient-to-br from-indigo-950/70 via-slate-900 to-slate-950 border border-indigo-500/35 shadow-lg shadow-indigo-500/5">
-            <div className="flex items-center justify-between mb-2.5">
-              <div className="flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-                <span className="text-[11px] font-bold text-indigo-300">Razorpay Evaluator 1-Click Access</span>
+          <div className="mb-6 p-4 rounded-2xl bg-gradient-to-br from-indigo-950/70 via-slate-900 to-slate-950 border border-indigo-500/35 shadow-lg shadow-indigo-500/5">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-cyan-400" />
+                <span className="text-xs sm:text-sm font-bold text-indigo-300">Razorpay Evaluator 1-Click Access</span>
               </div>
-              <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/25">
+              <span className="text-xs font-mono text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/25">
                 READY
               </span>
             </div>
-            <div className="grid grid-cols-2 gap-2.5">
+            <div className="grid grid-cols-2 gap-3">
               <button
                 type="button"
                 disabled={loading}
                 onClick={() => handleQuickLogin('reviewer', 'password123')}
-                className="p-2.5 rounded-xl bg-indigo-600/25 hover:bg-indigo-600/40 border border-indigo-500/40 text-indigo-200 text-xs font-semibold flex flex-col items-center justify-center gap-1 transition-all hover:scale-[1.02] cursor-pointer"
+                className="p-3 rounded-xl bg-indigo-600/25 hover:bg-indigo-600/40 border border-indigo-500/40 text-indigo-200 text-sm font-semibold flex flex-col items-center justify-center gap-1.5 transition-all hover:scale-[1.02] cursor-pointer"
               >
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1.5">
                   <span>⚡</span>
                   <span className="font-bold">Reviewer</span>
                 </div>
-                <span className="text-[10px] text-indigo-300/80 font-normal">Triage & Approval Tokens</span>
+                <span className="text-xs text-indigo-300/90 font-normal">Triage & Approval Tokens</span>
               </button>
               <button
                 type="button"
                 disabled={loading}
                 onClick={() => handleQuickLogin('admin', 'admin_secret_2026')}
-                className="p-2.5 rounded-xl bg-purple-600/25 hover:bg-purple-600/40 border border-purple-500/40 text-purple-200 text-xs font-semibold flex flex-col items-center justify-center gap-1 transition-all hover:scale-[1.02] cursor-pointer"
+                className="p-3 rounded-xl bg-purple-600/25 hover:bg-purple-600/40 border border-purple-500/40 text-purple-200 text-sm font-semibold flex flex-col items-center justify-center gap-1.5 transition-all hover:scale-[1.02] cursor-pointer"
               >
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1.5">
                   <span>🛡️</span>
                   <span className="font-bold">Admin</span>
                 </div>
-                <span className="text-[10px] text-purple-300/80 font-normal">Settings & Webhooks</span>
+                <span className="text-xs text-purple-300/90 font-normal">Settings & Webhooks</span>
               </button>
             </div>
           </div>
         )}
 
         {/* Tab Switcher */}
-        <div className="flex rounded-lg bg-slate-900/80 p-1 mb-6 border border-slate-800">
+        <div className="flex rounded-xl bg-slate-900/80 p-1.5 mb-6 border border-slate-800">
           <button
             type="button"
             onClick={() => {
               setMode('login');
               setError(null);
             }}
-            className={`flex-1 py-1.5 text-xs font-semibold rounded-md transition-all ${
+            className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all ${
               mode === 'login'
                 ? 'bg-indigo-600 text-white shadow-sm'
                 : 'text-slate-400 hover:text-slate-200'
@@ -174,7 +174,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess, systemSett
                 setMode('register');
                 setError(null);
               }}
-              className={`flex-1 py-1.5 text-xs font-semibold rounded-md transition-all ${
+              className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all ${
                 mode === 'register'
                   ? 'bg-indigo-600 text-white shadow-sm'
                   : 'text-slate-400 hover:text-slate-200'
@@ -184,7 +184,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess, systemSett
             </button>
           ) : (
             <div
-              className="flex-1 py-1.5 text-xs font-semibold rounded-md text-slate-500 text-center cursor-not-allowed"
+              className="flex-1 py-2 text-sm font-semibold rounded-lg text-slate-500 text-center cursor-not-allowed"
               title="Open self-registration is disabled in production"
             >
               Registration Disabled
@@ -193,14 +193,14 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess, systemSett
         </div>
 
         {error && (
-          <div className="mb-4 p-3 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
+          <div className="mb-4 p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-sm flex items-center gap-2.5">
             <AlertCircle className="w-4 h-4 flex-shrink-0 text-rose-400" />
             <span>{error}</span>
           </div>
         )}
 
         {success && (
-          <div className="mb-4 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs flex items-center gap-2">
+          <div className="mb-4 p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-sm flex items-center gap-2.5">
             <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-emerald-400" />
             <span>{success}</span>
           </div>
@@ -209,21 +209,21 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess, systemSett
         <form onSubmit={handleSubmit} className="space-y-4">
           {mode === 'register' && (
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">Full Name</label>
+              <label className="block text-sm font-semibold text-slate-300 mb-1.5">Full Name</label>
               <input
                 type="text"
                 required
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="e.g. Priya Sharma"
-                className="input-control text-xs"
+                className="input-control text-sm h-11 rounded-xl"
               />
             </div>
           )}
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
-              <User className="w-3.5 h-3.5 text-slate-400" />
+            <label className="block text-sm font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
+              <User className="w-4 h-4 text-slate-400" />
               <span>Username</span>
             </label>
             <input
@@ -233,13 +233,13 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess, systemSett
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               placeholder="e.g. psharma"
-              className="input-control text-xs"
+              className="input-control text-sm h-11 rounded-xl"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
-              <Key className="w-3.5 h-3.5 text-slate-400" />
+            <label className="block text-sm font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
+              <Key className="w-4 h-4 text-slate-400" />
               <span>Password</span>
             </label>
             <input
@@ -249,28 +249,28 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess, systemSett
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••••••"
-              className="input-control text-xs"
+              className="input-control text-sm h-11 rounded-xl"
             />
           </div>
 
           {mode === 'register' && (
-            <div className="p-3 rounded-lg bg-slate-900/80 border border-slate-800 text-xs">
+            <div className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 text-sm">
               <div className="flex items-center justify-between mb-1">
                 <span className="font-semibold text-slate-300">Initial Account Role</span>
-                <span className="badge badge-open text-[10px] uppercase font-mono">Reviewer</span>
+                <span className="badge badge-open text-xs uppercase font-mono">Reviewer</span>
               </div>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-xs text-slate-400 leading-relaxed">
                 Self-registration automatically grants Merchant Reviewer access. Elevated privileges (Administrator, Compliance Auditor) must be granted by an authenticated Admin.
               </p>
             </div>
           )}
 
-          <div className="pt-2 flex flex-col gap-2">
+          <div className="pt-2 flex flex-col gap-2.5">
             <button
               id="btn-submit-login"
               type="submit"
               disabled={loading}
-              className="btn btn-primary w-full py-2.5 text-xs font-semibold flex items-center justify-center gap-2"
+              className="btn btn-primary w-full h-11 text-sm font-semibold flex items-center justify-center gap-2 rounded-xl"
             >
               {loading ? (
                 <span>Processing...</span>
@@ -293,7 +293,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess, systemSett
                   id="btn-fill-demo"
                   type="button"
                   onClick={() => handleFillDemo('reviewer')}
-                  className="btn btn-ghost text-[11px] text-indigo-400 hover:text-indigo-300"
+                  className="btn btn-ghost text-xs text-indigo-400 font-semibold hover:text-indigo-300"
                 >
                   Fill Reviewer Demo
                 </button>
@@ -301,7 +301,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess, systemSett
                 <button
                   type="button"
                   onClick={() => handleFillDemo('admin')}
-                  className="btn btn-ghost text-[11px] text-indigo-400 hover:text-indigo-300"
+                  className="btn btn-ghost text-xs text-indigo-400 font-semibold hover:text-indigo-300"
                 >
                   Fill Admin Demo
                 </button>
@@ -310,7 +310,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess, systemSett
           </div>
         </form>
 
-        <div className="mt-6 pt-4 border-t border-slate-800/80 text-center text-[11px] text-slate-500">
+        <div className="mt-6 pt-4 border-t border-slate-800/80 text-center text-xs text-slate-400">
           Secured with scrypt hashing, HMAC-signed session cookies, and CSRF token validation.
         </div>
       </div>

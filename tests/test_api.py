@@ -1,10 +1,13 @@
 """Tests for DisputePilot REST API endpoints."""
 
+import time
+
 import pytest
 from fastapi.testclient import TestClient
 
 from disputepilot.pipeline.orchestrator import process_case
 from disputepilot.web.app import app, gateway
+from disputepilot.web import api as web_api
 from disputepilot.web.auth import (
     SESSION_COOKIE_NAME,
     create_session_cookie_value,
@@ -62,6 +65,9 @@ def test_api_dashboard_metrics(auth_client: tuple[TestClient, str]) -> None:
     assert "open_disputes" in data
     assert "urgent_disputes" in data
     assert "reason_breakdown" in data
+    assert "amount_at_risk_paise" in data
+    assert 0 <= data["amount_at_risk_paise"] <= data["total_amount_paise"]
+    assert sum(data["reason_breakdown"].values()) == data["total_disputes"]
     assert data["data_mode"] in ("sim", "live")
 
 
@@ -80,6 +86,30 @@ def test_api_list_disputes(auth_client: tuple[TestClient, str]) -> None:
         assert "amount_paise" in item
         assert "urgency" in item
         assert "recommendation" in item
+
+
+def test_api_list_disputes_urgent_filter(
+    auth_client: tuple[TestClient, str],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    c, _ = auth_client
+    fixed_now = int(time.time())
+    monkeypatch.setattr(web_api.time, "time", lambda: fixed_now)
+    all_res = c.get("/api/v1/disputes?page=1&per_page=200")
+    urgent_res = c.get("/api/v1/disputes?page=1&per_page=200&status_filter=urgent")
+
+    assert all_res.status_code == 200
+    assert urgent_res.status_code == 200
+    all_items = all_res.json()["items"]
+    expected_urgent_ids = {
+        item["case_id"]
+        for item in all_items
+        if item["hours_remaining"] is not None and item["hours_remaining"] <= 48
+    }
+    actual_urgent_ids = {
+        item["case_id"] for item in urgent_res.json()["items"]
+    }
+    assert actual_urgent_ids == expected_urgent_ids
 
 
 def test_api_dispute_detail(auth_client: tuple[TestClient, str], sample_case_id: str) -> None:
@@ -202,4 +232,3 @@ def test_spa_served(client: TestClient) -> None:
     assert res.status_code == 200
     assert "DisputePilot" in res.text
     assert "root" in res.text
-

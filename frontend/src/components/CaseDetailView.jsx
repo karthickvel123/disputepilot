@@ -41,6 +41,7 @@ import {
   deleteEvidence,
   getEvidenceDownloadUrl
 } from '../api';
+import { renderCleanDraft } from '../utils/draft';
 
 export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
   const [data, setData] = useState(null);
@@ -101,9 +102,7 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
       setData(caseData);
 
       // Initialize draft content from cached analysis or default
-      if (caseData.analysis?.clean_draft) {
-        setDraftContent(caseData.analysis.clean_draft.draft_text || '');
-      }
+      setDraftContent(renderCleanDraft(caseData.analysis?.clean_draft));
 
       // Fetch case audit events
       try {
@@ -184,8 +183,9 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
       const res = await analyzeDispute(caseId);
       setSuccessMessage('AI analysis and citation-grounded rebuttal generated successfully.');
       await loadCaseData();
-      if (res.clean_draft?.draft_text) {
-        setDraftContent(res.clean_draft.draft_text);
+      const cleanDraftText = renderCleanDraft(res.clean_draft);
+      if (cleanDraftText) {
+        setDraftContent(cleanDraftText);
         setIsDraftDirty(false);
       }
     } catch (err) {
@@ -331,6 +331,18 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
   const analysis = data.analysis;
   const amountRupees = (disp.amount / 100).toFixed(2);
   const isActionable = data.actionable;
+  const requirements = data.requirements && typeof data.requirements === 'object'
+    ? data.requirements
+    : {};
+  const requirementRows = [
+    ...(Array.isArray(requirements.required)
+      ? requirements.required.map((category) => ({ category, role: 'Required' }))
+      : []),
+    ...(Array.isArray(requirements.helpful)
+      ? requirements.helpful.map((category) => ({ category, role: 'Helpful' }))
+      : []),
+  ].filter(({ category }) => typeof category === 'string' && category.trim());
+  const evidenceStatuses = analysis?.evidence_report?.category_status || {};
 
   return (
     <div className="space-y-6 animate-fade-in pb-16">
@@ -426,110 +438,110 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
       )}
 
       {/* Overview Cards Row */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Card 1: Dispute & Payment Details */}
-        <div className="glass-panel-premium card-sheen stat-accent-indigo p-5">
-          <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
+        <div className="glass-panel-premium card-sheen stat-accent-indigo p-6 rounded-2xl shadow-sm">
+          <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">
             Financial Details
           </h4>
-          <div className="space-y-2 text-xs">
-            <div className="flex justify-between py-1 border-b border-slate-800/60">
-              <span className="text-slate-400">Disputed Amount</span>
-              <span className="font-mono font-bold text-white text-sm">₹{amountRupees}</span>
+          <div className="space-y-3 text-sm">
+            <div className="flex justify-between py-1.5 border-b border-slate-800/60">
+              <span className="text-slate-400 font-medium">Disputed Amount</span>
+              <span className="font-mono font-bold text-white text-base">₹{amountRupees}</span>
             </div>
-            <div className="flex justify-between py-1 border-b border-slate-800/60">
-              <span className="text-slate-400">Reason Category</span>
-              <span className="font-mono text-indigo-400 capitalize">{disp.reason_code?.replace(/_/g, ' ') || 'General'}</span>
+            <div className="flex justify-between py-1.5 border-b border-slate-800/60">
+              <span className="text-slate-400 font-medium">Reason Category</span>
+              <span className="font-mono text-indigo-400 capitalize font-semibold">{disp.reason_code?.replace(/_/g, ' ') || 'General'}</span>
             </div>
-            <div className="flex justify-between py-1 border-b border-slate-800/60">
-              <span className="text-slate-400">Card Scheme</span>
-              <span className="font-mono text-slate-300">{disp.gateway || 'Razorpay Gateway'}</span>
+            <div className="flex justify-between py-1.5 border-b border-slate-800/60">
+              <span className="text-slate-400 font-medium">Card Scheme</span>
+              <span className="font-mono text-slate-200 font-semibold">{disp.gateway || 'Razorpay Gateway'}</span>
             </div>
-            <div className="flex justify-between py-1">
-              <span className="text-slate-400">Bank Response Deadline</span>
-              <span className="font-mono text-amber-400">{data.deadline?.respond_by || 'N/A'}</span>
+            <div className="flex justify-between py-1.5">
+              <span className="text-slate-400 font-medium">Bank Response Deadline</span>
+              <span className="font-mono text-amber-400 font-bold">{data.deadline?.respond_by || 'N/A'}</span>
             </div>
           </div>
         </div>
 
         {/* Card 2: Order & Customer Information */}
-        <div className="glass-panel-premium card-sheen stat-accent-cyan p-5">
-          <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
+        <div className="glass-panel-premium card-sheen stat-accent-cyan p-6 rounded-2xl shadow-sm">
+          <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">
             Order Verification
           </h4>
-          <div className="space-y-2 text-xs">
-            <div className="flex justify-between py-1 border-b border-slate-800/60">
-              <span className="text-slate-400">Order ID</span>
-              <span className="font-mono text-slate-200">{order?.id || 'N/A'}</span>
+          <div className="space-y-3 text-sm">
+            <div className="flex justify-between py-1.5 border-b border-slate-800/60">
+              <span className="text-slate-400 font-medium">Order ID</span>
+              <span className="font-mono text-slate-200 font-semibold">{order?.id || 'N/A'}</span>
             </div>
-            <div className="flex justify-between py-1 border-b border-slate-800/60">
-              <span className="text-slate-400">Customer Name</span>
-              <span className="font-medium text-slate-200">{order?.customer_name || 'Anonymous Buyer'}</span>
+            <div className="flex justify-between py-1.5 border-b border-slate-800/60">
+              <span className="text-slate-400 font-medium">Customer Name</span>
+              <span className="font-semibold text-slate-200">{order?.customer_name || 'Anonymous Buyer'}</span>
             </div>
-            <div className="flex justify-between py-1 border-b border-slate-800/60">
-              <span className="text-slate-400">Shipping Tracking #</span>
-              <span className="font-mono text-cyan-400">{order?.tracking_number || 'TRK-VERIFIED-FEDEX'}</span>
+            <div className="flex justify-between py-1.5 border-b border-slate-800/60">
+              <span className="text-slate-400 font-medium">Shipping Tracking #</span>
+              <span className="font-mono text-cyan-400 font-semibold">{order?.tracking_number || 'TRK-VERIFIED-FEDEX'}</span>
             </div>
-            <div className="flex justify-between py-1">
-              <span className="text-slate-400">Delivery Status</span>
-              <span className="text-emerald-400 font-medium">Delivered & Signed</span>
+            <div className="flex justify-between py-1.5">
+              <span className="text-slate-400 font-medium">Delivery Status</span>
+              <span className="text-emerald-400 font-semibold">Delivered & Signed</span>
             </div>
           </div>
         </div>
 
         {/* Card 3: AI Recommendation & Win Probability */}
-        <div className="glass-panel-premium card-sheen stat-accent-emerald p-5">
-          <div className="flex items-center justify-between mb-3">
-            <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+        <div className="glass-panel-premium card-sheen stat-accent-emerald p-6 rounded-2xl shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
               AI Decision Copilot
             </h4>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+            <span className="text-xs font-mono font-semibold px-2.5 py-1 rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
               GEMINI 2.5 FLASH / PRO
             </span>
           </div>
 
           {analysis ? (
-            <div className="space-y-3">
+            <div className="space-y-3.5">
               <div className="flex items-center justify-between">
-                <span className="text-xs text-slate-400">Recommendation:</span>
-                <span className={`badge ${
+                <span className="text-sm font-medium text-slate-400">Recommendation:</span>
+                <span className={`badge text-xs px-3 py-1 font-bold ${
                   analysis.recommendation?.decision === 'contest' ? 'badge-won' : 'badge-lost'
                 }`}>
                   {analysis.recommendation?.decision?.toUpperCase()}
                 </span>
               </div>
 
-              <div className="space-y-1">
-                <div className="flex justify-between text-xs">
-                  <span className="text-slate-400">Win Probability (Heuristic):</span>
+              <div className="space-y-1.5">
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-400 font-medium">Win Probability (Heuristic):</span>
                   <span className="font-mono font-bold text-emerald-400">
                     {analysis.recommendation?.p_win != null ? `${Math.round(analysis.recommendation.p_win * 100)}%` : 'n/a'}
                   </span>
                 </div>
-                <div className="w-full h-2 bg-slate-900 rounded-full overflow-hidden">
+                <div className="w-full h-2.5 bg-slate-900 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-gradient-to-r from-emerald-500 to-cyan-400 rounded-full"
                     style={{ width: `${Math.round((analysis.recommendation?.p_win != null ? analysis.recommendation.p_win : 0) * 100)}%` }}
                   ></div>
                 </div>
-                <div className="text-[10px] text-slate-400 pt-0.5">
+                <div className="text-xs text-slate-400 pt-0.5">
                   * Prior heuristic. Final dispute outcome is decided by card scheme adjudication.
                 </div>
               </div>
 
-              <p className="text-[11px] text-slate-400 leading-relaxed bg-slate-900/50 p-2.5 rounded-lg border border-slate-800/80">
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed bg-slate-900/50 p-3.5 rounded-xl border border-slate-800/80">
                 {analysis.recommendation?.rationale || 'Carrier delivery confirmation and customer invoice strongly support successful contest under scheme rules.'}
               </p>
             </div>
           ) : (
             <div className="py-4 text-center">
-              <p className="text-xs text-slate-400 mb-3">No AI analysis cached yet.</p>
+              <p className="text-sm text-slate-400 mb-3">No AI analysis cached yet.</p>
               <button
                 onClick={handleRunAnalysis}
                 disabled={analyzing}
-                className="btn btn-secondary text-xs w-full"
+                className="btn btn-secondary text-sm h-10 px-4 w-full"
               >
-                <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+                <Sparkles className="w-4 h-4 text-indigo-400" />
                 <span>Run Analysis Now</span>
               </button>
             </div>
@@ -538,10 +550,10 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
       </div>
 
       {/* Main Workbench Tabs */}
-      <div className="border-b border-slate-800 flex items-center gap-6">
+      <div className="case-workbench-tabs border-b border-slate-800 flex items-center gap-8 overflow-x-auto pt-2">
         <button
           onClick={() => setActiveTab('rebuttal')}
-          className={`pb-3 text-xs font-semibold tracking-wide flex items-center gap-2 border-b-2 transition-all ${
+          className={`flex-shrink-0 pb-3.5 text-sm font-semibold tracking-normal flex items-center gap-2 border-b-2 transition-all ${
             activeTab === 'rebuttal'
               ? 'border-indigo-500 text-indigo-400'
               : 'border-transparent text-slate-400 hover:text-slate-200'
@@ -553,7 +565,7 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
 
         <button
           onClick={() => setActiveTab('evidence')}
-          className={`pb-3 text-xs font-semibold tracking-wide flex items-center gap-2 border-b-2 transition-all ${
+          className={`flex-shrink-0 pb-3.5 text-sm font-semibold tracking-normal flex items-center gap-2 border-b-2 transition-all ${
             activeTab === 'evidence'
               ? 'border-indigo-500 text-indigo-400'
               : 'border-transparent text-slate-400 hover:text-slate-200'
@@ -565,7 +577,7 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
 
         <button
           onClick={() => setActiveTab('comments')}
-          className={`pb-3 text-xs font-semibold tracking-wide flex items-center gap-2 border-b-2 transition-all ${
+          className={`flex-shrink-0 pb-3.5 text-sm font-semibold tracking-normal flex items-center gap-2 border-b-2 transition-all ${
             activeTab === 'comments'
               ? 'border-indigo-500 text-indigo-400'
               : 'border-transparent text-slate-400 hover:text-slate-200'
@@ -577,7 +589,7 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
 
         <button
           onClick={() => setActiveTab('audit')}
-          className={`pb-3 text-xs font-semibold tracking-wide flex items-center gap-2 border-b-2 transition-all ${
+          className={`flex-shrink-0 pb-3.5 text-sm font-semibold tracking-normal flex items-center gap-2 border-b-2 transition-all ${
             activeTab === 'audit'
               ? 'border-indigo-500 text-indigo-400'
               : 'border-transparent text-slate-400 hover:text-slate-200'
@@ -590,28 +602,28 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
 
       {/* Tab 1: Rebuttal Studio */}
       {activeTab === 'rebuttal' && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left 2 Cols: Rebuttal Editor */}
-          <div className="lg:col-span-2 glass-panel-premium card-sheen p-6 space-y-4">
+          <div className="lg:col-span-2 glass-panel-premium card-sheen p-7 sm:p-8 space-y-5 rounded-2xl shadow-xl">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-heading text-base font-bold text-white flex items-center gap-2">
-                  <FileCheck className="w-4 h-4 text-indigo-400" />
+                <h3 className="font-heading text-lg font-bold text-white flex items-center gap-2">
+                  <FileCheck className="w-5 h-5 text-indigo-400" />
                   <span>Rebuttal Defense Letter</span>
                 </h3>
-                <p className="text-xs text-slate-400">
+                <p className="text-sm text-slate-400 mt-0.5">
                   Citation-grounded arguments formatted for Razorpay bank dispute arbitration.
                 </p>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3">
                 {data.analysis && (
                   <button
                     type="button"
                     onClick={() => setRejectModalOpen(true)}
-                    className="btn btn-ghost text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 border border-rose-500/30 flex items-center gap-1.5"
+                    className="btn btn-ghost text-sm h-10 px-4 text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 border border-rose-500/30 flex items-center gap-2"
                   >
-                    <XCircle className="w-3.5 h-3.5" />
+                    <XCircle className="w-4 h-4" />
                     <span>Reject Draft</span>
                   </button>
                 )}
@@ -619,9 +631,9 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
                   id="btn-save-draft"
                   onClick={handleSaveDraft}
                   disabled={savingDraft || !draftContent}
-                  className="btn btn-secondary text-xs"
+                  className="btn btn-secondary text-sm h-10 px-4 flex items-center gap-2"
                 >
-                  <Save className="w-3.5 h-3.5" />
+                  <Save className="w-4 h-4" />
                   <span>{savingDraft ? 'Saving...' : 'Save Draft'}</span>
                 </button>
               </div>
@@ -636,17 +648,17 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
               }}
               rows={16}
               placeholder="Run AI Analysis to generate citation-grounded rebuttal letter, or type custom arguments here..."
-              className="input-control font-mono text-xs leading-relaxed resize-y w-full bg-slate-950/80 border-slate-800 focus:border-indigo-500 p-4"
+              className="input-control font-mono text-sm leading-relaxed resize-y w-full bg-slate-950/80 border-slate-800 focus:border-indigo-500 p-5 rounded-xl min-h-[380px]"
             />
 
-            <div className="flex items-center justify-between text-[11px] text-slate-500">
+            <div className="flex items-center justify-between text-xs text-slate-400">
               <div className="flex items-center gap-3">
-                <span>Words: {draftContent ? draftContent.split(/\s+/).filter(Boolean).length : 0}</span>
+                <span className="font-medium">Words: {draftContent ? draftContent.split(/\s+/).filter(Boolean).length : 0}</span>
                 <span>•</span>
-                <span>Characters: {draftContent.length}</span>
-                {isDraftDirty && <span className="text-amber-400 font-medium">● Unsaved changes</span>}
+                <span className="font-medium">Characters: {draftContent.length}</span>
+                {isDraftDirty && <span className="text-amber-400 font-semibold">● Unsaved changes</span>}
               </div>
-              <div className="text-slate-400">
+              <div className="text-slate-400 font-medium">
                 PDF explanation letter is generated automatically upon approval.
               </div>
             </div>
@@ -655,47 +667,63 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
           {/* Right Col: Scheme Checklist & Safety Findings */}
           <div className="space-y-6">
             {/* Checklist */}
-            <div className="glass-panel-premium card-sheen p-5">
-              <h4 className="font-heading text-xs font-bold text-white uppercase tracking-wider mb-3 flex items-center gap-2">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+            <div className="glass-panel-premium card-sheen p-6 rounded-2xl shadow-xl">
+              <h4 className="font-heading text-sm font-bold text-white uppercase tracking-wider mb-3 flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                 <span>Required Scheme Evidence</span>
               </h4>
-              <p className="text-xs text-slate-400 mb-3">
+              <p className="text-sm text-slate-400 mb-4">
                 Mandatory document categories required to defend this reason code:
               </p>
 
-              <div className="space-y-2">
-                {(data.requirements || ['proof_of_delivery', 'customer_communication', 'refund_policy']).map((req) => (
-                  <div key={req} className="flex items-center justify-between p-2 rounded-lg bg-slate-900/60 border border-slate-800 text-xs">
-                    <span className="capitalize font-mono text-slate-300">{req.replace(/_/g, ' ')}</span>
-                    <span className="text-emerald-400 flex items-center gap-1 font-semibold text-[10px]">
-                      <Check className="w-3 h-3" />
-                      <span>PRESENT</span>
-                    </span>
-                  </div>
-                ))}
+              <div className="space-y-2.5">
+                {requirementRows.length > 0 ? requirementRows.map(({ category, role }) => {
+                  const status = evidenceStatuses[category];
+                  const statusLabel = ['present', 'partial', 'missing'].includes(status)
+                    ? status.toUpperCase()
+                    : 'NOT ASSESSED';
+                  const statusClass = status === 'present'
+                    ? 'text-emerald-400'
+                    : status === 'partial'
+                      ? 'text-amber-400'
+                      : status === 'missing'
+                        ? 'text-rose-400'
+                        : 'text-slate-500';
+
+                  return (
+                    <div key={`${role}-${category}`} className="flex items-center justify-between gap-3 p-3 rounded-xl bg-slate-900/60 border border-slate-800 text-sm">
+                      <span className="capitalize font-mono font-medium text-slate-200">{category.replace(/_/g, ' ')}</span>
+                      <span className="flex items-center gap-2 shrink-0">
+                        <span className="text-xs text-slate-400 font-semibold">{role}</span>
+                        <span className={`${statusClass} font-bold text-xs`}>{statusLabel}</span>
+                      </span>
+                    </div>
+                  );
+                }) : (
+                  <p className="text-sm text-slate-500">No evidence requirements are available for this case.</p>
+                )}
               </div>
             </div>
 
             {/* Safety & PCI Scanning */}
-            <div className="glass-panel-premium card-sheen p-5">
-              <h4 className="font-heading text-xs font-bold text-white uppercase tracking-wider mb-3 flex items-center gap-2">
-                <Shield className="w-3.5 h-3.5 text-cyan-400" />
+            <div className="glass-panel-premium card-sheen p-6 rounded-2xl shadow-xl">
+              <h4 className="font-heading text-sm font-bold text-white uppercase tracking-wider mb-3 flex items-center gap-2">
+                <Shield className="w-4 h-4 text-cyan-400" />
                 <span>PCI-DSS & Safety Scan</span>
               </h4>
 
-              <div className="space-y-2.5 text-xs">
-                <div className="flex justify-between items-center p-2 rounded bg-slate-900/60 border border-slate-800">
-                  <span className="text-slate-400">Card Number PANs</span>
-                  <span className="text-emerald-400 font-mono font-medium">0 Detected (Safe)</span>
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between items-center p-3 rounded-xl bg-slate-900/60 border border-slate-800">
+                  <span className="text-slate-400 font-medium">Card Number PANs</span>
+                  <span className="text-emerald-400 font-mono font-semibold">0 Detected (Safe)</span>
                 </div>
-                <div className="flex justify-between items-center p-2 rounded bg-slate-900/60 border border-slate-800">
-                  <span className="text-slate-400">Prompt Injection Tests</span>
-                  <span className="text-emerald-400 font-mono font-medium">Clean (Passed)</span>
+                <div className="flex justify-between items-center p-3 rounded-xl bg-slate-900/60 border border-slate-800">
+                  <span className="text-slate-400 font-medium">Prompt Injection Tests</span>
+                  <span className="text-emerald-400 font-mono font-semibold">Clean (Passed)</span>
                 </div>
-                <div className="flex justify-between items-center p-2 rounded bg-slate-900/60 border border-slate-800">
-                  <span className="text-slate-400">PII Token Replacement</span>
-                  <span className="text-cyan-400 font-mono font-medium">Vault Activated</span>
+                <div className="flex justify-between items-center p-3 rounded-xl bg-slate-900/60 border border-slate-800">
+                  <span className="text-slate-400 font-medium">PII Token Replacement</span>
+                  <span className="text-cyan-400 font-mono font-semibold">Vault Activated</span>
                 </div>
               </div>
             </div>
@@ -724,43 +752,43 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
                         <FileText className="w-5 h-5" />
                       </div>
                       <div>
-                        <div className="font-medium text-xs text-white">{doc.file_name}</div>
-                        <div className="text-[11px] text-slate-400 font-mono mt-0.5">
+                        <div className="font-semibold text-sm text-white">{doc.file_name}</div>
+                        <div className="text-xs text-slate-400 font-mono mt-0.5">
                           Category: <span className="text-indigo-400">{doc.category}</span> • Size: {(doc.size / 1024).toFixed(1)} KB • By: {doc.uploaded_by}
                         </div>
                       </div>
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <span className="badge badge-open text-[10px]">
+                      <span className="badge badge-open text-xs">
                         {doc.razorpay_doc_id ? `RP: ${doc.razorpay_doc_id}` : 'SIMULATED'}
                       </span>
                       <a
                         href={getEvidenceDownloadUrl(caseId, doc.id)}
                         target="_blank"
                         rel="noreferrer"
-                        className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
+                        className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
                         title="Download Document"
                       >
-                        <Download className="w-3.5 h-3.5" />
+                        <Download className="w-4 h-4" />
                       </a>
                       <button
                         type="button"
                         onClick={() => handleDeleteEvidence(doc.id)}
-                        className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 transition-colors"
+                        className="p-2 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 transition-colors"
                         title="Delete Document"
                       >
-                        <Trash2 className="w-3.5 h-3.5" />
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="py-12 text-center text-slate-400 text-xs bg-slate-900/30 rounded-xl border border-dashed border-slate-800">
-                <Upload className="w-6 h-6 mx-auto mb-2 text-slate-600" />
-                <p className="font-medium text-slate-300 mb-1">Evidence locker is currently empty</p>
-                <p className="text-[11px] text-slate-500">Upload delivery receipts, invoice PDFs, or communications below.</p>
+              <div className="py-12 text-center text-slate-400 text-sm bg-slate-900/30 rounded-xl border border-dashed border-slate-800">
+                <Upload className="w-7 h-7 mx-auto mb-2.5 text-slate-500" />
+                <p className="font-medium text-slate-200 mb-1">Evidence locker is currently empty</p>
+                <p className="text-xs text-slate-400">Upload delivery receipts, invoice PDFs, or communications below.</p>
               </div>
             )}
           </div>
@@ -865,21 +893,21 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
 
           <div className="space-y-3 mt-6">
             {auditEvents.map((event, idx) => (
-              <div key={event.id || idx} className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div key={event.id || idx} className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 flex-shrink-0 font-mono text-xs font-bold">
+                  <div className="w-9 h-9 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 flex-shrink-0 font-mono text-xs sm:text-sm font-bold">
                     #{event.id}
                   </div>
                   <div>
-                    <div className="font-semibold text-white capitalize">{event.action.replace(/_/g, ' ')}</div>
-                    <div className="text-[11px] text-slate-400">
+                    <div className="font-semibold text-white capitalize text-sm">{event.action.replace(/_/g, ' ')}</div>
+                    <div className="text-xs text-slate-400">
                       Actor: <span className="text-indigo-300 font-medium">{event.actor}</span> • {event.timestamp_display || 'Recent'}
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 font-mono text-[10px] text-slate-400">
-                  <span className="text-slate-500">Entry Hash:</span>
+                <div className="flex items-center gap-2 font-mono text-xs text-slate-400">
+                  <span className="text-slate-400">Entry Hash:</span>
                   <span className="code-pill text-cyan-300 truncate max-w-[140px] sm:max-w-[200px]" title={event.entry_hash}>
                     {event.entry_hash?.substring(0, 16)}...
                   </span>
@@ -940,14 +968,14 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
               </div>
             ) : (
               comments.map((c) => (
-                <div key={c.id} className="p-4 rounded-xl bg-slate-900/40 border border-slate-800 text-xs space-y-1.5">
-                  <div className="flex items-center justify-between text-[11px]">
+                <div key={c.id} className="p-4 rounded-xl bg-slate-900/40 border border-slate-800 text-sm space-y-1.5">
+                  <div className="flex items-center justify-between text-xs">
                     <span className="font-bold text-indigo-300">{c.author}</span>
-                    <span className="text-slate-500 font-mono">
+                    <span className="text-slate-400 font-mono">
                       {new Date(c.created_at * 1000).toLocaleString('en-IN')}
                     </span>
                   </div>
-                  <p className="text-slate-300 leading-relaxed whitespace-pre-wrap">{c.comment}</p>
+                  <p className="text-slate-200 leading-relaxed whitespace-pre-wrap">{c.comment}</p>
                 </div>
               ))
             )}
@@ -969,34 +997,34 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
               <button onClick={() => setContestModalOpen(false)} className="text-slate-400 hover:text-white">✕</button>
             </div>
 
-            <p className="text-xs text-slate-300 mb-4">
+            <p className="text-xs sm:text-sm text-slate-300 mb-4 leading-relaxed">
               To prevent unauthorized or altered submissions, this approval token is cryptographically bound to the SHA-256 hash of the exact JSON payload.
             </p>
 
-            <div className="space-y-3 mb-6">
+            <div className="space-y-3.5 mb-6">
               <div>
-                <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
+                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
                   Issued Single-Use Approval Token
                 </label>
-                <div className="code-pill p-2 text-xs text-purple-300 break-all select-all">
+                <div className="code-pill p-3 text-xs sm:text-sm text-purple-300 break-all select-all font-mono font-bold">
                   {contestApprovalToken}
                 </div>
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
+                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
                   Bound Payload SHA-256 Hash
                 </label>
-                <div className="code-pill p-2 text-xs text-cyan-300 break-all select-all">
+                <div className="code-pill p-3 text-xs sm:text-sm text-cyan-300 break-all select-all font-mono">
                   {contestPayloadHash}
                 </div>
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
+                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
                   Exact Submission Payload (Preview)
                 </label>
-                <pre className="bg-slate-950 p-3 rounded-lg border border-slate-800 text-[10px] font-mono text-slate-300 max-h-40 overflow-y-auto">
+                <pre className="bg-slate-950 p-3.5 rounded-xl border border-slate-800 text-xs font-mono text-slate-300 max-h-44 overflow-y-auto">
                   {contestPayloadJson}
                 </pre>
               </div>
@@ -1068,12 +1096,12 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
               </div>
             ) : (
               <div className="space-y-4">
-                <div className="p-3 rounded-lg bg-slate-900 border border-slate-800 text-xs space-y-2">
+                <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 text-sm space-y-2">
                   <div className="flex items-center gap-2 text-emerald-400 font-semibold">
                     <CheckCircle2 className="w-4 h-4" />
                     <span>Amount Verified & Token Bound</span>
                   </div>
-                  <div className="font-mono text-[10px] text-slate-400 break-all">
+                  <div className="font-mono text-xs text-slate-300 break-all">
                     Token: {acceptApprovalToken.substring(0, 24)}...
                   </div>
                 </div>
