@@ -13,7 +13,7 @@ services:
       sizeGB: 1
     envVars:
       - key: APP_ENV
-        value: staging
+        value: production
       - key: DATA_MODE
         value: sim
       - key: DATA_DIR
@@ -27,8 +27,10 @@ services:
       - key: SESSION_SECRET
         generateValue: true
       - key: DISPUTEPILOT_ALLOW_DEV_USERS
-        value: "true"
+        value: "false"
       - key: REQUIRE_INDEPENDENT_APPROVAL
         value: "true"
       - key: REVIEWER_USER
-        value: reviewer
+        sync: false
+      - key: REVIEWER_PASSWORD_HASH
+        sync: false

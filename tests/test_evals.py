@@ -156,12 +156,17 @@ def test_real_llm_eval_offline_checkpoint_skip(tmp_path: Path) -> None:
     import json
     from typing import Any
 
+    from disputepilot.core.models import ReasonClass
+    from disputepilot.core.reasons import classify_reason
     from disputepilot.evals.runner import _load_cases_from_dir, run_real_llm_eval
 
-    cases = _load_cases_from_dir("data/cases_messy", max_cases=5)
+    cases = _load_cases_from_dir("data/cases_messy")
     log_file = tmp_path / "real_llm_outputs.jsonl"
 
-    unclassified_cases = [c for c in cases if c.ground_truth.reason_class != "not_as_described"]
+    unclassified_cases = [
+        c for c in cases
+        if classify_reason(c.dispute.reason_code, llm_client=None).reason_class == ReasonClass.UNCLASSIFIED
+    ]
     first_case = unclassified_cases[0]
 
     # Pre-populate checkpoint log with completion for first_case
@@ -350,10 +355,15 @@ def test_runner_never_repeats_case_already_completed_in_checkpoint_log(tmp_path:
     import json
     from typing import Any
 
+    from disputepilot.core.models import ReasonClass
+    from disputepilot.core.reasons import classify_reason
     from disputepilot.evals.runner import _load_cases_from_dir, run_real_llm_eval
 
-    cases = _load_cases_from_dir("data/cases_messy", max_cases=10)
-    unclassified_cases = [c for c in cases if c.ground_truth.reason_class != "not_as_described"]
+    cases = _load_cases_from_dir("data/cases_messy")
+    unclassified_cases = [
+        c for c in cases
+        if classify_reason(c.dispute.reason_code, llm_client=None).reason_class == ReasonClass.UNCLASSIFIED
+    ]
     case_a, case_b, case_c = unclassified_cases[0], unclassified_cases[1], unclassified_cases[2]
 
     log_file = tmp_path / "real_llm_outputs.jsonl"

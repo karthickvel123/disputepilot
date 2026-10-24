@@ -3,6 +3,7 @@
 import hashlib
 import json
 import logging
+import os
 import sqlite3
 import time
 from pathlib import Path
@@ -10,8 +11,8 @@ from typing import Any
 
 logger = logging.getLogger("disputepilot.audit")
 
-DEFAULT_AUDIT_DB_PATH = Path("data/audit.db")
-DEFAULT_DEAD_LETTER_PATH = Path("data/audit_dead_letter.jsonl")
+DEFAULT_AUDIT_DB_PATH = Path(os.environ.get("DATA_DIR", "data")) / "audit.db"
+DEFAULT_DEAD_LETTER_PATH = Path(os.environ.get("DATA_DIR", "data")) / "audit_dead_letter.jsonl"
 
 
 def compute_hash(data: Any) -> str:

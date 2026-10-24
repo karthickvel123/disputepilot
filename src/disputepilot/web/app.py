@@ -125,16 +125,43 @@ async def security_headers(request: Request, call_next: Any) -> Any:
 if STATIC_DIR.exists():
     app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
-FRONTEND_DIST = Path(__file__).resolve().parents[3] / "frontend" / "dist"
-if FRONTEND_DIST.exists() and (FRONTEND_DIST / "assets").exists():
+def find_frontend_dist() -> Path:
+    candidates: list[Path] = []
+    env_dist = os.environ.get("FRONTEND_DIST", "").strip()
+    if env_dist:
+        candidates.append(Path(env_dist))
+    candidates.append(Path(__file__).resolve().parents[3] / "frontend" / "dist")
+    candidates.append(Path.cwd() / "frontend" / "dist")
+    candidates.append(Path("/app/frontend/dist"))
+    for candidate in candidates:
+        if candidate.exists() and (candidate / "index.html").exists():
+            return candidate
+    return Path(__file__).resolve().parents[3] / "frontend" / "dist"
+
+
+FRONTEND_DIST = find_frontend_dist()
+if (FRONTEND_DIST / "assets").exists():
     app.mount("/assets", StaticFiles(directory=str(FRONTEND_DIST / "assets")), name="spa_assets")
 
-    @app.get("/spa", response_class=HTMLResponse)
-    @app.get("/app", response_class=HTMLResponse)
-    @app.get("/app/{full_path:path}", response_class=HTMLResponse)
-    async def serve_spa(full_path: str = "") -> HTMLResponse:
-        index_file = FRONTEND_DIST / "index.html"
+
+@app.get("/spa", response_class=HTMLResponse)
+@app.get("/app", response_class=HTMLResponse)
+@app.get("/app/{full_path:path}", response_class=HTMLResponse)
+async def serve_spa(full_path: str = "") -> HTMLResponse:
+    dist = find_frontend_dist()
+    index_file = dist / "index.html"
+    if index_file.exists():
         return HTMLResponse(content=index_file.read_text(encoding="utf-8"))
+    return HTMLResponse(
+        content=(
+            "<!DOCTYPE html><html><head><title>DisputePilot Console</title></head>"
+            "<body style='font-family:sans-serif;padding:3rem;text-align:center;background:#0b0f19;color:#f8fafc;'>"
+            "<h1 style='color:#6366f1;'>DisputePilot Frontend Build Not Found</h1>"
+            "<p style='color:#94a3b8;'>Please build the React application by running <code>npm run build</code> inside the <code>frontend/</code> directory.</p>"
+            "</body></html>"
+        ),
+        status_code=503,
+    )
 
 templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
 

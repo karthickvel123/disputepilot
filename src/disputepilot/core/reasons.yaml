@@ -21,6 +21,10 @@ item_not_received:
     - "goods not received"
     - "merchandise not received"
     - "no delivery"
+    - "consignment lost"
+    - "porch was completely empty"
+    - "door step"
+    - "waiting since"
 
 not_as_described:
   codes:
@@ -45,6 +49,10 @@ not_as_described:
     - "broken"
     - "inferior quality"
     - "mismatch"
+    - "cheap plastic"
+    - "cheap panel"
+    - "accessories missing"
+    - "screen shattered"
 
 unauthorised:
   codes:
@@ -75,6 +83,11 @@ unauthorised:
     - "hacked"
     - "unrecognized transaction"
     - "unrecognised transaction"
+    - "card skimmer"
+    - "misused my credentials"
+    - "phone lost"
+    - "stranger purchased"
+    - "suspicious debit"
 
 duplicate_charge:
   codes:
@@ -97,6 +110,11 @@ duplicate_charge:
     - "double billed"
     - "second charge"
     - "two charges"
+    - "twin debits"
+    - "two debits"
+    - "debited account two times"
+    - "deducted twice"
+    - "two times"
 
 subscription_cancelled:
   codes:
@@ -114,6 +132,9 @@ subscription_cancelled:
     - "auto-renewal"
     - "renewal after cancellation"
     - "membership cancelled"
+    - "opted out"
+    - "membership"
+    - "unsubscribed"
 
 refund_not_received:
   codes:
@@ -132,6 +153,9 @@ refund_not_received:
     - "promised refund"
     - "never refunded"
     - "no refund"
+    - "no credit yet"
+    - "promised compensation"
+    - "reversal still not showing"
 
 other:
   codes:
@@ -146,3 +170,5 @@ other:
     - "inquiry"
     - "clarification"
     - "unspecified"
+    - "compliance query"
+    - "audit clarification"

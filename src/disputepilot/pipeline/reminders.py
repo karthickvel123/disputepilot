@@ -4,6 +4,7 @@ Computes reminder timestamps at T-48h, T-24h, and T-12h before the merchant
 response deadline and stores them in an SQLite table. Does NOT send external notifications.
 """
 
+import os
 import sqlite3
 import time
 from pathlib import Path
@@ -12,7 +13,7 @@ from typing import Any
 from disputepilot.core.deadlines import calculate_deadline
 from disputepilot.core.models import DisputeCase
 
-DEFAULT_REMINDERS_DB_PATH = Path("data/reminders.db")
+DEFAULT_REMINDERS_DB_PATH = Path(os.environ.get("DATA_DIR", "data")) / "reminders.db"
 
 
 def init_reminders_db(db_path: Path | str = DEFAULT_REMINDERS_DB_PATH) -> None:

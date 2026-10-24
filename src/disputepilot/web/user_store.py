@@ -13,6 +13,7 @@ from disputepilot.web.auth import (
     DEFAULT_SALT,
     _is_production_mode,
     _is_sim_mode,
+    allow_dev_users,
     hash_password,
     validate_password_strength,
     verify_password,
@@ -52,9 +53,9 @@ class UserStore:
             configured_user = os.environ.get("REVIEWER_USER") or os.environ.get("INITIAL_REVIEWER_USERNAME")
             configured_hash = os.environ.get("REVIEWER_PASSWORD_HASH") or os.environ.get("INITIAL_REVIEWER_PASSWORD_HASH")
 
-            # In production, never seed demo accounts or leave the known development
+            # In production or when dev users are disallowed, never seed demo accounts or leave the known development
             # credentials behind if a pre-existing local database is reused.
-            if _is_production_mode():
+            if _is_production_mode() or not allow_dev_users():
                 if count == 0 and configured_user and configured_hash:
                     now = int(time.time())
                     conn.execute(
@@ -138,9 +139,10 @@ class UserStore:
             return None
         if verify_password(password, user["password_hash"]):
             return user
-        # In simulation mode, if reviewer logs in with standard demo password, heal hash
+        # In simulation mode with dev users allowed, if reviewer logs in with standard demo password, heal hash
         if (
             _is_sim_mode()
+            and allow_dev_users()
             and username.strip().lower() == DEFAULT_REVIEWER_USER.lower()
             and password == DEFAULT_REVIEWER_PASSWORD
         ):

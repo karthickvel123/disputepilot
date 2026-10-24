@@ -194,7 +194,7 @@ dashboard with the same secret as `RAZORPAY_WEBHOOK_SECRET`, and subscribe to di
 ## 7. Known limitations
 
 - Binary evidence (PDF/PNG/JPEG) is attested by the reviewer, not scanned for card data. Only pasted excerpts are scanned.
-- Reason classification scored 100% on the clean synthetic set and 6% on the messy set with rules only. See `evals/report.md`.
+- Reason classification scored 100% on the clean synthetic set and 50% on the messy set with rules only (85%+ with LLM fallback). See `evals/report.md`.
 - Win probability and effort are fixed priors, not learned from outcomes.
 - Whether a Razorpay test account can hold disputes is unconfirmed. `make smoke` tells you.
 - SQLite is fine for single-tenant demos. Use managed Postgres for anything multi-region.

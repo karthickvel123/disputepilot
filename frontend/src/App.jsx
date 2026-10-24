@@ -103,10 +103,9 @@ export default function App() {
   }
 
   const isSimMode = systemSettings?.data_mode === 'sim';
-  const isDemoAllowed = Boolean(
-    systemSettings?.is_demo_allowed ||
-    (systemSettings?.data_mode === 'sim' && systemSettings?.app_env !== 'production')
-  );
+  const isDemoAllowed = systemSettings?.is_demo_allowed !== undefined
+    ? Boolean(systemSettings.is_demo_allowed)
+    : (systemSettings?.data_mode === 'sim' && systemSettings?.app_env !== 'production');
 
   async function handleQuickDemoLogin() {
     if (!isDemoAllowed) {

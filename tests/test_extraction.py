@@ -66,6 +66,7 @@ def test_schema_sent_to_sdk_contains_no_additional_properties() -> None:
     """The schema sent to the Gemini SDK must contain no additionalProperties or defs."""
     import json
 
+    pytest.importorskip("google.genai")
     from google.genai import types
 
     from disputepilot.extraction.llm import sanitize_schema_for_gemini
@@ -364,6 +365,7 @@ def test_nested_pydantic_model_schema_sanitization() -> None:
     """
     import json
 
+    pytest.importorskip("google.genai")
     from google.genai import types
     from pydantic import BaseModel, ConfigDict, Field
 

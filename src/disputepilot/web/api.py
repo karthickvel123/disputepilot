@@ -1866,7 +1866,8 @@ async def api_settings(request: Request) -> dict[str, Any]:
     app_env = getattr(_settings, "app_env", os.environ.get("APP_ENV", "development")).lower()
     is_prod = app_env in ("production", "prod")
     data_mode = _settings.data_mode if _settings else "sim"
-    is_demo_allowed = (data_mode == "sim") and not is_prod
+    dev_users_flag = os.environ.get("DISPUTEPILOT_ALLOW_DEV_USERS", "").strip().lower()
+    is_demo_allowed = (data_mode == "sim") and not is_prod and dev_users_flag not in ("false", "0", "no")
 
     return {
         "app_env": app_env,

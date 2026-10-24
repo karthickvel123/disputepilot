@@ -1,6 +1,7 @@
 """End-to-end processing pipeline for dispute cases."""
 
 import json
+import os
 import re
 from pathlib import Path
 from typing import Any
@@ -105,6 +106,16 @@ def process_case(
     Returns:
         CaseProcessingResult instance containing all pipeline artifacts.
     """
+    base_data = Path(os.environ.get("DATA_DIR", "data"))
+    if str(data_dir) == "data/cases" and os.environ.get("DATA_DIR"):
+        data_dir = base_data / "cases"
+    if str(drafts_dir) == "data/drafts" and os.environ.get("DATA_DIR"):
+        drafts_dir = base_data / "drafts"
+    if str(audit_db_path) == "data/audit.db" and os.environ.get("DATA_DIR"):
+        audit_db_path = base_data / "audit.db"
+    if str(reminders_db_path) == "data/reminders.db" and os.environ.get("DATA_DIR"):
+        reminders_db_path = base_data / "reminders.db"
+
     client = llm_client or get_llm_client()
     gw = gateway or SimGateway(data_dir=Path(data_dir), drafts_dir=Path(drafts_dir))
 

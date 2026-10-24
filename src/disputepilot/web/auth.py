@@ -80,21 +80,36 @@ def _is_production_mode() -> bool:
     return os.environ.get("APP_ENV", "").strip().lower() in {"production", "prod"}
 
 
+def allow_dev_users() -> bool:
+    """Return whether development/demo-user credentials are permitted.
+
+    Disabled when APP_ENV is production/prod, or when DISPUTEPILOT_ALLOW_DEV_USERS is
+    explicitly set to 'false' / '0' / 'no'.
+    """
+    if _is_production_mode():
+        return False
+    val = os.environ.get("DISPUTEPILOT_ALLOW_DEV_USERS", "").strip().lower()
+    return val not in ("false", "0", "no")
+
+
 def get_configured_credentials() -> tuple[str, str]:
     """Retrieve the reviewer username and password hash from the environment.
 
     Live mode has NO built-in fallback: without REVIEWER_USER / REVIEWER_PASSWORD_HASH nobody can
-    log in. The well-known demo credentials exist only when DATA_MODE=sim (synthetic fixtures).
+    log in. The well-known demo credentials exist only when DATA_MODE=sim and dev users are allowed.
     """
-    user = os.environ.get("REVIEWER_USER", "").strip()
-    pwd_hash = os.environ.get("REVIEWER_PASSWORD_HASH", "").strip()
+    user = os.environ.get("REVIEWER_USER", "").strip() or os.environ.get("INITIAL_REVIEWER_USERNAME", "").strip()
+    pwd_hash = (
+        os.environ.get("REVIEWER_PASSWORD_HASH", "").strip()
+        or os.environ.get("INITIAL_REVIEWER_PASSWORD_HASH", "").strip()
+    )
     if user and pwd_hash:
         if _is_production_mode() and is_demo_password_hash(pwd_hash):
             return "", ""
         return user, pwd_hash
     # Never expose well-known demo credentials on a public production deployment,
-    # even when DATA_MODE=sim. Missing configured credentials must fail closed.
-    if _is_sim_mode() and not _is_production_mode():
+    # or when dev users are disabled, even when DATA_MODE=sim. Missing configured credentials must fail closed.
+    if _is_sim_mode() and allow_dev_users():
         return user or DEFAULT_REVIEWER_USER, pwd_hash or DEFAULT_HASH
     return "", ""
 
@@ -109,13 +124,13 @@ def get_session_secret() -> str:
     """Retrieve the session signing key from the environment.
 
     If SESSION_SECRET is unset, a random per-process key is used (sessions then do not survive a
-    restart) rather than a key committed to source. Only non-production sim mode uses a fixed dev key
+    restart) rather than a key committed to source. Only non-production sim mode with dev users uses a fixed dev key
     so local tests stay deterministic.
     """
     configured = os.environ.get("SESSION_SECRET", "").strip()
     if configured:
         return configured
-    if _is_sim_mode() and not _is_production_mode():
+    if _is_sim_mode() and allow_dev_users():
         return "disputepilot_dev_only_session_key_sim_mode"
     return _EPHEMERAL_SECRET
 

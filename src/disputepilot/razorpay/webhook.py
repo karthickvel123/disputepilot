@@ -15,7 +15,7 @@ from fastapi import APIRouter, Header, HTTPException, Request, status
 
 logger = logging.getLogger("disputepilot.razorpay.webhook")
 
-DEFAULT_DB_PATH = Path("data/disputes.db")
+DEFAULT_DB_PATH = Path(os.environ.get("DATA_DIR", "data")) / "disputes.db"
 
 # Callbacks invoked as (event_type, dispute_id) after a NEW (non-duplicate) event is stored.
 # The web app registers one to drop its cached dispute list so the worklist reflects the event.
