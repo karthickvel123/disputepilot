@@ -75,7 +75,11 @@ from disputepilot.razorpay.gateway import (
     DisputesGateway,
     RazorpayAPIError,
 )
-from disputepilot.safety.card_scanner import scan_pdf_bytes
+from disputepilot.safety.card_scanner import (
+    extract_text_from_pdf_bytes,
+    redact_text,
+    scan_pdf_bytes,
+)
 from disputepilot.safety.ingest import ingest_document
 from disputepilot.web.auth import (
     SESSION_COOKIE_NAME,
@@ -529,7 +533,7 @@ async def api_register(request: Request, body: RegisterRequest) -> JSONResponse:
     response = JSONResponse(
         content={
             "user": new_user["username"],
-            "role": "reviewer",
+            "role": assigned_role,
             "full_name": new_user["full_name"],
             "csrf_token": csrf_token,
         },
@@ -1016,6 +1020,7 @@ async def api_dispute_detail(request: Request, case_id: str) -> dict[str, Any]:
         "actionable": _is_actionable(case),
         "data_mode": _settings.data_mode,
         "data_gaps": case.metadata.get("data_gaps", []),
+        "require_independent_approval": bool(_settings.require_independent_approval) if _settings else False,
     }
 
 
@@ -1108,6 +1113,28 @@ async def api_save_draft(request: Request, case_id: str, body: SaveDraftRequest)
     except FileNotFoundError:
         raise HTTPException(status_code=404, detail=f"Case '{case_id}' not found.")
 
+    # Scan draft summary for payment card numbers / CVV
+    scan = ingest_document(
+        body.summary,
+        case_id=case.case_id,
+        known_names=[case.order.customer_name] if case.order and case.order.customer_name else [],
+        protected_ids={case.order.id if case.order else "", case.dispute.id, case.dispute.payment_id},
+    )
+    if scan.findings:
+        raise HTTPException(
+            status_code=400,
+            detail="A payment card number or CVV was detected in the draft.",
+        )
+
+    result_path = _drafts_dir() / f"{case_id}_result.json"
+    if result_path.exists():
+        try:
+            result_data = json.loads(result_path.read_text(encoding="utf-8"))
+            result_data["edited_markdown"] = body.summary
+            result_path.write_text(json.dumps(result_data, indent=2), encoding="utf-8")
+        except (json.JSONDecodeError, OSError) as err:
+            logger.warning("Could not persist edited_markdown to %s: %s", result_path, err)
+
     import httpx
     try:
         _require_gateway().contest_dispute(
@@ -1149,6 +1176,14 @@ class AcceptDisputeRequest(BaseModel):
     csrf_token: str
 
 
+def _resolve_draft_markdown(result_data: dict[str, Any], result: CaseProcessingResult) -> str:
+    """Resolve draft markdown, honoring saved human edits over pure generated draft."""
+    edited = result_data.get("edited_markdown")
+    if isinstance(edited, str) and edited.strip():
+        return edited.strip()
+    return result.clean_draft.to_markdown()
+
+
 @router.post("/disputes/{case_id}/request-approval")
 async def api_request_approval(request: Request, case_id: str) -> dict[str, Any]:
     """Issue approval token for contest submission."""
@@ -1172,7 +1207,7 @@ async def api_request_approval(request: Request, case_id: str) -> dict[str, Any]
     result_data = json.loads(result_path.read_text(encoding="utf-8"))
 
     result = CaseProcessingResult.model_validate(result_data)
-    clean_markdown = result.clean_draft.to_markdown()
+    clean_markdown = _resolve_draft_markdown(result_data, result)
 
     if not _settings.is_sim:
         _ensure_letter_uploaded(case, clean_markdown, session["user"])
@@ -1222,7 +1257,7 @@ async def api_submit_contest(request: Request, case_id: str, body: SubmitContest
 
 
     result = CaseProcessingResult.model_validate(result_data)
-    clean_markdown = result.clean_draft.to_markdown()
+    clean_markdown = _resolve_draft_markdown(result_data, result)
     payload = _build_contest_payload(case, clean_markdown)
 
     expected_hash = compute_contest_payload_hash(payload)
@@ -1546,6 +1581,12 @@ async def api_upload_evidence(
                 detail="A payment card number or CVV was detected in the uploaded PDF document. Remove it before uploading.",
             )
         extraction_status = "scanned_passed"
+        if not clean_excerpt:
+            raw_pdf_text = extract_text_from_pdf_bytes(data)
+            clean_excerpt = redact_text(
+                raw_pdf_text,
+                protected_ids={case.order.id if case.order else "", case.dispute.id, case.dispute.payment_id},
+            ).strip()[:20000]
     elif ext in (".png", ".jpg", ".jpeg"):
         if clean_excerpt:
             extraction_status = "manual_excerpt_provided"
@@ -1595,7 +1636,7 @@ async def api_upload_evidence(
             sha256=digest,
             uploaded_by=session["user"],
             razorpay_doc_id=doc_id,
-            excerpt=clean_excerpt or None,
+            excerpt=clean_excerpt,
         )
 
     # Drop cached draft to trigger re-audit on next review
@@ -1840,6 +1881,7 @@ async def api_settings(request: Request) -> dict[str, Any]:
         "is_demo_allowed": is_demo_allowed,
         "problems": _razorpay_problems + _auth_problems,
         "evidence_categories": list(EVIDENCE_CATEGORIES),
+        "require_independent_approval": bool(_settings.require_independent_approval) if _settings else False,
     }
 
 

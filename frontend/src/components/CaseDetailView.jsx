@@ -72,7 +72,7 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated, userRole
 
   // Evidence upload form state
   const [uploadFile, setUploadFile] = useState(null);
-  const [uploadCategory, setUploadCategory] = useState('proof_of_delivery');
+  const [uploadCategory, setUploadCategory] = useState('shipping_proof');
   const [attestNoCard, setAttestNoCard] = useState(false);
   const [uploadExcerpt, setUploadExcerpt] = useState('');
   const [uploading, setUploading] = useState(false);
@@ -103,7 +103,7 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated, userRole
       setData(caseData);
 
       // Initialize draft content from cached analysis or default
-      setDraftContent(renderCleanDraft(caseData.analysis?.clean_draft));
+      setDraftContent(caseData.analysis?.edited_markdown || renderCleanDraft(caseData.analysis?.clean_draft));
 
       // Fetch case audit events
       try {
@@ -345,6 +345,10 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated, userRole
   ].filter(({ category }) => typeof category === 'string' && category.trim());
   const evidenceStatuses = analysis?.evidence_report?.category_status || {};
 
+  const totalCards = (data.safety_findings || []).reduce((acc, f) => acc + (f.card_count || 0), 0);
+  const totalInjections = (data.safety_findings || []).reduce((acc, f) => acc + (f.injection_count || 0), 0);
+  const totalPii = (data.safety_findings || []).reduce((acc, f) => acc + (f.pii_count || 0), 0);
+
   return (
     <div className="space-y-6 animate-fade-in pb-16">
       {/* Top Navigation & Action Header */}
@@ -487,11 +491,13 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated, userRole
             </div>
             <div className="flex justify-between py-1.5 border-b border-slate-800/60">
               <span className="text-slate-400 font-medium">Shipping Tracking #</span>
-              <span className="font-mono text-cyan-400 font-semibold">{order?.tracking_number || 'TRK-VERIFIED-FEDEX'}</span>
+              <span className="font-mono text-cyan-400 font-semibold">{order?.tracking_number || 'Not Provided'}</span>
             </div>
             <div className="flex justify-between py-1.5">
               <span className="text-slate-400 font-medium">Delivery Status</span>
-              <span className="text-emerald-400 font-semibold">Delivered & Signed</span>
+              <span className="text-emerald-400 font-semibold">
+                {order?.delivered_at ? 'Delivered' : (order?.status || 'Not Available')}
+              </span>
             </div>
           </div>
         </div>
@@ -512,7 +518,11 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated, userRole
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium text-slate-400">Recommendation:</span>
                 <span className={`badge text-xs px-3 py-1 font-bold ${
-                  analysis.recommendation?.decision === 'contest' ? 'badge-won' : 'badge-lost'
+                  analysis.recommendation?.decision === 'contest'
+                    ? 'badge-won'
+                    : analysis.recommendation?.decision === 'accept'
+                    ? 'badge-lost'
+                    : 'badge-open'
                 }`}>
                   {analysis.recommendation?.decision?.toUpperCase()}
                 </span>
@@ -523,6 +533,14 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated, userRole
                   <span className="text-slate-400 font-medium">Win Probability (Heuristic):</span>
                   <span className="font-mono font-bold text-emerald-400">
                     {analysis.recommendation?.p_win != null ? `${Math.round(analysis.recommendation.p_win * 100)}%` : 'n/a'}
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-400 font-medium">Expected Net Advantage:</span>
+                  <span className="font-mono font-bold text-white">
+                    {typeof analysis.recommendation?.expected_value_paise === 'number'
+                      ? `₹${(analysis.recommendation.expected_value_paise / 100).toFixed(2)}`
+                      : 'n/a'}
                   </span>
                 </div>
                 <div className="w-full h-2.5 bg-slate-900 rounded-full overflow-hidden">
@@ -536,9 +554,22 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated, userRole
                 </div>
               </div>
 
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed bg-slate-900/50 p-3.5 rounded-xl border border-slate-800/80">
-                {analysis.recommendation?.rationale || 'Carrier delivery confirmation and customer invoice strongly support successful contest under scheme rules.'}
-              </p>
+              {analysis.recommendation?.reasons && analysis.recommendation.reasons.length > 0 ? (
+                <div className="text-xs sm:text-sm text-slate-300 leading-relaxed bg-slate-900/50 p-3.5 rounded-xl border border-slate-800/80 space-y-2">
+                  <p className="font-medium text-white">{analysis.recommendation.reasons[0]}</p>
+                  {analysis.recommendation.reasons.length > 1 && (
+                    <ul className="list-disc pl-4 space-y-1 text-xs text-slate-400">
+                      {analysis.recommendation.reasons.slice(1).map((r, i) => (
+                        <li key={i}>{r}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              ) : (
+                <p className="text-xs sm:text-sm text-slate-400 bg-slate-900/50 p-3.5 rounded-xl border border-slate-800/80">
+                  No recommendation reasons available.
+                </p>
+              )}
             </div>
           ) : (
             <div className="py-4 text-center">
@@ -722,15 +753,17 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated, userRole
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between items-center p-3 rounded-xl bg-slate-900/60 border border-slate-800">
                   <span className="text-slate-400 font-medium">Card Number PANs</span>
-                  <span className="text-emerald-400 font-mono font-semibold">0 Detected (Safe)</span>
+                  <span className="text-emerald-400 font-mono font-semibold">{totalCards} Redacted</span>
                 </div>
                 <div className="flex justify-between items-center p-3 rounded-xl bg-slate-900/60 border border-slate-800">
                   <span className="text-slate-400 font-medium">Prompt Injection Tests</span>
-                  <span className="text-emerald-400 font-mono font-semibold">Clean (Passed)</span>
+                  <span className="text-emerald-400 font-mono font-semibold">
+                    {totalInjections > 0 ? `${totalInjections} Flagged (Fenced)` : '0 Detected (Clean)'}
+                  </span>
                 </div>
                 <div className="flex justify-between items-center p-3 rounded-xl bg-slate-900/60 border border-slate-800">
                   <span className="text-slate-400 font-medium">PII Token Replacement</span>
-                  <span className="text-cyan-400 font-mono font-semibold">Vault Activated</span>
+                  <span className="text-cyan-400 font-mono font-semibold">{totalPii} Tokens Vaulted</span>
                 </div>
               </div>
             </div>
@@ -822,11 +855,22 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated, userRole
                   onChange={(e) => setUploadCategory(e.target.value)}
                   className="input-control text-xs"
                 >
-                  <option value="proof_of_delivery">Proof of Delivery</option>
-                  <option value="customer_communication">Customer Communication</option>
-                  <option value="refund_policy">Refund Policy / T&C</option>
-                  <option value="cancellation_policy">Cancellation Policy</option>
-                  <option value="explanation_letter">Explanation Letter</option>
+                  {(data.evidence_categories || [
+                    'shipping_proof',
+                    'billing_proof',
+                    'cancellation_proof',
+                    'customer_communication',
+                    'proof_of_service',
+                    'explanation_letter',
+                    'refund_confirmation',
+                    'access_activity_log',
+                    'refund_cancellation_policy',
+                    'term_and_conditions'
+                  ]).map((cat) => (
+                    <option key={cat} value={cat} className="capitalize">
+                      {cat.replace(/_/g, ' ')}
+                    </option>
+                  ))}
                 </select>
               </div>
 
@@ -1013,6 +1057,15 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated, userRole
               <button onClick={() => setContestModalOpen(false)} className="text-slate-400 hover:text-white">✕</button>
             </div>
 
+            {data.require_independent_approval && (
+              <div className="p-3 mb-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-300 flex items-start gap-2">
+                <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-amber-400" />
+                <div>
+                  <span className="font-semibold">Independent Two-Person Approval Enforced:</span> A second reviewer must execute the final submission. If you are the second reviewer executing an approval generated by another reviewer, paste the issued token and payload hash below.
+                </div>
+              </div>
+            )}
+
             <p className="text-xs sm:text-sm text-slate-300 mb-4 leading-relaxed">
               To prevent unauthorized or altered submissions, this approval token is cryptographically bound to the SHA-256 hash of the exact JSON payload.
             </p>
@@ -1020,20 +1073,28 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated, userRole
             <div className="space-y-3.5 mb-6">
               <div>
                 <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                  Issued Single-Use Approval Token
+                  Issued Single-Use Approval Token {data.require_independent_approval && '(Editable for 2nd Reviewer)'}
                 </label>
-                <div className="code-pill p-3 text-xs sm:text-sm text-purple-300 break-all select-all font-mono font-bold">
-                  {contestApprovalToken}
-                </div>
+                <input
+                  type="text"
+                  value={contestApprovalToken}
+                  onChange={(e) => setContestApprovalToken(e.target.value)}
+                  placeholder="Paste single-use approval token..."
+                  className="input-control text-xs sm:text-sm font-mono font-bold text-purple-300"
+                />
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
                   Bound Payload SHA-256 Hash
                 </label>
-                <div className="code-pill p-3 text-xs sm:text-sm text-cyan-300 break-all select-all font-mono">
-                  {contestPayloadHash}
-                </div>
+                <input
+                  type="text"
+                  value={contestPayloadHash}
+                  onChange={(e) => setContestPayloadHash(e.target.value)}
+                  placeholder="Paste payload SHA-256 hash..."
+                  className="input-control text-xs sm:text-sm font-mono text-cyan-300"
+                />
               </div>
 
               <div>
@@ -1081,6 +1142,15 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated, userRole
               <button onClick={() => setAcceptModalOpen(false)} className="text-slate-400 hover:text-white">✕</button>
             </div>
 
+            {data.require_independent_approval && (
+              <div className="p-3 mb-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-300 flex items-start gap-2">
+                <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-amber-400" />
+                <div>
+                  <span className="font-semibold">Independent Two-Person Approval Enforced:</span> A second reviewer must execute the final acceptance using the token issued by the first reviewer.
+                </div>
+              </div>
+            )}
+
             <p className="text-xs text-rose-300/90 mb-4 bg-rose-500/10 p-3 rounded-lg border border-rose-500/20">
               <strong>Warning:</strong> Accepting this dispute will permanently debit <strong>₹{amountRupees}</strong> from your merchant balance and close the case.
             </p>
@@ -1109,16 +1179,60 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated, userRole
                 >
                   Verify Amount & Generate Token
                 </button>
+
+                {data.require_independent_approval && (
+                  <div className="pt-2 border-t border-slate-800 space-y-3">
+                    <p className="text-xs font-semibold text-slate-300">
+                      Or execute as 2nd reviewer with existing token:
+                    </p>
+                    <div>
+                      <label className="block text-xs font-medium text-slate-400 mb-1">Approval Token</label>
+                      <input
+                        type="text"
+                        value={acceptApprovalToken}
+                        onChange={(e) => setAcceptApprovalToken(e.target.value)}
+                        placeholder="Paste acceptance token..."
+                        className="input-control text-xs font-mono"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-slate-400 mb-1">Payload Hash</label>
+                      <input
+                        type="text"
+                        value={acceptPayloadHash}
+                        onChange={(e) => setAcceptPayloadHash(e.target.value)}
+                        placeholder="Paste payload hash..."
+                        className="input-control text-xs font-mono"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="space-y-4">
-                <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 text-sm space-y-2">
-                  <div className="flex items-center gap-2 text-emerald-400 font-semibold">
+                <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 text-sm space-y-3">
+                  <div className="flex items-center gap-2 text-emerald-400 font-semibold text-xs">
                     <CheckCircle2 className="w-4 h-4" />
                     <span>Amount Verified & Token Bound</span>
                   </div>
-                  <div className="font-mono text-xs text-slate-300 break-all">
-                    Token: {acceptApprovalToken.substring(0, 24)}...
+                  <div>
+                    <label className="block text-xs font-medium text-slate-400 mb-1">Approval Token</label>
+                    <input
+                      type="text"
+                      value={acceptApprovalToken}
+                      onChange={(e) => setAcceptApprovalToken(e.target.value)}
+                      className="input-control text-xs font-mono"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-slate-400 mb-1">Payload Hash</label>
+                    <input
+                      type="text"
+                      value={acceptPayloadHash}
+                      onChange={(e) => setAcceptPayloadHash(e.target.value)}
+                      placeholder="Payload SHA-256 hash..."
+                      className="input-control text-xs font-mono"
+                    />
                   </div>
                 </div>
 

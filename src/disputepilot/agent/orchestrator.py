@@ -32,7 +32,7 @@ class EvidenceAgent:
         self,
         tool_registry: ReadOnlyToolRegistry,
         llm_client: LLMClient | None = None,
-        max_steps: int = 10,
+        max_steps: int = 20,
         rule_only_reasons: bool = False,
     ) -> None:
         self.tools = tool_registry
@@ -271,7 +271,7 @@ class EvidenceAgent:
         """Construct a minimal report when execution is stopped by step limit."""
         return EvidenceReport(
             case_id=case_id,
-            reason_class=ReasonClass.OTHER.value,
+            reason_class=ReasonClass.UNCLASSIFIED.value,
             category_status={},
             category_documents={},
             extraction_confidence={},

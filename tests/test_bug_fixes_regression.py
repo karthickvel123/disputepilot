@@ -538,3 +538,219 @@ def test_bug13_grounded_engine_status_messaging(test_env):
     assert res.status_code == 200
     data = res.json()
     assert "zero hallucination guarantee" not in data.get("message", "").lower()
+
+
+# ---------------------------------------------------------------------------
+# Task 7: Regression Tests
+# ---------------------------------------------------------------------------
+
+def test_pdf_evidence_upload_empty_excerpt_auto_extraction(test_env):
+    """Uploading a PDF evidence file with empty excerpt stores non-null string and extracts text."""
+    client = test_env["client"]
+    cases_dir = test_env["cases_dir"]
+    locker = test_env["locker"]
+
+    case = _create_dummy_case("disp_pdf_excerpt_test", cases_dir)
+
+    cookie_val, csrf = create_session_cookie_value(user="reviewer1", role="reviewer")
+    client.cookies.set("disputepilot_session", cookie_val)
+
+    clean_pdf = (
+        b"%PDF-1.4\n1 0 obj\n<< /Length 50 >>\nstream\n"
+        b"BT\n/F1 12 Tf\n(Courier Delivery Signed Proof Order 9988) Tj\nET\n"
+        b"endstream\nendobj\n%%EOF"
+    )
+
+    files = {"file": ("pod_document.pdf", clean_pdf, "application/pdf")}
+    res = client.post(
+        f"/api/v1/disputes/{case.case_id}/evidence",
+        data={"category": "shipping_proof", "attest_no_card_data": "yes", "excerpt": "", "csrf_token": csrf},
+        files=files,
+    )
+    assert res.status_code == 200
+
+    docs = locker.list_for_dispute(case.dispute.id)
+    assert len(docs) == 1
+    doc = docs[0]
+    assert doc.excerpt is not None
+    assert isinstance(doc.excerpt, str)
+    assert "Courier Delivery Signed Proof" in doc.excerpt
+
+    # Verify SQLite schema constraint compliance
+    with sqlite3.connect(str(test_env["data_dir"] / "locker.db")) as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT excerpt FROM locker_documents WHERE id = ?", (doc.id,))
+        row = cursor.fetchone()
+        assert row is not None
+        assert row[0] is not None
+        assert "Courier Delivery Signed Proof" in row[0]
+
+
+def test_edited_rebuttal_draft_persists_and_binds_to_approval(test_env):
+    """Saving edited draft persists edited_markdown and binds to request-approval payload hash."""
+    client = test_env["client"]
+    cases_dir = test_env["cases_dir"]
+    data_dir = test_env["data_dir"]
+    drafts_dir = data_dir / "drafts"
+    drafts_dir.mkdir(parents=True, exist_ok=True)
+
+    case = _create_dummy_case("disp_draft_edit_test", cases_dir)
+
+    # Configure a SimGateway so gateway calls succeed in test environment
+    from disputepilot.razorpay.gateway import SimGateway
+    gw = SimGateway(cases_dir)
+    configure_api(
+        settings=test_env["settings"],
+        gateway=gw,
+        approval_service=test_env["approval_svc"],
+        locker=test_env["locker"],
+    )
+
+    cookie_val, csrf = create_session_cookie_value(user="reviewer1", role="reviewer")
+    client.cookies.set("disputepilot_session", cookie_val)
+
+    # Setup initial analysis result on disk
+    from disputepilot.agent.models import EvidenceReport
+    from disputepilot.core.recommend import Recommendation
+    from disputepilot.drafting.drafter import DraftSentence, RebuttalDraft
+    from disputepilot.drafting.verifier import VerifierReport
+    from disputepilot.pipeline.orchestrator import CaseProcessingResult
+
+    clean_draft = RebuttalDraft(
+        case_id=case.case_id,
+        dispute_id=case.dispute.id,
+        summary=[DraftSentence(sentence="Original generated draft.")],
+    )
+    res_obj = CaseProcessingResult(
+        case_id=case.case_id,
+        recommendation=Recommendation(
+            case_id=case.case_id,
+            decision="contest",
+            p_win=0.8,
+            p_win_low=0.7,
+            p_win_high=0.9,
+            expected_value_paise=10000,
+            is_uncertain=False,
+            preselect_action="contest",
+            reasons=["Strong evidence"],
+        ),
+        evidence_report=EvidenceReport(
+            case_id=case.case_id,
+            reason_class="item_not_received",
+            category_status={},
+            category_documents={},
+            extraction_confidence={},
+            cross_check_flags=[],
+            specific_asks={},
+        ),
+        verifier_report=VerifierReport(
+            case_id=case.case_id,
+            total_sentences=1,
+            valid_sentences=1,
+            stripped_count=0,
+            is_clean=True,
+        ),
+        clean_draft=clean_draft,
+        audit_hash="a" * 64,
+    )
+    result_path = drafts_dir / f"{case.case_id}_result.json"
+    result_path.write_text(json.dumps(res_obj.model_dump(), indent=2), encoding="utf-8")
+
+    # 1. Reject draft containing credit card number
+    bad_draft = "Rebuttal with illegal card 4111111111111111 in text."
+    res_bad = client.post(
+        f"/api/v1/disputes/{case.case_id}/draft",
+        json={"summary": bad_draft, "csrf_token": csrf},
+    )
+    assert res_bad.status_code == 400
+    assert "card number or cvv was detected" in res_bad.json()["detail"].lower()
+
+    # 2. Save valid human-edited draft
+    edited_text = "### Custom Human Rebuttal\nCarrier verified package was hand-delivered."
+    res_save = client.post(
+        f"/api/v1/disputes/{case.case_id}/draft",
+        json={"summary": edited_text, "csrf_token": csrf},
+    )
+    assert res_save.status_code == 200
+
+    saved_data = json.loads(result_path.read_text(encoding="utf-8"))
+    assert saved_data.get("edited_markdown") == edited_text
+
+    # 3. Request approval binds the edited markdown into payload_hash
+    res_appr = client.post(
+        f"/api/v1/disputes/{case.case_id}/request-approval",
+        headers={"x-csrf-token": csrf},
+    )
+    assert res_appr.status_code == 200
+    appr_data = res_appr.json()
+
+    from disputepilot.razorpay.approval import compute_contest_payload_hash
+    expected_hash = compute_contest_payload_hash(appr_data["payload"])
+    assert appr_data["payload_hash"] == expected_hash
+    assert appr_data["payload"]["summary"] == edited_text
+
+
+def test_invoice_payment_mismatch_penalty_reduces_p_win():
+    """INVOICE_PAYMENT_MISMATCH cross check flag applies -0.25 penalty during compute_p_win."""
+    from disputepilot.agent.models import EvidenceReport
+    from disputepilot.core.models import (
+        DisputeCase,
+        DisputePhase,
+        DisputeStatus,
+        Order,
+        RazorpayDispute,
+    )
+    from disputepilot.core.recommend import recommend_action
+    from disputepilot.extraction.cross_checks import CrossCheckFlag, SeverityTier
+
+    now = int(time.time())
+    disp = RazorpayDispute(
+        id="disp_mismatch_test",
+        payment_id="pay_mismatch_test",
+        amount=50000,
+        currency="INR",
+        amount_deducted=50000,
+        reason_code="subscription_cancelled",
+        reason_description="Cancelled subscription charge",
+        phase=DisputePhase.CHARGEBACK,
+        status=DisputeStatus.OPEN,
+        respond_by=now + 86400,
+        created_at=now,
+    )
+    order = Order(id="order_1", amount=50000, currency="INR", status="paid", created_at=now - 86400)
+    case = DisputeCase(case_id="case_mismatch", dispute=disp, order=order)
+
+    # Base report without flags, required evidence present so baseline doesn't floor
+    rep_base = EvidenceReport(
+        case_id=case.case_id,
+        reason_class="subscription_cancelled",
+        category_status={"refund_cancellation_policy": "present"},
+        category_documents={},
+        extraction_confidence={},
+        cross_check_flags=[],
+        specific_asks={},
+    )
+    rec_base = recommend_action(case=case, evidence_report=rep_base)
+
+    # Report with INVOICE_PAYMENT_MISMATCH flag
+    mismatch_flag = CrossCheckFlag(
+        flag_code="INVOICE_PAYMENT_MISMATCH",
+        severity=SeverityTier.HIGH,
+        message="Invoice payment ID mismatch",
+        details={"field_a": "pay_1", "field_b": "pay_2"},
+    )
+    rep_flagged = EvidenceReport(
+        case_id=case.case_id,
+        reason_class="subscription_cancelled",
+        category_status={"refund_cancellation_policy": "present"},
+        category_documents={},
+        extraction_confidence={},
+        cross_check_flags=[mismatch_flag],
+        specific_asks={},
+    )
+    rec_flagged = recommend_action(case=case, evidence_report=rep_flagged)
+
+    assert rec_flagged.p_win < rec_base.p_win
+    assert round(rec_base.p_win - rec_flagged.p_win, 2) == 0.25
+    assert any("INVOICE_PAYMENT_MISMATCH" in r for r in rec_flagged.reasons)
+

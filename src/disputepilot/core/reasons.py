@@ -236,7 +236,8 @@ def classify_reason(
                 "- subscription_cancelled\n"
                 "- refund_not_received\n"
                 "- other\n"
-                "- unclassified"
+                "- unclassified\n\n"
+                "Disputes about unwanted subscription renewals, auto-debits after cancellation, or charges after a free trial ends (even if phrased as 'without permission') must be classified as 'subscription_cancelled', whereas 'unauthorised' is strictly for third-party fraud, stolen cards, or unrecognized account takeovers."
             )
             user_prompt = (
                 f"Dispute reason text to classify:\n<<<DISPUTE_REASON>>>\n{reason_code_or_text}\n<<<END_DISPUTE_REASON>>>\n\n"

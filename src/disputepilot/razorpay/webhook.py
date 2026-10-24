@@ -37,8 +37,11 @@ def init_db(db_path: Path | str = DEFAULT_DB_PATH) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)
 
     with sqlite3.connect(str(path), timeout=30.0) as conn:
-        conn.execute("PRAGMA journal_mode=WAL")
         conn.execute("PRAGMA busy_timeout=30000")
+        try:
+            conn.execute("PRAGMA journal_mode=WAL")
+        except sqlite3.OperationalError:
+            pass
         conn.executescript(
             """
             CREATE TABLE IF NOT EXISTS dispute_events (
@@ -58,7 +61,8 @@ def init_db(db_path: Path | str = DEFAULT_DB_PATH) -> None:
 def is_event_processed(event_id: str, db_path: Path | str = DEFAULT_DB_PATH) -> bool:
     """Check whether a webhook event has already been recorded in SQLite."""
     init_db(db_path)
-    with sqlite3.connect(str(db_path)) as conn:
+    with sqlite3.connect(str(db_path), timeout=30.0) as conn:
+        conn.execute("PRAGMA busy_timeout=30000")
         cursor = conn.cursor()
         cursor.execute("SELECT 1 FROM dispute_events WHERE event_id = ?", (event_id,))
         return cursor.fetchone() is not None
@@ -83,8 +87,11 @@ def record_dispute_event_atomic(
     """
     init_db(db_path)
     with sqlite3.connect(str(db_path), timeout=30.0) as conn:
-        conn.execute("PRAGMA journal_mode=WAL")
         conn.execute("PRAGMA busy_timeout=30000")
+        try:
+            conn.execute("PRAGMA journal_mode=WAL")
+        except sqlite3.OperationalError:
+            pass
         cursor = conn.cursor()
         try:
             cursor.execute(

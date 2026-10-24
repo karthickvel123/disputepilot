@@ -7,6 +7,8 @@ from pydantic import BaseModel, Field
 
 from disputepilot.core.models import DisputeCase
 from disputepilot.extraction.extractor import ExtractedDocument
+from disputepilot.safety.ingest import get_vault
+from disputepilot.safety.pii import rehydrate
 
 
 class Fact(BaseModel):
@@ -254,12 +256,16 @@ def build_fact_set(case: DisputeCase, extracted_docs: list[ExtractedDocument]) -
     # 4. Verified Extracted Document Fields
     for doc in extracted_docs:
         doc_source = f"doc:{doc.doc_id}"
+        vault = get_vault(doc.vault_id) if hasattr(doc, "vault_id") and doc.vault_id else None
         for field_name, field_obj in doc.surviving_fields.items():
             val = getattr(field_obj, "value", None)
             if val is None and isinstance(field_obj, dict):
                 val = field_obj.get("value")
             if val is None:
                 val = str(field_obj)
+
+            if vault is not None and isinstance(val, str):
+                val = rehydrate(val, vault)
 
             fact_id = f"fact_doc_{doc.doc_id}_{field_name}"
             # Render human-friendly text

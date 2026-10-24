@@ -190,6 +190,8 @@ def ingest_document(
         )
 
     # 7. Register vault for per-case rehydration with TTL
+    for k in [k for k, v in _VAULT_REGISTRY.items() if v.is_expired()]:
+        _VAULT_REGISTRY.pop(k, None)
     vault_id = f"vault_{case_id}_{secrets.token_hex(4)}"
     vault.vault_id = vault_id
     vault.ttl = ttl
