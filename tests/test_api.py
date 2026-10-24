@@ -6,8 +6,8 @@ import pytest
 from fastapi.testclient import TestClient
 
 from disputepilot.pipeline.orchestrator import process_case
-from disputepilot.web.app import app, gateway
 from disputepilot.web import api as web_api
+from disputepilot.web.app import app, gateway
 from disputepilot.web.auth import (
     SESSION_COOKIE_NAME,
     create_session_cookie_value,

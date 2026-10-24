@@ -1,9 +1,7 @@
 """Comprehensive regression test suite verifying fixes for all 13 reported bugs."""
 
-import io
 import json
 import sqlite3
-import tempfile
 import time
 from pathlib import Path
 from unittest.mock import MagicMock, patch
@@ -18,13 +16,10 @@ from disputepilot.core.models import (
     DisputePhase,
     DisputeStatus,
     Order,
-    OrderItem,
     RazorpayDispute,
-    RazorpayEvidence,
 )
 from disputepilot.live.locker import EvidenceLocker
 from disputepilot.pipeline.audit import (
-    DEFAULT_DEAD_LETTER_PATH,
     init_audit_db,
     reconcile_audit_log,
     record_audit_event,
@@ -32,13 +27,14 @@ from disputepilot.pipeline.audit import (
 from disputepilot.razorpay.approval import ApprovalService, compute_accept_payload_hash
 from disputepilot.razorpay.gateway import RazorpayGateway
 from disputepilot.safety.card_scanner import (
-    extract_text_from_pdf_bytes,
     scan_pdf_bytes,
-    scan_text,
 )
-from disputepilot.web.api import _ensure_actionable, configure_api, router as api_router
+from disputepilot.web.api import _ensure_actionable, configure_api
 from disputepilot.web.app import app
-from disputepilot.web.auth import create_session_cookie_value, get_cookie_samesite_and_secure
+from disputepilot.web.auth import (
+    create_session_cookie_value,
+    get_cookie_samesite_and_secure,
+)
 
 
 @pytest.fixture

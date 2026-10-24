@@ -15,8 +15,6 @@ import time
 from pathlib import Path
 from unittest.mock import MagicMock
 
-import pytest
-
 from disputepilot.core.models import (
     DisputeCase,
     DisputePhase,
@@ -26,7 +24,6 @@ from disputepilot.core.models import (
     OrderItem,
     RazorpayDispute,
     RazorpayEvidence,
-    ReasonClass,
     Refund,
 )
 from disputepilot.drafting import (

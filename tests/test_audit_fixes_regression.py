@@ -389,8 +389,8 @@ def test_shared_evidence_deletion_safety(audit_env):
     locker = audit_env["locker"]
     headers = _login_client(client)
 
-    case1 = _create_test_case("disp_ev_01", cases_dir)
-    case2 = _create_test_case("disp_ev_02", cases_dir)
+    _create_test_case("disp_ev_01", cases_dir)
+    _create_test_case("disp_ev_02", cases_dir)
 
     dummy_content = b"%PDF-1.4 dummy evidence pdf payload"
     import hashlib
@@ -439,3 +439,168 @@ def test_shared_evidence_deletion_safety(audit_env):
     # Physical file should now be deleted since references dropped to 0
     assert locker.count_by_hash(file_hash) == 0
     assert not disk_file.exists()
+
+
+def test_auditor_role_blocked_from_mutations_allowed_read(audit_env):
+    """Verify that users with role 'auditor' are read-only:
+
+    - Can read disputes, case detail, audit logs (200 OK)
+    - Forbidden with 403 on all mutating operations (analyze, draft, submit, accept, comments, import).
+    """
+    client = audit_env["client"]
+    cases_dir = audit_env["cases_dir"]
+    user_store = audit_env["user_store"]
+
+    user_store.create_user("auditor_jane", "auditpass123", full_name="Auditor Jane", role="auditor")
+    headers = _login_client(client, username="auditor_jane", role="auditor")
+
+    case = _create_test_case("disp_auditor_01", cases_dir)
+
+    # 1. Read operations succeed with 200 OK
+    resp_list = client.get("/api/v1/disputes", headers=headers)
+    assert resp_list.status_code == 200
+
+    resp_detail = client.get(f"/api/v1/disputes/{case.case_id}", headers=headers)
+    assert resp_detail.status_code == 200
+
+    resp_audit = client.get(f"/api/v1/disputes/{case.case_id}/audit", headers=headers)
+    assert resp_audit.status_code == 200
+
+    resp_global_audit = client.get("/api/v1/audit", headers=headers)
+    assert resp_global_audit.status_code == 200
+
+    # 2. Mutation operations blocked with 403 Forbidden
+    resp_analyze = client.post(f"/api/v1/disputes/{case.case_id}/analyze", headers=headers)
+    assert resp_analyze.status_code == 403
+    assert "Reviewer or administrator privileges required" in resp_analyze.json()["detail"]
+
+    resp_draft = client.post(
+        f"/api/v1/disputes/{case.case_id}/draft",
+        json={"summary": "Rebuttal summary text", "csrf_token": headers["x-csrf-token"]},
+        headers=headers,
+    )
+    assert resp_draft.status_code == 403
+
+    resp_req_appr = client.post(f"/api/v1/disputes/{case.case_id}/request-approval", headers=headers)
+    assert resp_req_appr.status_code == 403
+
+    resp_submit = client.post(
+        f"/api/v1/disputes/{case.case_id}/submit",
+        json={"approval_token": "dummy", "payload_hash": "dummy", "csrf_token": headers["x-csrf-token"]},
+        headers=headers,
+    )
+    assert resp_submit.status_code == 403
+
+    resp_req_accept = client.post(
+        f"/api/v1/disputes/{case.case_id}/request-accept",
+        json={"typed_amount": "2500.00", "csrf_token": headers["x-csrf-token"]},
+        headers=headers,
+    )
+    assert resp_req_accept.status_code == 403
+
+    resp_accept = client.post(
+        f"/api/v1/disputes/{case.case_id}/accept",
+        json={"approval_token": "dummy", "payload_hash": "dummy", "csrf_token": headers["x-csrf-token"]},
+        headers=headers,
+    )
+    assert resp_accept.status_code == 403
+
+    resp_comment = client.post(
+        f"/api/v1/disputes/{case.case_id}/comments",
+        json={"comment": "Auditor comment attempt"},
+        headers=headers,
+    )
+    assert resp_comment.status_code == 403
+
+    resp_reject = client.post(
+        f"/api/v1/disputes/{case.case_id}/reject",
+        json={"reason": "Auditor rejection attempt"},
+        headers=headers,
+    )
+    assert resp_reject.status_code == 403
+
+    resp_import = client.post(
+        "/api/v1/disputes/import-csv",
+        json={"csv_data": "dispute_id,amount,reason_code,reason_description\ndisp_1,100,fraud,test"},
+        headers=headers,
+    )
+    assert resp_import.status_code == 403
+
+
+def test_webhook_stale_and_future_timestamp_rejection(tmp_path):
+    """Verify that incoming webhooks with stale (>24h) or future (>300s) created_at are rejected."""
+    import hashlib
+    import hmac
+
+    from fastapi import FastAPI
+
+    from disputepilot.razorpay.webhook import create_webhook_router
+
+    secret = "sec_test_webhook_replay_protection_123"
+    db_file = tmp_path / "webhook_events.db"
+    router = create_webhook_router(webhook_secret=secret, db_path=db_file)
+    test_app = FastAPI()
+    test_app.include_router(router)
+    client = TestClient(test_app)
+
+    now = int(time.time())
+
+    # 1. Stale event (> 24 hours old)
+    stale_payload = {
+        "entity": "event",
+        "id": "evt_stale_01",
+        "event": "dispute.created",
+        "created_at": now - 90000,
+        "payload": {"dispute": {"entity": {"id": "disp_stale_01", "amount": 5000}}},
+    }
+    raw_stale = json.dumps(stale_payload).encode("utf-8")
+    sig_stale = hmac.new(secret.encode("utf-8"), raw_stale, hashlib.sha256).hexdigest()
+
+    resp_stale = client.post(
+        "/webhook",
+        content=raw_stale,
+        headers={"Content-Type": "application/json", "X-Razorpay-Signature": sig_stale},
+    )
+    assert resp_stale.status_code == 400
+    assert "expired" in resp_stale.json()["detail"].lower()
+
+    # 2. Future-dated event (> 300s in future)
+    future_payload = {
+        "entity": "event",
+        "id": "evt_future_01",
+        "event": "dispute.created",
+        "created_at": now + 600,
+        "payload": {"dispute": {"entity": {"id": "disp_future_01", "amount": 5000}}},
+    }
+    raw_future = json.dumps(future_payload).encode("utf-8")
+    sig_future = hmac.new(secret.encode("utf-8"), raw_future, hashlib.sha256).hexdigest()
+
+    resp_future = client.post(
+        "/webhook",
+        content=raw_future,
+        headers={"Content-Type": "application/json", "X-Razorpay-Signature": sig_future},
+    )
+    assert resp_future.status_code == 400
+    assert "in the future" in resp_future.json()["detail"].lower()
+
+
+def test_sqlite_wal_mode_enabled(audit_env):
+    """Verify that SQLite stores initialize with WAL journal_mode and busy_timeout configured."""
+    import sqlite3
+    data_dir = audit_env["data_dir"]
+
+    # Check user_store db
+    with sqlite3.connect(str(data_dir / "users.db")) as conn:
+        mode = conn.execute("PRAGMA journal_mode").fetchone()[0]
+        assert mode.lower() == "wal"
+
+    # Check locker db
+    with sqlite3.connect(str(data_dir / "locker.db")) as conn:
+        mode = conn.execute("PRAGMA journal_mode").fetchone()[0]
+        assert mode.lower() == "wal"
+
+    # Check approvals db
+    with sqlite3.connect(str(data_dir / "approvals.db")) as conn:
+        mode = conn.execute("PRAGMA journal_mode").fetchone()[0]
+        assert mode.lower() == "wal"
+

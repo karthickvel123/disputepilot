@@ -24,7 +24,8 @@ import {
   getDisputesExportUrl 
 } from '../api';
 
-export default function DisputesView({ onSelectCase, initialFilter = 'all' }) {
+export default function DisputesView({ onSelectCase, initialFilter = 'all', userRole = 'reviewer' }) {
+  const isAuditor = userRole === 'auditor';
   const [items, setItems] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -219,6 +220,11 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
             <span className="text-xs font-mono font-semibold px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
               {total} cases
             </span>
+            {isAuditor && (
+              <span className="text-xs font-semibold px-3 py-1 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30 flex items-center gap-1.5">
+                Read-Only Auditor View
+              </span>
+            )}
           </div>
           <p className="text-sm text-slate-400">
             Real-time triage queue prioritized by scheme SLA response deadlines and AI win confidence.
@@ -237,21 +243,25 @@ disp_demo_${Math.floor(Math.random() * 9000 + 1000)},1850.50,not_as_described,Pr
             <span>Export CSV</span>
           </a>
 
-          <button
-            onClick={() => setImportModalOpen(true)}
-            className="btn btn-secondary text-sm h-11 px-4 flex items-center gap-2"
-          >
-            <Upload className="w-4 h-4" />
-            <span>Import CSV</span>
-          </button>
+          {!isAuditor && (
+            <>
+              <button
+                onClick={() => setImportModalOpen(true)}
+                className="btn btn-secondary text-sm h-11 px-4 flex items-center gap-2"
+              >
+                <Upload className="w-4 h-4" />
+                <span>Import CSV</span>
+              </button>
 
-          <button
-            onClick={() => setCreateModalOpen(true)}
-            className="btn btn-primary text-sm h-11 px-5 font-semibold flex items-center gap-2"
-          >
-            <Plus className="w-4 h-4" />
-            <span>New Dispute</span>
-          </button>
+              <button
+                onClick={() => setCreateModalOpen(true)}
+                className="btn btn-primary text-sm h-11 px-5 font-semibold flex items-center gap-2"
+              >
+                <Plus className="w-4 h-4" />
+                <span>New Dispute</span>
+              </button>
+            </>
+          )}
         </div>
       </div>
 

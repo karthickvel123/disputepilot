@@ -395,7 +395,7 @@ def test_session_expiry_enforcement() -> None:
 
 def test_csrf_on_integration_and_notification_routes(reviewer_client: tuple[TestClient, str, str]) -> None:
     """Integration probe and notification mutating routes must strictly reject missing CSRF tokens."""
-    client, user, csrf_token = reviewer_client
+    client, _user, csrf_token = reviewer_client
 
     # 1. Notification read: Reject without CSRF
     res_no_csrf = client.post("/api/v1/notifications/notif_123/read")

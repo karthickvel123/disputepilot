@@ -265,12 +265,14 @@ export default function App() {
           <DisputesView
             initialFilter={disputeFilter}
             onSelectCase={handleSelectCase}
+            userRole={userRole}
           />
         )}
 
         {activeView === 'review-queue' && (
           <ReviewQueueView
             onSelectCase={handleSelectCase}
+            userRole={userRole}
           />
         )}
 
@@ -279,6 +281,7 @@ export default function App() {
             caseId={selectedCaseId}
             onBack={handleBackToWorklist}
             onCaseUpdated={fetchInitialData}
+            userRole={userRole}
           />
         )}
 

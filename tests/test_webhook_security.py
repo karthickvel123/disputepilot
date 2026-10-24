@@ -106,7 +106,7 @@ def test_webhook_payload_pruning_and_pii_redaction(tmp_path: Path) -> None:
         "account_id": "acc_prod_001",
         "event": "dispute.created",
         "id": "evt_sanitize_01",
-        "created_at": 1700000000,
+        "created_at": int(time.time()),
         "payload": {
             "dispute": {
                 "entity": {

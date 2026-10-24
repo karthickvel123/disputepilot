@@ -172,6 +172,21 @@ def _require_admin_session(request: Request) -> dict[str, Any]:
     return session
 
 
+def _require_reviewer_session(request: Request) -> dict[str, Any]:
+    """Require an authenticated session with reviewer or admin role.
+
+    Auditors are read-only and denied access to mutations with 403 Forbidden.
+    """
+    session = _require_session(request)
+    role = _get_user_role(session)
+    if role not in ("reviewer", "admin"):
+        raise HTTPException(
+            status_code=403,
+            detail="Reviewer or administrator privileges required. Auditors have read-only access.",
+        )
+    return session
+
+
 def _get_gateway() -> DisputesGateway | None:
     if _gateway is not None:
         return _gateway
@@ -1011,7 +1026,7 @@ async def api_dispute_detail(request: Request, case_id: str) -> dict[str, Any]:
 @router.post("/disputes/{case_id}/analyze")
 async def api_analyze_dispute(request: Request, case_id: str) -> dict[str, Any]:
     """Trigger AI analysis pipeline for a dispute."""
-    session = _require_session(request)
+    session = _require_reviewer_session(request)
     _require_csrf(request, session)
 
     if not CASE_ID_PATTERN.match(case_id):
@@ -1082,7 +1097,7 @@ class SaveDraftRequest(BaseModel):
 @router.post("/disputes/{case_id}/draft")
 async def api_save_draft(request: Request, case_id: str, body: SaveDraftRequest) -> dict[str, Any]:
     """Save edited rebuttal draft."""
-    session = _require_session(request)
+    session = _require_reviewer_session(request)
     _require_csrf(request, session, body.csrf_token)
 
     if not CASE_ID_PATTERN.match(case_id):
@@ -1137,7 +1152,7 @@ class AcceptDisputeRequest(BaseModel):
 @router.post("/disputes/{case_id}/request-approval")
 async def api_request_approval(request: Request, case_id: str) -> dict[str, Any]:
     """Issue approval token for contest submission."""
-    session = _require_session(request)
+    session = _require_reviewer_session(request)
     _require_csrf(request, session)
 
     if not CASE_ID_PATTERN.match(case_id):
@@ -1183,7 +1198,7 @@ async def api_request_approval(request: Request, case_id: str) -> dict[str, Any]
 @router.post("/disputes/{case_id}/submit")
 async def api_submit_contest(request: Request, case_id: str, body: SubmitContestRequest) -> dict[str, Any]:
     """Submit rebuttal contest to Razorpay with human approval token."""
-    session = _require_session(request)
+    session = _require_reviewer_session(request)
     _require_csrf(request, session, body.csrf_token)
 
     if not CASE_ID_PATTERN.match(case_id):
@@ -1223,12 +1238,16 @@ async def api_submit_contest(request: Request, case_id: str, body: SubmitContest
     approver = token_rec.approver if token_rec else session["user"]
     executor = session["user"]
 
-    if _settings and _settings.require_independent_approval:
-        if token_rec and (token_rec.approver == executor or token_rec.metadata.get("requester") == executor):
-            raise HTTPException(
-                status_code=403,
-                detail="Independent approval required: executor cannot be the same user who approved or requested the action.",
-            )
+    if (
+        _settings
+        and _settings.require_independent_approval
+        and token_rec
+        and (token_rec.approver == executor or token_rec.metadata.get("requester") == executor)
+    ):
+        raise HTTPException(
+            status_code=403,
+            detail="Independent approval required: executor cannot be the same user who approved or requested the action.",
+        )
 
     import httpx
     try:
@@ -1293,7 +1312,7 @@ async def api_submit_contest(request: Request, case_id: str, body: SubmitContest
 @router.post("/disputes/{case_id}/request-accept")
 async def api_request_accept(request: Request, case_id: str, body: RequestAcceptRequest) -> dict[str, Any]:
     """Verify typed amount and issue approval token bound to acceptance payload."""
-    session = _require_session(request)
+    session = _require_reviewer_session(request)
     _require_csrf(request, session, body.csrf_token)
 
     if not CASE_ID_PATTERN.match(case_id):
@@ -1347,7 +1366,7 @@ async def api_request_accept(request: Request, case_id: str, body: RequestAccept
 @router.post("/disputes/{case_id}/accept")
 async def api_accept_dispute(request: Request, case_id: str, body: AcceptDisputeRequest) -> dict[str, Any]:
     """Accept dispute liability with human approval token."""
-    session = _require_session(request)
+    session = _require_reviewer_session(request)
     _require_csrf(request, session, body.csrf_token)
 
     if not CASE_ID_PATTERN.match(case_id):
@@ -1376,12 +1395,16 @@ async def api_accept_dispute(request: Request, case_id: str, body: AcceptDispute
     approver = token_rec.approver if token_rec else session["user"]
     executor = session["user"]
 
-    if _settings and _settings.require_independent_approval:
-        if token_rec and (token_rec.approver == executor or token_rec.metadata.get("requester") == executor):
-            raise HTTPException(
-                status_code=403,
-                detail="Independent approval required: executor cannot be the same user who approved or requested the action.",
-            )
+    if (
+        _settings
+        and _settings.require_independent_approval
+        and token_rec
+        and (token_rec.approver == executor or token_rec.metadata.get("requester") == executor)
+    ):
+        raise HTTPException(
+            status_code=403,
+            detail="Independent approval required: executor cannot be the same user who approved or requested the action.",
+        )
 
     import httpx
     try:
@@ -1448,7 +1471,7 @@ async def api_upload_evidence(
     csrf_token: str = Form(""),
 ) -> dict[str, Any]:
     """Upload evidence file: PCI card scan on excerpt, validation, locker store, Razorpay upload."""
-    session = _require_session(request)
+    session = _require_reviewer_session(request)
     _require_csrf(request, session, csrf_token)
 
     if not CASE_ID_PATTERN.match(case_id):
@@ -1596,7 +1619,7 @@ async def api_upload_evidence(
                 "extraction_status": extraction_status,
             },
         )
-    except Exception as aud_err:
+    except Exception as aud_err:  # noqa: BLE001
         logger.error("Audit log failed for upload_evidence: %s", aud_err)
 
     return {
@@ -1620,8 +1643,9 @@ async def api_upload_evidence(
 async def api_download_evidence(request: Request, case_id: str, doc_id: int) -> FileResponse:
     """Download an uploaded evidence file securely with ownership and authorization checks."""
     session = _require_session(request)
-    if session.get("role") not in ("reviewer", "admin"):
-        raise HTTPException(status_code=403, detail="Forbidden. Reviewer or admin role required.")
+    role = _get_user_role(session)
+    if role not in ("reviewer", "admin", "auditor"):
+        raise HTTPException(status_code=403, detail="Forbidden. Reviewer, admin, or auditor role required.")
 
     if not CASE_ID_PATTERN.match(case_id):
         raise HTTPException(status_code=404, detail=f"Invalid case ID: '{case_id}'.")
@@ -1660,10 +1684,8 @@ async def api_download_evidence(request: Request, case_id: str, doc_id: int) -> 
 @router.delete("/disputes/{case_id}/evidence/{doc_id}")
 async def api_delete_evidence(request: Request, case_id: str, doc_id: int) -> dict[str, Any]:
     """Delete an evidence document from the locker with ownership and authorization checks."""
-    session = _require_session(request)
+    session = _require_reviewer_session(request)
     _require_csrf(request, session)
-    if session.get("role") not in ("reviewer", "admin"):
-        raise HTTPException(status_code=403, detail="Forbidden. Reviewer or admin role required.")
 
     if not CASE_ID_PATTERN.match(case_id):
         raise HTTPException(status_code=404, detail=f"Invalid case ID: '{case_id}'.")
@@ -1714,7 +1736,7 @@ async def api_delete_evidence(request: Request, case_id: str, doc_id: int) -> di
                 "sha256": doc.sha256,
             },
         )
-    except Exception as aud_err:
+    except Exception as aud_err:  # noqa: BLE001
         logger.error("Audit log failed for delete_evidence: %s", aud_err)
 
     return {"ok": True, "message": f"Document '{doc.file_name}' deleted from evidence locker."}
@@ -1857,7 +1879,7 @@ class ImportDisputesRequest(BaseModel):
 @router.post("/disputes/create")
 async def api_create_dispute(request: Request, body: CreateDisputeRequest) -> dict[str, Any]:
     """Manually create or import a new dispute case."""
-    session = _require_session(request)
+    session = _require_reviewer_session(request)
     _require_csrf(request, session)
 
     if _settings and not _settings.is_sim:
@@ -1971,7 +1993,7 @@ async def api_create_dispute(request: Request, body: CreateDisputeRequest) -> di
                 "reason_code": body.reason_code,
             },
         )
-    except Exception as aud_err:
+    except Exception as aud_err:  # noqa: BLE001
         logger.error("Audit log failed for create_dispute: %s", aud_err)
 
     return {
@@ -1986,7 +2008,7 @@ async def api_create_dispute(request: Request, body: CreateDisputeRequest) -> di
 @router.post("/disputes/import-csv")
 async def api_import_csv(request: Request, body: ImportDisputesRequest) -> dict[str, Any]:
     """Import multiple disputes from CSV with preview and validation."""
-    session = _require_session(request)
+    session = _require_reviewer_session(request)
     _require_csrf(request, session)
 
     reader = csv.DictReader(io.StringIO(body.csv_data))
@@ -2179,7 +2201,7 @@ async def api_import_csv(request: Request, body: ImportDisputesRequest) -> dict[
             actor=session["user"],
             details={"imported_count": imported_count, "error_count": len(errors)},
         )
-    except Exception as aud_err:
+    except Exception as aud_err:  # noqa: BLE001
         logger.error("Audit log failed for import_disputes_csv: %s", aud_err)
 
     return {
@@ -2218,7 +2240,7 @@ async def api_list_comments(request: Request, case_id: str) -> dict[str, Any]:
 @router.post("/disputes/{case_id}/comments")
 async def api_add_comment(request: Request, case_id: str, body: CommentRequest) -> dict[str, Any]:
     """Add a reviewer note/comment on a dispute."""
-    session = _require_session(request)
+    session = _require_reviewer_session(request)
     _require_csrf(request, session)
     if not CASE_ID_PATTERN.match(case_id):
         raise HTTPException(status_code=404, detail=f"Invalid case ID: '{case_id}'.")
@@ -2243,7 +2265,7 @@ async def api_add_comment(request: Request, case_id: str, body: CommentRequest) 
 @router.post("/disputes/{case_id}/reject")
 async def api_reject_draft(request: Request, case_id: str, body: RejectDraftRequest) -> dict[str, Any]:
     """Reject an AI rebuttal draft, requiring revision."""
-    session = _require_session(request)
+    session = _require_reviewer_session(request)
     _require_csrf(request, session)
     if not CASE_ID_PATTERN.match(case_id):
         raise HTTPException(status_code=404, detail=f"Invalid case ID: '{case_id}'.")

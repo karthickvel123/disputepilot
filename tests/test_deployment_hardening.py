@@ -39,7 +39,7 @@ def test_production_cors_is_explicit_allowlist_only() -> None:
 
 
 def test_production_user_store_removes_known_demo_accounts(tmp_path, monkeypatch) -> None:
-    from disputepilot.web.auth import DEFAULT_HASH, DEFAULT_SALT, hash_password
+    from disputepilot.web.auth import hash_password
 
     monkeypatch.setenv("APP_ENV", "development")
     monkeypatch.setenv("DATA_MODE", "sim")

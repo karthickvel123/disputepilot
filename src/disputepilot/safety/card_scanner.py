@@ -205,10 +205,10 @@ def extract_text_from_pdf_bytes(pdf_bytes: bytes) -> str:
         decompressed: bytes | None = None
         try:
             decompressed = zlib.decompress(raw_stream)
-        except Exception:
+        except (zlib.error, ValueError):
             try:
                 decompressed = zlib.decompress(raw_stream, -zlib.MAX_WBITS)
-            except Exception:
+            except (zlib.error, ValueError):
                 decompressed = raw_stream
 
         if decompressed:

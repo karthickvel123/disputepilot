@@ -4,9 +4,9 @@ import datetime
 import hashlib
 import json
 import logging
-import tempfile
-import shutil
 import os
+import shutil
+import tempfile
 import time
 from pathlib import Path
 from typing import Any
@@ -171,18 +171,10 @@ cors_origins = (
     if settings.cors_allowed_origins
     else []
 )
-from disputepilot.config import ConfigError, validate_production_startup
-try:
-    validate_production_startup(settings, cors_origins)
-except ConfigError as exc:
-    if settings.is_sim:
-        logger.warning(
-            "Production startup validation check warning in SIMULATION mode: %s. "
-            "Continuing startup because DATA_MODE=sim (synthetic demo sandbox).",
-            exc,
-        )
-    else:
-        raise
+from disputepilot.config import validate_production_startup
+
+# Enforce strict production startup validation (fails fast and closed)
+validate_production_startup(settings, cors_origins)
 
 for _problem in razorpay_problems + auth_problems:
     logger.warning("Configuration problem: %s", _problem)

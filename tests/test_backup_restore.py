@@ -1,8 +1,6 @@
 """Unit tests for scripts/backup_restore.py."""
 
 import sqlite3
-import tarfile
-import tempfile
 from pathlib import Path
 
 from scripts.backup_restore import create_backup, restore_backup

@@ -36,7 +36,9 @@ def init_db(db_path: Path | str = DEFAULT_DB_PATH) -> None:
     if str(db_path) != ":memory:":
         path.parent.mkdir(parents=True, exist_ok=True)
 
-    with sqlite3.connect(str(path)) as conn:
+    with sqlite3.connect(str(path), timeout=30.0) as conn:
+        conn.execute("PRAGMA journal_mode=WAL")
+        conn.execute("PRAGMA busy_timeout=30000")
         conn.executescript(
             """
             CREATE TABLE IF NOT EXISTS dispute_events (
@@ -81,6 +83,8 @@ def record_dispute_event_atomic(
     """
     init_db(db_path)
     with sqlite3.connect(str(db_path), timeout=30.0) as conn:
+        conn.execute("PRAGMA journal_mode=WAL")
+        conn.execute("PRAGMA busy_timeout=30000")
         cursor = conn.cursor()
         try:
             cursor.execute(
@@ -201,6 +205,7 @@ def create_webhook_router(
     db_path: Path | str = DEFAULT_DB_PATH,
     rate_limiter: SlidingWindowRateLimiter | None = None,
     max_body_bytes: int = MAX_WEBHOOK_BYTES,
+    max_event_age_seconds: int | None = 86400,
 ) -> APIRouter:
     """Factory function creating a configured FastAPI webhook APIRouter."""
     r = APIRouter()
@@ -260,14 +265,14 @@ def create_webhook_router(
         content_length = request.headers.get("content-length")
         if content_length and content_length.isdigit() and int(content_length) > max_body_bytes:
             raise HTTPException(
-                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                status_code=status.HTTP_413_CONTENT_TOO_LARGE,
                 detail=f"Webhook payload exceeds maximum allowed size of {max_body_bytes} bytes.",
             )
 
         raw_body = await request.body()
         if len(raw_body) > max_body_bytes:
             raise HTTPException(
-                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                status_code=status.HTTP_413_CONTENT_TOO_LARGE,
                 detail=f"Webhook payload exceeds maximum allowed size of {max_body_bytes} bytes.",
             )
 
@@ -297,6 +302,35 @@ def create_webhook_router(
         if not event_id:
             # Fallback deterministic hash if provider omitted event id
             event_id = f"evt_{hashlib.sha256(raw_body).hexdigest()[:16]}"
+
+        # Replay protection against stale deliveries
+        if max_event_age_seconds is not None and "created_at" in event_json:
+            try:
+                created_ts = int(event_json["created_at"])
+                now_ts = int(time.time())
+                if now_ts - created_ts > max_event_age_seconds:
+                    logger.warning(
+                        "Rejected stale webhook event %s: created_at %s is older than %ss",
+                        event_id,
+                        created_ts,
+                        max_event_age_seconds,
+                    )
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail=f"Webhook event expired: timestamp is older than {max_event_age_seconds} seconds.",
+                    )
+                if created_ts - now_ts > 300:
+                    logger.warning(
+                        "Rejected future-dated webhook event %s: created_at %s is in future (>300s)",
+                        event_id,
+                        created_ts,
+                    )
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail="Webhook event rejected: timestamp is in the future.",
+                    )
+            except (ValueError, TypeError):
+                pass
 
         # 6. Extract dispute details and normalize event name
         raw_event_type = str(event_json.get("event", "unknown"))

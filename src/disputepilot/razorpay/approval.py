@@ -82,6 +82,8 @@ class ApprovalService:
         if self.db_path:
             self.db_path.parent.mkdir(parents=True, exist_ok=True)
             with sqlite3.connect(str(self.db_path), timeout=30.0) as conn:
+                conn.execute("PRAGMA journal_mode=WAL")
+                conn.execute("PRAGMA busy_timeout=30000")
                 conn.execute(
                     """
                     CREATE TABLE IF NOT EXISTS approval_tokens (

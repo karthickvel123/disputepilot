@@ -30,6 +30,8 @@ def init_audit_db(db_path: Path | str = DEFAULT_AUDIT_DB_PATH) -> None:
     path = Path(db_path)
     path.parent.mkdir(parents=True, exist_ok=True)
     with sqlite3.connect(path, timeout=30.0) as conn:
+        conn.execute("PRAGMA journal_mode=WAL")
+        conn.execute("PRAGMA busy_timeout=30000")
         conn.execute(
             """
             CREATE TABLE IF NOT EXISTS audit_log (
@@ -231,7 +233,7 @@ def reconcile_audit_log(
                 )
                 conn.commit()
             reconciled += 1
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001
             logger.error("Failed to reconcile audit entry (%d bytes), error: %s", len(line_str), exc)
             unprocessed_lines.append(line_str)
 

@@ -43,7 +43,8 @@ import {
 } from '../api';
 import { renderCleanDraft } from '../utils/draft';
 
-export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
+export default function CaseDetailView({ caseId, onBack, onCaseUpdated, userRole = 'reviewer' }) {
+  const isAuditor = userRole === 'auditor';
   const [data, setData] = useState(null);
   const [auditEvents, setAuditEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -380,10 +381,16 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
 
         {/* Action Buttons */}
         <div className="flex items-center gap-2 flex-wrap">
+          {isAuditor && (
+            <span className="badge text-xs px-3 py-1.5 font-semibold bg-amber-500/10 text-amber-300 border border-amber-500/30 flex items-center gap-1.5 mr-2">
+              <Eye className="w-3.5 h-3.5" />
+              <span>Read-Only Auditor Mode</span>
+            </span>
+          )}
           <button
             id="btn-trigger-ai"
             onClick={handleRunAnalysis}
-            disabled={analyzing || !isActionable}
+            disabled={analyzing || !isActionable || isAuditor}
             className="btn btn-primary text-xs shadow-sm"
           >
             {analyzing ? (
@@ -397,7 +404,7 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
           <button
             id="btn-contest-modal-trigger"
             onClick={handleOpenContestModal}
-            disabled={!analysis || !isActionable}
+            disabled={!analysis || !isActionable || isAuditor}
             className="btn btn-success text-xs shadow-sm"
           >
             <Lock className="w-3.5 h-3.5" />
@@ -407,7 +414,7 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
           <button
             id="btn-accept-modal-trigger"
             onClick={handleOpenAcceptModal}
-            disabled={!isActionable}
+            disabled={!isActionable || isAuditor}
             className="btn btn-danger text-xs shadow-sm"
           >
             <XCircle className="w-3.5 h-3.5" />
@@ -617,7 +624,7 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
               </div>
 
               <div className="flex items-center gap-3">
-                {data.analysis && (
+                {data.analysis && !isAuditor && (
                   <button
                     type="button"
                     onClick={() => setRejectModalOpen(true)}
@@ -630,7 +637,7 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
                 <button
                   id="btn-save-draft"
                   onClick={handleSaveDraft}
-                  disabled={savingDraft || !draftContent}
+                  disabled={savingDraft || !draftContent || isAuditor}
                   className="btn btn-secondary text-sm h-10 px-4 flex items-center gap-2"
                 >
                   <Save className="w-4 h-4" />
@@ -772,14 +779,16 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
                       >
                         <Download className="w-4 h-4" />
                       </a>
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteEvidence(doc.id)}
-                        className="p-2 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 transition-colors"
-                        title="Delete Document"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      {!isAuditor && (
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteEvidence(doc.id)}
+                          className="p-2 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 transition-colors"
+                          title="Delete Document"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -862,10 +871,10 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
 
               <button
                 type="submit"
-                disabled={uploading || !uploadFile || !attestNoCard}
+                disabled={uploading || !uploadFile || !attestNoCard || isAuditor}
                 className="btn btn-primary w-full text-xs py-2.5"
               >
-                {uploading ? 'Scanning & Uploading...' : 'Upload to Evidence Locker'}
+                {uploading ? 'Scanning & Uploading...' : (isAuditor ? 'Upload Disabled in Auditor Mode' : 'Upload to Evidence Locker')}
               </button>
             </form>
           </div>
@@ -937,28 +946,35 @@ export default function CaseDetailView({ caseId, onBack, onCaseUpdated }) {
           </div>
 
           {/* New Comment Input */}
-          <form onSubmit={handleAddComment} className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-3">
-            <label className="block text-xs font-semibold text-slate-300">
-              Add Reviewer Note / Dispatcher Verification:
-            </label>
-            <textarea
-              required
-              rows={3}
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              placeholder="e.g. Spoke with courier hub manager; verified signed delivery pod with OTP..."
-              className="input-control text-xs resize-none"
-            />
-            <div className="flex justify-end">
-              <button
-                type="submit"
-                disabled={postingComment || !newComment.trim()}
-                className="btn btn-primary text-xs flex items-center gap-1.5"
-              >
-                <span>{postingComment ? 'Posting...' : 'Post Reviewer Note'}</span>
-              </button>
+          {!isAuditor ? (
+            <form onSubmit={handleAddComment} className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-3">
+              <label className="block text-xs font-semibold text-slate-300">
+                Add Reviewer Note / Dispatcher Verification:
+              </label>
+              <textarea
+                required
+                rows={3}
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                placeholder="e.g. Spoke with courier hub manager; verified signed delivery pod with OTP..."
+                className="input-control text-xs resize-none"
+              />
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  disabled={postingComment || !newComment.trim()}
+                  className="btn btn-primary text-xs flex items-center gap-1.5"
+                >
+                  <span>{postingComment ? 'Posting...' : 'Post Reviewer Note'}</span>
+                </button>
+              </div>
+            </form>
+          ) : (
+            <div className="p-3.5 rounded-xl bg-slate-900/40 border border-slate-800 text-xs text-amber-300/80 flex items-center gap-2">
+              <Eye className="w-4 h-4 text-amber-400 flex-shrink-0" />
+              <span>Auditor view: Comment posting is restricted to reviewers and compliance officers.</span>
             </div>
-          </form>
+          )}
 
           {/* Comments List */}
           <div className="space-y-3">

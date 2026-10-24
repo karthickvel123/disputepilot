@@ -8,10 +8,11 @@ Verifies:
 5. Clean handling of 4xx errors without raw body or credential leakage.
 """
 
+from pathlib import Path
+
 import httpx
 import pytest
 
-from pathlib import Path
 from scripts.smoke_razorpay import run_e2e_pilot_smoke, run_smoke
 
 
