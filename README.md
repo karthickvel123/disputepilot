@@ -108,9 +108,9 @@ Run evaluation anytime with `make eval` (or on Windows: `uv run python -m disput
 | **Fabricated Claims in Clean Drafts** | **0** | **0** | N/A (omitted for budget) | **Pipeline sanity check, not performance** (verifier check) |
 | **Prompt Injection Containment** | 100.00% | 100.00% | N/A (omitted for budget) | Fencing check |
 | **PCI-DSS Card Leaks** | **0** | **0** | N/A (omitted for budget) | Deterministic Luhn scanner |
-| **Decision Accuracy vs. Winnable** | 88.89% | 72.00% | N/A (omitted for budget) | **Pipeline sanity check, not performance** (heuristic vs sim rules) |
-| **DisputePilot Policy Recovery (INR)** | ₹116,783.00* | ₹22,499.00* | N/A (omitted for budget) | Simulated, under assumptions listed here |
-| **Uplift vs Contest-All (INR)** | ₹-71,995.00* | ₹-132,373.00* | N/A (omitted for budget) | Simulated, under assumptions listed here |
+| **Decision Accuracy vs. Winnable** | 95.56% | 72.00% | N/A (omitted for budget) | **Pipeline sanity check, not performance** (heuristic vs sim rules) |
+| **DisputePilot Policy Recovery (INR)** | ₹188,778.00* | ₹78,191.00* | N/A (omitted for budget) | Simulated, under assumptions listed here |
+| **Uplift vs Contest-All (INR)** | ₹0.00* | ₹-76,681.00* | N/A (omitted for budget) | Simulated, under assumptions listed here |
 
 \* *Simulated under default assumptions (effort cost = ₹0.00, dispute fee = ₹0.00). Whether realistic dispute fees make uplift positive is not tested.*
 

@@ -68,17 +68,17 @@ Clean and messy results are reported side by side in separate columns below. The
 
 | Metric | Clean Train (70%, in-distribution) | Clean Hold-out (30%, in-distribution) | Messy Set: Rules Only (n=100) | Real LLM (Gemini) | Metric Classification |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Reason Code Accuracy** | 100.00% | 100.00% | 6.00% | 15 of 16 | LLM fallback (Gemini), n=16 unique cases |
-| **Reason Code Macro-F1** | 100.00% | 100.00% | 9.80% | omitted (sample too small) | LLM fallback (Gemini), n=16 unique cases |
+| **Reason Code Accuracy** | 100.00% | 100.00% | 50.00% | 15 of 16 | LLM fallback (Gemini), n=16 unique cases |
+| **Reason Code Macro-F1** | 100.00% | 100.00% | 65.92% | omitted (sample too small) | LLM fallback (Gemini), n=16 unique cases |
 | **Field-Level Extraction Accuracy** | fake regex baseline, appendix only | fake regex baseline, appendix only | fake regex baseline, appendix only | n too small (k=1) | fake regex baseline, appendix only |
-| **Missing-Category Recall** | 98.96% | 100.00% | 100.00% | N/A (omitted for budget) | **Pipeline sanity check, not performance** |
+| **Missing-Category Recall** | 100.00% | 100.00% | 100.00% | N/A (omitted for budget) | **Pipeline sanity check, not performance** |
 | **Raw Sentence Grounding Rate** | 100.00% | 100.00% | 100.00% | N/A (omitted for budget) | Pre-verifier fact coverage |
 | **Fabricated Claims in Clean Drafts** | **0** | **0** | **0** | N/A (omitted for budget) | **Pipeline sanity check, not performance** (verifier guarantee) |
 | **Prompt Injection Containment** | 100.00% | 100.00% | 100.00% | N/A (omitted for budget) | Fencing check |
 | **PCI-DSS Card Leaks** | **0** | **0** | **0** | N/A (omitted for budget) | Deterministic Luhn scanner |
-| **Decision Accuracy vs. Winnable** | 84.76% | 88.89% | 72.00% | N/A (omitted for budget) | **Pipeline sanity check, not performance** (heuristic vs sim rules) |
-| **DisputePilot Policy Recovery (INR)** | ₹367,850.00* | ₹116,783.00* | ₹22,499.00* | N/A (omitted for budget) | Simulated, under assumptions listed here |
-| **Uplift vs Contest-All (INR)** | ₹-49,692.00* | ₹-71,995.00* | ₹-132,373.00* | N/A (omitted for budget) | Simulated, under assumptions listed here |
+| **Decision Accuracy vs. Winnable** | 93.33% | 95.56% | 72.00% | N/A (omitted for budget) | **Pipeline sanity check, not performance** (heuristic vs sim rules) |
+| **DisputePilot Policy Recovery (INR)** | ₹417,542.00* | ₹188,778.00* | ₹78,191.00* | N/A (omitted for budget) | Simulated, under assumptions listed here |
+| **Uplift vs Contest-All (INR)** | ₹0.00* | ₹0.00* | ₹-76,681.00* | N/A (omitted for budget) | Simulated, under assumptions listed here |
 
 \* *Simulated, under assumptions listed here: response effort cost = ₹0.00, dispute fee = ₹0.00. Whether realistic dispute fees make uplift positive is not tested.*
 
@@ -167,33 +167,33 @@ Clean and messy results are reported side by side in separate columns below. The
 | `other` | 100.0% | 100.0% | 100.0% | 10 |
 
 ### Messy Set: Rules Only (n=100)
-- **Overall Accuracy:** 6.00%
-- **Macro-F1 Score:** 9.80%
+- **Overall Accuracy:** 50.00%
+- **Macro-F1 Score:** 65.92%
 
 | Reason Class | Precision | Recall | F1-Score | Support |
 | --- | --- | --- | --- | --- |
-| `item_not_received` | 0.0% | 0.0% | 0.0% | 15 |
-| `not_as_described` | 100.0% | 20.0% | 33.3% | 15 |
-| `unauthorised` | 0.0% | 0.0% | 0.0% | 14 |
-| `duplicate_charge` | 0.0% | 0.0% | 0.0% | 14 |
-| `subscription_cancelled` | 0.0% | 0.0% | 0.0% | 14 |
-| `refund_not_received` | 0.0% | 0.0% | 0.0% | 14 |
-| `other` | 100.0% | 21.4% | 35.3% | 14 |
+| `item_not_received` | 100.0% | 40.0% | 57.1% | 15 |
+| `not_as_described` | 100.0% | 60.0% | 75.0% | 15 |
+| `unauthorised` | 100.0% | 42.9% | 60.0% | 14 |
+| `duplicate_charge` | 100.0% | 71.4% | 83.3% | 14 |
+| `subscription_cancelled` | 100.0% | 50.0% | 66.7% | 14 |
+| `refund_not_received` | 100.0% | 50.0% | 66.7% | 14 |
+| `other` | 100.0% | 35.7% | 52.6% | 14 |
 
 ---
 
 ## 2. Recommendation Engine & Calibration
-- **Clean Hold-out Accuracy vs Winnable:** 88.89%
+- **Clean Hold-out Accuracy vs Winnable:** 95.56%
 - **Messy Set (Rules Only) Accuracy vs Winnable:** 72.00%
 
 ### Calibration Table: Clean Hold-out Set
 | Win Probability Bin | Count | Mean Predicted $p_{win}$ | Actual Win Rate |
 | --- | --- | --- | --- |
 | [0.0, 0.2) | 14 | 11.0% | 0.0% |
-| [0.2, 0.4) | 11 | 34.3% | 27.3% |
+| [0.2, 0.4) | 8 | 32.9% | 0.0% |
 | [0.4, 0.6) | 5 | 55.2% | 0.0% |
 | [0.6, 0.8) | 6 | 73.2% | 100.0% |
-| [0.8, 1.0] | 9 | 93.0% | 100.0% |
+| [0.8, 1.0] | 12 | 93.0% | 100.0% |
 
 ---
 
@@ -207,8 +207,8 @@ Clean and messy results are reported side by side in separate columns below. The
 | :--- | :--- | :--- | :--- | :--- |
 | **Accept Everything** | ₹0.00* | ₹0.00* | N/A (omitted for budget) | Concedes 100% of disputes |
 | **Contest Everything** | ₹188,778.00* | ₹154,872.00* | N/A (omitted for budget) | Contests winnable and unwinnable alike |
-| **DisputePilot Policy** | **₹116,783.00*** | **₹22,499.00*** | N/A (omitted for budget) | Selectively contests high-probability disputes |
-| **Uplift vs Contest-All** | **₹-71,995.00*** | **₹-132,373.00*** | N/A (omitted for budget) | Not tested (dispute fees set to ₹0.00 in simulation) |
+| **DisputePilot Policy** | **₹188,778.00*** | **₹78,191.00*** | N/A (omitted for budget) | Selectively contests high-probability disputes |
+| **Uplift vs Contest-All** | **₹0.00*** | **₹-76,681.00*** | N/A (omitted for budget) | Not tested (dispute fees set to ₹0.00 in simulation) |
 
 \* *All rupee amounts are simulated, under assumptions listed here (effort cost ₹0.00, dispute fee ₹0.00). Whether realistic dispute fees make uplift positive is not tested.*
 
@@ -235,34 +235,34 @@ Because `FakeLLMClient` was authored by the same engineer who wrote the syntheti
 
 | Metric | Messy Set: Rules + FakeLLMClient (Sanity Check Only, n=100) |
 | :--- | :--- |
-| **Reason Code Accuracy** | 85.00% |
-| **Reason Code Macro-F1** | 89.94% |
+| **Reason Code Accuracy** | 100.00% |
+| **Reason Code Macro-F1** | 100.00% |
 | **Field-Level Extraction Accuracy** | 0.00% |
 | **Missing-Category Recall** | 100.00% |
 | **Raw Sentence Grounding Rate** | 100.00% |
 | **Fabricated Claims in Clean Drafts** | 0 |
 | **Prompt Injection Containment** | 100.00% |
 | **PCI-DSS Card Leaks** | 0 |
-| **Decision Accuracy vs. Winnable** | 76.00% |
-| **DisputePilot Policy Recovery (INR)** | ₹135,678.00* |
-| **Uplift vs Contest-All (INR)** | ₹-19,194.00* |
+| **Decision Accuracy vs. Winnable** | 82.00% |
+| **DisputePilot Policy Recovery (INR)** | ₹152,973.00* |
+| **Uplift vs Contest-All (INR)** | ₹-1,899.00* |
 
 #### FakeLLMClient Per-Class Reason Breakdown (Messy Set)
 | Reason Class | Precision | Recall | F1-Score | Support |
 | --- | --- | --- | --- | --- |
-| `item_not_received` | 90.0% | 60.0% | 72.0% | 15 |
-| `not_as_described` | 100.0% | 73.3% | 84.6% | 15 |
-| `unauthorised` | 100.0% | 92.9% | 96.3% | 14 |
-| `duplicate_charge` | 87.5% | 100.0% | 93.3% | 14 |
+| `item_not_received` | 100.0% | 100.0% | 100.0% | 15 |
+| `not_as_described` | 100.0% | 100.0% | 100.0% | 15 |
+| `unauthorised` | 100.0% | 100.0% | 100.0% | 14 |
+| `duplicate_charge` | 100.0% | 100.0% | 100.0% | 14 |
 | `subscription_cancelled` | 100.0% | 100.0% | 100.0% | 14 |
-| `refund_not_received` | 100.0% | 71.4% | 83.3% | 14 |
+| `refund_not_received` | 100.0% | 100.0% | 100.0% | 14 |
 | `other` | 100.0% | 100.0% | 100.0% | 14 |
 
 #### FakeLLMClient Calibration Table (Messy Set)
 | Win Probability Bin | Count | Mean Predicted $p_{win}$ | Actual Win Rate |
 | --- | --- | --- | --- |
-| [0.0, 0.2) | 11 | 11.3% | 0.0% |
-| [0.2, 0.4) | 18 | 29.1% | 5.6% |
-| [0.4, 0.6) | 16 | 49.4% | 0.0% |
-| [0.6, 0.8) | 23 | 70.4% | 47.8% |
-| [0.8, 1.0] | 20 | 91.9% | 65.0% |
+| [0.0, 0.2) | 13 | 11.5% | 0.0% |
+| [0.2, 0.4) | 21 | 29.9% | 4.8% |
+| [0.4, 0.6) | 19 | 47.8% | 0.0% |
+| [0.6, 0.8) | 24 | 70.3% | 50.0% |
+| [0.8, 1.0] | 23 | 91.8% | 73.9% |

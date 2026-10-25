@@ -167,6 +167,11 @@ class EvidenceAgent:
         file_name = doc_info.get("file_name", "").lower()
 
         # Deterministic rules
+        if doc_type in RAZORPAY_EVIDENCE_CATEGORIES:
+            return doc_type
+
+        if any(kw in doc_type or kw in file_name for kw in ["refund_confirmation", "refund_receipt", "arn", "credit_note"]):
+            return "refund_confirmation"
         if any(kw in doc_type or kw in file_name for kw in ["shipping", "pod", "delivery", "courier"]):
             return "shipping_proof"
         if any(kw in doc_type or kw in file_name for kw in ["invoice", "billing", "bill", "receipt"]):
@@ -175,8 +180,6 @@ class EvidenceAgent:
             return "customer_communication"
         if any(kw in doc_type or kw in file_name for kw in ["policy", "return_policy", "cancellation_policy"]):
             return "refund_cancellation_policy"
-        if any(kw in doc_type or kw in file_name for kw in ["refund_confirmation", "arn", "credit_note"]):
-            return "refund_confirmation"
         if any(kw in doc_type or kw in file_name for kw in ["service", "timesheet", "completion"]):
             return "proof_of_service"
         if any(kw in doc_type or kw in file_name for kw in ["activity", "login", "access_log"]):

@@ -320,6 +320,9 @@ class FakeLLMClient:
                 "not received",
                 "nahi mila",
                 "parcel gayab",
+                "box gayab",
+                "nahi pahuncha",
+                "delivered mark",
                 "empty",
                 "lost",
                 "handed over",
@@ -345,6 +348,8 @@ class FakeLLMClient:
                 "mismatched",
                 "wrong variant",
                 "cheap plastic",
+                "cheap panel",
+                "duplicate piece",
                 "shattered",
                 "cloth quality",
                 "accessories missing",
@@ -458,12 +463,15 @@ class FakeLLMClient:
             kw in lower
             for kw in [
                 "paise wapas",
+                "paisa wapas",
                 "refund",
                 "reversal",
                 "arn number fake",
                 "promised compensation",
                 "credit not",
+                "no credit yet",
                 "return parcel pick",
+                "15 din ho gaye",
             ]
         ):
             return {

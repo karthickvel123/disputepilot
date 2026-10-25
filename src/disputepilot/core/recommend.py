@@ -101,6 +101,13 @@ def compute_p_win(
     missing_required = [
         cat for cat in required_cats if category_statuses.get(cat, CategoryStatus.MISSING) == CategoryStatus.MISSING
     ]
+    if (
+        reason_class == ReasonClass.DUPLICATE_CHARGE
+        and "billing_proof" in missing_required
+        and category_statuses.get("refund_confirmation") == CategoryStatus.PRESENT
+    ):
+        missing_required = [c for c in missing_required if c != "billing_proof"]
+
     partial_required = [
         cat for cat in required_cats if category_statuses.get(cat) == CategoryStatus.PARTIAL
     ]
@@ -288,6 +295,13 @@ def recommend_action(
         for cat, role in roles.items()
         if role == EvidenceRole.REQUIRED and statuses.get(cat) == CategoryStatus.MISSING
     ]
+    if (
+        reason_class == ReasonClass.DUPLICATE_CHARGE
+        and "billing_proof" in missing_required
+        and statuses.get("refund_confirmation") == CategoryStatus.PRESENT
+    ):
+        missing_required = [c for c in missing_required if c != "billing_proof"]
+
 
     thresholds = config.get("thresholds", {})
     band_min = thresholds.get("uncertain_band_min", 0.35)
