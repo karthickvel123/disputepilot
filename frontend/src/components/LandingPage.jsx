@@ -73,7 +73,21 @@ export default function LandingPage({
   const [openFaq, setOpenFaq] = useState(0);
   const [activeModal, setActiveModal] = useState(null);
   const [simulating, setSimulating] = useState(false);
+  const [launchingDemo, setLaunchingDemo] = useState(false);
   const [activeStage, setActiveStage] = useState(1);
+
+  async function handleLaunchDemoClick() {
+    if (onQuickDemoLogin) {
+      setLaunchingDemo(true);
+      try {
+        await onQuickDemoLogin();
+      } finally {
+        setLaunchingDemo(false);
+      }
+    } else if (onLaunchConsole) {
+      onLaunchConsole();
+    }
+  }
 
   async function handleSimulateClick() {
     if (!onSimulateDispute) return;
@@ -117,17 +131,31 @@ export default function LandingPage({
           </p>
           <div className="sama-hero-actions">
             <button
-              id="btn-hero-launch"
+              id="btn-hero-launch-demo"
               type="button"
-              onClick={isDemoAllowed ? (onQuickDemoLogin || onLaunchConsole) : onLaunchConsole}
+              disabled={launchingDemo}
+              onClick={handleLaunchDemoClick}
               className="sama-hero-primary"
             >
-              {isDemoAllowed ? 'Explore the demo' : 'Open merchant console'}
+              <Sparkles className="h-4 w-4" />
+              {launchingDemo ? 'Launching demo…' : 'Launch Demo'}
               <ArrowRight className="h-4 w-4" />
+            </button>
+            <button
+              id="btn-hero-signin"
+              type="button"
+              onClick={onLaunchConsole}
+              className="sama-hero-secondary"
+            >
+              Sign In
             </button>
             <a className="sama-hero-secondary" href="#approach">
               How it works <ArrowDown className="h-4 w-4" />
             </a>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '12px', fontSize: '13px', color: '#8fa596' }}>
+            <span style={{ display: 'inline-block', width: '7px', height: '7px', borderRadius: '50%', backgroundColor: '#4ade80', boxShadow: '0 0 10px rgba(74,222,128,0.7)' }} />
+            <span>Click <strong>Launch Demo</strong> for instant access to live dispute operations</span>
           </div>
           {onSimulateDispute && (
             <button
@@ -515,11 +543,14 @@ export default function LandingPage({
         <span className="sama-section-kicker">A CLEARER WORKFLOW STARTS HERE</span>
         <h2>Bring clarity to<br /><em>the next dispute.</em></h2>
         <button
+          id="btn-last-call-launch-demo"
           type="button"
-          onClick={isDemoAllowed ? (onQuickDemoLogin || onLaunchConsole) : onLaunchConsole}
+          disabled={launchingDemo}
+          onClick={handleLaunchDemoClick}
           className="sama-last-call-button"
         >
-          {isDemoAllowed ? 'Explore the demo' : 'Open merchant console'}
+          <Sparkles className="h-4 w-4" />
+          {launchingDemo ? 'Launching demo…' : 'Launch Demo'}
           <ArrowRight className="h-4 w-4" />
         </button>
       </section>

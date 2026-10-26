@@ -194,10 +194,10 @@ export default function Navbar({
             <span className="environment-dot" />
             {modeLabel}
           </span>
-          {isDemoAllowed && (
+          {onQuickDemoLogin && (
             <button id="btn-nav-quick-demo" type="button" onClick={onQuickDemoLogin} className="btn btn-primary guest-demo-button">
               <Sparkles className="h-4 w-4" />
-              <span>Try the demo</span>
+              <span>Launch Demo</span>
             </button>
           )}
           <button id="btn-launch-login" type="button" onClick={onOpenLogin || (() => setActiveTab('dashboard'))} className="btn btn-secondary guest-signin-button">
