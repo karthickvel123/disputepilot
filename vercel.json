@@ -6,7 +6,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://disputepilot.onrender.com/api/:path*"
+      "destination": "https://disputepilot-backend.onrender.com/api/:path*"
     },
     {
       "source": "/((?!api/).*)",

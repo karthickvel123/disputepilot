@@ -1,6 +1,6 @@
 // In production, prefer the deployed Render API even when Vercel's env var is missing.
 // VITE_API_BASE_URL should still be configured in Vercel for environment-specific deployments.
-const DEFAULT_PRODUCTION_API = 'https://disputepilot.onrender.com/api/v1';
+const DEFAULT_PRODUCTION_API = 'https://disputepilot-backend.onrender.com/api/v1';
 const API_BASE = (
   import.meta.env.VITE_API_BASE_URL ||
   (import.meta.env.PROD ? DEFAULT_PRODUCTION_API : '/api/v1')

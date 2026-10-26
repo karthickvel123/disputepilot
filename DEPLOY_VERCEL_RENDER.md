@@ -96,7 +96,7 @@ Copy the generated hash string into `REVIEWER_PASSWORD_HASH`.
    - **Output Directory**: `frontend/dist` (or `dist` if root directory is set to `frontend`)
 4. In **Environment Variables**, add:
    - **Key**: `VITE_API_BASE_URL`
-   - **Value**: `https://disputepilot.onrender.com/api/v1` *(replace with your actual Render service URL if different)*
+   - **Value**: `https://disputepilot-backend.onrender.com/api/v1`
 5. Click **Deploy**.
 
 ---

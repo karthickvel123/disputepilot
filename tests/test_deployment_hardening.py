@@ -64,7 +64,7 @@ def test_frontend_production_api_has_render_backend_fallback() -> None:
     from pathlib import Path
 
     api_source = Path("frontend/src/api.js").read_text(encoding="utf-8")
-    assert "https://disputepilot.onrender.com/api/v1" in api_source
+    assert "https://disputepilot-backend.onrender.com/api/v1" in api_source
     assert "import.meta.env.PROD ? DEFAULT_PRODUCTION_API : '/api/v1'" in api_source
     assert "Unable to reach the DisputePilot API" in api_source
 
