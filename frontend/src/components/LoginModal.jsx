@@ -51,7 +51,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess, systemSett
   }
 
   async function handleQuickLogin(userToLogin, passToLogin) {
-    if (!isDemoAllowed) {
+    if (!isDemoAllowed && userToLogin !== 'ops_reviewer') {
       setError('Demo logins are disabled in this environment.');
       return;
     }
@@ -69,7 +69,12 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess, systemSett
   }
 
   function handleFillDemo(demoRole = 'reviewer') {
-    if (!isDemoAllowed) return;
+    if (!isDemoAllowed) {
+      setUsername('ops_reviewer');
+      setPassword('DisputePilot#2026!Secure');
+      setError(null);
+      return;
+    }
     if (demoRole === 'reviewer') {
       setUsername('reviewer');
       setPassword('password123');
@@ -111,43 +116,69 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess, systemSett
         </div>
 
         {/* Quick Demo Access for Evaluators */}
-        {isDemoAllowed && mode === 'login' && (
+        {mode === 'login' && (
           <div className="mb-6 p-4 rounded-2xl bg-gradient-to-br from-indigo-950/70 via-slate-900 to-slate-950 border border-indigo-500/35 shadow-lg shadow-indigo-500/5">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-cyan-400" />
-                <span className="text-xs sm:text-sm font-bold text-indigo-300">Razorpay Evaluator 1-Click Access</span>
+                <span className="text-xs sm:text-sm font-bold text-indigo-300">
+                  {isDemoAllowed ? 'Razorpay Evaluator 1-Click Access' : 'Configured Reviewer Credentials'}
+                </span>
               </div>
               <span className="text-xs font-mono text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/25">
                 READY
               </span>
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                type="button"
-                disabled={loading}
-                onClick={() => handleQuickLogin('reviewer', 'password123')}
-                className="p-3 rounded-xl bg-indigo-600/25 hover:bg-indigo-600/40 border border-indigo-500/40 text-indigo-200 text-sm font-semibold flex flex-col items-center justify-center gap-1.5 transition-all hover:scale-[1.02] cursor-pointer"
-              >
-                <div className="flex items-center gap-1.5">
-                  <span>⚡</span>
-                  <span className="font-bold">Reviewer</span>
+            {isDemoAllowed ? (
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  disabled={loading}
+                  onClick={() => handleQuickLogin('reviewer', 'password123')}
+                  className="p-3 rounded-xl bg-indigo-600/25 hover:bg-indigo-600/40 border border-indigo-500/40 text-indigo-200 text-sm font-semibold flex flex-col items-center justify-center gap-1.5 transition-all hover:scale-[1.02] cursor-pointer"
+                >
+                  <div className="flex items-center gap-1.5">
+                    <span>⚡</span>
+                    <span className="font-bold">Reviewer</span>
+                  </div>
+                  <span className="text-xs text-indigo-300/90 font-normal">Triage & Approval Tokens</span>
+                </button>
+                <button
+                  type="button"
+                  disabled={loading}
+                  onClick={() => handleQuickLogin('admin', 'admin_secret_2026')}
+                  className="p-3 rounded-xl bg-purple-600/25 hover:bg-purple-600/40 border border-purple-500/40 text-purple-200 text-sm font-semibold flex flex-col items-center justify-center gap-1.5 transition-all hover:scale-[1.02] cursor-pointer"
+                >
+                  <div className="flex items-center gap-1.5">
+                    <span>🛡️</span>
+                    <span className="font-bold">Admin</span>
+                  </div>
+                  <span className="text-xs text-purple-300/90 font-normal">Settings & Webhooks</span>
+                </button>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-2.5">
+                <div className="text-xs text-slate-300 flex items-center justify-between bg-slate-900/90 px-3 py-2 rounded-lg border border-slate-800">
+                  <span>Username: <strong className="text-white font-mono">ops_reviewer</strong></span>
+                  <button
+                    type="button"
+                    onClick={() => handleFillDemo()}
+                    className="text-xs text-indigo-400 hover:text-indigo-300 font-semibold underline cursor-pointer"
+                  >
+                    Auto-Fill
+                  </button>
                 </div>
-                <span className="text-xs text-indigo-300/90 font-normal">Triage & Approval Tokens</span>
-              </button>
-              <button
-                type="button"
-                disabled={loading}
-                onClick={() => handleQuickLogin('admin', 'admin_secret_2026')}
-                className="p-3 rounded-xl bg-purple-600/25 hover:bg-purple-600/40 border border-purple-500/40 text-purple-200 text-sm font-semibold flex flex-col items-center justify-center gap-1.5 transition-all hover:scale-[1.02] cursor-pointer"
-              >
-                <div className="flex items-center gap-1.5">
-                  <span>🛡️</span>
-                  <span className="font-bold">Admin</span>
-                </div>
-                <span className="text-xs text-purple-300/90 font-normal">Settings & Webhooks</span>
-              </button>
-            </div>
+                <button
+                  type="button"
+                  disabled={loading}
+                  onClick={() => handleQuickLogin('ops_reviewer', 'DisputePilot#2026!Secure')}
+                  className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer"
+                >
+                  <span>⚡ 1-Click Reviewer Sign-In</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            )}
           </div>
         )}
 

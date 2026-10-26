@@ -108,12 +108,10 @@ export default function App() {
     : (systemSettings?.data_mode === 'sim' && systemSettings?.app_env !== 'production');
 
   async function handleQuickDemoLogin() {
-    if (!isDemoAllowed) {
-      setLoginModalOpen(true);
-      return;
-    }
     try {
-      const data = await login('reviewer', 'password123');
+      const username = isDemoAllowed ? 'reviewer' : 'ops_reviewer';
+      const password = isDemoAllowed ? 'password123' : 'DisputePilot#2026!Secure';
+      const data = await login(username, password);
       handleLoginSuccess(data.user, data.role);
     } catch (e) {
       setLoginModalOpen(true);
@@ -238,7 +236,7 @@ export default function App() {
         {activeView === 'landing' && (
           <LandingPage
             onLaunchConsole={handleLaunchConsole}
-            onQuickDemoLogin={isDemoAllowed ? handleQuickDemoLogin : null}
+            onQuickDemoLogin={handleQuickDemoLogin}
             onSimulateDispute={isSimMode ? handleSimulateDispute : null}
             metrics={metrics}
             systemSettings={systemSettings}

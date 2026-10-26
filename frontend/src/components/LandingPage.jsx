@@ -149,51 +149,211 @@ export default function LandingPage({
 
         <div className="hero-case-art" aria-label="Illustrative dispute case review">
           <div className="hero-art-topline">
-            <span><i /> CASE IN REVIEW</span>
-            <span>MERCHANT WORKSPACE</span>
+            <span><i /> STAGE {activeStage} OF 4 · {activeStage === 1 ? 'WEBHOOK INGEST' : activeStage === 2 ? 'EVIDENCE MATCH' : activeStage === 3 ? 'AI REBUTTAL' : 'HUMAN APPROVAL'}</span>
+            <div style={{ display: 'flex', gap: '3px' }}>
+              {[1, 2, 3, 4].map((step) => (
+                <button
+                  key={step}
+                  type="button"
+                  onClick={() => setActiveStage(step)}
+                  style={{
+                    padding: '2px 6px',
+                    fontSize: '9px',
+                    fontWeight: 700,
+                    borderRadius: '4px',
+                    border: '1px solid',
+                    borderColor: activeStage === step ? '#5e9a79' : 'rgba(0,0,0,0.15)',
+                    background: activeStage === step ? '#eef7f2' : 'transparent',
+                    color: activeStage === step ? '#275239' : '#849087',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease',
+                  }}
+                  title={`View Stage 0${step}`}
+                >
+                  0{step}
+                </button>
+              ))}
+            </div>
           </div>
           <div className="hero-art-card">
-            <div className="hero-art-summary">
-              <span className="hero-art-label">DISPUTE REASON</span>
-              <strong>Item not received</strong>
-              <small>Case DP-0184 <span>·</span> Open</small>
-            </div>
-            <div className="hero-art-amount">
-              <span className="hero-art-label">AMOUNT</span>
-              <strong>₹4,899</strong>
-              <small>INR</small>
-            </div>
-            <div className="hero-art-divider" />
-            <div className="hero-art-evidence-label">
-              <span>Evidence review</span>
-              <span>2 of 3 matched</span>
-            </div>
-            <div className="hero-art-row">
-              <PackageCheck className="h-4 w-4" />
-              <span><strong>Delivery record</strong><small>Carrier confirmation</small></span>
-              <CircleCheck className="hero-art-check h-4 w-4" />
-            </div>
-            <div className="hero-art-row">
-              <FileCheck2 className="h-4 w-4" />
-              <span><strong>Order invoice</strong><small>Purchase details</small></span>
-              <CircleCheck className="hero-art-check h-4 w-4" />
-            </div>
-            <div className="hero-art-row hero-art-row-pending">
-              <ScanText className="h-4 w-4" />
-              <span><strong>Customer correspondence</strong><small>Review recommended</small></span>
-              <span className="hero-art-pending">Review</span>
-            </div>
-            <div className="hero-art-deadline">
-              <Clock3 className="h-4 w-4" />
-              <span><strong>Response deadline</strong><small>36 hours remaining</small></span>
-              <span className="hero-art-priority">Needs attention</span>
-            </div>
-            <div className="hero-art-footer">
-              <span><LockKeyhole className="h-3.5 w-3.5" /> Awaiting reviewer approval</span>
-              <span>NOT AUTO-SUBMITTED</span>
-            </div>
+            {activeStage === 1 && (
+              <>
+                <div className="hero-art-summary">
+                  <span className="hero-art-label">01 · INGEST & TRIAGE</span>
+                  <strong>Item not received (INR)</strong>
+                  <small>Razorpay Webhook · disp_fraud_001 <span>·</span> 94% Win Score</small>
+                </div>
+                <div className="hero-art-amount">
+                  <span className="hero-art-label">DISPUTE AMOUNT</span>
+                  <strong>₹4,899</strong>
+                  <small>INR · Escalated</small>
+                </div>
+                <div className="hero-art-divider" />
+                <div className="hero-art-evidence-label">
+                  <span>Intelligent Triage Pipeline</span>
+                  <span>Verified</span>
+                </div>
+                <div className="hero-art-row">
+                  <PackageCheck className="h-4 w-4" />
+                  <span><strong>Webhook Authenticity</strong><small>HMAC-SHA256 signature verified</small></span>
+                  <CircleCheck className="hero-art-check h-4 w-4" />
+                </div>
+                <div className="hero-art-row">
+                  <FileCheck2 className="h-4 w-4" />
+                  <span><strong>Chargeback Classification</strong><small>Non-receipt categorized</small></span>
+                  <CircleCheck className="hero-art-check h-4 w-4" />
+                </div>
+                <div className="hero-art-deadline">
+                  <Clock3 className="h-4 w-4" />
+                  <span><strong>Bank Response Deadline</strong><small>36 hours remaining</small></span>
+                  <span className="hero-art-priority">Needs attention</span>
+                </div>
+                <div className="hero-art-footer">
+                  <span>⚡ Triage Complete</span>
+                  <span>MOVING TO EVIDENCE</span>
+                </div>
+              </>
+            )}
+
+            {activeStage === 2 && (
+              <>
+                <div className="hero-art-summary">
+                  <span className="hero-art-label">02 · EVIDENCE MATCHING</span>
+                  <strong>Order #ORD-9021 Correlated</strong>
+                  <small>2 of 3 Documents Auto-Retrieved</small>
+                </div>
+                <div className="hero-art-amount">
+                  <span className="hero-art-label">EVIDENCE HEALTH</span>
+                  <strong>2/3 Matched</strong>
+                  <small>Locker Encrypted</small>
+                </div>
+                <div className="hero-art-divider" />
+                <div className="hero-art-evidence-label">
+                  <span>Evidence Review & PCI Scan</span>
+                  <span>Passed</span>
+                </div>
+                <div className="hero-art-row">
+                  <PackageCheck className="h-4 w-4" />
+                  <span><strong>BlueDart Carrier POD</strong><small>Recipient signature verified</small></span>
+                  <CircleCheck className="hero-art-check h-4 w-4" />
+                </div>
+                <div className="hero-art-row">
+                  <FileCheck2 className="h-4 w-4" />
+                  <span><strong>Order Tax Invoice</strong><small>Matches billing & shipping address</small></span>
+                  <CircleCheck className="hero-art-check h-4 w-4" />
+                </div>
+                <div className="hero-art-row">
+                  <ScanText className="h-4 w-4" />
+                  <span><strong>PCI-DSS Card Shield</strong><small>0 unmasked PANs found</small></span>
+                  <CircleCheck className="hero-art-check h-4 w-4" />
+                </div>
+                <div className="hero-art-footer">
+                  <span>🛡️ Evidence Locked</span>
+                  <span>READY FOR REBUTTAL</span>
+                </div>
+              </>
+            )}
+
+            {activeStage === 3 && (
+              <>
+                <div className="hero-art-summary">
+                  <span className="hero-art-label">03 · REBUTTAL SYNTHESIS</span>
+                  <strong>Bank-Grade Defense Draft</strong>
+                  <small>Grounded in 2 Evidence Citations</small>
+                </div>
+                <div className="hero-art-amount">
+                  <span className="hero-art-label">NETWORK RULES</span>
+                  <strong>Visa / RuPay</strong>
+                  <small>Compliant</small>
+                </div>
+                <div className="hero-art-divider" />
+                <div className="hero-art-evidence-label">
+                  <span>AI & Rule-Based Synthesis</span>
+                  <span>Complete</span>
+                </div>
+                <div className="hero-art-row">
+                  <FileCheck2 className="h-4 w-4" />
+                  <span><strong>Acquirer Addressed</strong><small>HDFC Settlement Dept</small></span>
+                  <CircleCheck className="hero-art-check h-4 w-4" />
+                </div>
+                <div className="hero-art-row">
+                  <ScanText className="h-4 w-4" />
+                  <span><strong>Evidence Citations</strong><small>Cites POD [Doc #1] & Invoice [Doc #2]</small></span>
+                  <CircleCheck className="hero-art-check h-4 w-4" />
+                </div>
+                <div className="hero-art-row">
+                  <PackageCheck className="h-4 w-4" />
+                  <span><strong>Deterministic Guarantee</strong><small>100% rule fallback reliability</small></span>
+                  <CircleCheck className="hero-art-check h-4 w-4" />
+                </div>
+                <div className="hero-art-footer">
+                  <span>✍️ Draft Synthesized</span>
+                  <span>AWAITING APPROVAL</span>
+                </div>
+              </>
+            )}
+
+            {activeStage === 4 && (
+              <>
+                <div className="hero-art-summary">
+                  <span className="hero-art-label">04 · HUMAN AUTHORIZATION</span>
+                  <strong>Single-Use Approval Token</strong>
+                  <small>Reviewer: ops_reviewer <span>·</span> Two-Party</small>
+                </div>
+                <div className="hero-art-amount">
+                  <span className="hero-art-label">SUBMISSION STATE</span>
+                  <strong>Contested</strong>
+                  <small>API Verified</small>
+                </div>
+                <div className="hero-art-divider" />
+                <div className="hero-art-evidence-label">
+                  <span>Cryptographic Governance</span>
+                  <span>Active</span>
+                </div>
+                <div className="hero-art-row">
+                  <LockKeyhole className="h-4 w-4" />
+                  <span><strong>Payload-Bound Token</strong><small>sha256:7adc7ad6... locked</small></span>
+                  <CircleCheck className="hero-art-check h-4 w-4" />
+                </div>
+                <div className="hero-art-row">
+                  <Fingerprint className="h-4 w-4" />
+                  <span><strong>Reviewer Sign-Off</strong><small>Approved by ops_reviewer</small></span>
+                  <CircleCheck className="hero-art-check h-4 w-4" />
+                </div>
+                <div className="hero-art-row">
+                  <ShieldCheck className="h-4 w-4" />
+                  <span><strong>Immutable Audit Ledger</strong><small>Event #4092 committed</small></span>
+                  <CircleCheck className="hero-art-check h-4 w-4" />
+                </div>
+                <div className="hero-art-footer">
+                  <span>🔒 Contest Filed to Bank</span>
+                  <span>AUDIT COMMITTED</span>
+                </div>
+              </>
+            )}
           </div>
-          <span className="hero-art-footnote">ILLUSTRATIVE CASE · SYNTHETIC DETAILS</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px', padding: '0 4px' }}>
+            <span className="hero-art-footnote">INTERACTIVE WORKFLOW · CLICK 01-04</span>
+            <button
+              type="button"
+              onClick={() => setActiveStage((s) => (s % 4) + 1)}
+              style={{
+                fontSize: '9px',
+                fontWeight: 600,
+                color: '#275239',
+                background: '#eef7f2',
+                border: '1px solid #5e9a79',
+                borderRadius: '4px',
+                padding: '2px 8px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '3px',
+              }}
+            >
+              Next Stage ➔
+            </button>
+          </div>
         </div>
       </section>
 
