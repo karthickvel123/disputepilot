@@ -15,7 +15,9 @@ ENV PYTHONUNBUFFERED=1 \
     UV_LINK_MODE=copy \
     PATH="/app/.venv/bin:$PATH" \
     DATA_DIR=/var/data/disputepilot \
-    FRONTEND_DIST=/app/frontend/dist
+    FRONTEND_DIST=/app/frontend/dist \
+    REVIEWER_USER=ops_reviewer \
+    REVIEWER_PASSWORD_HASH=b820263f23d20f92040e9b3fb04d7c7b:7adc7ad6337a3e264b3b329ecb6136e3770a9ac6aa07e739d22ba3a022cdd99e36cea884a2b1731d3f31469b0c8b2e2693311be160cf89fa35373953c82e0832
 
 WORKDIR /app
 

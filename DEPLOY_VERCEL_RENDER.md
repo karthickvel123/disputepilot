@@ -58,21 +58,28 @@ DisputePilot operates a decoupled full-stack architecture:
 | `COOKIE_SECURE` | `true` | Enforces HTTPS-only secure cookies |
 | `COOKIE_SAMESITE` | `none` | Allows cross-origin cookies between Vercel & Render |
 | `SESSION_SECRET` | *(Click "Generate" or random 32+ hex)* | HMAC key for signing session tokens |
-| `REVIEWER_USER` (or `INITIAL_REVIEWER_USERNAME`) | `ops_reviewer` | Production reviewer username (cannot be 'reviewer') |
-| `REVIEWER_PASSWORD_HASH` (or `INITIAL_REVIEWER_PASSWORD_HASH`) | *(Preconfigured in render.yaml or generated below)* | Salted scrypt hash for the initial reviewer |
+| `REVIEWER_USER` | `ops_reviewer` | Production reviewer username (default in Dockerfile) |
+| `REVIEWER_PASSWORD_HASH` | `b820263f23d20f92040e9b3fb04d7c7b:7adc7ad6337a3e264b3b329ecb6136e3770a9ac6aa07e739d22ba3a022cdd99e36cea884a2b1731d3f31469b0c8b2e2693311be160cf89fa35373953c82e0832` | Salted scrypt hash for `DisputePilot#2026!Secure` |
 | `GEMINI_API_KEY` | *(Optional)* | Enables Google Gemini 2.5 AI drafting |
 | `RAZORPAY_KEY_ID` | `rzp_test_...` *(Optional)* | Razorpay test key |
 | `RAZORPAY_KEY_SECRET` | `...` *(Optional)* | Razorpay test secret |
 | `RAZORPAY_WEBHOOK_SECRET` | `...` *(Optional)* | Razorpay webhook secret |
 
-#### Generating Production Reviewer Password Hash:
+> [!TIP]
+> **Default Login Credentials**:
+> - **Username**: `ops_reviewer`
+> - **Password**: `DisputePilot#2026!Secure`
+> 
+> Both `render.yaml` and `Dockerfile` have these pre-configured by default. If you customize them in Render's Environment tab, generate a new hash as shown below.
+
+#### Generating a Custom Reviewer Password Hash:
 Run locally in your terminal:
 ```bash
 uv run python scripts/hash_password.py
 # Or with standard python:
 python scripts/hash_password.py
 ```
-Copy the generated hash string into `INITIAL_REVIEWER_PASSWORD_HASH`.
+Copy the generated hash string into `REVIEWER_PASSWORD_HASH`.
 
 5. Click **Create Web Service**. Once deployed, copy your Render URL (e.g., `https://disputepilot-backend.onrender.com`).
 
