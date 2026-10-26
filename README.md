@@ -2,11 +2,21 @@
 
 > **Human-Approved Chargeback Defense Engine for Razorpay Merchants**
 
-DisputePilot helps Razorpay merchants respond to payment disputes (chargebacks) by triaging incoming claims, auditing supporting fulfillment evidence, and recommending whether to contest or accept liability. It drafts citation-grounded rebuttal letters where unsupported numbers, dates and IDs are stripped by a deterministic verifier against factual order and shipping records. Built with strict safety non-negotiables, DisputePilot requires cryptographically bound human approval before any dispute is contested or accepted.
-
-The web app has a landing page, analytics dashboard, evidence locker, rebuttal studio and audit-chain verifier (React + Vite), served by a session-authenticated JSON API (`/api/v1`) with CSRF protection and HMAC-signed sessions.
+[![Live Frontend](https://img.shields.io/badge/Vercel-Live%20Frontend-black?logo=vercel)](https://disputepilot-frontend.vercel.app)
+[![Live Backend](https://img.shields.io/badge/Render-Healthy%20API-46E3B7?logo=render)](https://disputepilot-backend.onrender.com/api/v1/health)
+[![Python 3.12](https://img.shields.io/badge/Python-3.12+-blue?logo=python)](https://python.org)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?logo=fastapi)](https://fastapi.tiangolo.com)
+[![React 19](https://img.shields.io/badge/React-19.0-61DAFB?logo=react)](https://react.dev)
+[![Vite](https://img.shields.io/badge/Vite-6.0-646CFF?logo=vite)](https://vitejs.dev)
+[![Tests Passing](https://img.shields.io/badge/Tests-306%20Passing-success)](tests/)
 
 ---
+
+## 📖 About DisputePilot
+
+DisputePilot helps Razorpay merchants respond to payment disputes (chargebacks) by triaging incoming claims, auditing supporting fulfillment evidence, and recommending whether to contest or accept liability. It drafts citation-grounded rebuttal letters where unsupported numbers, dates, and IDs are stripped by a deterministic verifier against factual order and shipping records. Built with strict safety non-negotiables, DisputePilot requires cryptographically bound human approval before any dispute is contested or accepted.
+
+The web application features an interactive landing page, real-time analytics dashboard, evidence locker, rebuttal synthesis studio, and tamper-evident audit ledger (React + Vite), served by a session-authenticated FastAPI JSON API (`/api/v1`) with CSRF protection and HMAC-signed cookies.
 
 ---
 
