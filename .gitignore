@@ -5,6 +5,8 @@
 
 # Data directory (SQLite databases & generated drafts)
 *.db
+*.db-shm
+*.db-wal
 data/*.db
 data/drafts/
 data/evidence_files/
