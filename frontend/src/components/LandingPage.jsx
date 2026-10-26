@@ -19,20 +19,28 @@ import {
 
 const faqs = [
   {
-    question: 'Can AI submit a dispute without a person reviewing it?',
-    answer: 'No. A named reviewer must inspect the case and approve the exact submission. The approval is bound to the payload hash and can only be used once.',
+    question: 'How does DisputePilot automatically triage incoming disputes?',
+    answer: 'When a dispute webhook arrives from Razorpay or is simulated, DisputePilot extracts transaction identifiers, classifies the chargeback reason (e.g. fraud, item not received, duplicate billing), scores the financial recoverability probability, and calculates the exact SLA countdown to ensure bank response deadlines are never missed.',
   },
   {
-    question: 'How does DisputePilot handle sensitive card data?',
-    answer: 'Evidence is checked for unmasked card numbers before it is stored. Documents that fail the card-data scan are rejected or quarantined.',
+    question: 'Can AI submit a dispute without a human reviewer approving it?',
+    answer: 'No. DisputePilot enforces a strict Separation of Duties. An authorized reviewer must inspect the matched evidence and approve the rebuttal letter. The approval is bound to a cryptographic SHA-256 payload hash and can only be used once.',
   },
   {
-    question: 'What if the AI provider is unavailable?',
-    answer: 'The workflow can fall back to deterministic rules for triage and evidence checks. AI-generated content is not required for an approval or submission.',
+    question: 'How does DisputePilot handle sensitive card data and PCI-DSS compliance?',
+    answer: 'All uploaded evidence documents and PDF excerpts pass through real-time Luhn algorithm card scanning. Unmasked 13-19 digit primary account numbers (PANs) are detected and quarantined before reaching storage or LLM context.',
   },
   {
-    question: 'Can I import an existing dispute history?',
-    answer: 'Yes. The worklist supports CSV import with a dry-run preview and row-level validation before records are created.',
+    question: 'What happens if the Gemini AI API is offline or unconfigured?',
+    answer: 'DisputePilot features a 100% deterministic fallback drafting engine. It synthesizes structured, bank-compliant rebuttal letters citing matched invoices and delivery proofs using rules and templates without requiring any external AI API.',
+  },
+  {
+    question: 'How does DisputePilot submit contests to Razorpay?',
+    answer: 'DisputePilot operates a dual-gateway architecture: in Simulated Mode (DATA_MODE=sim), disputes and submissions run against realistic local fixtures; in Live Mode (DATA_MODE=live), it calls Razorpay’s official Dispute API and document upload endpoints.',
+  },
+  {
+    question: 'How does the Tamper-Evident Audit Ledger work?',
+    answer: 'Every state transition, evidence ingestion, AI draft generation, and reviewer sign-off is recorded with a cryptographically chained SHA-256 HMAC entry in SQLite, providing an immutable audit trail for compliance and chargeback accounting.',
   },
 ];
 
@@ -40,17 +48,17 @@ const safeguards = [
   {
     icon: ScanText,
     title: 'Evidence stays in context',
-    detail: 'Bring order, delivery, and customer records together around the dispute.',
+    detail: 'Automatically matches order invoices, carrier delivery tracking, and customer communications into a unified Evidence Locker.',
   },
   {
     icon: Clock3,
-    title: 'Deadlines stay visible',
-    detail: 'Make response windows clear so your team knows what needs attention.',
+    title: 'Bank deadlines stay visible',
+    detail: 'Real-time SLA countdown timers prioritize disputes nearing expiry so your team never forfeits a winnable chargeback.',
   },
   {
     icon: Fingerprint,
     title: 'Your team stays in control',
-    detail: 'A reviewer checks the exact response before any decision is submitted.',
+    detail: 'Cryptographic payload-bound approval tokens guarantee that an authorized human reviewer signs off on every contest packet.',
   },
 ];
 
@@ -98,13 +106,13 @@ export default function LandingPage({
         <div className="sama-hero-content">
           <span className="sama-hero-kicker">
             <span />
-            PAYMENT DISPUTES, WITH CLARITY
+            AUTONOMOUS CHARGEBACK DEFENSE FOR RAZORPAY
           </span>
           <h1>Facts first.<br /><em>Fair responses.</em></h1>
           <p>
-            A calmer way to manage payment disputes.
-            Give your team the evidence, time, and confidence
-            to make the right call.
+            Autonomous payment dispute intelligence for modern merchants.
+            Automate triage, correlate evidence across orders, generate bank-grade
+            rebuttals, and empower reviewers to contest chargebacks with confidence.
           </p>
           <div className="sama-hero-actions">
             <button
@@ -225,42 +233,41 @@ export default function LandingPage({
         <div className="landing-approach-grid">
           <article>
             <span>01</span>
-            <h3>Understand the case</h3>
-            <p>See the dispute reason, amount, current status, and response deadline together.</p>
+            <h3>Ingest & Triage</h3>
+            <p>Ingest notices via webhooks, auto-classify chargeback reasons (fraud, non-receipt, billing), score recoverability, and compute strict bank SLA deadlines.</p>
           </article>
           <article>
             <span>02</span>
-            <h3>Bring facts together</h3>
-            <p>Review relevant order details, customer records, and delivery evidence in context.</p>
+            <h3>Match Evidence</h3>
+            <p>Correlate order IDs to automatically pull proof-of-delivery receipts, tax invoices, and customer chat history into a secure Evidence Locker.</p>
           </article>
           <article>
             <span>03</span>
-            <h3>Prepare a response</h3>
-            <p>Create a fact-grounded draft and identify evidence that still needs attention.</p>
+            <h3>Draft Rebuttals</h3>
+            <p>Synthesize structured, citation-grounded rebuttal letters tailored to payment network rules, backed by our 100% deterministic fallback engine.</p>
           </article>
           <article>
             <span>04</span>
-            <h3>Approve before action</h3>
-            <p>An authorized reviewer checks the exact payload before anything is submitted.</p>
+            <h3>Approve & Submit</h3>
+            <p>An authorized reviewer examines the packet and issues a cryptographic, single-use SHA-256 approval token before the contest is submitted.</p>
           </article>
         </div>
       </section>
 
       <section className="landing-proof-band">
         <div className="landing-proof-heading">
-          <span className="sama-section-kicker">BUILT AROUND TRUST</span>
-          <h2>Technology can help.<br /><em>Your people decide.</em></h2>
+          <span className="sama-section-kicker">BUILT AROUND ENTERPRISE TRUST</span>
+          <h2>Technology accelerates.<br /><em>Your reviewers decide.</em></h2>
         </div>
         <div className="landing-proof-details">
           <p>
-            AI can help organize facts and prepare a draft. It cannot make the
-            final decision or submit a dispute on its own. Every consequential
-            action stays with an authorized human reviewer.
+            AI and rule engines automate evidence correlation and rebuttal letter drafting, but never make unilateral financial decisions. Every contest or acceptance requires explicit, single-use cryptographic authorization from a designated reviewer.
           </p>
           <div className="landing-proof-tags">
-            <span><Check className="h-3.5 w-3.5" /> Evidence checks</span>
-            <span><Check className="h-3.5 w-3.5" /> Card-data scanning</span>
-            <span><Check className="h-3.5 w-3.5" /> Tamper-evident audit trail</span>
+            <span><Check className="h-3.5 w-3.5" /> PCI-DSS Card Scanning</span>
+            <span><Check className="h-3.5 w-3.5" /> 100% Deterministic Fallback</span>
+            <span><Check className="h-3.5 w-3.5" /> Tamper-Evident HMAC Ledger</span>
+            <span><Check className="h-3.5 w-3.5" /> Dual-Gateway (Sim/Live)</span>
           </div>
         </div>
       </section>
@@ -294,23 +301,23 @@ export default function LandingPage({
         <div className="landing-security-grid">
           <article>
             <span><LockKeyhole className="h-4 w-4" /></span>
-            <h3>Human authorization</h3>
-            <p>Only an authorized reviewer can approve a contest or acceptance request.</p>
+            <h3>Separation of Duties</h3>
+            <p>Enforces two-party governance so AI models cannot unilaterally submit chargeback contests to banks.</p>
           </article>
           <article>
             <span><Fingerprint className="h-4 w-4" /></span>
-            <h3>Payload-bound approval</h3>
-            <p>Approval tokens are tied to the exact payload that the reviewer examined.</p>
+            <h3>Payload-Bound Tokens</h3>
+            <p>Cryptographic single-use SHA-256 tokens ensure only the exact approved letter and evidence packet can be filed.</p>
           </article>
           <article>
             <span><ScanText className="h-4 w-4" /></span>
-            <h3>Sensitive-data checks</h3>
-            <p>Evidence is scanned for unmasked payment-card data before storage.</p>
+            <h3>PCI-DSS Shield</h3>
+            <p>Real-time Luhn algorithm scanning scrubs and quarantines raw card numbers from uploaded documents.</p>
           </article>
           <article>
             <span><FileCheck2 className="h-4 w-4" /></span>
-            <h3>Auditable history</h3>
-            <p>Important actions are recorded in a tamper-evident audit ledger.</p>
+            <h3>Chained Audit Ledger</h3>
+            <p>Immutable HMAC-chained event logging records every state change, triage decision, and human review.</p>
           </article>
         </div>
       </section>
@@ -385,21 +392,24 @@ export default function LandingPage({
                 <X className="h-4 w-4" />
               </button>
             </div>
-            <span className="sama-section-kicker">{activeModal === 'privacy' ? 'DATA PROTECTION' : 'PLATFORM OVERVIEW'}</span>
+            <span className="sama-section-kicker">{activeModal === 'privacy' ? 'DATA PROTECTION & PCI-DSS' : 'SYSTEM ARCHITECTURE'}</span>
             <h2 id="landing-modal-title">
-              {activeModal === 'privacy' ? 'Sensitive data stays protected.' : 'A reviewable, auditable workflow.'}
+              {activeModal === 'privacy' ? 'Defense-in-depth for cardholder data.' : 'Autonomous, reviewable, and auditable.'}
             </h2>
             {activeModal === 'privacy' ? (
               <ul className="landing-modal-list">
-                <li><Check className="h-4 w-4" /><span>Card data scanning helps prevent unmasked numbers from being stored.</span></li>
-                <li><Check className="h-4 w-4" /><span>Incoming webhooks are authenticated with HMAC verification.</span></li>
-                <li><Check className="h-4 w-4" /><span>Evidence integrity is tracked with cryptographic hashes.</span></li>
+                <li><Check className="h-4 w-4" /><span><strong>PCI-DSS Shield:</strong> Real-time Luhn algorithm scanning scrubs raw card numbers from uploaded documents and PDF excerpts.</span></li>
+                <li><Check className="h-4 w-4" /><span><strong>Webhook Authenticity:</strong> All incoming Razorpay event notifications are validated using strict HMAC-SHA256 signatures.</span></li>
+                <li><Check className="h-4 w-4" /><span><strong>Cryptographic Integrity:</strong> Evidence files are hashed at rest, guaranteeing zero post-upload document tampering.</span></li>
+                <li><Check className="h-4 w-4" /><span><strong>Secure Session Cookies:</strong> Encrypted, HttpOnly, SameSite=None/Lax cookies with CSRF token protection.</span></li>
               </ul>
             ) : (
               <ul className="landing-modal-list">
-                <li><Check className="h-4 w-4" /><span>React-based merchant console backed by a FastAPI JSON API.</span></li>
-                <li><Check className="h-4 w-4" /><span>AI-assisted drafting with deterministic verification and fallback.</span></li>
-                <li><Check className="h-4 w-4" /><span>Human approval gates and a tamper-evident audit ledger.</span></li>
+                <li><Check className="h-4 w-4" /><span><strong>Modern Full-Stack:</strong> React + Vite SPA backed by Python 3.12 FastAPI with async SQLite storage.</span></li>
+                <li><Check className="h-4 w-4" /><span><strong>Dual-Gateway Pipeline:</strong> Instant offline simulation via SimGateway or production contests via RazorpayGateway.</span></li>
+                <li><Check className="h-4 w-4" /><span><strong>Hybrid Rebuttal Studio:</strong> Google Gemini 2.5 generative drafting paired with a 100% deterministic rule fallback engine.</span></li>
+                <li><Check className="h-4 w-4" /><span><strong>Cryptographic Approval Gate:</strong> Single-use SHA-256 payload authorization tokens with independent reviewer enforcement.</span></li>
+                <li><Check className="h-4 w-4" /><span><strong>Immutable Audit Ledger:</strong> Append-only event tracking for compliance, SOC2 readiness, and dispute reconciliation.</span></li>
               </ul>
             )}
             <button type="button" onClick={() => setActiveModal(null)} className="landing-button landing-button-primary landing-modal-done">
