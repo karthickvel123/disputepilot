@@ -272,14 +272,14 @@ def create_webhook_router(
         content_length = request.headers.get("content-length")
         if content_length and content_length.isdigit() and int(content_length) > max_body_bytes:
             raise HTTPException(
-                status_code=status.HTTP_413_CONTENT_TOO_LARGE,
+                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
                 detail=f"Webhook payload exceeds maximum allowed size of {max_body_bytes} bytes.",
             )
 
         raw_body = await request.body()
         if len(raw_body) > max_body_bytes:
             raise HTTPException(
-                status_code=status.HTTP_413_CONTENT_TOO_LARGE,
+                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
                 detail=f"Webhook payload exceeds maximum allowed size of {max_body_bytes} bytes.",
             )
 
