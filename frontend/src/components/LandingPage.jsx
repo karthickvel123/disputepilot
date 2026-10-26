@@ -73,6 +73,7 @@ export default function LandingPage({
   const [openFaq, setOpenFaq] = useState(0);
   const [activeModal, setActiveModal] = useState(null);
   const [simulating, setSimulating] = useState(false);
+  const [activeStage, setActiveStage] = useState(1);
 
   async function handleSimulateClick() {
     if (!onSimulateDispute) return;
