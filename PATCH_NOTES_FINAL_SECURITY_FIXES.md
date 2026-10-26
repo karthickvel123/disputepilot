@@ -8,7 +8,7 @@
 - **Setup script no longer opts into live mode:** `scripts/setup_keys.py` always writes `DATA_MODE=sim`, even if Razorpay credentials are entered. Live mode must be enabled explicitly after deliberate review.
 - **No hard-coded reviewer password hash:** the setup script asks for a reviewer username and password, validates the username and password length, and creates a fresh salted scrypt hash.
 - **CORS restricted:** removed broad wildcard trust for all Vercel and Render subdomains. Production allows only exact origins configured through `CORS_ALLOWED_ORIGINS`. Localhost convenience is only enabled outside production.
-- **Render origin configured:** `render.yaml` sets `CORS_ALLOWED_ORIGINS=https://frontend-blue-nine-19.vercel.app`.
+- **Render origin configured:** `render.yaml` sets `CORS_ALLOWED_ORIGINS=https://disputepilot-frontend.vercel.app,https://frontend-blue-nine-19.vercel.app`.
 - **Regression coverage:** added `tests/test_deployment_hardening.py` for password hashing, safe setup mode, image packaging, CORS restrictions, and demo-account cleanup.
 
 ## Verification results

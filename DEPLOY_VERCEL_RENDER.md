@@ -10,13 +10,13 @@ This guide provides the complete, production-ready procedure to deploy **Dispute
 
 DisputePilot operates a decoupled full-stack architecture:
 ```
-┌─────────────────────────────────┐           ┌─────────────────────────────────┐
-│     Vercel Frontend (SPA)       │   CORS    │     Render Backend (FastAPI)    │
-│  https://disputepilot.vercel.app├──────────►│ https://disputepilot.onrender   │
-│  - React 19 + Vite 6            │Credentials│ - Python 3.12 + Docker          │
-│  - Tailwind CSS Fintech Design  │           │ - Deterministic Rules Engine    │
-│  - Session & CSRF Bearer State  │           │ - Gemini AI Rebuttal Engine     │
-└─────────────────────────────────┘           └─────────────────────────────────┘
+┌───────────────────────────────────────────────┐           ┌───────────────────────────────────────────────┐
+│              Vercel Frontend (SPA)            │   CORS    │            Render Backend (FastAPI)           │
+│    https://disputepilot-frontend.vercel.app   ├──────────►│    https://disputepilot-backend.onrender.com  │
+│  - React 19 + Vite 6                          │Credentials│ - Python 3.12 + Docker                        │
+│  - Tailwind CSS Fintech Design                │           │ - Deterministic Rules Engine                  │
+│  - Session & CSRF Bearer State                │           │ - Gemini AI Rebuttal Engine                   │
+└───────────────────────────────────────────────┘           └───────────────────────────────────────────────┘
 ```
 
 - **Cross-Site Cookie Handling**: Configured with `SameSite=None` and `Secure=True` when `COOKIE_SECURE=true` in production, allowing seamless session cookie persistence across decoupled domains.
@@ -105,19 +105,19 @@ Copy the generated hash string into `REVIEWER_PASSWORD_HASH`.
 
 1. **Verify Backend Health**:
    Open in your browser:
-   `https://YOUR-RENDER-APP.onrender.com/api/v1/health`
+   `https://disputepilot-backend.onrender.com/api/v1/health`
    Expected response:
    ```json
-   {"status":"healthy","timestamp":1792422258,"version":"0.2.0"}
+   {"status":"healthy","timestamp":1793003504,"version":"0.2.0"}
    ```
 
 2. **Verify Frontend & End-to-End Auth**:
    - Open your Vercel URL: `https://disputepilot-frontend.vercel.app`
-   - Click **⚡ Launch Interactive Demo (1-Click)** or open the login modal and click **⚡ Reviewer Access**.
+   - Click **⚡ Launch Demo** or open the login modal and click **⚡ 1-Click Reviewer Sign-In**.
    - Confirm you are logged in and routed to the **Dashboard** with active metrics.
-   - Go to **Worklist**, select a dispute (e.g. `disp_1001`), and click **Analyze with Gemini**.
+   - Go to **Dispute worklist**, select a dispute (e.g. `disp_0001_hbrpoi`), and inspect the matched facts.
    - Check the **PCI-DSS Shield** indicator and verify that the bank rebuttal draft is synthesized.
-   - Click **+ Simulate Dispute** in the navigation bar to test live dispute creation and triage!
+   - Click **Simulate a dispute** to test live dispute creation and triage!
 
 ---
 
@@ -127,7 +127,7 @@ If you are running in `DATA_MODE=live` with test mode keys:
 1. Open the [Razorpay Dashboard](https://dashboard.razorpay.com/) in **Test Mode**.
 2. Navigate to **Account & Settings** → **Webhooks** → **Add New Webhook**.
 3. Set the Webhook URL to:
-   `https://YOUR-RENDER-APP.onrender.com/webhook/razorpay`
+   `https://disputepilot-backend.onrender.com/webhook/razorpay`
 4. Set the **Secret** to match `RAZORPAY_WEBHOOK_SECRET` from your Render environment variables.
 5. Subscribe to the following active events:
    - `dispute.created`

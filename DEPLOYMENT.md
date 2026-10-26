@@ -33,6 +33,11 @@ Open `http://127.0.0.1:8000` in your web browser. Default local reviewer credent
 - **Username**: `reviewer`
 - **Password**: `password123`
 
+### Live Production Deployments
+- **Vercel Frontend**: [https://disputepilot-frontend.vercel.app](https://disputepilot-frontend.vercel.app)
+- **Render Backend API**: [https://disputepilot-backend.onrender.com/api/v1/health](https://disputepilot-backend.onrender.com/api/v1/health)
+- **Production Reviewer**: `ops_reviewer` / `DisputePilot#2026!Secure` (or click **⚡ Launch Demo** on the landing page)
+
 ---
 
 ## 2. Configuration & Environment Variables
