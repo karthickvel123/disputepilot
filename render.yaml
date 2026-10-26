@@ -19,7 +19,7 @@ services:
       - key: DATA_DIR
         value: /var/data/disputepilot
       - key: CORS_ALLOWED_ORIGINS
-        value: https://frontend-blue-nine-19.vercel.app
+        value: https://frontend-blue-nine-19.vercel.app,https://disputepilot-frontend.vercel.app
       - key: COOKIE_SECURE
         value: "true"
       - key: COOKIE_SAMESITE

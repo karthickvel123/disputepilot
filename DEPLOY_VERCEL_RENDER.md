@@ -112,7 +112,7 @@ Copy the generated hash string into `REVIEWER_PASSWORD_HASH`.
    ```
 
 2. **Verify Frontend & End-to-End Auth**:
-   - Open your Vercel URL: `https://YOUR-VERCEL-APP.vercel.app`
+   - Open your Vercel URL: `https://disputepilot-frontend.vercel.app`
    - Click **⚡ Launch Interactive Demo (1-Click)** or open the login modal and click **⚡ Reviewer Access**.
    - Confirm you are logged in and routed to the **Dashboard** with active metrics.
    - Go to **Worklist**, select a dispute (e.g. `disp_1001`), and click **Analyze with Gemini**.
