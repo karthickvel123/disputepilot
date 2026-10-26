@@ -226,6 +226,7 @@ export default function App() {
         isDemoAllowed={isDemoAllowed}
         isSimMode={isSimMode}
         onOpenLanding={() => setActiveView('landing')}
+        onOpenLogin={() => setLoginModalOpen(true)}
         onQuickDemoLogin={isDemoAllowed ? handleQuickDemoLogin : null}
         onSimulateDispute={isSimMode ? handleSimulateDispute : null}
         onSelectCase={handleSelectCase}

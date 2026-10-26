@@ -45,6 +45,7 @@ export default function Navbar({
   isDemoAllowed = false,
   isSimMode = false,
   onOpenLanding,
+  onOpenLogin,
   onQuickDemoLogin,
   onSimulateDispute,
   onSelectCase,
@@ -199,7 +200,7 @@ export default function Navbar({
               <span>Try the demo</span>
             </button>
           )}
-          <button id="btn-launch-login" type="button" onClick={() => setActiveTab('dashboard')} className="btn btn-secondary guest-signin-button">
+          <button id="btn-launch-login" type="button" onClick={onOpenLogin || (() => setActiveTab('dashboard'))} className="btn btn-secondary guest-signin-button">
             Sign in
           </button>
         </div>
