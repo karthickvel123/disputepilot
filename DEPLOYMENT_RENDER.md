@@ -15,24 +15,25 @@ customer evidence, or generated secrets.
 DisputePilot includes a `render.yaml` blueprint. In Render:
 1. Click **New +** → **Blueprint**.
 2. Select this repository.
-3. Render automatically provisions the Docker service with the persistent 1GB disk and configured environment variables (`APP_ENV=staging`, `DATA_MODE=sim`).
+3. Render automatically provisions the Docker service with the persistent 1GB disk and configured environment variables (`APP_ENV=production`, `DATA_MODE=sim`).
 4. Click **Apply**.
 5. Once deployed, reviewers can log in with:
-   - **Username**: `reviewer`
-   - **Password**: `password123`
+   - **Username**: `ops_reviewer`
+   - **Password**: `DisputePilot#2026!Secure`
+   *(Or configure your own custom `REVIEWER_USER` and `REVIEWER_PASSWORD_HASH` in the Render dashboard).*
 
 ### Option B: Manual Web Service Setup
 1. In Render, choose **New → Web Service** and connect the GitHub repository.
 2. Choose **Docker** as the runtime; Render builds from `Dockerfile`.
 3. Set the following environment variables in the Render dashboard:
 
-   | Variable | Demo Showcase Value | Live Production Value |
+   | Variable | Value | Notes |
    |---|---|---|
-   | `APP_ENV` | `staging` | `production` |
-   | `DATA_MODE` | `sim` | `live` |
-   | `COOKIE_SECURE` | `true` | `true` |
-   | `REVIEWER_USER` | `reviewer` | A dedicated admin username |
-   | `REVIEWER_PASSWORD_HASH` | (omitted or demo) | Salted scrypt hash from `scripts/hash_password.py` |
+   | `APP_ENV` | `production` | Production mode |
+   | `DATA_MODE` | `sim` | Simulated disputes mode |
+   | `COOKIE_SECURE` | `true` | Secure HTTPS cookies |
+   | `REVIEWER_USER` | `ops_reviewer` | Production reviewer username (cannot be 'reviewer') |
+   | `REVIEWER_PASSWORD_HASH` | (preconfigured or generated) | Salted scrypt hash from `scripts/hash_password.py` |
    | `SESSION_SECRET` | (auto-generated) | Cryptographic 32+ char hex secret |
 
 4. Deploy and wait for the service to become healthy (`/api/v1/health`).

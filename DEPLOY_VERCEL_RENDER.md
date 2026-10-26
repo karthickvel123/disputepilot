@@ -58,8 +58,8 @@ DisputePilot operates a decoupled full-stack architecture:
 | `COOKIE_SECURE` | `true` | Enforces HTTPS-only secure cookies |
 | `COOKIE_SAMESITE` | `none` | Allows cross-origin cookies between Vercel & Render |
 | `SESSION_SECRET` | *(Click "Generate" or random 32+ hex)* | HMAC key for signing session tokens |
-| `INITIAL_REVIEWER_USERNAME` | `reviewer` | Production reviewer username |
-| `INITIAL_REVIEWER_PASSWORD_HASH` | *(Generate using script below)* | Salted scrypt hash for the initial reviewer |
+| `REVIEWER_USER` (or `INITIAL_REVIEWER_USERNAME`) | `ops_reviewer` | Production reviewer username (cannot be 'reviewer') |
+| `REVIEWER_PASSWORD_HASH` (or `INITIAL_REVIEWER_PASSWORD_HASH`) | *(Preconfigured in render.yaml or generated below)* | Salted scrypt hash for the initial reviewer |
 | `GEMINI_API_KEY` | *(Optional)* | Enables Google Gemini 2.5 AI drafting |
 | `RAZORPAY_KEY_ID` | `rzp_test_...` *(Optional)* | Razorpay test key |
 | `RAZORPAY_KEY_SECRET` | `...` *(Optional)* | Razorpay test secret |

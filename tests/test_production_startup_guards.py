@@ -159,3 +159,37 @@ def test_rule_5_cors_wildcard_with_credentials_fails() -> None:
     with pytest.raises(ConfigError) as exc_info:
         validate_production_startup(settings, cors_origins=["*"])
     assert "wildcard origin '*'" in str(exc_info.value)
+
+
+def test_load_settings_fallback_to_initial_reviewer(monkeypatch: pytest.MonkeyPatch) -> None:
+    """load_settings correctly falls back to INITIAL_REVIEWER_* env vars."""
+    from disputepilot.config import load_settings
+
+    monkeypatch.delenv("REVIEWER_USER", raising=False)
+    monkeypatch.delenv("REVIEWER_PASSWORD_HASH", raising=False)
+    monkeypatch.setenv("INITIAL_REVIEWER_USERNAME", "custom_ops")
+    monkeypatch.setenv("INITIAL_REVIEWER_PASSWORD_HASH", "custom_hash_123")
+
+    s = load_settings()
+    assert s.reviewer_user == "custom_ops"
+    assert s.reviewer_password_hash == "custom_hash_123"
+
+
+def test_render_yaml_default_credentials_pass_startup() -> None:
+    """Default non-demo credentials specified in render.yaml satisfy production validation."""
+    from disputepilot.web.auth import verify_password
+
+    # Credentials configured in render.yaml
+    render_user = "ops_reviewer"
+    render_hash = "b820263f23d20f92040e9b3fb04d7c7b:7adc7ad6337a3e264b3b329ecb6136e3770a9ac6aa07e739d22ba3a022cdd99e36cea884a2b1731d3f31469b0c8b2e2693311be160cf89fa35373953c82e0832"
+
+    settings = _valid_prod_settings(
+        reviewer_user=render_user,
+        reviewer_password_hash=render_hash,
+    )
+    # Must not raise
+    validate_production_startup(settings, cors_origins=["https://frontend-blue-nine-19.vercel.app"])
+
+    # And password verification must succeed
+    assert verify_password("DisputePilot#2026!Secure", render_hash) is True
+

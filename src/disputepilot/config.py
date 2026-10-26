@@ -260,8 +260,8 @@ def load_settings() -> Settings:
         razorpay_webhook_secret=_env("RAZORPAY_WEBHOOK_SECRET"),
         allow_live_keys=_flag("ALLOW_LIVE_KEYS"),
         session_secret=_env("SESSION_SECRET"),
-        reviewer_user=_env("REVIEWER_USER"),
-        reviewer_password_hash=_env("REVIEWER_PASSWORD_HASH"),
+        reviewer_user=_env("REVIEWER_USER") or _env("INITIAL_REVIEWER_USERNAME"),
+        reviewer_password_hash=_env("REVIEWER_PASSWORD_HASH") or _env("INITIAL_REVIEWER_PASSWORD_HASH"),
         cookie_secure=_flag(
             "COOKIE_SECURE", default=env_name in {"production", "prod"}
         ),
