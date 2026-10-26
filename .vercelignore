@@ -1,0 +1,9 @@
+test-tmp
+.venv
+tests
+data
+src
+*.db
+*.sqlite
+.pytest_cache
+.ruff_cache
