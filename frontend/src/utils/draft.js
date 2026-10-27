@@ -5,9 +5,11 @@ const DRAFT_SECTIONS = [
   ['conclusion', 'Conclusion & Requested Action'],
 ];
 
-export function renderCleanDraft(cleanDraft) {
+export function renderCleanDraft(cleanDraft, includeCitations = false) {
   if (!cleanDraft || typeof cleanDraft !== 'object') return '';
-  if (typeof cleanDraft.draft_text === 'string') return cleanDraft.draft_text;
+  if (typeof cleanDraft.draft_text === 'string') {
+    return includeCitations ? cleanDraft.draft_text : cleanDraft.draft_text.replace(/\s+\[fact_[^\]]+\]/g, '');
+  }
 
   const lines = [
     `# Dispute Contest Rebuttal: ${cleanDraft.dispute_id || cleanDraft.case_id || ''}`,
@@ -19,7 +21,7 @@ export function renderCleanDraft(cleanDraft) {
     const sentences = Array.isArray(cleanDraft[key]) ? cleanDraft[key] : [];
     for (const item of sentences) {
       if (typeof item?.sentence !== 'string' || !item.sentence.trim()) continue;
-      const citations = Array.isArray(item.cited_fact_ids)
+      const citations = (includeCitations && Array.isArray(item.cited_fact_ids))
         ? item.cited_fact_ids.filter((id) => typeof id === 'string' && id.trim())
         : [];
       lines.push(`- ${item.sentence}${citations.length ? ` ${citations.map((id) => `[${id}]`).join(' ')}` : ''}`);

@@ -68,11 +68,12 @@ CRITICAL NON-NEGOTIABLE GROUNDING RULES:
 2. Every sentence MUST include a 'cited_fact_ids' list citing the exact fact_id(s) that support all numbers, dates, IDs, and assertions in that sentence.
 3. NEVER invent, extrapolate, or hallucinate dates, amounts, courier names, tracking IDs, or order numbers.
 4. If a fact is not in the list, DO NOT MENTION IT.
-5. Follow the fixed section template:
-   - 'summary': High-level dispute contest assertion.
+5. Always state the real IDs (real dispute ID, payment transaction ID, order ID, courier tracking number) directly from the facts. NEVER write placeholders like '{order_id}', '{payment_id}', and always include the actual transaction payment ID when describing transactions.
+6. Follow the fixed section template:
+   - 'summary': High-level dispute contest assertion explicitly citing the dispute ID, transaction payment ID, and disputed amount.
    - 'timeline': Chronological sequence of order creation, fulfillment, and dispute.
    - 'evidence_list': Description of verified documents attached.
-   - 'conclusion': Clear demand for dispute reversal with reference to disputed amount and dispute ID.
+   - 'conclusion': Clear demand for dispute reversal with reference to disputed amount, transaction ID, and dispute ID.
 """
 
 
@@ -204,14 +205,23 @@ class RebuttalDrafter:
         f_name = facts.get_fact("fact_customer_name")
         f_amt = facts.get_fact("fact_dispute_amount")
         f_disp = facts.get_fact("fact_dispute_id")
+        f_pay = facts.get_fact("fact_payment_id")
 
         if f_disp and f_amt:
-            sentences.append(
-                DraftSentence(
-                    sentence=f"We formally contest dispute {f_disp.raw_value} regarding transaction of {f_amt.raw_value} paise.",
-                    cited_fact_ids=["fact_dispute_id", "fact_dispute_amount"],
+            if f_pay:
+                sentences.append(
+                    DraftSentence(
+                        sentence=f"We formally contest dispute {f_disp.raw_value} regarding transaction {f_pay.raw_value} of {f_amt.raw_value} paise.",
+                        cited_fact_ids=["fact_dispute_id", "fact_payment_id", "fact_dispute_amount"],
+                    )
                 )
-            )
+            else:
+                sentences.append(
+                    DraftSentence(
+                        sentence=f"We formally contest dispute {f_disp.raw_value} regarding transaction of {f_amt.raw_value} paise.",
+                        cited_fact_ids=["fact_dispute_id", "fact_dispute_amount"],
+                    )
+                )
         if f_ord and f_name:
             sentences.append(
                 DraftSentence(
@@ -280,7 +290,15 @@ class RebuttalDrafter:
     def _fallback_conclusion(self, facts: FactSet) -> list[DraftSentence]:
         f_disp = facts.get_fact("fact_dispute_id")
         f_amt = facts.get_fact("fact_dispute_amount")
+        f_pay = facts.get_fact("fact_payment_id")
         if f_disp and f_amt:
+            if f_pay:
+                return [
+                    DraftSentence(
+                        sentence=f"In conclusion, merchant has fully fulfilled terms of service for dispute {f_disp.raw_value} on transaction {f_pay.raw_value} and requests immediate reversal of {f_amt.raw_value} paise.",
+                        cited_fact_ids=["fact_dispute_id", "fact_payment_id", "fact_dispute_amount"],
+                    )
+                ]
             return [
                 DraftSentence(
                     sentence=f"In conclusion, merchant has fully fulfilled terms of service for dispute {f_disp.raw_value} and requests immediate reversal of {f_amt.raw_value} paise.",
